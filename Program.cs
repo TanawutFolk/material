@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RawMat.Views.Setting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmMain());
+                Application.Run(new frmSetting());
             }
             finally
             {

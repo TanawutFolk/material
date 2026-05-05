@@ -130,6 +130,15 @@
     <Reference Include="K4os.Hash.xxHash, Version=1.0.8.0, Culture=neutral, PublicKeyToken=32cd54395057cec3, processorArchitecture=MSIL">
       <HintPath>packages\K4os.Hash.xxHash.1.0.8\lib\net462\K4os.Hash.xxHash.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.3912.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.WebView2.1.0.3912.50\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.3912.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.WebView2.1.0.3912.50\lib\net462\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.3912.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.WebView2.1.0.3912.50\lib\net462\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="MQTTnet, Version=3.1.2.0, Culture=neutral, PublicKeyToken=b69712f52770c0a7, processorArchitecture=MSIL">
       <HintPath>packages\MQTTnet.3.1.2\lib\net461\MQTTnet.dll</HintPath>
     </Reference>
@@ -192,9 +201,11 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\PronesControllers.cs" />
     <Compile Include="Controllers\QAdataControllers.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\PronesModels.cs" />
     <Compile Include="Models\QAdataModels.cs" />
+    <Compile Include="Models\SettingModels.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -203,12 +214,15 @@
     <Compile Include="Property\EmployeeProperty.cs" />
     <Compile Include="Property\PronesProperty.cs" />
     <Compile Include="Property\QAdataProperty.cs" />
+    <Compile Include="Property\SettingProperty.cs" />
     <Compile Include="Services\EmployeeServices.cs" />
     <Compile Include="Services\PronesServices.cs" />
     <Compile Include="Services\QAdataServices.cs" />
+    <Compile Include="Services\SettingService.cs" />
     <Compile Include="SQLFactory\EmployeeSQL.cs" />
     <Compile Include="SQLFactory\PronessSQL.cs" />
     <Compile Include="SQLFactory\QAdataSQL.cs" />
+    <Compile Include="SQLFactory\SettingSQL.cs" />
     <Compile Include="Utilities\docCls.cs" />
     <Compile Include="Utilities\imgCls.cs" />
     <Compile Include="Utilities\INavigationService.cs" />
@@ -454,6 +468,12 @@
     <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Setting\frmEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmEdit.Designer.cs">
+      <DependentUpon>frmEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Setting\frmSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -582,6 +602,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmEdit.resx">
+      <DependentUpon>frmEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Setting\frmSetting.resx">
       <DependentUpon>frmSetting.cs</DependentUpon>
@@ -778,5 +801,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.Web.WebView2.1.0.3912.50\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Web.WebView2.1.0.3912.50\build\Microsoft.Web.WebView2.targets'))" />
   </Target>
+  <Import Project="packages\Microsoft.Web.WebView2.1.0.3912.50\build\Microsoft.Web.WebView2.targets" Condition="Exists('packages\Microsoft.Web.WebView2.1.0.3912.50\build\Microsoft.Web.WebView2.targets')" />
 </Project>
