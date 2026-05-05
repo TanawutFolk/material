@@ -1,0 +1,782 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props" Condition="Exists('packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4F9E21D1-3D93-4D0C-A30D-14CB1F43F027}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>RawMat</RootNamespace>
+    <AssemblyName>Material_Receiving_System_ver1.0.0</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <UseWinFormsOutOfProcDesigner>True</UseWinFormsOutOfProcDesigner>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>cart1.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>RawMat.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>packages\Portable.BouncyCastle.1.9.0\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Bunifu_UI_v1.52, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Bunifu_UI_v1.52.dll</HintPath>
+    </Reference>
+    <Reference Include="BusinessData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\BusinessData.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Dapper.2.0.123\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.21.9.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Protobuf.3.21.9\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="Humanizer, Version=2.8.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>packages\Humanizer.Core.2.8.26\lib\netstandard2.0\Humanizer.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.4, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>packages\iTextSharp.5.5.13.4\lib\net461\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Compression.LZ4, Version=1.3.5.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
+      <HintPath>packages\K4os.Compression.LZ4.1.3.5\lib\net462\K4os.Compression.LZ4.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Compression.LZ4.Streams, Version=1.3.5.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
+      <HintPath>packages\K4os.Compression.LZ4.Streams.1.3.5\lib\net462\K4os.Compression.LZ4.Streams.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Hash.xxHash, Version=1.0.8.0, Culture=neutral, PublicKeyToken=32cd54395057cec3, processorArchitecture=MSIL">
+      <HintPath>packages\K4os.Hash.xxHash.1.0.8\lib\net462\K4os.Hash.xxHash.dll</HintPath>
+    </Reference>
+    <Reference Include="MQTTnet, Version=3.1.2.0, Culture=neutral, PublicKeyToken=b69712f52770c0a7, processorArchitecture=MSIL">
+      <HintPath>packages\MQTTnet.3.1.2\lib\net461\MQTTnet.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=8.0.33.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>packages\MySql.Data.8.0.33\lib\net48\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfiumViewer, Version=2.13.0.0, Culture=neutral, PublicKeyToken=91e4789cfb0609e0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\PdfiumViewer.Updated.2.14.5\lib\net45\PdfiumViewer.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SqlKata, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\SqlKata.2.4.0\lib\netstandard2.0\SqlKata.dll</HintPath>
+    </Reference>
+    <Reference Include="SqlKata.Execution, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\SqlKata.Execution.2.4.0\lib\netstandard2.0\SqlKata.Execution.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Pipelines, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.IO.Pipelines.5.0.2\lib\net461\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Printing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\EmployeeController.cs" />
+    <Compile Include="Controllers\PronesControllers.cs" />
+    <Compile Include="Controllers\QAdataControllers.cs" />
+    <Compile Include="Models\EmployeeModel.cs" />
+    <Compile Include="Models\PronesModels.cs" />
+    <Compile Include="Models\QAdataModels.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Property\EmployeeProperty.cs" />
+    <Compile Include="Property\PronesProperty.cs" />
+    <Compile Include="Property\QAdataProperty.cs" />
+    <Compile Include="Services\EmployeeServices.cs" />
+    <Compile Include="Services\PronesServices.cs" />
+    <Compile Include="Services\QAdataServices.cs" />
+    <Compile Include="SQLFactory\EmployeeSQL.cs" />
+    <Compile Include="SQLFactory\PronessSQL.cs" />
+    <Compile Include="SQLFactory\QAdataSQL.cs" />
+    <Compile Include="Utilities\docCls.cs" />
+    <Compile Include="Utilities\imgCls.cs" />
+    <Compile Include="Utilities\INavigationService.cs" />
+    <Compile Include="Utilities\IParent.cs" />
+    <Compile Include="Utilities\MqttManager.cs" />
+    <Compile Include="Utilities\MutexManager.cs" />
+    <Compile Include="Utilities\NavigationService.cs" />
+    <Compile Include="Utilities\NetworkInfoCls.cs" />
+    <Compile Include="Utilities\printerCls.cs" />
+    <Compile Include="Views\AppearCheck\userControlAppear.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlAppear.Designer.cs">
+      <DependentUpon>userControlAppear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlAppearPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlAppearPending.Designer.cs">
+      <DependentUpon>userControlAppearPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlSelectAppear.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlSelectAppear.Designer.cs">
+      <DependentUpon>userControlSelectAppear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlSelectAppearPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\AppearCheck\userControlSelectAppearPending.Designer.cs">
+      <DependentUpon>userControlSelectAppearPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBoxBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBoxBase.Designer.cs">
+      <DependentUpon>CustomMsgBoxBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlInspData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlInspData.Designer.cs">
+      <DependentUpon>userControlInspData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlInspDataPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlInspDataPending.Designer.cs">
+      <DependentUpon>userControlInspDataPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlSelectInspData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlSelectInspData.Designer.cs">
+      <DependentUpon>userControlSelectInspData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlDimension.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlDimension.Designer.cs">
+      <DependentUpon>userControlDimension.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlDimensionPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlDimensionPending.Designer.cs">
+      <DependentUpon>userControlDimensionPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlSelectDimension.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlSelectDimension.Designer.cs">
+      <DependentUpon>userControlSelectDimension.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlSelectDimensionPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\DimensionCheck\userControlSelectDimensionPending.Designer.cs">
+      <DependentUpon>userControlSelectDimensionPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlFunction.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlFunction.Designer.cs">
+      <DependentUpon>userControlFunction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlFunctionPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlFunctionPending.Designer.cs">
+      <DependentUpon>userControlFunctionPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlSelectFunction.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlSelectFunction.Designer.cs">
+      <DependentUpon>userControlSelectFunction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlSelectFunctionPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\FunctionCheck\userControlSelectFunctionPending.Designer.cs">
+      <DependentUpon>userControlSelectFunctionPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBox.Designer.cs">
+      <DependentUpon>CustomMsgBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBoxYesNo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\CustomMsg\CustomMsgBoxYesNo.Designer.cs">
+      <DependentUpon>CustomMsgBoxYesNo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlSelectInspDataPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\InspDataCheck\userControlSelectInspDataPending.Designer.cs">
+      <DependentUpon>userControlSelectInspDataPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingCheckPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingCheckPending.Designer.cs">
+      <DependentUpon>userControlPackingCheckPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingPrint.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingPrint.Designer.cs">
+      <DependentUpon>userControlPackingPrint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegularCheck\FormRegularReportStamp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\RegularCheck\FormRegularReportStamp.Designer.cs">
+      <DependentUpon>FormRegularReportStamp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlRegularPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlRegularPending.Designer.cs">
+      <DependentUpon>userControlRegularPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlSelectRegularPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlSelectRegularPending.Designer.cs">
+      <DependentUpon>userControlSelectRegularPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlSelectRegular.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlSelectRegular.Designer.cs">
+      <DependentUpon>userControlSelectRegular.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Login\userControlLogin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Login\userControlLogin.Designer.cs">
+      <DependentUpon>userControlLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Login\userControlProfile.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Login\userControlProfile.Designer.cs">
+      <DependentUpon>userControlProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\Main\userControlSearch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Main\userControlSearch.Designer.cs">
+      <DependentUpon>userControlSearch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlSelectPackingCheck.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlSelectPackingCheck.Designer.cs">
+      <DependentUpon>userControlSelectPackingCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Menu\userControlMenu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Menu\userControlMenu.Designer.cs">
+      <DependentUpon>userControlMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\userControlRecMat.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Main\userControlRecMat.Designer.cs">
+      <DependentUpon>userControlRecMat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Menu\userControlWH.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Menu\userControlWH.Designer.cs">
+      <DependentUpon>userControlWH.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingCheck.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\PackingCheck\userControlPackingCheck.Designer.cs">
+      <DependentUpon>userControlPackingCheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlRegular.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\RegularCheck\userControlRegular.Designer.cs">
+      <DependentUpon>userControlRegular.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlCheckSheet.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlCheckSheet.Designer.cs">
+      <DependentUpon>userControlCheckSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlRecWHPending.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlRecWHPending.Designer.cs">
+      <DependentUpon>userControlRecWHPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlReplacement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
+      <DependentUpon>userControlReplacement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\frmSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmSetting.Designer.cs">
+      <DependentUpon>frmSetting.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
+      <DependentUpon>userControlAppear.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\AppearCheck\userControlAppearPending.resx">
+      <DependentUpon>userControlAppearPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\AppearCheck\userControlSelectAppear.resx">
+      <DependentUpon>userControlSelectAppear.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\AppearCheck\userControlSelectAppearPending.resx">
+      <DependentUpon>userControlSelectAppearPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBoxBase.resx">
+      <DependentUpon>CustomMsgBoxBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\InspDataCheck\userControlInspData.resx">
+      <DependentUpon>userControlInspData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\InspDataCheck\userControlInspDataPending.resx">
+      <DependentUpon>userControlInspDataPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\InspDataCheck\userControlSelectInspData.resx">
+      <DependentUpon>userControlSelectInspData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DimensionCheck\userControlDimension.resx">
+      <DependentUpon>userControlDimension.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DimensionCheck\userControlDimensionPending.resx">
+      <DependentUpon>userControlDimensionPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DimensionCheck\userControlSelectDimension.resx">
+      <DependentUpon>userControlSelectDimension.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DimensionCheck\userControlSelectDimensionPending.resx">
+      <DependentUpon>userControlSelectDimensionPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FunctionCheck\userControlFunction.resx">
+      <DependentUpon>userControlFunction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FunctionCheck\userControlFunctionPending.resx">
+      <DependentUpon>userControlFunctionPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FunctionCheck\userControlSelectFunction.resx">
+      <DependentUpon>userControlSelectFunction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FunctionCheck\userControlSelectFunctionPending.resx">
+      <DependentUpon>userControlSelectFunctionPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBox.resx">
+      <DependentUpon>CustomMsgBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBoxYesNo.resx">
+      <DependentUpon>CustomMsgBoxYesNo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\InspDataCheck\userControlSelectInspDataPending.resx">
+      <DependentUpon>userControlSelectInspDataPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PackingCheck\userControlPackingCheckPending.resx">
+      <DependentUpon>userControlPackingCheckPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PackingCheck\userControlPackingPrint.resx">
+      <DependentUpon>userControlPackingPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PackingCheck\userControlSelectPackingCheck.resx">
+      <DependentUpon>userControlSelectPackingCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RegularCheck\FormRegularReportStamp.resx">
+      <DependentUpon>FormRegularReportStamp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RegularCheck\userControlRegularPending.resx">
+      <DependentUpon>userControlRegularPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RegularCheck\userControlSelectRegularPending.resx">
+      <DependentUpon>userControlSelectRegularPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RegularCheck\userControlSelectRegular.resx">
+      <DependentUpon>userControlSelectRegular.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Login\userControlLogin.resx">
+      <DependentUpon>userControlLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Login\userControlProfile.resx">
+      <DependentUpon>userControlProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\userControlRecMat.resx">
+      <DependentUpon>userControlRecMat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Main\userControlSearch.resx">
+      <DependentUpon>userControlSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Menu\userControlMenu.resx">
+      <DependentUpon>userControlMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Menu\userControlWH.resx">
+      <DependentUpon>userControlWH.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\PackingCheck\userControlPackingCheck.resx">
+      <DependentUpon>userControlPackingCheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\RegularCheck\userControlRegular.resx">
+      <DependentUpon>userControlRegular.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ReceiveWH\userControlCheckSheet.resx">
+      <DependentUpon>userControlCheckSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ReceiveWH\userControlRecWHPending.resx">
+      <DependentUpon>userControlRecWHPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
+      <DependentUpon>userControlReplacement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmSetting.resx">
+      <DependentUpon>frmSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\login.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\keep_data.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\settingface.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\smug.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\smug.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\anyasearch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="CommonClassLibrary\CommonClassLibrary\CommonClassLibrary.csproj">
+      <Project>{cf191309-162c-4e7e-a4b7-9c1e040ab4a3}</Project>
+      <Name>CommonClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="PermissionLibrary\PermissionLibrary\PermissionLibrary.csproj">
+      <Project>{311b49ae-7eb4-4e7c-b3f4-144770c3a248}</Project>
+      <Name>PermissionLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="Prones_Connection\PronesConnection.csproj">
+      <Project>{df71393b-2ab0-4b54-9531-bd05d0923813}</Project>
+      <Name>PronesConnection</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\keep.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\record.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\recieve.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\anyasearchmeme.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\OperateGO.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\okeyDokey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\bond.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\03_Pictures for program\Regular\SHIN005.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\packing.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\record_lot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\replace.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\receive_date.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\find_report.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\p_select.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\img\Packing 1.jpg" />
+    <None Include="bin\Debug\img\Packing 2.jpg" />
+    <None Include="bin\Debug\img\Packing 3.jpg" />
+    <None Include="bin\Debug\img\Cavity.png" />
+    <None Include="bin\Debug\img\image %282%29.png" />
+    <None Include="bin\Debug\img\QUESTION.png" />
+    <Content Include="cart1.ico" />
+    <None Include="img\no-photo.jpg" />
+    <Content Include="supply-chain.ico" />
+    <None Include="img\setting.png" />
+    <None Include="img\supply-chain.png" />
+    <None Include="img\warehouse.png" />
+    <None Include="bin\Debug\img\point.png" />
+    <None Include="img\on_going.png" />
+    <None Include="img\pending.png" />
+    <None Include="img\ncr.png" />
+    <None Include="img\inspection.png" />
+    <None Include="img\kanban_barcode.png" />
+    <None Include="img\document_ncr.png" />
+    <None Include="bin\Debug\img\login.png" />
+    <None Include="bin\Debug\img\home.png" />
+    <None Include="img\function.png" />
+    <None Include="img\dimension.png" />
+    <None Include="img\apperance.png" />
+    <None Include="img\check-mark.png" />
+    <Content Include="img\p_select.jpg" />
+    <None Include="img\report_approve.png" />
+    <None Include="img\refresh.png" />
+    <None Include="img\replacement.png" />
+    <None Include="img\regular.png" />
+    <Content Include="img\select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AcroPDFLib">
+      <Guid>{05BFD3F1-6319-4F30-B752-C7A22889BCC4}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="AxAcroPDFLib">
+      <Guid>{05BFD3F1-6319-4F30-B752-C7A22889BCC4}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>9</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props'))" />
+  </Target>
+</Project>
