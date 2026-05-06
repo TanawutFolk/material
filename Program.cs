@@ -55,7 +55,7 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmSetting());
+                Application.Run(new frmMain());
             }
             finally
             {

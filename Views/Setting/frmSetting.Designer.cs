@@ -237,7 +237,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridResult.DoubleBuffered = true;
+            this.dataGridResult.DoubleBuffered =true;
             this.dataGridResult.EnableHeadersVisualStyles = false;
             this.dataGridResult.HeaderBgColor = System.Drawing.Color.SeaGreen;
             this.dataGridResult.HeaderForeColor = System.Drawing.Color.SeaGreen;

@@ -21,61 +21,95 @@ namespace RawMat.Views.Setting
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            short cavityQty = 0;
-            short samplingQty = 0;
-
-            if (cavityQty < 0 || samplingQty < 0)
-            {
-                MessageBox.Show("จำนวนตัวเลขห้ามติดลบ", "แจ้งเตือน", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // 1. เอาข้อความมาหั่นแยกชิ้นด้วยลูกน้ำ (,) และตัดช่องว่างที่อาจเผลอพิมพ์เกินมาออก
-            string[] nameArray = txtCavityName.Text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            int nameCount = nameArray.Length;
-
-            // 2. ถ้าตัวเลข Cavity Qty มากกว่า 0 แต่จำนวนชื่อที่หั่นมาได้ ไม่เท่ากับตัวเลข Qty
-            // (อนุโลมให้กรณี Qty = 0 เผื่อบาง Part ไม่มีการใช้ Cavity)
-            if (cavityQty > 0 && nameCount != cavityQty)
-            {
-                MessageBox.Show($"จำนวนชื่อ Cavity ไม่สอดคล้องกับ Cavity Qty!\n\n" +
-                                $"คุณตั้ง Cavity Qty ไว้ที่: {cavityQty}\n" +
-                                $"แต่ระบุชื่อมา: {nameCount} ชื่อ ({txtCavityName.Text})\n\n" +
-                                $"*กรุณาระบุชื่อให้ครบและคั่นด้วยลูกน้ำ (,) เช่น A,B,C,D",
-                                "แจ้งเตือนตรรกะข้อมูล", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return; // เด้งออก ไม่ให้เซฟ
-            }
             try
             {
-                // 1. แพ็คข้อมูลจากหน้าจอ ใส่กล่อง SamplingSettingModel
-                SettingProperty.SamplingSettingModel updateData = new SettingProperty.SamplingSettingModel();
+                // แปลงค่าตัวเลขก่อน
+                short cavityQty = Convert.ToInt16(txtCavityQty.Text);
+                short samplingQty = Convert.ToInt16(txtSamplingQty.Text);
 
-                updateData.M_Code = txtMCode.Text;
-                updateData.Cavity_Name = txtCavityName.Text;
+                // เช็คค่าติดลบ
+                if (cavityQty < 0 || samplingQty < 0)
+                {
+                    MessageBox.Show(
+                        "จำนวนตัวเลขห้ามติดลบ",
+                        "แจ้งเตือน",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                    return;
+                }
 
-                // แปลงข้อความจากช่อง TextBox เป็นตัวเลข (short)
-                updateData.Cavity_Qty = Convert.ToInt16(txtCavityQty.Text);
-                updateData.Sampling_Qty = Convert.ToInt16(txtSamplingQty.Text);
+                // แยกชื่อ Cavity ด้วยลูกน้ำ
+                string[] nameArray = txtCavityName.Text
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                // ดึงตัวเลข ID จาก Dropdown (ที่ซ่อนไว้ใน ValueMember)
+                int nameCount = nameArray.Length;
+
+                // เช็คจำนวนชื่อ Cavity ให้ตรงกับ Cavity Qty
+                if (cavityQty > 0 && nameCount != cavityQty)
+                {
+                    MessageBox.Show(
+                        $"จำนวนชื่อ Cavity ไม่สอดคล้องกับ Cavity Qty!\n\n" +
+                        $"คุณตั้ง Cavity Qty ไว้ที่: {cavityQty}\n" +
+                        $"แต่ระบุชื่อมา: {nameCount} ชื่อ ({txtCavityName.Text})\n\n" +
+                        $"*กรุณาระบุชื่อให้ครบและคั่นด้วยลูกน้ำ (,) เช่น A,B,C,D",
+                        "แจ้งเตือนตรรกะข้อมูล",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                    return;
+                }
+
+                // แพ็คข้อมูลจากหน้าจอ
+                SettingProperty.SamplingSettingModel updateData =
+                    new SettingProperty.SamplingSettingModel();
+
+                updateData.M_Code = txtMCode.Text.Trim();
+                updateData.Cavity_Name = txtCavityName.Text.Trim();
+
+                updateData.Cavity_Qty = cavityQty;
+                updateData.Sampling_Qty = samplingQty;
+
                 updateData.Sampling_Type = Convert.ToInt16(cboSamplingType.SelectedValue);
                 updateData.Strictness_Type = Convert.ToInt16(cboStrictnessType.SelectedValue);
                 updateData.Strictness_Level = Convert.ToInt16(cboStrictnessLevel.SelectedValue);
 
-                // 2. ส่งกล่องข้อมูล และประเภทตาราง ไปให้ Controller จัดการ
+                // ส่งข้อมูลไป Update
                 bool isSuccess = _controller.UpdateSamplingData(updateData, _category);
 
-                // 3. ถ้าอัปเดตสำเร็จ แจ้งเตือนแล้วปิดหน้าต่าง
                 if (isSuccess)
                 {
-                    MessageBox.Show("อัปเดตข้อมูลสำเร็จ!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.Close(); // ปิดฟอร์ม Edit เพื่อกลับไปหน้าหลัก
+                    MessageBox.Show(
+                        "อัปเดตข้อมูลสำเร็จ!",
+                        "Success",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+
+                    // สำคัญมาก: ส่งค่า OK กลับไปให้ frmSetting
+                    this.DialogResult = DialogResult.OK;
+
+                    // ปิด frmEdit
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "ไม่สามารถอัปเดตข้อมูลได้",
+                        "Warning",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
                 }
             }
             catch (Exception ex)
             {
-                // ดัก Error กรณี User พิมพ์ตัวอักษรใส่ช่องตัวเลข
-                MessageBox.Show("กรุณาตรวจสอบความถูกต้องของข้อมูล\n" + ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "กรุณาตรวจสอบความถูกต้องของข้อมูล\n" + ex.Message,
+                    "Warning",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
             }
         }
 

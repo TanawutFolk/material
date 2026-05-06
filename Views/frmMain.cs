@@ -96,7 +96,7 @@ namespace RawMat
             //panelMain.Controls.Clear();
             //panelMenu.Controls.Clear();
 
-            bt_setting.Visible = false;
+            bt_setting.Visible = true;
 
             userControlWH usrConWH = new userControlWH();
 

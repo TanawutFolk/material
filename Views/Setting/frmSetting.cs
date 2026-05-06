@@ -118,7 +118,10 @@ namespace RawMat.Views.Setting
                 frmEdit frmEdit = new frmEdit(category, mCode, cavityQty, samplingType, samplingQty, strictnessType, strictnessLevel, cavityName);
 
                 // ใช้ ShowDialog() เพื่อบังคับให้แก้หน้าย่อยให้เสร็จก่อน ถึงจะกลับมากดหน้าหลักได้
-                frmEdit.ShowDialog();
+                if (frmEdit.ShowDialog() == DialogResult.OK)
+                {
+                    btnSearch_Click(null, null);
+                }
             }
         }
     }
