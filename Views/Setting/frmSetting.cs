@@ -59,7 +59,7 @@ namespace RawMat.Views.Setting
             dataGridResult.DataSource = dt;
 
             // (แถม) จัดให้ความกว้างคอลัมน์พอดีกับพื้นที่ตาราง
-            dataGridResult.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridResult.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             // 1. ตัดบรรทัดสุดท้ายออก (ปิดโหมดไม่ให้ User พิมพ์เพิ่มแถวใหม่เอง แถวที่มี * จะหายไป)
             dataGridResult.AllowUserToAddRows = false;
 
@@ -96,19 +96,29 @@ namespace RawMat.Views.Setting
 
         private void dataGridResult_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // เช็คว่า User ไม่ได้เผลอไปคลิกโดนหัวตาราง (e.RowIndex >= 0)
-            // และเช็คว่าคอลัมน์ที่คลิก คือคอลัมน์ "btnEdit" ที่เราเพิ่งสร้างใช่ไหม
+            // เช็คว่า User คลิกที่คอลัมน์ชื่อ "btnEdit" (ปุ่ม Action) และไม่ได้คลิกโดนหัวตาราง (RowIndex >= 0)
             if (e.RowIndex >= 0 && dataGridResult.Columns[e.ColumnIndex].Name == "btnEdit")
             {
-                // ดึงค่า M_Code จากบรรทัดที่ถูกคลิกออกมา (เพื่อส่งไปให้ฟอร์ม Edit ค้นหาข้อมูลต่อ)
-                string selectedMCode = dataGridResult.Rows[e.RowIndex].Cells["M_Code"].Value.ToString();
+                // 1. ชี้ไปที่แถว (Row) ที่ User คลิก
+                DataGridViewRow row = dataGridResult.Rows[e.RowIndex];
 
-                // (สมมติ) เปิดฟอร์มสำหรับ Edit
-                // frmEditSetting frmEdit = new frmEditSetting(selectedMCode);
-                // frmEdit.ShowDialog();
+                // 2. ดึงข้อมูลแต่ละคอลัมน์ออกมา (อ้างอิงชื่อคอลัมน์ตาม AS ใน SQL ที่เราเขียนไว้)
+                string mCode = row.Cells["M-Code"].Value.ToString();
+                string cavityQty = row.Cells["Cavity Qty"].Value.ToString();
+                string samplingType = row.Cells["Sampling Type"].Value.ToString();
+                string samplingQty = row.Cells["Sampling Qty"].Value.ToString();
+                string strictnessType = row.Cells["Strictness Type"].Value.ToString();
+                string strictnessLevel = row.Cells["Strictness Level"].Value.ToString();
+                string cavityName = row.Cells["Cavity Name"].Value.ToString();
 
-                // ลองโชว์ข้อความดูก่อนว่าดึงค่า M Code มาได้ถูกต้องไหม
-                MessageBox.Show("คุณต้องการแก้ไขข้อมูลของ M Code : " + selectedMCode, "Edit Data");
+                // ดึงประเภท Sampling (จาก Dropdown ค้นหาหน้าหลัก) เพื่อจะได้รู้ว่ากำลังแก้ตารางไหน
+                string category = cboSampling.Text;
+
+                // 3. เปิดหน้าฟอร์ม Edit พร้อมกับโยนข้อมูลทั้งหมดเข้าไป
+                frmEdit frmEdit = new frmEdit(category, mCode, cavityQty, samplingType, samplingQty, strictnessType, strictnessLevel, cavityName);
+
+                // ใช้ ShowDialog() เพื่อบังคับให้แก้หน้าย่อยให้เสร็จก่อน ถึงจะกลับมากดหน้าหลักได้
+                frmEdit.ShowDialog();
             }
         }
     }

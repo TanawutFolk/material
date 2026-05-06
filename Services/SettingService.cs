@@ -52,6 +52,42 @@ namespace RawMat.Services
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
+
+        public OutputOnDbProperty GetMasterSamplingType()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetMasterSamplingType();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetMasterStrictnessType()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetMasterStrictnessType();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetMasterStrictnessLevel()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetMasterStrictnessLevel();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+
+        public OutputOnDbProperty UpdateSamplingData(SettingProperty.SamplingSettingModel dataItem, string category)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateSamplingData(dataItem, category);
+
+            // ตรง ActionBySql ถ้า Base Class คุณตั้งชื่ออื่น (เช่น ExecuteSql) ให้แก้ตามโปรเจคคุณนะครับ
+            _resultData = base.UpdateBySql(sql);
+
+            return _resultData;
+        }
         //------ Override Method ---------
         public override OutputOnDbProperty Delete(SettingsProperty dataItem)
         {

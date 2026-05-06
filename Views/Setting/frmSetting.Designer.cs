@@ -62,7 +62,7 @@
             this.bunifuGradientPanel2.GradientBottomRight = System.Drawing.Color.White;
             this.bunifuGradientPanel2.GradientTopLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel2.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel2.Location = new System.Drawing.Point(12, 24);
+            this.bunifuGradientPanel2.Location = new System.Drawing.Point(12, 12);
             this.bunifuGradientPanel2.Name = "bunifuGradientPanel2";
             this.bunifuGradientPanel2.Quality = 10;
             this.bunifuGradientPanel2.Size = new System.Drawing.Size(1419, 166);
@@ -71,7 +71,7 @@
             // btnClear
             // 
             this.btnClear.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.btnClear.BackColor = System.Drawing.Color.DarkGray;
+            this.btnClear.BackColor = System.Drawing.Color.Gray;
             this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnClear.BorderRadius = 0;
             this.btnClear.ButtonText = "Clear";
@@ -91,7 +91,7 @@
             this.btnClear.Location = new System.Drawing.Point(1278, 108);
             this.btnClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Normalcolor = System.Drawing.Color.DarkGray;
+            this.btnClear.Normalcolor = System.Drawing.Color.Gray;
             this.btnClear.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.btnClear.OnHoverTextColor = System.Drawing.Color.White;
             this.btnClear.selected = false;
@@ -142,11 +142,11 @@
             // 
             this.label8.AutoSize = true;
             this.label8.BackColor = System.Drawing.Color.Transparent;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.Red;
             this.label8.Location = new System.Drawing.Point(437, 49);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(77, 24);
+            this.label8.Size = new System.Drawing.Size(83, 24);
             this.label8.TabIndex = 17;
             this.label8.Text = "M Code";
             // 
@@ -165,11 +165,11 @@
             // 
             this.ssssssss.AutoSize = true;
             this.ssssssss.BackColor = System.Drawing.Color.Transparent;
-            this.ssssssss.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ssssssss.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ssssssss.ForeColor = System.Drawing.Color.Red;
             this.ssssssss.Location = new System.Drawing.Point(189, 47);
             this.ssssssss.Name = "ssssssss";
-            this.ssssssss.Size = new System.Drawing.Size(89, 24);
+            this.ssssssss.Size = new System.Drawing.Size(97, 24);
             this.ssssssss.TabIndex = 5;
             this.ssssssss.Text = "Sampling";
             // 
@@ -187,10 +187,10 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(40, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(126, 25);
+            this.label1.Size = new System.Drawing.Size(140, 25);
             this.label1.TabIndex = 2;
             this.label1.Text = "Search Fillter";
             // 
@@ -204,20 +204,20 @@
             this.bunifuGradientPanel3.GradientBottomRight = System.Drawing.Color.White;
             this.bunifuGradientPanel3.GradientTopLeft = System.Drawing.Color.White;
             this.bunifuGradientPanel3.GradientTopRight = System.Drawing.Color.White;
-            this.bunifuGradientPanel3.Location = new System.Drawing.Point(12, 196);
+            this.bunifuGradientPanel3.Location = new System.Drawing.Point(12, 194);
             this.bunifuGradientPanel3.Name = "bunifuGradientPanel3";
             this.bunifuGradientPanel3.Quality = 10;
-            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1419, 786);
+            this.bunifuGradientPanel3.Size = new System.Drawing.Size(1419, 788);
             this.bunifuGradientPanel3.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(40, 15);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(134, 25);
+            this.label2.Size = new System.Drawing.Size(147, 25);
             this.label2.TabIndex = 3;
             this.label2.Text = "Search Result";
             // 
@@ -258,6 +258,7 @@
             this.Controls.Add(this.bunifuGradientPanel3);
             this.Controls.Add(this.bunifuGradientPanel2);
             this.Name = "frmSetting";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmSetting";
             this.Load += new System.EventHandler(this.frmSetting_Load);
             this.bunifuGradientPanel2.ResumeLayout(false);

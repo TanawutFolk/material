@@ -59,5 +59,101 @@ namespace RawMat.Controllers
 
             return result;
         }
+
+        // ==========================================
+        // ส่วนดึงข้อมูล Master สำหรับ Dropdown
+        // ==========================================
+
+        public DataTable GetMasterSamplingType()
+        {
+            DataTable result = new DataTable();
+            OutputOnDbProperty resultData = new OutputOnDbProperty();
+            try
+            {
+                resultData = _model.GetMasterSamplingType();
+                if (resultData.StatusOnDb == true)
+                {
+                    result = resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable GetMasterStrictnessType()
+        {
+            DataTable result = new DataTable();
+            OutputOnDbProperty resultData = new OutputOnDbProperty();
+            try
+            {
+                resultData = _model.GetMasterStrictnessType();
+                if (resultData.StatusOnDb == true)
+                {
+                    result = resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable GetMasterStrictnessLevel()
+        {
+            DataTable result = new DataTable();
+            OutputOnDbProperty resultData = new OutputOnDbProperty();
+            try
+            {
+                resultData = _model.GetMasterStrictnessLevel();
+                if (resultData.StatusOnDb == true)
+                {
+                    result = resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+        public bool UpdateSamplingData(SettingProperty.SamplingSettingModel dataItem, string category)
+        {
+            bool isSuccess = false;
+            OutputOnDbProperty resultData = new OutputOnDbProperty();
+            try
+            {
+                resultData = _model.UpdateSamplingData(dataItem, category);
+                if (resultData.StatusOnDb == true)
+                {
+                    isSuccess = true;
+                }
+                else
+                {
+                    MessageBox.Show(resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return isSuccess;
+        }
     }
+
 }

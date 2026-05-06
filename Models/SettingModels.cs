@@ -39,5 +39,33 @@ namespace RawMat.Models
             resultData = services.SearchAppearanceSamplingAll(dataItem);
             return resultData;
         }
+
+        // ==========================================
+        // ส่วนดึงข้อมูล Master สำหรับ Dropdown
+        // ==========================================
+
+        public OutputOnDbProperty GetMasterSamplingType()
+        {
+            resultData = services.GetMasterSamplingType();
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetMasterStrictnessType()
+        {
+            resultData = services.GetMasterStrictnessType();
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetMasterStrictnessLevel()
+        {
+            resultData = services.GetMasterStrictnessLevel();
+            return resultData;
+        }
+
+        public OutputOnDbProperty UpdateSamplingData(SettingProperty.SamplingSettingModel dataItem, string category)
+        {
+            resultData = services.UpdateSamplingData(dataItem, category);
+            return resultData;
+        }
     }
 }

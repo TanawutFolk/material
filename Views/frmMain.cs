@@ -33,6 +33,7 @@ using RawMat.Views.DimensionCheck;
 using RawMat.Views.InspDataCheck;
 using RawMat.Views.AppearCheck;
 using RawMat.Views.ReceiveMat;
+using RawMat.Views.Setting;
 namespace RawMat
 {
     public partial class frmMain : Form 
@@ -704,6 +705,16 @@ namespace RawMat
         private void bt_appear_pending_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void bt_setting_Click(object sender, EventArgs e)
+        {
+            if (empProp.EMP_LEVEL == "1")
+            {
+                // ถ้าเป็น Level 1 ให้เปิดหน้า Setting ได้
+                frmSetting formSetting = new frmSetting();
+                formSetting.ShowDialog();
+            }
         }
     }
 }
