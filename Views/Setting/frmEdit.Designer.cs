@@ -48,38 +48,38 @@
             // 
             // txtMCode
             // 
-            this.txtMCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtMCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMCode.Location = new System.Drawing.Point(27, 99);
             this.txtMCode.Name = "txtMCode";
             this.txtMCode.ReadOnly = true;
-            this.txtMCode.Size = new System.Drawing.Size(145, 34);
+            this.txtMCode.Size = new System.Drawing.Size(177, 30);
             this.txtMCode.TabIndex = 0;
             // 
             // cboSamplingType
             // 
-            this.cboSamplingType.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboSamplingType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboSamplingType.FormattingEnabled = true;
-            this.cboSamplingType.Location = new System.Drawing.Point(288, 96);
+            this.cboSamplingType.Location = new System.Drawing.Point(320, 96);
             this.cboSamplingType.Name = "cboSamplingType";
-            this.cboSamplingType.Size = new System.Drawing.Size(262, 37);
+            this.cboSamplingType.Size = new System.Drawing.Size(262, 33);
             this.cboSamplingType.TabIndex = 2;
             // 
             // cboStrictnessType
             // 
-            this.cboStrictnessType.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboStrictnessType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboStrictnessType.FormattingEnabled = true;
             this.cboStrictnessType.Location = new System.Drawing.Point(734, 96);
             this.cboStrictnessType.Name = "cboStrictnessType";
-            this.cboStrictnessType.Size = new System.Drawing.Size(194, 37);
+            this.cboStrictnessType.Size = new System.Drawing.Size(194, 33);
             this.cboStrictnessType.TabIndex = 4;
             // 
             // cboStrictnessLevel
             // 
-            this.cboStrictnessLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboStrictnessLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboStrictnessLevel.FormattingEnabled = true;
             this.cboStrictnessLevel.Location = new System.Drawing.Point(934, 96);
             this.cboStrictnessLevel.Name = "cboStrictnessLevel";
-            this.cboStrictnessLevel.Size = new System.Drawing.Size(160, 37);
+            this.cboStrictnessLevel.Size = new System.Drawing.Size(160, 33);
             this.cboStrictnessLevel.TabIndex = 5;
             // 
             // label8
@@ -100,7 +100,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(178, 72);
+            this.label1.Location = new System.Drawing.Point(210, 72);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(92, 24);
             this.label1.TabIndex = 19;
@@ -112,7 +112,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(288, 72);
+            this.label2.Location = new System.Drawing.Point(320, 72);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(137, 24);
             this.label2.TabIndex = 20;
@@ -124,7 +124,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(556, 72);
+            this.label3.Location = new System.Drawing.Point(588, 72);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(122, 24);
             this.label3.TabIndex = 21;
@@ -238,27 +238,27 @@
             // 
             // txtCavityQty
             // 
-            this.txtCavityQty.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityQty.Location = new System.Drawing.Point(178, 99);
+            this.txtCavityQty.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.txtCavityQty.Location = new System.Drawing.Point(210, 99);
             this.txtCavityQty.Name = "txtCavityQty";
-            this.txtCavityQty.Size = new System.Drawing.Size(104, 34);
+            this.txtCavityQty.Size = new System.Drawing.Size(104, 30);
             this.txtCavityQty.TabIndex = 28;
             this.txtCavityQty.TextChanged += new System.EventHandler(this.txtCavityQty_TextChanged);
             // 
             // txtSamplingQty
             // 
-            this.txtSamplingQty.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSamplingQty.Location = new System.Drawing.Point(556, 99);
+            this.txtSamplingQty.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.txtSamplingQty.Location = new System.Drawing.Point(588, 99);
             this.txtSamplingQty.Name = "txtSamplingQty";
-            this.txtSamplingQty.Size = new System.Drawing.Size(172, 34);
+            this.txtSamplingQty.Size = new System.Drawing.Size(140, 30);
             this.txtSamplingQty.TabIndex = 29;
             // 
             // txtCavityName
             // 
-            this.txtCavityName.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCavityName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.txtCavityName.Location = new System.Drawing.Point(1100, 99);
             this.txtCavityName.Name = "txtCavityName";
-            this.txtCavityName.Size = new System.Drawing.Size(172, 34);
+            this.txtCavityName.Size = new System.Drawing.Size(172, 30);
             this.txtCavityName.TabIndex = 30;
             // 
             // frmEdit
@@ -267,6 +267,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
             this.ClientSize = new System.Drawing.Size(1297, 237);
+            this.ControlBox = false;
             this.Controls.Add(this.txtCavityName);
             this.Controls.Add(this.txtSamplingQty);
             this.Controls.Add(this.txtCavityQty);
@@ -283,6 +284,7 @@
             this.Controls.Add(this.cboStrictnessType);
             this.Controls.Add(this.cboSamplingType);
             this.Controls.Add(this.txtMCode);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmEdit";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmEdit";
