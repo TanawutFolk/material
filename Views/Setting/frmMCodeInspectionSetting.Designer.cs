@@ -116,10 +116,10 @@
             // 
             // txtMCode
             // 
-            this.txtMCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtMCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMCode.Location = new System.Drawing.Point(24, 63);
             this.txtMCode.Name = "txtMCode";
-            this.txtMCode.Size = new System.Drawing.Size(165, 30);
+            this.txtMCode.Size = new System.Drawing.Size(199, 30);
             this.txtMCode.TabIndex = 0;
             // 
             // btnCancel
@@ -249,7 +249,7 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
             this.label9.ForeColor = System.Drawing.Color.Red;
-            this.label9.Location = new System.Drawing.Point(927, 35);
+            this.label9.Location = new System.Drawing.Point(956, 35);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(168, 24);
             this.label9.TabIndex = 15;
@@ -257,9 +257,9 @@
             // 
             // cboAppearanceCheck
             // 
-            this.cboAppearanceCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboAppearanceCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboAppearanceCheck.FormattingEnabled = true;
-            this.cboAppearanceCheck.Location = new System.Drawing.Point(927, 62);
+            this.cboAppearanceCheck.Location = new System.Drawing.Point(959, 62);
             this.cboAppearanceCheck.Name = "cboAppearanceCheck";
             this.cboAppearanceCheck.Size = new System.Drawing.Size(138, 33);
             this.cboAppearanceCheck.TabIndex = 14;
@@ -269,7 +269,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
             this.label8.ForeColor = System.Drawing.Color.Red;
-            this.label8.Location = new System.Drawing.Point(767, 35);
+            this.label8.Location = new System.Drawing.Point(799, 35);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(157, 24);
             this.label8.TabIndex = 13;
@@ -277,9 +277,9 @@
             // 
             // cboDimensionCheck
             // 
-            this.cboDimensionCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboDimensionCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboDimensionCheck.FormattingEnabled = true;
-            this.cboDimensionCheck.Location = new System.Drawing.Point(781, 62);
+            this.cboDimensionCheck.Location = new System.Drawing.Point(813, 62);
             this.cboDimensionCheck.Name = "cboDimensionCheck";
             this.cboDimensionCheck.Size = new System.Drawing.Size(138, 33);
             this.cboDimensionCheck.TabIndex = 12;
@@ -289,7 +289,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
             this.label7.ForeColor = System.Drawing.Color.Red;
-            this.label7.Location = new System.Drawing.Point(628, 35);
+            this.label7.Location = new System.Drawing.Point(660, 35);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(140, 24);
             this.label7.TabIndex = 11;
@@ -297,9 +297,9 @@
             // 
             // cboFunctionCheck
             // 
-            this.cboFunctionCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboFunctionCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboFunctionCheck.FormattingEnabled = true;
-            this.cboFunctionCheck.Location = new System.Drawing.Point(635, 62);
+            this.cboFunctionCheck.Location = new System.Drawing.Point(667, 62);
             this.cboFunctionCheck.Name = "cboFunctionCheck";
             this.cboFunctionCheck.Size = new System.Drawing.Size(138, 33);
             this.cboFunctionCheck.TabIndex = 10;
@@ -309,7 +309,7 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(489, 35);
+            this.label6.Location = new System.Drawing.Point(521, 35);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(132, 24);
             this.label6.TabIndex = 9;
@@ -317,9 +317,9 @@
             // 
             // cboRegularCheck
             // 
-            this.cboRegularCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboRegularCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboRegularCheck.FormattingEnabled = true;
-            this.cboRegularCheck.Location = new System.Drawing.Point(489, 62);
+            this.cboRegularCheck.Location = new System.Drawing.Point(521, 62);
             this.cboRegularCheck.Name = "cboRegularCheck";
             this.cboRegularCheck.Size = new System.Drawing.Size(138, 33);
             this.cboRegularCheck.TabIndex = 8;
@@ -329,7 +329,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
             this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(343, 35);
+            this.label5.Location = new System.Drawing.Point(375, 35);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(133, 24);
             this.label5.TabIndex = 7;
@@ -337,9 +337,9 @@
             // 
             // cboPackingCheck
             // 
-            this.cboPackingCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboPackingCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboPackingCheck.FormattingEnabled = true;
-            this.cboPackingCheck.Location = new System.Drawing.Point(343, 62);
+            this.cboPackingCheck.Location = new System.Drawing.Point(375, 62);
             this.cboPackingCheck.Name = "cboPackingCheck";
             this.cboPackingCheck.Size = new System.Drawing.Size(138, 33);
             this.cboPackingCheck.TabIndex = 6;
@@ -349,7 +349,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(216, 35);
+            this.label4.Location = new System.Drawing.Point(248, 35);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(98, 24);
             this.label4.TabIndex = 5;
@@ -357,9 +357,9 @@
             // 
             // cboKeepData
             // 
-            this.cboKeepData.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboKeepData.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboKeepData.FormattingEnabled = true;
-            this.cboKeepData.Location = new System.Drawing.Point(197, 62);
+            this.cboKeepData.Location = new System.Drawing.Point(229, 62);
             this.cboKeepData.Name = "cboKeepData";
             this.cboKeepData.Size = new System.Drawing.Size(138, 33);
             this.cboKeepData.TabIndex = 4;

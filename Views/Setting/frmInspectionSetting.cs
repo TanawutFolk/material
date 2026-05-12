@@ -63,7 +63,7 @@ namespace RawMat.Views.Setting
             dtgInspectionSetting.DefaultCellStyle.BackColor = Color.White;
             dtgInspectionSetting.DefaultCellStyle.SelectionBackColor = Color.LightCoral;
             dtgInspectionSetting.DefaultCellStyle.SelectionForeColor = Color.Black;
-
+            dtgInspectionSetting.DefaultCellStyle.Font = new Font(dtgInspectionSetting.Font, FontStyle.Bold);
             // Grid Style
             dtgInspectionSetting.BackgroundColor = Color.White;
             dtgInspectionSetting.GridColor = Color.LightGray;
@@ -72,20 +72,18 @@ namespace RawMat.Views.Setting
             AddEditButtonColumn();
 
             // Column Width
-            SetColumnWidth("Edit", 70);
+            SetColumnWidth("Edit", 80);
 
-            SetColumnWidth("M Code", 90);
-            SetColumnWidth("Material Name", 200);
-            SetColumnWidth("Vendor", 254);
+            SetColumnWidth("M Code", 110);
 
-            SetColumnWidth("Keep Data", 60);
-            SetColumnWidth("Packing Check", 70);
-            SetColumnWidth("Regular Check", 75);
-            SetColumnWidth("Regular Ref", 60);
-            SetColumnWidth("Function Check", 75);
-            SetColumnWidth("Dimension Check", 75);
-            SetColumnWidth("Appearance Check", 75);
-            SetColumnWidth("Status", 60);
+            SetColumnWidth("Keep Data", 110);
+            SetColumnWidth("Packing Check", 110);
+            SetColumnWidth("Regular Check", 110);
+            SetColumnWidth("Regular Ref", 110);
+            SetColumnWidth("Function Check", 110);
+            SetColumnWidth("Dimension Check", 110);
+            SetColumnWidth("Appearance Check", 110);
+            SetColumnWidth("Status", 65);
 
             SetColumnCenter("Edit");
             SetColumnCenter("Keep Data");

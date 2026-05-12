@@ -29,8 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInspectionSetting));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -55,7 +56,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(6, 8);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1610, 39);
+            this.panel1.Size = new System.Drawing.Size(1421, 39);
             this.panel1.TabIndex = 0;
             // 
             // label1
@@ -63,7 +64,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(722, 2);
+            this.label1.Location = new System.Drawing.Point(561, 1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(235, 31);
             this.label1.TabIndex = 0;
@@ -79,7 +80,7 @@
             this.panel2.Controls.Add(this.txtMCodeSearch);
             this.panel2.Location = new System.Drawing.Point(6, 53);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1610, 103);
+            this.panel2.Size = new System.Drawing.Size(1421, 103);
             this.panel2.TabIndex = 1;
             // 
             // btnAddNew
@@ -102,7 +103,7 @@
             this.btnAddNew.IconVisible = true;
             this.btnAddNew.IconZoom = 90D;
             this.btnAddNew.IsTab = false;
-            this.btnAddNew.Location = new System.Drawing.Point(1452, 13);
+            this.btnAddNew.Location = new System.Drawing.Point(1270, 13);
             this.btnAddNew.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAddNew.Name = "btnAddNew";
             this.btnAddNew.Normalcolor = System.Drawing.Color.Pink;
@@ -222,24 +223,24 @@
             this.panel3.Controls.Add(this.dtgInspectionSetting);
             this.panel3.Location = new System.Drawing.Point(6, 162);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1610, 726);
+            this.panel3.Size = new System.Drawing.Size(1421, 726);
             this.panel3.TabIndex = 2;
             // 
             // dtgInspectionSetting
             // 
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtgInspectionSetting.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtgInspectionSetting.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dtgInspectionSetting.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtgInspectionSetting.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtgInspectionSetting.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtgInspectionSetting.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtgInspectionSetting.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dtgInspectionSetting.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             //this.dtgInspectionSetting.DoubleBuffered = true;
             this.dtgInspectionSetting.EnableHeadersVisualStyles = false;
@@ -248,9 +249,17 @@
             this.dtgInspectionSetting.Location = new System.Drawing.Point(17, 16);
             this.dtgInspectionSetting.Name = "dtgInspectionSetting";
             this.dtgInspectionSetting.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtgInspectionSetting.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dtgInspectionSetting.RowHeadersVisible = false;
             this.dtgInspectionSetting.RowTemplate.Height = 24;
-            this.dtgInspectionSetting.Size = new System.Drawing.Size(1566, 693);
+            this.dtgInspectionSetting.Size = new System.Drawing.Size(1393, 693);
             this.dtgInspectionSetting.TabIndex = 0;
             this.dtgInspectionSetting.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtgInspectionSetting_CellContentClick);
             // 
@@ -271,7 +280,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(1621, 900);
+            this.ClientSize = new System.Drawing.Size(1430, 893);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
