@@ -277,10 +277,15 @@ namespace RawMat.Views.Setting
             CheckMCodeInMES();
         }
 
-        //private void frmMCodeInspectionSetting_Load_1(object sender, EventArgs e)
-        //{
+        private void UpdateTabStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tabRegularCheckDetails.Enabled = (cboRegularCheck.Text == "Yes");
+            tabFunctionCheckDetails.Enabled = (cboFunctionCheck.Text == "Yes");
+            tabDimensionCheckDetails.Enabled = (cboAppearanceCheck.Text == "Yes");
+            tabAppearanceCheckDetails.Enabled = (cboAppearanceCheck.Text == "Yes");
+        }
 
-        //}
+
     }
 }
 
