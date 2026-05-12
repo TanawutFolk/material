@@ -1,6 +1,6 @@
 ﻿namespace RawMat.Views.Setting
 {
-    partial class frmSetting
+    partial class frmSamplingSetting
     {
         /// <summary>
         /// Required designer variable.
@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSetting));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSamplingSetting));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.bunifuGradientPanel2 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.btnClear = new Bunifu.Framework.UI.BunifuFlatButton();
             this.btnSearch = new Bunifu.Framework.UI.BunifuFlatButton();
@@ -42,6 +42,7 @@
             this.bunifuGradientPanel3 = new Bunifu.Framework.UI.BunifuGradientPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.dataGridResult = new Bunifu.Framework.UI.BunifuCustomDataGrid();
+            this.label3 = new System.Windows.Forms.Label();
             this.bunifuGradientPanel2.SuspendLayout();
             this.bunifuGradientPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridResult)).BeginInit();
@@ -51,6 +52,7 @@
             // 
             this.bunifuGradientPanel2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bunifuGradientPanel2.BackgroundImage")));
             this.bunifuGradientPanel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bunifuGradientPanel2.Controls.Add(this.label3);
             this.bunifuGradientPanel2.Controls.Add(this.btnClear);
             this.bunifuGradientPanel2.Controls.Add(this.btnSearch);
             this.bunifuGradientPanel2.Controls.Add(this.label8);
@@ -88,7 +90,7 @@
             this.btnClear.IconVisible = true;
             this.btnClear.IconZoom = 90D;
             this.btnClear.IsTab = false;
-            this.btnClear.Location = new System.Drawing.Point(1278, 108);
+            this.btnClear.Location = new System.Drawing.Point(458, 109);
             this.btnClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnClear.Name = "btnClear";
             this.btnClear.Normalcolor = System.Drawing.Color.Gray;
@@ -123,7 +125,7 @@
             this.btnSearch.IconVisible = true;
             this.btnSearch.IconZoom = 90D;
             this.btnSearch.IsTab = false;
-            this.btnSearch.Location = new System.Drawing.Point(1029, 108);
+            this.btnSearch.Location = new System.Drawing.Point(209, 109);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -144,7 +146,7 @@
             this.label8.BackColor = System.Drawing.Color.Transparent;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.ForeColor = System.Drawing.Color.Red;
-            this.label8.Location = new System.Drawing.Point(437, 49);
+            this.label8.Location = new System.Drawing.Point(481, 15);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(83, 24);
             this.label8.TabIndex = 17;
@@ -155,7 +157,7 @@
             this.txtMcode.BackColor = System.Drawing.Color.White;
             this.txtMcode.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMcode.ForeColor = System.Drawing.Color.Black;
-            this.txtMcode.Location = new System.Drawing.Point(422, 68);
+            this.txtMcode.Location = new System.Drawing.Point(466, 34);
             this.txtMcode.Name = "txtMcode";
             this.txtMcode.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.txtMcode.Size = new System.Drawing.Size(264, 38);
@@ -167,7 +169,7 @@
             this.ssssssss.BackColor = System.Drawing.Color.Transparent;
             this.ssssssss.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ssssssss.ForeColor = System.Drawing.Color.Red;
-            this.ssssssss.Location = new System.Drawing.Point(189, 47);
+            this.ssssssss.Location = new System.Drawing.Point(233, 13);
             this.ssssssss.Name = "ssssssss";
             this.ssssssss.Size = new System.Drawing.Size(97, 24);
             this.ssssssss.TabIndex = 5;
@@ -178,7 +180,7 @@
             this.cboSampling.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cboSampling.ForeColor = System.Drawing.Color.Black;
             this.cboSampling.FormattingEnabled = true;
-            this.cboSampling.Location = new System.Drawing.Point(165, 67);
+            this.cboSampling.Location = new System.Drawing.Point(209, 33);
             this.cboSampling.Name = "cboSampling";
             this.cboSampling.Size = new System.Drawing.Size(251, 39);
             this.cboSampling.TabIndex = 4;
@@ -223,21 +225,21 @@
             // 
             // dataGridResult
             // 
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dataGridResult.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dataGridResult.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridResult.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dataGridResult.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridResult.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridResult.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridResult.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridResult.DoubleBuffered = true;
+            //this.dataGridResult.DoubleBuffered = true;
             this.dataGridResult.EnableHeadersVisualStyles = false;
             this.dataGridResult.HeaderBgColor = System.Drawing.Color.SeaGreen;
             this.dataGridResult.HeaderForeColor = System.Drawing.Color.SeaGreen;
@@ -249,7 +251,19 @@
             this.dataGridResult.TabIndex = 0;
             this.dataGridResult.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridResult_CellContentClick);
             // 
-            // frmSetting
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(1207, 15);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(193, 29);
+            this.label3.TabIndex = 22;
+            this.label3.Text = "M Code Setting";
+            // 
+            // frmSamplingSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -258,9 +272,9 @@
             this.Controls.Add(this.bunifuGradientPanel3);
             this.Controls.Add(this.bunifuGradientPanel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "frmSetting";
+            this.Name = "frmSamplingSetting";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "frmSetting";
+            this.Text = "Sampling Setting";
             this.Load += new System.EventHandler(this.frmSetting_Load);
             this.bunifuGradientPanel2.ResumeLayout(false);
             this.bunifuGradientPanel2.PerformLayout();
@@ -283,5 +297,6 @@
         private System.Windows.Forms.TextBox txtMcode;
         private Bunifu.Framework.UI.BunifuFlatButton btnSearch;
         private Bunifu.Framework.UI.BunifuFlatButton btnClear;
+        private System.Windows.Forms.Label label3;
     }
 }

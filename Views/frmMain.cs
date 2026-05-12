@@ -712,8 +712,8 @@ namespace RawMat
             if (empProp.EMP_LEVEL == "1")
             {
                 // ถ้าเป็น Level 1 ให้เปิดหน้า Setting ได้
-                frmSetting formSetting = new frmSetting();
-                formSetting.ShowDialog();
+               frmManuSetting FormManu = new frmManuSetting();
+                FormManu.ShowDialog();
             }
         }
     }

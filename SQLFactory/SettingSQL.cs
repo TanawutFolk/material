@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 
 namespace RawMat.SQLFactory
 {
@@ -17,11 +18,12 @@ namespace RawMat.SQLFactory
             sql = $@"SELECT 
                         a.M_Code AS `M-Code`, 
                         a.Cavity_Qty AS `Cavity Qty`,
+                        a.Cavity_Name AS `Cavity Name`,
                         t.Sampling_Type_Name AS `Sampling Type`,
                         a.Sampling_Qty AS `Sampling Qty`, 
                         st.Strictness_Name AS `Strictness Type`, 
-                        sl.Strictness_Level_Name AS `Strictness Level`, 
-                        a.Cavity_Name AS `Cavity Name`
+                        sl.Strictness_Level_Name AS `Strictness Level`
+                        
                     FROM info_regular_sampling a
                     LEFT JOIN info_sampling_type t ON a.sampling_type = t.sampling_type
                     LEFT JOIN info_strictness_type st ON a.Strictness_Type = st.Strictness_Type
@@ -134,5 +136,13 @@ namespace RawMat.SQLFactory
 
             return sql;
         }
+
+
+        // ------------------------------ M CODE Setting ------------------------------
+        //public string Search_M_Code()
+        //{
+        //    sql= 
+        //        Return sql
+        //}
     }
 }

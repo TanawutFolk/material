@@ -468,17 +468,29 @@
     <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmEdit.cs">
+    <Compile Include="Views\Setting\frmManuSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmEdit.Designer.cs">
-      <DependentUpon>frmEdit.cs</DependentUpon>
+    <Compile Include="Views\Setting\frmManuSetting.Designer.cs">
+      <DependentUpon>frmManuSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.cs">
+    <Compile Include="Views\Setting\frmMCodeSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.Designer.cs">
-      <DependentUpon>frmSetting.cs</DependentUpon>
+    <Compile Include="Views\Setting\frmMCodeSetting.Designer.cs">
+      <DependentUpon>frmMCodeSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\frmSamplingEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmSamplingEdit.Designer.cs">
+      <DependentUpon>frmSamplingEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\frmSamplingSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmSamplingSetting.Designer.cs">
+      <DependentUpon>frmSamplingSetting.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
       <DependentUpon>userControlAppear.cs</DependentUpon>
@@ -603,11 +615,17 @@
     <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmEdit.resx">
-      <DependentUpon>frmEdit.cs</DependentUpon>
+    <EmbeddedResource Include="Views\Setting\frmManuSetting.resx">
+      <DependentUpon>frmManuSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmSetting.resx">
-      <DependentUpon>frmSetting.cs</DependentUpon>
+    <EmbeddedResource Include="Views\Setting\frmMCodeSetting.resx">
+      <DependentUpon>frmMCodeSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmSamplingEdit.resx">
+      <DependentUpon>frmSamplingEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmSamplingSetting.resx">
+      <DependentUpon>frmSamplingSetting.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

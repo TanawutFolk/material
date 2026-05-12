@@ -70,7 +70,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dtg_receiveMatSearch.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dtg_receiveMatSearch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtg_receiveMatSearch.DoubleBuffered = true;
+            //this.dtg_receiveMatSearch.DoubleBuffered = true;
             this.dtg_receiveMatSearch.EnableHeadersVisualStyles = false;
             this.dtg_receiveMatSearch.HeaderBgColor = System.Drawing.Color.DarkGreen;
             this.dtg_receiveMatSearch.HeaderForeColor = System.Drawing.Color.Cyan;

@@ -1,6 +1,6 @@
 ﻿namespace RawMat.Views.Setting
 {
-    partial class frmEdit
+    partial class frmSamplingEdit
     {
         /// <summary>
         /// Required designer variable.
@@ -59,7 +59,7 @@
             // 
             this.cboSamplingType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboSamplingType.FormattingEnabled = true;
-            this.cboSamplingType.Location = new System.Drawing.Point(320, 96);
+            this.cboSamplingType.Location = new System.Drawing.Point(498, 96);
             this.cboSamplingType.Name = "cboSamplingType";
             this.cboSamplingType.Size = new System.Drawing.Size(262, 33);
             this.cboSamplingType.TabIndex = 2;
@@ -68,7 +68,7 @@
             // 
             this.cboStrictnessType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboStrictnessType.FormattingEnabled = true;
-            this.cboStrictnessType.Location = new System.Drawing.Point(734, 96);
+            this.cboStrictnessType.Location = new System.Drawing.Point(912, 96);
             this.cboStrictnessType.Name = "cboStrictnessType";
             this.cboStrictnessType.Size = new System.Drawing.Size(194, 33);
             this.cboStrictnessType.TabIndex = 4;
@@ -77,7 +77,7 @@
             // 
             this.cboStrictnessLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.cboStrictnessLevel.FormattingEnabled = true;
-            this.cboStrictnessLevel.Location = new System.Drawing.Point(934, 96);
+            this.cboStrictnessLevel.Location = new System.Drawing.Point(1112, 96);
             this.cboStrictnessLevel.Name = "cboStrictnessLevel";
             this.cboStrictnessLevel.Size = new System.Drawing.Size(160, 33);
             this.cboStrictnessLevel.TabIndex = 5;
@@ -112,7 +112,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(320, 72);
+            this.label2.Location = new System.Drawing.Point(498, 72);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(137, 24);
             this.label2.TabIndex = 20;
@@ -124,7 +124,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(588, 72);
+            this.label3.Location = new System.Drawing.Point(766, 72);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(122, 24);
             this.label3.TabIndex = 21;
@@ -136,7 +136,7 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(734, 69);
+            this.label4.Location = new System.Drawing.Point(912, 72);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(139, 24);
             this.label4.TabIndex = 22;
@@ -148,7 +148,7 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.Red;
-            this.label5.Location = new System.Drawing.Point(934, 69);
+            this.label5.Location = new System.Drawing.Point(1112, 72);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(136, 24);
             this.label5.TabIndex = 23;
@@ -160,7 +160,7 @@
             this.label6.BackColor = System.Drawing.Color.Transparent;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.Red;
-            this.label6.Location = new System.Drawing.Point(1100, 69);
+            this.label6.Location = new System.Drawing.Point(320, 72);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(115, 24);
             this.label6.TabIndex = 25;
@@ -186,7 +186,7 @@
             this.btnSave.IconVisible = true;
             this.btnSave.IconZoom = 90D;
             this.btnSave.IsTab = false;
-            this.btnSave.Location = new System.Drawing.Point(422, 181);
+            this.btnSave.Location = new System.Drawing.Point(422, 150);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
@@ -207,7 +207,7 @@
             this.btnCancle.BackColor = System.Drawing.Color.Gray;
             this.btnCancle.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnCancle.BorderRadius = 0;
-            this.btnCancle.ButtonText = "Cancle";
+            this.btnCancle.ButtonText = "Cancel";
             this.btnCancle.DisabledColor = System.Drawing.Color.Gray;
             this.btnCancle.Iconcolor = System.Drawing.Color.Transparent;
             this.btnCancle.Iconimage = null;
@@ -221,7 +221,7 @@
             this.btnCancle.IconVisible = true;
             this.btnCancle.IconZoom = 90D;
             this.btnCancle.IsTab = false;
-            this.btnCancle.Location = new System.Drawing.Point(669, 181);
+            this.btnCancle.Location = new System.Drawing.Point(669, 150);
             this.btnCancle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCancle.Name = "btnCancle";
             this.btnCancle.Normalcolor = System.Drawing.Color.Gray;
@@ -230,7 +230,7 @@
             this.btnCancle.selected = false;
             this.btnCancle.Size = new System.Drawing.Size(162, 43);
             this.btnCancle.TabIndex = 27;
-            this.btnCancle.Text = "Cancle";
+            this.btnCancle.Text = "Cancel";
             this.btnCancle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnCancle.Textcolor = System.Drawing.Color.White;
             this.btnCancle.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -248,7 +248,7 @@
             // txtSamplingQty
             // 
             this.txtSamplingQty.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.txtSamplingQty.Location = new System.Drawing.Point(588, 99);
+            this.txtSamplingQty.Location = new System.Drawing.Point(766, 99);
             this.txtSamplingQty.Name = "txtSamplingQty";
             this.txtSamplingQty.Size = new System.Drawing.Size(140, 30);
             this.txtSamplingQty.TabIndex = 29;
@@ -256,17 +256,17 @@
             // txtCavityName
             // 
             this.txtCavityName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.txtCavityName.Location = new System.Drawing.Point(1100, 99);
+            this.txtCavityName.Location = new System.Drawing.Point(320, 99);
             this.txtCavityName.Name = "txtCavityName";
             this.txtCavityName.Size = new System.Drawing.Size(172, 30);
             this.txtCavityName.TabIndex = 30;
             // 
-            // frmEdit
+            // frmSamplingEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(1297, 237);
+            this.ClientSize = new System.Drawing.Size(1297, 211);
             this.ControlBox = false;
             this.Controls.Add(this.txtCavityName);
             this.Controls.Add(this.txtSamplingQty);
@@ -285,7 +285,7 @@
             this.Controls.Add(this.cboSamplingType);
             this.Controls.Add(this.txtMCode);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "frmEdit";
+            this.Name = "frmSamplingEdit";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmEdit";
             this.Load += new System.EventHandler(this.frmEdit_Load);
