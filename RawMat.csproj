@@ -192,9 +192,11 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\PronesControllers.cs" />
     <Compile Include="Controllers\QAdataControllers.cs" />
+    <Compile Include="Controllers\SettingControllers.cs" />
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\PronesModels.cs" />
     <Compile Include="Models\QAdataModels.cs" />
+    <Compile Include="Models\SettingModels.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -203,12 +205,15 @@
     <Compile Include="Property\EmployeeProperty.cs" />
     <Compile Include="Property\PronesProperty.cs" />
     <Compile Include="Property\QAdataProperty.cs" />
+    <Compile Include="Property\SettingProperty.cs" />
     <Compile Include="Services\EmployeeServices.cs" />
     <Compile Include="Services\PronesServices.cs" />
     <Compile Include="Services\QAdataServices.cs" />
+    <Compile Include="Services\SettingServices.cs" />
     <Compile Include="SQLFactory\EmployeeSQL.cs" />
     <Compile Include="SQLFactory\PronessSQL.cs" />
     <Compile Include="SQLFactory\QAdataSQL.cs" />
+    <Compile Include="SQLFactory\SettingSQL.cs" />
     <Compile Include="Utilities\docCls.cs" />
     <Compile Include="Utilities\imgCls.cs" />
     <Compile Include="Utilities\INavigationService.cs" />
@@ -454,11 +459,17 @@
     <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.cs">
+    <Compile Include="Views\Setting\frmInspectionSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.Designer.cs">
-      <DependentUpon>frmSetting.cs</DependentUpon>
+    <Compile Include="Views\Setting\frmInspectionSetting.Designer.cs">
+      <DependentUpon>frmInspectionSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\frmMCodeInspectionSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmMCodeInspectionSetting.Designer.cs">
+      <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
       <DependentUpon>userControlAppear.cs</DependentUpon>
@@ -583,8 +594,11 @@
     <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmSetting.resx">
-      <DependentUpon>frmSetting.cs</DependentUpon>
+    <EmbeddedResource Include="Views\Setting\frmInspectionSetting.resx">
+      <DependentUpon>frmInspectionSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmMCodeInspectionSetting.resx">
+      <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
