@@ -8,15 +8,8 @@ namespace RawMat.Property
 {
     public class SettingProperty
     {
-        // Search
-        public string Search_M_CODE { get; set; }
-
-        // Master Setting
+        // --- Master Setting ---
         public string M_CODE { get; set; }
-        public string Material_Name { get; set; }
-        public string Vendor_ID { get; set; }
-        public string Vendor_Name { get; set; }
-
         public string Keep_Data_Need { get; set; }
         public string Packing_Check_Mode { get; set; }
         public string Regular_Check_Need { get; set; }
@@ -24,8 +17,41 @@ namespace RawMat.Property
         public string Function_Check_Need { get; set; }
         public string Dimension_Check_Need { get; set; }
         public string Appearance_Check_Need { get; set; }
-
         public string INUSE { get; set; }
-        public string EMP_ID { get; set; }
+
+        // --- Search & Meta ---
+        public string Search_M_CODE { get; set; }
+
+        // --- Tab 1: Regular Sampling ---
+        public string Reg_Cavity_Qty { get; set; }
+        public string Reg_Cavity_Name { get; set; }
+        public string Reg_Strictness_Level { get; set; }
+        public string Reg_Sampling_Qty { get; set; }
+        public string Reg_Strictness_Type { get; set; }
+        public string Reg_Sampling_Type { get; set; }
+
+        // --- Tab 2: Function Sampling ---
+        public string Func_Cavity_Qty { get; set; }
+        public string Func_Cavity_Name { get; set; }
+        public string Func_Strictness_Level { get; set; }
+        public string Func_Sampling_Qty { get; set; }
+        public string Func_Strictness_Type { get; set; }
+        public string Func_Sampling_Type { get; set; }
+
+        // --- Tab 3: Dimension Sampling ---
+        public string Dim_Cavity_Qty { get; set; }
+        public string Dim_Cavity_Name { get; set; }
+        public string Dim_Strictness_Level { get; set; }
+        public string Dim_Sampling_Qty { get; set; }
+        public string Dim_Strictness_Type { get; set; }
+        public string Dim_Sampling_Type { get; set; }
+
+        // --- Tab 4: Appearance Sampling ---
+        public string App_Cavity_Qty { get; set; }
+        public string App_Cavity_Name { get; set; }
+        public string App_Strictness_Level { get; set; }
+        public string App_Sampling_Qty { get; set; }
+        public string App_Strictness_Type { get; set; }
+        public string App_Sampling_Type { get; set; }
     }
 }

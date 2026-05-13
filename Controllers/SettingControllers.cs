@@ -199,5 +199,75 @@ namespace RawMat.Controllers
 
             return bl;
         }
+        // --- เพิ่มโค้ดส่วนนี้ต่อท้ายก่อนปิดปีกกาของคลาส SettingControllers ---
+
+        public DataTable GetSamplingTypeList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.GetSamplingTypeList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
+        public DataTable GetStrictnessTypeList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.GetStrictnessTypeList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
+        public DataTable GetStrictnessLevelList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.GetStrictnessLevelList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
     }
 }

@@ -86,5 +86,31 @@ namespace RawMat.Services
             _resultData = base.UpdateBySql(sql);
             return _resultData;
         }
+
+        // --- เพิ่มโค้ดส่วนนี้ต่อท้ายก่อนปิดปีกกาของคลาส SettingServices ---
+
+        public OutputOnDbProperty GetSamplingTypeList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetSamplingTypeList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetStrictnessTypeList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetStrictnessTypeList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetStrictnessLevelList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetStrictnessLevelList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
     }
 }

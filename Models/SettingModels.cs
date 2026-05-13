@@ -44,5 +44,24 @@ namespace RawMat.Models
             resultData = services.UpdateInspectionSetting(dataItem);
             return resultData;
         }
+        // --- เพิ่มโค้ดส่วนนี้ต่อท้ายก่อนปิดปีกกาของคลาส SettingModels ---
+
+        public OutputOnDbProperty GetSamplingTypeList()
+        {
+            resultData = services.GetSamplingTypeList();
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetStrictnessTypeList()
+        {
+            resultData = services.GetStrictnessTypeList();
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetStrictnessLevelList()
+        {
+            resultData = services.GetStrictnessLevelList();
+            return resultData;
+        }
     }
 }
