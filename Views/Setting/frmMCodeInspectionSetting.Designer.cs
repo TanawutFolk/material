@@ -180,7 +180,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.btnCancel.Activecolor = System.Drawing.Color.DimGray;
             this.btnCancel.BackColor = System.Drawing.Color.DarkGray;
             this.btnCancel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnCancel.BorderRadius = 0;
@@ -215,7 +215,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.btnSave.Activecolor = System.Drawing.Color.DarkRed;
             this.btnSave.BackColor = System.Drawing.Color.Red;
             this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnSave.BorderRadius = 0;

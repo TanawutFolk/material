@@ -1,5 +1,6 @@
 ﻿using RawMat.Controllers;
 using RawMat.Property;
+using RawMat.SQLFactory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,6 +16,9 @@ namespace RawMat.Views.Setting
     public partial class frmMCodeInspectionSetting : Form
     {
         SettingControllers _controller = new SettingControllers();
+        DataTable dtRegularEquipment = new DataTable();
+        DataTable dtDimensionEquipment = new DataTable();
+        DataTable dtEquipmentType = new DataTable();
 
         private string _mCode = "";
         private bool _isEditMode = false;
@@ -22,7 +26,11 @@ namespace RawMat.Views.Setting
         public frmMCodeInspectionSetting()
         {
             InitializeComponent();
+
+            _mCode = "";
+            _isEditMode = false;
         }
+
         public frmMCodeInspectionSetting(string mCode)
         {
             InitializeComponent();
@@ -36,9 +44,18 @@ namespace RawMat.Views.Setting
             BindInspectionLevelEvents();
             ClearInput();
 
+            LoadEquipmentTypeList();
+
+            SetupEquipmentGrid(dtgRegularEquipment);
+            SetupEquipmentGrid(dtgDimensionEquipment);
+
+            dtgRegularEquipment.DataError += dtgEquipment_DataError;
+            dtgDimensionEquipment.DataError += dtgEquipment_DataError;
+
             if (_isEditMode)
             {
                 LoadInspectionSettingByMCode(_mCode);
+                LoadEquipmentSetting(_mCode);
                 txtMCode.Enabled = false;
             }
             else
@@ -519,64 +536,142 @@ namespace RawMat.Views.Setting
             this.Close();
         }
 
-        private void cboS1tab4_SelectedIndexChanged(object sender, EventArgs e)
+        private void SetupEquipmentGrid(DataGridView dtg)
         {
+            dtg.AutoGenerateColumns = false;
+            dtg.AllowUserToAddRows = true;
+            dtg.AllowUserToDeleteRows = true;
+            dtg.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dtg.MultiSelect = false;
+            dtg.RowHeadersVisible = false;
 
+            dtg.Columns.Clear();
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "M_CODE",
+                HeaderText = "M Code",
+                DataPropertyName = "M_CODE",
+                Width = 100,
+                ReadOnly = true,
+                Visible = false
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "POINT_ORDER",
+                HeaderText = "Order",
+                DataPropertyName = "POINT_ORDER",
+                Width = 60
+            });
+
+            dtg.Columns.Add(new DataGridViewComboBoxColumn
+            {
+                Name = "EQUIPMENT_TYPE",
+                HeaderText = "Equipment",
+                DataPropertyName = "EQUIPMENT_TYPE",
+                DataSource = dtEquipmentType,
+                DisplayMember = "Equipment_Name",
+                ValueMember = "Equipment_Type",
+                Width = 180,
+                DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Equipment_Name",
+                HeaderText = "Equipment Name",
+                DataPropertyName = "Equipment_Name",
+                Width = 160,
+                ReadOnly = true
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "POINT_NAME",
+                HeaderText = "Point Name",
+                DataPropertyName = "POINT_NAME",
+                Width = 160
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "POINT_CAL",
+                HeaderText = "Point Cal",
+                DataPropertyName = "POINT_CAL",
+                Width = 120
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CRITERIA_MIN",
+                HeaderText = "Min",
+                DataPropertyName = "CRITERIA_MIN",
+                Width = 80
+            });
+
+            dtg.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "CRITERIA_MAX",
+                HeaderText = "Max",
+                DataPropertyName = "CRITERIA_MAX",
+                Width = 80
+            });
         }
 
-        private void cboNormalReducetab4_SelectedIndexChanged()
+        private void LoadEquipmentTypeList()
         {
+            dtEquipmentType = _controller.GetEquipmentTypeList();
 
+            if (dtEquipmentType == null)
+            {
+                dtEquipmentType = new DataTable();
+            }
+        }
+        private void LoadEquipmentSetting(string mCode)
+        {
+            if (string.IsNullOrWhiteSpace(mCode))
+            {
+                dtgRegularEquipment.DataSource = null;
+                dtgDimensionEquipment.DataSource = null;
+                return;
+            }
+
+            SettingProperty dataItem = new SettingProperty();
+            dataItem.M_CODE = mCode.Trim();
+
+            dtRegularEquipment = _controller.SearchRegularEquipmentSetting(dataItem);
+            dtDimensionEquipment = _controller.SearchDimensionEquipmentSetting(dataItem);
+
+            dtgRegularEquipment.DataSource = dtRegularEquipment;
+            dtgDimensionEquipment.DataSource = dtDimensionEquipment;
+        }
+        private void dtgEquipment_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+        }
+        private void cboNormalReducetab4_SelectedIndexChanged(object sender, EventArgs e)
+        {
         }
 
-        private void txtInspectionQtytab4_TextChanged(object sender, EventArgs e)
+        private void label28_Click(object sender, EventArgs e)
         {
-
         }
 
-        private void label28_Click()
+        private void cboInscpectionLeveltab4_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
-        private void label23_Click(object sender, EventArgs e)
+        private void label31_Click(object sender, EventArgs e)
         {
-
         }
 
-        private void cboInscpectionLeveltab4_SelectedIndexChanged()
+        private void label33_Click(object sender, EventArgs e)
         {
-
         }
 
-        private void label30_Click(object sender, EventArgs e)
+        private void txtCavityQtytab4_TextChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void label31_Click()
-        {
-
-        }
-
-        private void label32_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label33_Click()
-        {
-
-        }
-
-        private void txtCavityNametab4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtCavityQtytab4_TextChanged()
-        {
-
         }
     }
 }

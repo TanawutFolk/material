@@ -63,5 +63,24 @@ namespace RawMat.Models
             resultData = services.GetStrictnessLevelList();
             return resultData;
         }
+        //------------------- Equipment
+
+        public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SearchRegularEquipmentSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SearchDimensionEquipmentSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetEquipmentTypeList()
+        {
+            resultData = services.GetEquipmentTypeList();
+            return resultData;
+        }
     }
 }

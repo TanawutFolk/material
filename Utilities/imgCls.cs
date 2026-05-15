@@ -620,9 +620,9 @@ namespace RawMat.Utilities
             try
             {
                 // ดึงพาธโฟลเดอร์จาก app.config
-                string folderRegularPath = ConfigurationManager.AppSettings["AppearancePath"];
+                string folderAppearPath = ConfigurationManager.AppSettings["AppearancePath"];
 
-                if (string.IsNullOrEmpty(folderRegularPath))
+                if (string.IsNullOrEmpty(folderAppearPath))
                 {
                     Console.WriteLine("ข้อผิดพลาด: ไม่พบพาธโฟลเดอร์ AppearancePath ใน app.config");
                     return _defaultImage;
@@ -633,7 +633,7 @@ namespace RawMat.Utilities
 
                 foreach (string extension in allowedExtensions)
                 {
-                    string fullPath = Path.Combine(folderRegularPath, fileName + extension);
+                    string fullPath = Path.Combine(folderAppearPath, fileName + extension);
 
                     if (File.Exists(fullPath))
                     {

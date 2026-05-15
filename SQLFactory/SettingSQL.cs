@@ -302,5 +302,67 @@ namespace RawMat.SQLFactory
 
             return sql;
         }
+        //-------------------------------------- Equipment
+        public string SearchRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            sql = @"
+            SELECT 
+                a.M_CODE,
+                a.POINT_ORDER,
+                a.EQUIPMENT_TYPE,
+                b.Equipment_Name,
+                a.POINT_NAME,
+                a.POINT_CAL,
+                a.CRITERIA_MIN,
+                a.CRITERIA_MAX
+            FROM qa_system.info_regular_equipment a
+            LEFT JOIN qa_system.info_equipment_type b 
+                ON a.EQUIPMENT_TYPE = b.Equipment_Type
+            WHERE a.M_CODE = 'dataItem.M_CODE'
+            ORDER BY a.POINT_ORDER ASC;
+          ";
+
+            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
+
+            return sql;
+        }
+
+        public string SearchDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            sql = @"
+            SELECT 
+                a.M_CODE,
+                a.POINT_ORDER,
+                a.EQUIPMENT_TYPE,
+                b.Equipment_Name,
+                a.POINT_NAME,
+                a.POINT_CAL,
+                a.CRITERIA_MIN,
+                a.CRITERIA_MAX
+            FROM qa_system.info_dimension_equipment a
+            LEFT JOIN qa_system.info_equipment_type b 
+                ON a.EQUIPMENT_TYPE = b.Equipment_Type
+            WHERE a.M_CODE = 'dataItem.M_CODE'
+            ORDER BY a.POINT_ORDER ASC;
+          ";
+
+            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
+
+            return sql;
+        }
+
+        public string GetEquipmentTypeList()
+        {
+            sql = @"
+            SELECT 
+                Equipment_Type,
+                Equipment_Name
+            FROM qa_system.info_equipment_type
+            ORDER BY Equipment_Type ASC;
+          ";
+
+            return sql;
+        }
+
     }
 }

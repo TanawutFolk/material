@@ -12,6 +12,10 @@ namespace RawMat.Controllers
         OutputOnDbProperty _resultData = new OutputOnDbProperty();
         SettingModels _model = new SettingModels();
 
+        DataTable dtRegularEquipment = new DataTable();
+        DataTable dtDimensionEquipment = new DataTable();
+        DataTable dtEquipmentType = new DataTable();
+
         public DataTable SearchInspectionSettingList(SettingProperty dataItem)
         {
             DataTable result = new DataTable();
@@ -267,6 +271,87 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 result = null;
             }
+            return result;
+        }
+        //------------------- Equipment
+
+        public DataTable SearchRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.SearchRegularEquipmentSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
+        public DataTable SearchDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.SearchDimensionEquipmentSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
+        public DataTable GetEquipmentTypeList()
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.GetEquipmentTypeList();
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
             return result;
         }
     }

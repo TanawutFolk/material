@@ -112,5 +112,28 @@ namespace RawMat.Services
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
+        public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchRegularEquipmentSetting(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchDimensionEquipmentSetting(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetEquipmentTypeList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetEquipmentTypeList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
     }
 }
