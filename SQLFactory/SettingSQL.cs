@@ -24,7 +24,9 @@ namespace RawMat.SQLFactory
             if (value == "1" ||
                 value.Equals("YES", StringComparison.OrdinalIgnoreCase) ||
                 value.Equals("Y", StringComparison.OrdinalIgnoreCase) ||
-                value.Equals("NEED", StringComparison.OrdinalIgnoreCase))
+                value.Equals("NEED", StringComparison.OrdinalIgnoreCase) ||
+                value.Equals("ACTIVE", StringComparison.OrdinalIgnoreCase) ||
+                value.Equals("TRUE", StringComparison.OrdinalIgnoreCase))
             {
                 return "1";
             }
@@ -50,13 +52,13 @@ namespace RawMat.SQLFactory
                 SELECT 
                     a.M_CODE AS `M Code`,
                     CASE WHEN a.Keep_Data_Need = 1 THEN 'Yes' ELSE 'No' END AS `Keep Data`,
-                    CASE WHEN a.Packing_Check_Mode = 1 THEN 'Yes' ELSE 'NO' END AS `Packing Check`,
+                    CASE WHEN a.Packing_Check_Mode = 1 THEN 'Yes' ELSE 'No' END AS `Packing Check`,
                     CASE WHEN a.Regular_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Regular Check`,
                     a.Regular_Check_Ref AS `Regular Ref`,
                     CASE WHEN a.Function_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Function Check`,
                     CASE WHEN a.Dimension_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Dimension Check`,
                     CASE WHEN a.Appearance_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Appearance Check`,
-                    CASE WHEN a.INUSE = 1 THEN 'Active' ELSE 'Inactive' END AS `Status`
+                    CASE WHEN IFNULL(a.INUSE, 1) = 1 THEN 'Active' ELSE 'InActive' END AS `Status`
                 FROM info_mat_inspection_list a
                 WHERE 1=1 ";
 
@@ -75,26 +77,27 @@ namespace RawMat.SQLFactory
                 SELECT 
                     a.M_CODE AS `M Code`,
                     CASE WHEN a.Keep_Data_Need = 1 THEN 'Yes' ELSE 'No' END AS `Keep Data`,
-                    a.Packing_Check_Mode AS `Packing Check`,
+                    CASE WHEN a.Packing_Check_Mode = 1 THEN 'Yes' ELSE 'No' END AS `Packing Check`,
                     CASE WHEN a.Regular_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Regular Check`,
                     a.Regular_Check_Ref AS `Regular Ref`,
                     CASE WHEN a.Function_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Function Check`,
                     CASE WHEN a.Dimension_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Dimension Check`,
                     CASE WHEN a.Appearance_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Appearance Check`,
+                    IFNULL(a.INUSE, 1) AS INUSE,
 
                     -- เรียงลำดับคอลัมน์ให้ตรงเป๊ะตาม Database
                     -- 1. Regular
                     r.Cavity_Qty AS Reg_Cavity_Qty, r.Sampling_Type AS Reg_Sampling_Type, r.Sampling_Qty AS Reg_Sampling_Qty, 
                     r.Strictness_Type AS Reg_Strictness_Type, r.Strictness_Level AS Reg_Strictness_Level, r.Cavity_Name AS Reg_Cavity_Name,
-        
+
                     -- 2. Function
                     f.Cavity_Qty AS Func_Cavity_Qty, f.Sampling_Type AS Func_Sampling_Type, f.Sampling_Qty AS Func_Sampling_Qty, 
                     f.Strictness_Type AS Func_Strictness_Type, f.Strictness_Level AS Func_Strictness_Level, f.Cavity_Name AS Func_Cavity_Name,
-        
+
                     -- 3. Dimension
                     d.Cavity_Qty AS Dim_Cavity_Qty, d.Sampling_Type AS Dim_Sampling_Type, d.Sampling_Qty AS Dim_Sampling_Qty, 
                     d.Strictness_Type AS Dim_Strictness_Type, d.Strictness_Level AS Dim_Strictness_Level, d.Cavity_Name AS Dim_Cavity_Name,
-        
+
                     -- 4. Appearance
                     ap.Cavity_Qty AS App_Cavity_Qty, ap.Sampling_Type AS App_Sampling_Type, ap.Sampling_Qty AS App_Sampling_Qty, 
                     ap.Strictness_Type AS App_Strictness_Type, ap.Strictness_Level AS App_Strictness_Level, ap.Cavity_Name AS App_Cavity_Name
@@ -135,8 +138,7 @@ namespace RawMat.SQLFactory
             sql = @"
                 SELECT COUNT(*) AS CNT
                 FROM info_mat_inspection_list
-                WHERE M_CODE = 'dataItem.M_CODE'
-                  AND IFNULL(INUSE, 1) = 1;
+                WHERE M_CODE = 'dataItem.M_CODE';
             ";
 
             sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
@@ -152,7 +154,6 @@ namespace RawMat.SQLFactory
                     M_CODE,
                     Keep_Data_Need,
                     Regular_Check_Need,
-                    Regular_Check_Ref,
                     Packing_Check_Mode,
                     Function_Check_Need,
                     Dimension_Check_Need,
@@ -164,23 +165,75 @@ namespace RawMat.SQLFactory
                     'dataItem.M_CODE',
                     dataItem.Keep_Data_Need,
                     dataItem.Regular_Check_Need,
-                    dataItem.Regular_Check_Ref,
                     dataItem.Packing_Check_Mode,
                     dataItem.Function_Check_Need,
                     dataItem.Dimension_Check_Need,
                     dataItem.Appearance_Check_Need,
-                    1
+                    dataItem.INUSE
                 );
+
+                -- เรียงลำดับคอลัมน์ตอนบันทึกให้ตรงเป๊ะ
+                INSERT INTO info_regular_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
+                VALUES ('dataItem.M_CODE', dataItem.Reg_Cavity_Qty, dataItem.Reg_Sampling_Type, dataItem.Reg_Sampling_Qty, dataItem.Reg_Strictness_Type, dataItem.Reg_Strictness_Level, dataItem.Reg_Cavity_Name)
+                ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
+
+                INSERT INTO info_function_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
+                VALUES ('dataItem.M_CODE', dataItem.Func_Cavity_Qty, dataItem.Func_Sampling_Type, dataItem.Func_Sampling_Qty, dataItem.Func_Strictness_Type, dataItem.Func_Strictness_Level, dataItem.Func_Cavity_Name)
+                ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
+
+                INSERT INTO info_dimension_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
+                VALUES ('dataItem.M_CODE', dataItem.Dim_Cavity_Qty, dataItem.Dim_Sampling_Type, dataItem.Dim_Sampling_Qty, dataItem.Dim_Strictness_Type, dataItem.Dim_Strictness_Level, dataItem.Dim_Cavity_Name)
+                ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
+
+                INSERT INTO info_appearance_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
+                VALUES ('dataItem.M_CODE', dataItem.App_Cavity_Qty, dataItem.App_Sampling_Type, dataItem.App_Sampling_Qty, dataItem.App_Strictness_Type, dataItem.App_Strictness_Level, dataItem.App_Cavity_Name)
+                ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
             ";
 
+            // Helper: ใส่ 0 แทนถ้าค่าว่าง (สำหรับ DB smallint)
+            Func<string, string> toZero = v => string.IsNullOrWhiteSpace(v) ? "0" : v;
+
+            // --- Master Logic ---
             sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
             sql = sql.Replace("dataItem.Keep_Data_Need", ToBitValue(dataItem.Keep_Data_Need));
             sql = sql.Replace("dataItem.Regular_Check_Need", ToBitValue(dataItem.Regular_Check_Need));
-            sql = sql.Replace("dataItem.Regular_Check_Ref", ToSqlTextOrNull(dataItem.Regular_Check_Ref));
-            sql = sql.Replace("dataItem.Packing_Check_Mode", ToSqlTextOrNull(dataItem.Packing_Check_Mode));
+            sql = sql.Replace("dataItem.Packing_Check_Mode", ToBitValue(dataItem.Packing_Check_Mode));
             sql = sql.Replace("dataItem.Function_Check_Need", ToBitValue(dataItem.Function_Check_Need));
             sql = sql.Replace("dataItem.Dimension_Check_Need", ToBitValue(dataItem.Dimension_Check_Need));
             sql = sql.Replace("dataItem.Appearance_Check_Need", ToBitValue(dataItem.Appearance_Check_Need));
+            sql = sql.Replace("dataItem.INUSE", ToBitValue(dataItem.INUSE));
+
+            // --- Tab 1: Regular ---
+            sql = sql.Replace("dataItem.Reg_Cavity_Qty", toZero(dataItem.Reg_Cavity_Qty));
+            sql = sql.Replace("dataItem.Reg_Sampling_Type", toZero(dataItem.Reg_Sampling_Type));
+            sql = sql.Replace("dataItem.Reg_Sampling_Qty", toZero(dataItem.Reg_Sampling_Qty));
+            sql = sql.Replace("dataItem.Reg_Strictness_Type", toZero(dataItem.Reg_Strictness_Type));
+            sql = sql.Replace("dataItem.Reg_Strictness_Level", toZero(dataItem.Reg_Strictness_Level));
+            sql = sql.Replace("dataItem.Reg_Cavity_Name", ToSqlTextOrNull(dataItem.Reg_Cavity_Name));
+
+            // --- Tab 2: Function ---
+            sql = sql.Replace("dataItem.Func_Cavity_Qty", toZero(dataItem.Func_Cavity_Qty));
+            sql = sql.Replace("dataItem.Func_Sampling_Type", toZero(dataItem.Func_Sampling_Type));
+            sql = sql.Replace("dataItem.Func_Sampling_Qty", toZero(dataItem.Func_Sampling_Qty));
+            sql = sql.Replace("dataItem.Func_Strictness_Type", toZero(dataItem.Func_Strictness_Type));
+            sql = sql.Replace("dataItem.Func_Strictness_Level", toZero(dataItem.Func_Strictness_Level));
+            sql = sql.Replace("dataItem.Func_Cavity_Name", ToSqlTextOrNull(dataItem.Func_Cavity_Name));
+
+            // --- Tab 3: Dimension ---
+            sql = sql.Replace("dataItem.Dim_Cavity_Qty", toZero(dataItem.Dim_Cavity_Qty));
+            sql = sql.Replace("dataItem.Dim_Sampling_Type", toZero(dataItem.Dim_Sampling_Type));
+            sql = sql.Replace("dataItem.Dim_Sampling_Qty", toZero(dataItem.Dim_Sampling_Qty));
+            sql = sql.Replace("dataItem.Dim_Strictness_Type", toZero(dataItem.Dim_Strictness_Type));
+            sql = sql.Replace("dataItem.Dim_Strictness_Level", toZero(dataItem.Dim_Strictness_Level));
+            sql = sql.Replace("dataItem.Dim_Cavity_Name", ToSqlTextOrNull(dataItem.Dim_Cavity_Name));
+
+            // --- Tab 4: Appearance ---
+            sql = sql.Replace("dataItem.App_Cavity_Qty", toZero(dataItem.App_Cavity_Qty));
+            sql = sql.Replace("dataItem.App_Sampling_Type", toZero(dataItem.App_Sampling_Type));
+            sql = sql.Replace("dataItem.App_Sampling_Qty", toZero(dataItem.App_Sampling_Qty));
+            sql = sql.Replace("dataItem.App_Strictness_Type", toZero(dataItem.App_Strictness_Type));
+            sql = sql.Replace("dataItem.App_Strictness_Level", toZero(dataItem.App_Strictness_Level));
+            sql = sql.Replace("dataItem.App_Cavity_Name", ToSqlTextOrNull(dataItem.App_Cavity_Name));
 
             return sql;
         }
@@ -196,7 +249,7 @@ namespace RawMat.SQLFactory
                     Function_Check_Need = dataItem.Function_Check_Need, 
                     Dimension_Check_Need = dataItem.Dimension_Check_Need, 
                     Appearance_Check_Need = dataItem.Appearance_Check_Need, 
-                    INUSE = 1
+                    INUSE = dataItem.INUSE
                 WHERE M_CODE = 'dataItem.M_CODE';
 
                 -- เรียงลำดับคอลัมน์ตอนบันทึกให้ตรงเป๊ะ
@@ -224,10 +277,12 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
             sql = sql.Replace("dataItem.Keep_Data_Need", ToBitValue(dataItem.Keep_Data_Need));
             sql = sql.Replace("dataItem.Regular_Check_Need", ToBitValue(dataItem.Regular_Check_Need));
-            sql = sql.Replace("dataItem.Packing_Check_Mode", ToSqlTextOrNull(dataItem.Packing_Check_Mode));
+            sql = sql.Replace("dataItem.Packing_Check_Mode", ToBitValue(dataItem.Packing_Check_Mode));
+            sql = sql.Replace("dataItem.Regular_Check_Ref", ToSqlTextOrNull(dataItem.Regular_Check_Ref));
             sql = sql.Replace("dataItem.Function_Check_Need", ToBitValue(dataItem.Function_Check_Need));
             sql = sql.Replace("dataItem.Dimension_Check_Need", ToBitValue(dataItem.Dimension_Check_Need));
             sql = sql.Replace("dataItem.Appearance_Check_Need", ToBitValue(dataItem.Appearance_Check_Need));
+            sql = sql.Replace("dataItem.INUSE", ToBitValue(dataItem.INUSE));
 
             // --- Tab 1: Regular ---
             sql = sql.Replace("dataItem.Reg_Cavity_Qty", toZero(dataItem.Reg_Cavity_Qty));
@@ -235,7 +290,7 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.Reg_Sampling_Qty", toZero(dataItem.Reg_Sampling_Qty));
             sql = sql.Replace("dataItem.Reg_Strictness_Type", toZero(dataItem.Reg_Strictness_Type));
             sql = sql.Replace("dataItem.Reg_Strictness_Level", toZero(dataItem.Reg_Strictness_Level));
-            sql = sql.Replace("dataItem.Reg_Cavity_Name", CleanSqlText(dataItem.Reg_Cavity_Name));
+            sql = sql.Replace("dataItem.Reg_Cavity_Name", ToSqlTextOrNull(dataItem.Reg_Cavity_Name));
 
             // --- Tab 2: Function ---
             sql = sql.Replace("dataItem.Func_Cavity_Qty", toZero(dataItem.Func_Cavity_Qty));
@@ -243,7 +298,7 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.Func_Sampling_Qty", toZero(dataItem.Func_Sampling_Qty));
             sql = sql.Replace("dataItem.Func_Strictness_Type", toZero(dataItem.Func_Strictness_Type));
             sql = sql.Replace("dataItem.Func_Strictness_Level", toZero(dataItem.Func_Strictness_Level));
-            sql = sql.Replace("dataItem.Func_Cavity_Name", CleanSqlText(dataItem.Func_Cavity_Name));
+            sql = sql.Replace("dataItem.Func_Cavity_Name", ToSqlTextOrNull(dataItem.Func_Cavity_Name));
 
             // --- Tab 3: Dimension ---
             sql = sql.Replace("dataItem.Dim_Cavity_Qty", toZero(dataItem.Dim_Cavity_Qty));
@@ -251,7 +306,7 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.Dim_Sampling_Qty", toZero(dataItem.Dim_Sampling_Qty));
             sql = sql.Replace("dataItem.Dim_Strictness_Type", toZero(dataItem.Dim_Strictness_Type));
             sql = sql.Replace("dataItem.Dim_Strictness_Level", toZero(dataItem.Dim_Strictness_Level));
-            sql = sql.Replace("dataItem.Dim_Cavity_Name", CleanSqlText(dataItem.Dim_Cavity_Name));
+            sql = sql.Replace("dataItem.Dim_Cavity_Name", ToSqlTextOrNull(dataItem.Dim_Cavity_Name));
 
             // --- Tab 4: Appearance ---
             sql = sql.Replace("dataItem.App_Cavity_Qty", toZero(dataItem.App_Cavity_Qty));
@@ -259,7 +314,7 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.App_Sampling_Qty", toZero(dataItem.App_Sampling_Qty));
             sql = sql.Replace("dataItem.App_Strictness_Type", toZero(dataItem.App_Strictness_Type));
             sql = sql.Replace("dataItem.App_Strictness_Level", toZero(dataItem.App_Strictness_Level));
-            sql = sql.Replace("dataItem.App_Cavity_Name", CleanSqlText(dataItem.App_Cavity_Name));
+            sql = sql.Replace("dataItem.App_Cavity_Name", ToSqlTextOrNull(dataItem.App_Cavity_Name));
 
             return sql;
         }
@@ -302,6 +357,7 @@ namespace RawMat.SQLFactory
 
             return sql;
         }
+
         //-------------------------------------- Equipment
         public string SearchRegularEquipmentSetting(SettingProperty dataItem)
         {
@@ -322,7 +378,7 @@ namespace RawMat.SQLFactory
             ORDER BY a.POINT_ORDER ASC;
           ";
 
-            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
+            sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
 
             return sql;
         }
@@ -346,7 +402,7 @@ namespace RawMat.SQLFactory
             ORDER BY a.POINT_ORDER ASC;
           ";
 
-            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
+            sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
 
             return sql;
         }
@@ -363,6 +419,5 @@ namespace RawMat.SQLFactory
 
             return sql;
         }
-
     }
 }

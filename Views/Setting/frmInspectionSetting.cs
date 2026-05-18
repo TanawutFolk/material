@@ -72,7 +72,7 @@ namespace RawMat.Views.Setting
             AddEditButtonColumn();
 
             // Column Width
-            SetColumnWidth("Edit", 80);
+            SetColumnWidth("Revise", 80);
 
             SetColumnWidth("M Code", 110);
 
@@ -85,7 +85,7 @@ namespace RawMat.Views.Setting
             SetColumnWidth("Appearance Check", 110);
             SetColumnWidth("Status", 65);
 
-            SetColumnCenter("Edit");
+            SetColumnCenter("Revise");
             SetColumnCenter("Keep Data");
             SetColumnCenter("Packing Check");
             SetColumnCenter("Regular Check");
@@ -98,15 +98,15 @@ namespace RawMat.Views.Setting
 
         private void AddEditButtonColumn()
         {
-            if (dtgInspectionSetting.Columns.Contains("Edit"))
+            if (dtgInspectionSetting.Columns.Contains("Revise"))
             {
                 return;
             }
 
             DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn();
-            btnEdit.Name = "Edit";
+            btnEdit.Name = "Revise";
             btnEdit.HeaderText = "";
-            btnEdit.Text = "Edit";
+            btnEdit.Text = "Revise";
             btnEdit.UseColumnTextForButtonValue = true;
             btnEdit.Width = 70;
 
@@ -155,7 +155,7 @@ namespace RawMat.Views.Setting
                 return;
             }
 
-            if (dtgInspectionSetting.Columns[e.ColumnIndex].Name != "Edit")
+            if (dtgInspectionSetting.Columns[e.ColumnIndex].Name != "Revise")
             {
                 return;
             }

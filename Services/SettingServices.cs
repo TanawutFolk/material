@@ -57,7 +57,7 @@ namespace RawMat.Services
 
         public OutputOnDbProperty SearchMCodeInMES(SettingProperty dataItem)
         {
-            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlMES"].ConnectionString;
             sql = sqlFactory.SearchMCodeInMES(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;

@@ -37,6 +37,12 @@
             this.btnSave = new Bunifu.Framework.UI.BunifuFlatButton();
             this.tabDetails = new System.Windows.Forms.TabControl();
             this.tabRegularCheckDetails = new System.Windows.Forms.TabPage();
+            this.txtCavityNameTab1 = new System.Windows.Forms.TextBox();
+            this.txtQtyCavityTab1 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.dtgRegularEquipment = new System.Windows.Forms.DataGridView();
             this.label29 = new System.Windows.Forms.Label();
             this.cboNormalReducetab1 = new System.Windows.Forms.ComboBox();
@@ -46,11 +52,11 @@
             this.cboInscpectionLeveltab1 = new System.Windows.Forms.ComboBox();
             this.lbForQty = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtCavityNametab1 = new System.Windows.Forms.TextBox();
-            this.txtCavityQtytab1 = new System.Windows.Forms.TextBox();
             this.tabFunctionCheckDetails = new System.Windows.Forms.TabPage();
+            this.txtCavityNameTab2 = new System.Windows.Forms.TextBox();
+            this.txtQtyCavityTab2 = new System.Windows.Forms.TextBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.cboNormalReducetab2 = new System.Windows.Forms.ComboBox();
             this.txtInspectionQtytab2 = new System.Windows.Forms.TextBox();
@@ -59,11 +65,12 @@
             this.cboInscpectionLeveltab2 = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.txtCavityNametab2 = new System.Windows.Forms.TextBox();
-            this.txtCavityQtytab2 = new System.Windows.Forms.TextBox();
             this.tabDimensionCheckDetails = new System.Windows.Forms.TabPage();
+            this.txtCavityNameTab3 = new System.Windows.Forms.TextBox();
+            this.txtQtyCavityTab3 = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
             this.dtgDimensionEquipment = new System.Windows.Forms.DataGridView();
             this.label17 = new System.Windows.Forms.Label();
             this.cboNormalReducetab3 = new System.Windows.Forms.ComboBox();
@@ -73,11 +80,11 @@
             this.cboInscpectionLeveltab3 = new System.Windows.Forms.ComboBox();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label27 = new System.Windows.Forms.Label();
-            this.txtCavityNametab3 = new System.Windows.Forms.TextBox();
-            this.txtCavityQtytab3 = new System.Windows.Forms.TextBox();
             this.tabAppearanceCheckDetails = new System.Windows.Forms.TabPage();
+            this.txtCavityNameTab4 = new System.Windows.Forms.TextBox();
+            this.txtQtyCavityTab4 = new System.Windows.Forms.TextBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.cboNormalReducetab4 = new System.Windows.Forms.ComboBox();
             this.txtInspectionQtytab4 = new System.Windows.Forms.TextBox();
@@ -86,10 +93,6 @@
             this.cboInscpectionLeveltab4 = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.label33 = new System.Windows.Forms.Label();
-            this.txtCavityNametab4 = new System.Windows.Forms.TextBox();
-            this.txtCavityQtytab4 = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.cboAppearanceCheck = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -103,6 +106,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.cboKeepData = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.cboStatus = new System.Windows.Forms.ComboBox();
+            this.label36 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.tabDetails.SuspendLayout();
@@ -148,6 +153,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Pink;
+            this.panel2.Controls.Add(this.label36);
+            this.panel2.Controls.Add(this.cboStatus);
             this.panel2.Controls.Add(this.txtMCode);
             this.panel2.Controls.Add(this.btnCancel);
             this.panel2.Controls.Add(this.btnSave);
@@ -167,7 +174,7 @@
             this.panel2.Controls.Add(this.label3);
             this.panel2.Location = new System.Drawing.Point(2, 51);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1252, 595);
+            this.panel2.Size = new System.Drawing.Size(1252, 631);
             this.panel2.TabIndex = 3;
             // 
             // txtMCode
@@ -198,7 +205,7 @@
             this.btnCancel.IconVisible = true;
             this.btnCancel.IconZoom = 90D;
             this.btnCancel.IsTab = false;
-            this.btnCancel.Location = new System.Drawing.Point(662, 538);
+            this.btnCancel.Location = new System.Drawing.Point(662, 576);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Normalcolor = System.Drawing.Color.DarkGray;
@@ -233,7 +240,7 @@
             this.btnSave.IconVisible = true;
             this.btnSave.IconZoom = 90D;
             this.btnSave.IsTab = false;
-            this.btnSave.Location = new System.Drawing.Point(448, 538);
+            this.btnSave.Location = new System.Drawing.Point(448, 576);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Normalcolor = System.Drawing.Color.Red;
@@ -259,11 +266,17 @@
             this.tabDetails.Name = "tabDetails";
             this.tabDetails.Padding = new System.Drawing.Point(36, 2);
             this.tabDetails.SelectedIndex = 0;
-            this.tabDetails.Size = new System.Drawing.Size(1234, 403);
+            this.tabDetails.Size = new System.Drawing.Size(1234, 444);
             this.tabDetails.TabIndex = 16;
             // 
             // tabRegularCheckDetails
             // 
+            this.tabRegularCheckDetails.Controls.Add(this.txtCavityNameTab1);
+            this.tabRegularCheckDetails.Controls.Add(this.txtQtyCavityTab1);
+            this.tabRegularCheckDetails.Controls.Add(this.label10);
+            this.tabRegularCheckDetails.Controls.Add(this.label11);
+            this.tabRegularCheckDetails.Controls.Add(this.label20);
+            this.tabRegularCheckDetails.Controls.Add(this.label13);
             this.tabRegularCheckDetails.Controls.Add(this.dtgRegularEquipment);
             this.tabRegularCheckDetails.Controls.Add(this.label29);
             this.tabRegularCheckDetails.Controls.Add(this.cboNormalReducetab1);
@@ -273,25 +286,80 @@
             this.tabRegularCheckDetails.Controls.Add(this.cboInscpectionLeveltab1);
             this.tabRegularCheckDetails.Controls.Add(this.lbForQty);
             this.tabRegularCheckDetails.Controls.Add(this.label12);
-            this.tabRegularCheckDetails.Controls.Add(this.label11);
-            this.tabRegularCheckDetails.Controls.Add(this.label10);
-            this.tabRegularCheckDetails.Controls.Add(this.txtCavityNametab1);
-            this.tabRegularCheckDetails.Controls.Add(this.txtCavityQtytab1);
             this.tabRegularCheckDetails.Location = new System.Drawing.Point(4, 31);
             this.tabRegularCheckDetails.Name = "tabRegularCheckDetails";
             this.tabRegularCheckDetails.Padding = new System.Windows.Forms.Padding(3);
-            this.tabRegularCheckDetails.Size = new System.Drawing.Size(1226, 368);
+            this.tabRegularCheckDetails.Size = new System.Drawing.Size(1226, 409);
             this.tabRegularCheckDetails.TabIndex = 0;
             this.tabRegularCheckDetails.Text = "Regular Check Detail";
             this.tabRegularCheckDetails.UseVisualStyleBackColor = true;
             // 
+            // txtCavityNameTab1
+            // 
+            this.txtCavityNameTab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCavityNameTab1.Location = new System.Drawing.Point(215, 67);
+            this.txtCavityNameTab1.Name = "txtCavityNameTab1";
+            this.txtCavityNameTab1.Size = new System.Drawing.Size(165, 30);
+            this.txtCavityNameTab1.TabIndex = 51;
+            // 
+            // txtQtyCavityTab1
+            // 
+            this.txtQtyCavityTab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtQtyCavityTab1.Location = new System.Drawing.Point(44, 67);
+            this.txtQtyCavityTab1.Name = "txtQtyCavityTab1";
+            this.txtQtyCavityTab1.Size = new System.Drawing.Size(165, 30);
+            this.txtQtyCavityTab1.TabIndex = 50;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.ForeColor = System.Drawing.Color.Red;
+            this.label10.Location = new System.Drawing.Point(44, 40);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(104, 24);
+            this.label10.TabIndex = 49;
+            this.label10.Text = "Q\'ty Cavity";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.Color.Red;
+            this.label11.Location = new System.Drawing.Point(215, 40);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(116, 24);
+            this.label11.TabIndex = 52;
+            this.label11.Text = "Cavity name";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.ForeColor = System.Drawing.Color.Black;
+            this.label20.Location = new System.Drawing.Point(39, 143);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(135, 24);
+            this.label20.TabIndex = 48;
+            this.label20.Text = "Equipment Set";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.ForeColor = System.Drawing.Color.Red;
+            this.label13.Location = new System.Drawing.Point(48, 131);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(0, 24);
+            this.label13.TabIndex = 46;
+            // 
             // dtgRegularEquipment
             // 
             this.dtgRegularEquipment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtgRegularEquipment.Location = new System.Drawing.Point(44, 129);
+            this.dtgRegularEquipment.Location = new System.Drawing.Point(39, 170);
             this.dtgRegularEquipment.Name = "dtgRegularEquipment";
             this.dtgRegularEquipment.RowTemplate.Height = 24;
-            this.dtgRegularEquipment.Size = new System.Drawing.Size(1011, 203);
+            this.dtgRegularEquipment.Size = new System.Drawing.Size(1150, 203);
             this.dtgRegularEquipment.TabIndex = 45;
             // 
             // label29
@@ -299,7 +367,7 @@
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label29.ForeColor = System.Drawing.Color.Red;
-            this.label29.Location = new System.Drawing.Point(702, 50);
+            this.label29.Location = new System.Drawing.Point(762, 38);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(145, 24);
             this.label29.TabIndex = 44;
@@ -309,7 +377,7 @@
             // 
             this.cboNormalReducetab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboNormalReducetab1.FormattingEnabled = true;
-            this.cboNormalReducetab1.Location = new System.Drawing.Point(699, 77);
+            this.cboNormalReducetab1.Location = new System.Drawing.Point(759, 65);
             this.cboNormalReducetab1.Name = "cboNormalReducetab1";
             this.cboNormalReducetab1.Size = new System.Drawing.Size(155, 33);
             this.cboNormalReducetab1.TabIndex = 43;
@@ -317,7 +385,7 @@
             // txtInspectionQtytab1
             // 
             this.txtInspectionQtytab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInspectionQtytab1.Location = new System.Drawing.Point(547, 80);
+            this.txtInspectionQtytab1.Location = new System.Drawing.Point(607, 68);
             this.txtInspectionQtytab1.Name = "txtInspectionQtytab1";
             this.txtInspectionQtytab1.Size = new System.Drawing.Size(146, 30);
             this.txtInspectionQtytab1.TabIndex = 31;
@@ -327,7 +395,7 @@
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.ForeColor = System.Drawing.Color.Red;
-            this.label15.Location = new System.Drawing.Point(904, 50);
+            this.label15.Location = new System.Drawing.Point(964, 38);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(55, 24);
             this.label15.TabIndex = 30;
@@ -337,7 +405,7 @@
             // 
             this.cboS1tab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboS1tab1.FormattingEnabled = true;
-            this.cboS1tab1.Location = new System.Drawing.Point(860, 77);
+            this.cboS1tab1.Location = new System.Drawing.Point(920, 65);
             this.cboS1tab1.Name = "cboS1tab1";
             this.cboS1tab1.Size = new System.Drawing.Size(155, 33);
             this.cboS1tab1.TabIndex = 29;
@@ -346,9 +414,9 @@
             // 
             this.cboInscpectionLeveltab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboInscpectionLeveltab1.FormattingEnabled = true;
-            this.cboInscpectionLeveltab1.Location = new System.Drawing.Point(386, 77);
+            this.cboInscpectionLeveltab1.Location = new System.Drawing.Point(386, 65);
             this.cboInscpectionLeveltab1.Name = "cboInscpectionLeveltab1";
-            this.cboInscpectionLeveltab1.Size = new System.Drawing.Size(155, 33);
+            this.cboInscpectionLeveltab1.Size = new System.Drawing.Size(215, 33);
             this.cboInscpectionLeveltab1.TabIndex = 28;
             // 
             // lbForQty
@@ -356,7 +424,7 @@
             this.lbForQty.AutoSize = true;
             this.lbForQty.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbForQty.ForeColor = System.Drawing.Color.Red;
-            this.lbForQty.Location = new System.Drawing.Point(550, 53);
+            this.lbForQty.Location = new System.Drawing.Point(610, 41);
             this.lbForQty.Name = "lbForQty";
             this.lbForQty.Size = new System.Drawing.Size(84, 24);
             this.lbForQty.TabIndex = 24;
@@ -367,52 +435,18 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.ForeColor = System.Drawing.Color.Red;
-            this.label12.Location = new System.Drawing.Point(389, 51);
+            this.label12.Location = new System.Drawing.Point(389, 39);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(144, 24);
+            this.label12.Size = new System.Drawing.Size(146, 24);
             this.label12.TabIndex = 22;
-            this.label12.Text = "Inspection level";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.Color.Red;
-            this.label11.Location = new System.Drawing.Point(215, 53);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(116, 24);
-            this.label11.TabIndex = 21;
-            this.label11.Text = "Cavity name";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.ForeColor = System.Drawing.Color.Red;
-            this.label10.Location = new System.Drawing.Point(44, 53);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(104, 24);
-            this.label10.TabIndex = 19;
-            this.label10.Text = "Q\'ty Cavity";
-            // 
-            // txtCavityNametab1
-            // 
-            this.txtCavityNametab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityNametab1.Location = new System.Drawing.Point(215, 80);
-            this.txtCavityNametab1.Name = "txtCavityNametab1";
-            this.txtCavityNametab1.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityNametab1.TabIndex = 20;
-            // 
-            // txtCavityQtytab1
-            // 
-            this.txtCavityQtytab1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityQtytab1.Location = new System.Drawing.Point(44, 80);
-            this.txtCavityQtytab1.Name = "txtCavityQtytab1";
-            this.txtCavityQtytab1.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityQtytab1.TabIndex = 19;
+            this.label12.Text = "Inspection Type";
             // 
             // tabFunctionCheckDetails
             // 
+            this.tabFunctionCheckDetails.Controls.Add(this.txtCavityNameTab2);
+            this.tabFunctionCheckDetails.Controls.Add(this.txtQtyCavityTab2);
+            this.tabFunctionCheckDetails.Controls.Add(this.label26);
+            this.tabFunctionCheckDetails.Controls.Add(this.label27);
             this.tabFunctionCheckDetails.Controls.Add(this.label14);
             this.tabFunctionCheckDetails.Controls.Add(this.cboNormalReducetab2);
             this.tabFunctionCheckDetails.Controls.Add(this.txtInspectionQtytab2);
@@ -421,24 +455,58 @@
             this.tabFunctionCheckDetails.Controls.Add(this.cboInscpectionLeveltab2);
             this.tabFunctionCheckDetails.Controls.Add(this.label18);
             this.tabFunctionCheckDetails.Controls.Add(this.label19);
-            this.tabFunctionCheckDetails.Controls.Add(this.label20);
-            this.tabFunctionCheckDetails.Controls.Add(this.label21);
-            this.tabFunctionCheckDetails.Controls.Add(this.txtCavityNametab2);
-            this.tabFunctionCheckDetails.Controls.Add(this.txtCavityQtytab2);
             this.tabFunctionCheckDetails.Location = new System.Drawing.Point(4, 31);
             this.tabFunctionCheckDetails.Name = "tabFunctionCheckDetails";
             this.tabFunctionCheckDetails.Padding = new System.Windows.Forms.Padding(3);
-            this.tabFunctionCheckDetails.Size = new System.Drawing.Size(1226, 368);
+            this.tabFunctionCheckDetails.Size = new System.Drawing.Size(1226, 409);
             this.tabFunctionCheckDetails.TabIndex = 1;
             this.tabFunctionCheckDetails.Text = "Function Check Detail";
             this.tabFunctionCheckDetails.UseVisualStyleBackColor = true;
+            // 
+            // txtCavityNameTab2
+            // 
+            this.txtCavityNameTab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCavityNameTab2.Location = new System.Drawing.Point(215, 67);
+            this.txtCavityNameTab2.Name = "txtCavityNameTab2";
+            this.txtCavityNameTab2.Size = new System.Drawing.Size(165, 30);
+            this.txtCavityNameTab2.TabIndex = 48;
+            // 
+            // txtQtyCavityTab2
+            // 
+            this.txtQtyCavityTab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtQtyCavityTab2.Location = new System.Drawing.Point(44, 67);
+            this.txtQtyCavityTab2.Name = "txtQtyCavityTab2";
+            this.txtQtyCavityTab2.Size = new System.Drawing.Size(165, 30);
+            this.txtQtyCavityTab2.TabIndex = 47;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.ForeColor = System.Drawing.Color.Red;
+            this.label26.Location = new System.Drawing.Point(44, 40);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(104, 24);
+            this.label26.TabIndex = 46;
+            this.label26.Text = "Q\'ty Cavity";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label27.ForeColor = System.Drawing.Color.Red;
+            this.label27.Location = new System.Drawing.Point(215, 40);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(116, 24);
+            this.label27.TabIndex = 49;
+            this.label27.Text = "Cavity name";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.ForeColor = System.Drawing.Color.Red;
-            this.label14.Location = new System.Drawing.Point(702, 50);
+            this.label14.Location = new System.Drawing.Point(762, 38);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(145, 24);
             this.label14.TabIndex = 45;
@@ -448,7 +516,7 @@
             // 
             this.cboNormalReducetab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboNormalReducetab2.FormattingEnabled = true;
-            this.cboNormalReducetab2.Location = new System.Drawing.Point(699, 77);
+            this.cboNormalReducetab2.Location = new System.Drawing.Point(759, 65);
             this.cboNormalReducetab2.Name = "cboNormalReducetab2";
             this.cboNormalReducetab2.Size = new System.Drawing.Size(155, 33);
             this.cboNormalReducetab2.TabIndex = 44;
@@ -456,7 +524,7 @@
             // txtInspectionQtytab2
             // 
             this.txtInspectionQtytab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInspectionQtytab2.Location = new System.Drawing.Point(547, 80);
+            this.txtInspectionQtytab2.Location = new System.Drawing.Point(607, 68);
             this.txtInspectionQtytab2.Name = "txtInspectionQtytab2";
             this.txtInspectionQtytab2.Size = new System.Drawing.Size(146, 30);
             this.txtInspectionQtytab2.TabIndex = 43;
@@ -466,7 +534,7 @@
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.ForeColor = System.Drawing.Color.Red;
-            this.label16.Location = new System.Drawing.Point(904, 50);
+            this.label16.Location = new System.Drawing.Point(964, 38);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(55, 24);
             this.label16.TabIndex = 42;
@@ -476,7 +544,7 @@
             // 
             this.cboS1tab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboS1tab2.FormattingEnabled = true;
-            this.cboS1tab2.Location = new System.Drawing.Point(860, 77);
+            this.cboS1tab2.Location = new System.Drawing.Point(920, 65);
             this.cboS1tab2.Name = "cboS1tab2";
             this.cboS1tab2.Size = new System.Drawing.Size(155, 33);
             this.cboS1tab2.TabIndex = 41;
@@ -485,9 +553,9 @@
             // 
             this.cboInscpectionLeveltab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboInscpectionLeveltab2.FormattingEnabled = true;
-            this.cboInscpectionLeveltab2.Location = new System.Drawing.Point(386, 77);
+            this.cboInscpectionLeveltab2.Location = new System.Drawing.Point(386, 65);
             this.cboInscpectionLeveltab2.Name = "cboInscpectionLeveltab2";
-            this.cboInscpectionLeveltab2.Size = new System.Drawing.Size(155, 33);
+            this.cboInscpectionLeveltab2.Size = new System.Drawing.Size(215, 33);
             this.cboInscpectionLeveltab2.TabIndex = 40;
             // 
             // label18
@@ -495,7 +563,7 @@
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label18.ForeColor = System.Drawing.Color.Red;
-            this.label18.Location = new System.Drawing.Point(550, 53);
+            this.label18.Location = new System.Drawing.Point(610, 41);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(84, 24);
             this.label18.TabIndex = 36;
@@ -506,52 +574,19 @@
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label19.ForeColor = System.Drawing.Color.Red;
-            this.label19.Location = new System.Drawing.Point(389, 51);
+            this.label19.Location = new System.Drawing.Point(389, 39);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(144, 24);
+            this.label19.Size = new System.Drawing.Size(146, 24);
             this.label19.TabIndex = 35;
-            this.label19.Text = "Inspection level";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.ForeColor = System.Drawing.Color.Red;
-            this.label20.Location = new System.Drawing.Point(215, 53);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(116, 24);
-            this.label20.TabIndex = 34;
-            this.label20.Text = "Cavity name";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.ForeColor = System.Drawing.Color.Red;
-            this.label21.Location = new System.Drawing.Point(44, 53);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(104, 24);
-            this.label21.TabIndex = 31;
-            this.label21.Text = "Q\'ty Cavity";
-            // 
-            // txtCavityNametab2
-            // 
-            this.txtCavityNametab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityNametab2.Location = new System.Drawing.Point(215, 80);
-            this.txtCavityNametab2.Name = "txtCavityNametab2";
-            this.txtCavityNametab2.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityNametab2.TabIndex = 33;
-            // 
-            // txtCavityQtytab2
-            // 
-            this.txtCavityQtytab2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityQtytab2.Location = new System.Drawing.Point(44, 80);
-            this.txtCavityQtytab2.Name = "txtCavityQtytab2";
-            this.txtCavityQtytab2.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityQtytab2.TabIndex = 32;
+            this.label19.Text = "Inspection Type";
             // 
             // tabDimensionCheckDetails
             // 
+            this.tabDimensionCheckDetails.Controls.Add(this.txtCavityNameTab3);
+            this.tabDimensionCheckDetails.Controls.Add(this.txtQtyCavityTab3);
+            this.tabDimensionCheckDetails.Controls.Add(this.label32);
+            this.tabDimensionCheckDetails.Controls.Add(this.label33);
+            this.tabDimensionCheckDetails.Controls.Add(this.label21);
             this.tabDimensionCheckDetails.Controls.Add(this.dtgDimensionEquipment);
             this.tabDimensionCheckDetails.Controls.Add(this.label17);
             this.tabDimensionCheckDetails.Controls.Add(this.cboNormalReducetab3);
@@ -561,25 +596,70 @@
             this.tabDimensionCheckDetails.Controls.Add(this.cboInscpectionLeveltab3);
             this.tabDimensionCheckDetails.Controls.Add(this.label24);
             this.tabDimensionCheckDetails.Controls.Add(this.label25);
-            this.tabDimensionCheckDetails.Controls.Add(this.label26);
-            this.tabDimensionCheckDetails.Controls.Add(this.label27);
-            this.tabDimensionCheckDetails.Controls.Add(this.txtCavityNametab3);
-            this.tabDimensionCheckDetails.Controls.Add(this.txtCavityQtytab3);
             this.tabDimensionCheckDetails.Location = new System.Drawing.Point(4, 31);
             this.tabDimensionCheckDetails.Name = "tabDimensionCheckDetails";
             this.tabDimensionCheckDetails.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDimensionCheckDetails.Size = new System.Drawing.Size(1226, 368);
+            this.tabDimensionCheckDetails.Size = new System.Drawing.Size(1226, 409);
             this.tabDimensionCheckDetails.TabIndex = 2;
             this.tabDimensionCheckDetails.Text = "Dimension Check Detail";
             this.tabDimensionCheckDetails.UseVisualStyleBackColor = true;
             // 
+            // txtCavityNameTab3
+            // 
+            this.txtCavityNameTab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCavityNameTab3.Location = new System.Drawing.Point(215, 67);
+            this.txtCavityNameTab3.Name = "txtCavityNameTab3";
+            this.txtCavityNameTab3.Size = new System.Drawing.Size(165, 30);
+            this.txtCavityNameTab3.TabIndex = 52;
+            // 
+            // txtQtyCavityTab3
+            // 
+            this.txtQtyCavityTab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtQtyCavityTab3.Location = new System.Drawing.Point(44, 67);
+            this.txtQtyCavityTab3.Name = "txtQtyCavityTab3";
+            this.txtQtyCavityTab3.Size = new System.Drawing.Size(165, 30);
+            this.txtQtyCavityTab3.TabIndex = 51;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.ForeColor = System.Drawing.Color.Red;
+            this.label32.Location = new System.Drawing.Point(44, 40);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(104, 24);
+            this.label32.TabIndex = 50;
+            this.label32.Text = "Q\'ty Cavity";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label33.ForeColor = System.Drawing.Color.Red;
+            this.label33.Location = new System.Drawing.Point(215, 40);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(116, 24);
+            this.label33.TabIndex = 53;
+            this.label33.Text = "Cavity name";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.ForeColor = System.Drawing.Color.Black;
+            this.label21.Location = new System.Drawing.Point(39, 143);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(135, 24);
+            this.label21.TabIndex = 49;
+            this.label21.Text = "Equipment Set";
+            // 
             // dtgDimensionEquipment
             // 
             this.dtgDimensionEquipment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtgDimensionEquipment.Location = new System.Drawing.Point(44, 129);
+            this.dtgDimensionEquipment.Location = new System.Drawing.Point(39, 170);
             this.dtgDimensionEquipment.Name = "dtgDimensionEquipment";
             this.dtgDimensionEquipment.RowTemplate.Height = 24;
-            this.dtgDimensionEquipment.Size = new System.Drawing.Size(1011, 203);
+            this.dtgDimensionEquipment.Size = new System.Drawing.Size(1150, 203);
             this.dtgDimensionEquipment.TabIndex = 46;
             // 
             // label17
@@ -587,7 +667,7 @@
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label17.ForeColor = System.Drawing.Color.Red;
-            this.label17.Location = new System.Drawing.Point(702, 50);
+            this.label17.Location = new System.Drawing.Point(762, 38);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(145, 24);
             this.label17.TabIndex = 45;
@@ -597,7 +677,7 @@
             // 
             this.cboNormalReducetab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboNormalReducetab3.FormattingEnabled = true;
-            this.cboNormalReducetab3.Location = new System.Drawing.Point(699, 77);
+            this.cboNormalReducetab3.Location = new System.Drawing.Point(759, 65);
             this.cboNormalReducetab3.Name = "cboNormalReducetab3";
             this.cboNormalReducetab3.Size = new System.Drawing.Size(155, 33);
             this.cboNormalReducetab3.TabIndex = 44;
@@ -605,7 +685,7 @@
             // txtInspectionQtytab3
             // 
             this.txtInspectionQtytab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInspectionQtytab3.Location = new System.Drawing.Point(547, 80);
+            this.txtInspectionQtytab3.Location = new System.Drawing.Point(607, 68);
             this.txtInspectionQtytab3.Name = "txtInspectionQtytab3";
             this.txtInspectionQtytab3.Size = new System.Drawing.Size(146, 30);
             this.txtInspectionQtytab3.TabIndex = 43;
@@ -615,7 +695,7 @@
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label22.ForeColor = System.Drawing.Color.Red;
-            this.label22.Location = new System.Drawing.Point(904, 50);
+            this.label22.Location = new System.Drawing.Point(964, 38);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(55, 24);
             this.label22.TabIndex = 42;
@@ -625,7 +705,7 @@
             // 
             this.cboS1tab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboS1tab3.FormattingEnabled = true;
-            this.cboS1tab3.Location = new System.Drawing.Point(860, 77);
+            this.cboS1tab3.Location = new System.Drawing.Point(920, 65);
             this.cboS1tab3.Name = "cboS1tab3";
             this.cboS1tab3.Size = new System.Drawing.Size(155, 33);
             this.cboS1tab3.TabIndex = 41;
@@ -634,9 +714,9 @@
             // 
             this.cboInscpectionLeveltab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboInscpectionLeveltab3.FormattingEnabled = true;
-            this.cboInscpectionLeveltab3.Location = new System.Drawing.Point(386, 77);
+            this.cboInscpectionLeveltab3.Location = new System.Drawing.Point(386, 65);
             this.cboInscpectionLeveltab3.Name = "cboInscpectionLeveltab3";
-            this.cboInscpectionLeveltab3.Size = new System.Drawing.Size(155, 33);
+            this.cboInscpectionLeveltab3.Size = new System.Drawing.Size(215, 33);
             this.cboInscpectionLeveltab3.TabIndex = 40;
             // 
             // label24
@@ -644,7 +724,7 @@
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label24.ForeColor = System.Drawing.Color.Red;
-            this.label24.Location = new System.Drawing.Point(550, 53);
+            this.label24.Location = new System.Drawing.Point(610, 41);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(84, 24);
             this.label24.TabIndex = 36;
@@ -655,52 +735,18 @@
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label25.ForeColor = System.Drawing.Color.Red;
-            this.label25.Location = new System.Drawing.Point(389, 51);
+            this.label25.Location = new System.Drawing.Point(389, 39);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(144, 24);
+            this.label25.Size = new System.Drawing.Size(146, 24);
             this.label25.TabIndex = 35;
-            this.label25.Text = "Inspection level";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.ForeColor = System.Drawing.Color.Red;
-            this.label26.Location = new System.Drawing.Point(215, 53);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(116, 24);
-            this.label26.TabIndex = 34;
-            this.label26.Text = "Cavity name";
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label27.ForeColor = System.Drawing.Color.Red;
-            this.label27.Location = new System.Drawing.Point(44, 53);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(104, 24);
-            this.label27.TabIndex = 31;
-            this.label27.Text = "Q\'ty Cavity";
-            // 
-            // txtCavityNametab3
-            // 
-            this.txtCavityNametab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityNametab3.Location = new System.Drawing.Point(215, 80);
-            this.txtCavityNametab3.Name = "txtCavityNametab3";
-            this.txtCavityNametab3.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityNametab3.TabIndex = 33;
-            // 
-            // txtCavityQtytab3
-            // 
-            this.txtCavityQtytab3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityQtytab3.Location = new System.Drawing.Point(44, 80);
-            this.txtCavityQtytab3.Name = "txtCavityQtytab3";
-            this.txtCavityQtytab3.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityQtytab3.TabIndex = 32;
+            this.label25.Text = "Inspection Type";
             // 
             // tabAppearanceCheckDetails
             // 
+            this.tabAppearanceCheckDetails.Controls.Add(this.txtCavityNameTab4);
+            this.tabAppearanceCheckDetails.Controls.Add(this.txtQtyCavityTab4);
+            this.tabAppearanceCheckDetails.Controls.Add(this.label34);
+            this.tabAppearanceCheckDetails.Controls.Add(this.label35);
             this.tabAppearanceCheckDetails.Controls.Add(this.label23);
             this.tabAppearanceCheckDetails.Controls.Add(this.cboNormalReducetab4);
             this.tabAppearanceCheckDetails.Controls.Add(this.txtInspectionQtytab4);
@@ -709,24 +755,58 @@
             this.tabAppearanceCheckDetails.Controls.Add(this.cboInscpectionLeveltab4);
             this.tabAppearanceCheckDetails.Controls.Add(this.label30);
             this.tabAppearanceCheckDetails.Controls.Add(this.label31);
-            this.tabAppearanceCheckDetails.Controls.Add(this.label32);
-            this.tabAppearanceCheckDetails.Controls.Add(this.label33);
-            this.tabAppearanceCheckDetails.Controls.Add(this.txtCavityNametab4);
-            this.tabAppearanceCheckDetails.Controls.Add(this.txtCavityQtytab4);
             this.tabAppearanceCheckDetails.Location = new System.Drawing.Point(4, 31);
             this.tabAppearanceCheckDetails.Name = "tabAppearanceCheckDetails";
             this.tabAppearanceCheckDetails.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAppearanceCheckDetails.Size = new System.Drawing.Size(1226, 368);
+            this.tabAppearanceCheckDetails.Size = new System.Drawing.Size(1226, 409);
             this.tabAppearanceCheckDetails.TabIndex = 3;
             this.tabAppearanceCheckDetails.Text = "Appearance Check Detail";
             this.tabAppearanceCheckDetails.UseVisualStyleBackColor = true;
+            // 
+            // txtCavityNameTab4
+            // 
+            this.txtCavityNameTab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCavityNameTab4.Location = new System.Drawing.Point(215, 67);
+            this.txtCavityNameTab4.Name = "txtCavityNameTab4";
+            this.txtCavityNameTab4.Size = new System.Drawing.Size(165, 30);
+            this.txtCavityNameTab4.TabIndex = 56;
+            // 
+            // txtQtyCavityTab4
+            // 
+            this.txtQtyCavityTab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtQtyCavityTab4.Location = new System.Drawing.Point(44, 67);
+            this.txtQtyCavityTab4.Name = "txtQtyCavityTab4";
+            this.txtQtyCavityTab4.Size = new System.Drawing.Size(165, 30);
+            this.txtQtyCavityTab4.TabIndex = 55;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label34.ForeColor = System.Drawing.Color.Red;
+            this.label34.Location = new System.Drawing.Point(44, 40);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(104, 24);
+            this.label34.TabIndex = 54;
+            this.label34.Text = "Q\'ty Cavity";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label35.ForeColor = System.Drawing.Color.Red;
+            this.label35.Location = new System.Drawing.Point(215, 40);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(116, 24);
+            this.label35.TabIndex = 57;
+            this.label35.Text = "Cavity name";
             // 
             // label23
             // 
             this.label23.AutoSize = true;
             this.label23.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label23.ForeColor = System.Drawing.Color.Red;
-            this.label23.Location = new System.Drawing.Point(702, 50);
+            this.label23.Location = new System.Drawing.Point(762, 38);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(145, 24);
             this.label23.TabIndex = 45;
@@ -736,7 +816,7 @@
             // 
             this.cboNormalReducetab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboNormalReducetab4.FormattingEnabled = true;
-            this.cboNormalReducetab4.Location = new System.Drawing.Point(699, 77);
+            this.cboNormalReducetab4.Location = new System.Drawing.Point(759, 65);
             this.cboNormalReducetab4.Name = "cboNormalReducetab4";
             this.cboNormalReducetab4.Size = new System.Drawing.Size(155, 33);
             this.cboNormalReducetab4.TabIndex = 44;
@@ -744,7 +824,7 @@
             // txtInspectionQtytab4
             // 
             this.txtInspectionQtytab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInspectionQtytab4.Location = new System.Drawing.Point(547, 80);
+            this.txtInspectionQtytab4.Location = new System.Drawing.Point(607, 68);
             this.txtInspectionQtytab4.Name = "txtInspectionQtytab4";
             this.txtInspectionQtytab4.Size = new System.Drawing.Size(146, 30);
             this.txtInspectionQtytab4.TabIndex = 43;
@@ -754,7 +834,7 @@
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label28.ForeColor = System.Drawing.Color.Red;
-            this.label28.Location = new System.Drawing.Point(904, 50);
+            this.label28.Location = new System.Drawing.Point(964, 38);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(55, 24);
             this.label28.TabIndex = 42;
@@ -764,7 +844,7 @@
             // 
             this.cboS1tab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboS1tab4.FormattingEnabled = true;
-            this.cboS1tab4.Location = new System.Drawing.Point(860, 77);
+            this.cboS1tab4.Location = new System.Drawing.Point(920, 65);
             this.cboS1tab4.Name = "cboS1tab4";
             this.cboS1tab4.Size = new System.Drawing.Size(155, 33);
             this.cboS1tab4.TabIndex = 41;
@@ -773,9 +853,9 @@
             // 
             this.cboInscpectionLeveltab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.cboInscpectionLeveltab4.FormattingEnabled = true;
-            this.cboInscpectionLeveltab4.Location = new System.Drawing.Point(386, 77);
+            this.cboInscpectionLeveltab4.Location = new System.Drawing.Point(386, 65);
             this.cboInscpectionLeveltab4.Name = "cboInscpectionLeveltab4";
-            this.cboInscpectionLeveltab4.Size = new System.Drawing.Size(155, 33);
+            this.cboInscpectionLeveltab4.Size = new System.Drawing.Size(215, 33);
             this.cboInscpectionLeveltab4.TabIndex = 40;
             // 
             // label30
@@ -783,7 +863,7 @@
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label30.ForeColor = System.Drawing.Color.Red;
-            this.label30.Location = new System.Drawing.Point(550, 53);
+            this.label30.Location = new System.Drawing.Point(610, 41);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(84, 24);
             this.label30.TabIndex = 36;
@@ -794,49 +874,11 @@
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label31.ForeColor = System.Drawing.Color.Red;
-            this.label31.Location = new System.Drawing.Point(389, 51);
+            this.label31.Location = new System.Drawing.Point(389, 39);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(144, 24);
+            this.label31.Size = new System.Drawing.Size(146, 24);
             this.label31.TabIndex = 35;
-            this.label31.Text = "Inspection level";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.ForeColor = System.Drawing.Color.Red;
-            this.label32.Location = new System.Drawing.Point(215, 53);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(116, 24);
-            this.label32.TabIndex = 34;
-            this.label32.Text = "Cavity name";
-            // 
-            // label33
-            // 
-            this.label33.AutoSize = true;
-            this.label33.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.ForeColor = System.Drawing.Color.Red;
-            this.label33.Location = new System.Drawing.Point(44, 53);
-            this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(104, 24);
-            this.label33.TabIndex = 31;
-            this.label33.Text = "Q\'ty Cavity";
-            // 
-            // txtCavityNametab4
-            // 
-            this.txtCavityNametab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityNametab4.Location = new System.Drawing.Point(215, 80);
-            this.txtCavityNametab4.Name = "txtCavityNametab4";
-            this.txtCavityNametab4.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityNametab4.TabIndex = 33;
-            // 
-            // txtCavityQtytab4
-            // 
-            this.txtCavityQtytab4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCavityQtytab4.Location = new System.Drawing.Point(44, 80);
-            this.txtCavityQtytab4.Name = "txtCavityQtytab4";
-            this.txtCavityQtytab4.Size = new System.Drawing.Size(165, 30);
-            this.txtCavityQtytab4.TabIndex = 32;
+            this.label31.Text = "Inspection Type";
             // 
             // label9
             // 
@@ -973,11 +1015,31 @@
             this.label3.TabIndex = 3;
             this.label3.Text = "M Code";
             // 
+            // cboStatus
+            // 
+            this.cboStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
+            this.cboStatus.FormattingEnabled = true;
+            this.cboStatus.Location = new System.Drawing.Point(1155, 60);
+            this.cboStatus.Name = "cboStatus";
+            this.cboStatus.Size = new System.Drawing.Size(89, 33);
+            this.cboStatus.TabIndex = 53;
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold);
+            this.label36.ForeColor = System.Drawing.Color.Red;
+            this.label36.Location = new System.Drawing.Point(1168, 36);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(63, 24);
+            this.label36.TabIndex = 54;
+            this.label36.Text = "Status";
+            // 
             // frmMCodeInspectionSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1258, 647);
+            this.ClientSize = new System.Drawing.Size(1258, 688);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "frmMCodeInspectionSetting";
@@ -1029,8 +1091,8 @@
         private Bunifu.Framework.UI.BunifuFlatButton btnCancel;
         private Bunifu.Framework.UI.BunifuFlatButton btnSave;
         private System.Windows.Forms.TextBox txtMCode;
-        private System.Windows.Forms.TextBox txtCavityQtytab1;
-        private System.Windows.Forms.TextBox txtCavityNametab1;
+        private System.Windows.Forms.TextBox txtQtyCavity;
+        private System.Windows.Forms.TextBox txtCavityName;
         private System.Windows.Forms.Label lbForQty;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
@@ -1043,28 +1105,16 @@
         private System.Windows.Forms.ComboBox cboInscpectionLeveltab2;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.TextBox txtCavityNametab2;
-        private System.Windows.Forms.TextBox txtCavityQtytab2;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.ComboBox cboS1tab3;
         private System.Windows.Forms.ComboBox cboInscpectionLeveltab3;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.TextBox txtCavityNametab3;
-        private System.Windows.Forms.TextBox txtCavityQtytab3;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.ComboBox cboS1tab4;
         private System.Windows.Forms.ComboBox cboInscpectionLeveltab4;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.TextBox txtCavityNametab4;
-        private System.Windows.Forms.TextBox txtCavityQtytab4;
         private System.Windows.Forms.TextBox txtInspectionQtytab1;
         private System.Windows.Forms.TextBox txtInspectionQtytab2;
         private System.Windows.Forms.TextBox txtInspectionQtytab3;
@@ -1079,5 +1129,31 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.DataGridView dtgRegularEquipment;
         private System.Windows.Forms.DataGridView dtgDimensionEquipment;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Panel pnlCommonCavity;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.TextBox txtQtyCavityTab1;
+        private System.Windows.Forms.TextBox txtQtyCavityTab2;
+        private System.Windows.Forms.TextBox txtQtyCavityTab3;
+        private System.Windows.Forms.TextBox txtQtyCavityTab4;
+        private System.Windows.Forms.TextBox txtCavityNameTab1;
+        private System.Windows.Forms.TextBox txtCavityNameTab2;
+        private System.Windows.Forms.TextBox txtCavityNameTab3;
+        private System.Windows.Forms.TextBox txtCavityNameTab4;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.ComboBox cboStatus;
     }
 }

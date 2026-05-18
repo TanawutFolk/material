@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace RawMat.Views.Setting
@@ -19,6 +20,8 @@ namespace RawMat.Views.Setting
         DataTable dtRegularEquipment = new DataTable();
         DataTable dtDimensionEquipment = new DataTable();
         DataTable dtEquipmentType = new DataTable();
+        private bool _isSyncingCavity = false;
+
 
         private string _mCode = "";
         private bool _isEditMode = false;
@@ -26,7 +29,6 @@ namespace RawMat.Views.Setting
         public frmMCodeInspectionSetting()
         {
             InitializeComponent();
-
             _mCode = "";
             _isEditMode = false;
         }
@@ -34,14 +36,16 @@ namespace RawMat.Views.Setting
         public frmMCodeInspectionSetting(string mCode)
         {
             InitializeComponent();
-
+            //InitCommonCavityPanel();
             _mCode = mCode;
             _isEditMode = true;
         }
         private void frmMCodeInspectionSetting_Load(object sender, EventArgs e)
         {
             BindCombo();
+            BindCheckTabStatusEvents();
             BindInspectionLevelEvents();
+            BindCavitySyncEvents();
             ClearInput();
 
             LoadEquipmentTypeList();
@@ -79,15 +83,16 @@ namespace RawMat.Views.Setting
             BindYesNoCombo(cboDimensionCheck);
             BindYesNoCombo(cboAppearanceCheck);
 
+            BindStatusCombo();
             // --- 2. ดึงข้อมูลรายการจาก Database มาเป็น DataTable ---
             // (ใช้ Controller ที่เราเพิ่มฟังก์ชัน GetList ไว้ก่อนหน้านี้)
             DataTable dtSamplingType = _controller.GetSamplingTypeList();   // รายชื่อประเภทการสุ่ม
             DataTable dtStrictnessType = _controller.GetStrictnessTypeList(); // รายชื่อ Normal/Reduce
             MessageBox.Show(
-    "dtStrictnessType null = " + (dtStrictnessType == null).ToString() + Environment.NewLine +
-    "Rows = " + (dtStrictnessType == null ? "0" : dtStrictnessType.Rows.Count.ToString()) + Environment.NewLine +
-    "Columns = " + (dtStrictnessType == null ? "" : string.Join(", ", dtStrictnessType.Columns.Cast<DataColumn>().Select(c => c.ColumnName)))
-);
+                "dtStrictnessType null = " + (dtStrictnessType == null).ToString() + Environment.NewLine +
+                "Rows = " + (dtStrictnessType == null ? "0" : dtStrictnessType.Rows.Count.ToString()) + Environment.NewLine +
+                "Columns = " + (dtStrictnessType == null ? "" : string.Join(", ", dtStrictnessType.Columns.Cast<DataColumn>().Select(c => c.ColumnName)))
+            );
             DataTable dtStrictnessLevel = _controller.GetStrictnessLevelList(); // รายชื่อ Level I, II, III, S-1
 
             // --- 3. ผูกข้อมูลเข้ากับ ComboBox ใน 4 Tab (เรียงตามลำดับหน้าจอ) ---
@@ -164,25 +169,26 @@ namespace RawMat.Views.Setting
             SetComboValue(cboDimensionCheck, "0");
             SetComboValue(cboAppearanceCheck, "0");
 
-            // Regular
-            txtCavityQtytab1.Text = "-";
+            SetComboValue(cboStatus, "1");
+
+            txtQtyCavityTab1.Text = "-";
             txtInspectionQtytab1.Text = "-";
-            txtCavityNametab1.Text = "-";
+            txtCavityNameTab1.Text = "-";
 
-            // Function
-            txtCavityQtytab2.Text = "-";
-            txtInspectionQtytab2.Text = "-";
-            txtCavityNametab2.Text = "-";
+            //// Function
+            //txtCavityQtytab2.Text = "-";
+            //txtInspectionQtytab2.Text = "-";
+            //txtCavityNametab2.Text = "-";
 
-            // Dimension
-            txtCavityQtytab3.Text = "-";
-            txtInspectionQtytab3.Text = "-";
-            txtCavityNametab3.Text = "-";
+            //// Dimension
+            //txtCavityQtytab3.Text = "-";
+            //txtInspectionQtytab3.Text = "-";
+            //txtCavityNametab3.Text = "-";
 
-            // Appearance
-            txtCavityQtytab4.Text = "-";
-            txtInspectionQtytab4.Text = "-";
-            txtCavityNametab4.Text = "-";
+            //// Appearance
+            //txtCavityQtytab4.Text = "-";
+            //txtInspectionQtytab4.Text = "-";
+            //txtCavityNametab4.Text = "-";
         }
         private string DisplayDashIfZeroOrEmpty(object value)
         {
@@ -199,6 +205,33 @@ namespace RawMat.Views.Setting
             }
 
             return text;
+        }
+
+        private string GetFirstCavityValue(DataRow row, params string[] columnNames)
+        {
+            foreach (string columnName in columnNames)
+            {
+                if (!row.Table.Columns.Contains(columnName))
+                {
+                    continue;
+                }
+
+                object value = row[columnName];
+
+                if (value == null || value == DBNull.Value)
+                {
+                    continue;
+                }
+
+                string text = value.ToString().Trim();
+
+                if (!string.IsNullOrWhiteSpace(text) && text != "0" && text != "-")
+                {
+                    return text;
+                }
+            }
+
+            return "-";
         }
 
         private string GetNumberValueFromTextBox(TextBox txt)
@@ -245,37 +278,62 @@ namespace RawMat.Views.Setting
             SetComboValue(cboDimensionCheck, row["Dimension Check"].ToString());
             SetComboValue(cboAppearanceCheck, row["Appearance Check"].ToString());
 
+            if (row.Table.Columns.Contains("INUSE"))
+            {
+                SetComboValue(cboStatus, NormalizeStatusValue(row["INUSE"]));
+            }
+            else if (row.Table.Columns.Contains("Status"))
+            {
+                SetComboValue(cboStatus, NormalizeStatusValue(row["Status"]));
+            }
+            else
+            {
+                SetComboValue(cboStatus, "1");
+            }
+
             // 1. Regular
-            txtCavityQtytab1.Text = DisplayDashIfZeroOrEmpty(row["Reg_Cavity_Qty"]);
+            txtQtyCavityTab1.Text = GetFirstCavityValue(
+                row,
+                "Reg_Cavity_Qty",
+                "Func_Cavity_Qty",
+                "Dim_Cavity_Qty",
+                "App_Cavity_Qty"
+            );
             SetComboValue(cboInscpectionLeveltab1, row["Reg_Sampling_Type"].ToString());
             txtInspectionQtytab1.Text = DisplayDashIfZeroOrEmpty(row["Reg_Sampling_Qty"]);
             SetComboValue(cboNormalReducetab1, row["Reg_Strictness_Type"].ToString());
             SetComboValue(cboS1tab1, row["Reg_Strictness_Level"].ToString());
-            txtCavityNametab1.Text = DisplayDashIfZeroOrEmpty(row["Reg_Cavity_Name"]);
+            txtCavityNameTab1.Text = GetFirstCavityValue(
+                row,
+                "Reg_Cavity_Name",
+                "Func_Cavity_Name",
+                "Dim_Cavity_Name",
+                "App_Cavity_Name"
+            );
 
             // 2. Function
-            txtCavityQtytab2.Text = DisplayDashIfZeroOrEmpty(row["Func_Cavity_Qty"]);
+            //txtCavityQtytab2.Text = DisplayDashIfZeroOrEmpty(row["Func_Cavity_Qty"]);
             SetComboValue(cboInscpectionLeveltab2, row["Func_Sampling_Type"].ToString());
             txtInspectionQtytab2.Text = DisplayDashIfZeroOrEmpty(row["Func_Sampling_Qty"]);
             SetComboValue(cboNormalReducetab2, row["Func_Strictness_Type"].ToString());
             SetComboValue(cboS1tab2, row["Func_Strictness_Level"].ToString());
-            txtCavityNametab2.Text = DisplayDashIfZeroOrEmpty(row["Func_Cavity_Name"]);
+            //txtCavityNametab2.Text = DisplayDashIfZeroOrEmpty(row["Func_Cavity_Name"]);
 
             // 3. Dimension
-            txtCavityQtytab3.Text = DisplayDashIfZeroOrEmpty(row["Dim_Cavity_Qty"]);
+            //txtCavityQtytab3.Text = DisplayDashIfZeroOrEmpty(row["Dim_Cavity_Qty"]);
             SetComboValue(cboInscpectionLeveltab3, row["Dim_Sampling_Type"].ToString());
             txtInspectionQtytab3.Text = DisplayDashIfZeroOrEmpty(row["Dim_Sampling_Qty"]);
             SetComboValue(cboNormalReducetab3, row["Dim_Strictness_Type"].ToString());
             SetComboValue(cboS1tab3, row["Dim_Strictness_Level"].ToString());
-            txtCavityNametab3.Text = DisplayDashIfZeroOrEmpty(row["Dim_Cavity_Name"]);
+            //txtCavityNametab3.Text = DisplayDashIfZeroOrEmpty(row["Dim_Cavity_Name"]);
 
             // 4. Appearance
-            txtCavityQtytab4.Text = DisplayDashIfZeroOrEmpty(row["App_Cavity_Qty"]);
+            //txtCavityQtytab4.Text = DisplayDashIfZeroOrEmpty(row["App_Cavity_Qty"]);
             SetComboValue(cboInscpectionLeveltab4, row["App_Sampling_Type"].ToString());
             txtInspectionQtytab4.Text = DisplayDashIfZeroOrEmpty(row["App_Sampling_Qty"]);
             SetComboValue(cboNormalReducetab4, row["App_Strictness_Type"].ToString());
             SetComboValue(cboS1tab4, row["App_Strictness_Level"].ToString());
-            txtCavityNametab4.Text = DisplayDashIfZeroOrEmpty(row["App_Cavity_Name"]);
+            //txtCavityNametab4.Text = DisplayDashIfZeroOrEmpty(row["App_Cavity_Name"]);
         }
         private void SetComboValue(ComboBox cbo, string value)
         {
@@ -340,39 +398,43 @@ namespace RawMat.Views.Setting
             dataItem.Function_Check_Need = GetComboValue(cboFunctionCheck);
             dataItem.Dimension_Check_Need = GetComboValue(cboDimensionCheck);
             dataItem.Appearance_Check_Need = GetComboValue(cboAppearanceCheck);
-            dataItem.INUSE = "1";
+            dataItem.INUSE = GetComboValue(cboStatus);
+
+            // Common Cavity
+            string commonCavityQty = GetNumberValueFromTextBox(txtQtyCavityTab1);
+            string commonCavityName = GetTextValueFromTextBox(txtCavityNameTab1);
 
             // 1. Regular
-            dataItem.Reg_Cavity_Qty = GetNumberValueFromTextBox(txtCavityQtytab1);
+            dataItem.Reg_Cavity_Qty = commonCavityQty;
             dataItem.Reg_Sampling_Type = GetComboValue(cboInscpectionLeveltab1);
             dataItem.Reg_Sampling_Qty = GetNumberValueFromTextBox(txtInspectionQtytab1);
             dataItem.Reg_Strictness_Type = GetComboValue(cboNormalReducetab1);
             dataItem.Reg_Strictness_Level = GetComboValue(cboS1tab1);
-            dataItem.Reg_Cavity_Name = GetTextValueFromTextBox(txtCavityNametab1);
+            dataItem.Reg_Cavity_Name = commonCavityName;
 
             // 2. Function
-            dataItem.Func_Cavity_Qty = GetNumberValueFromTextBox(txtCavityQtytab2);
+            dataItem.Func_Cavity_Qty = commonCavityQty;
             dataItem.Func_Sampling_Type = GetComboValue(cboInscpectionLeveltab2);
             dataItem.Func_Sampling_Qty = GetNumberValueFromTextBox(txtInspectionQtytab2);
             dataItem.Func_Strictness_Type = GetComboValue(cboNormalReducetab2);
             dataItem.Func_Strictness_Level = GetComboValue(cboS1tab2);
-            dataItem.Func_Cavity_Name = GetTextValueFromTextBox(txtCavityNametab2);
+            dataItem.Func_Cavity_Name = commonCavityName;
 
             // 3. Dimension
-            dataItem.Dim_Cavity_Qty = GetNumberValueFromTextBox(txtCavityQtytab3);
+            dataItem.Dim_Cavity_Qty = commonCavityQty;
             dataItem.Dim_Sampling_Type = GetComboValue(cboInscpectionLeveltab3);
             dataItem.Dim_Sampling_Qty = GetNumberValueFromTextBox(txtInspectionQtytab3);
             dataItem.Dim_Strictness_Type = GetComboValue(cboNormalReducetab3);
             dataItem.Dim_Strictness_Level = GetComboValue(cboS1tab3);
-            dataItem.Dim_Cavity_Name = GetTextValueFromTextBox(txtCavityNametab3);
+            dataItem.Dim_Cavity_Name = commonCavityName;
 
             // 4. Appearance
-            dataItem.App_Cavity_Qty = GetNumberValueFromTextBox(txtCavityQtytab4);
+            dataItem.App_Cavity_Qty = commonCavityQty;
             dataItem.App_Sampling_Type = GetComboValue(cboInscpectionLeveltab4);
             dataItem.App_Sampling_Qty = GetNumberValueFromTextBox(txtInspectionQtytab4);
             dataItem.App_Strictness_Type = GetComboValue(cboNormalReducetab4);
             dataItem.App_Strictness_Level = GetComboValue(cboS1tab4);
-            dataItem.App_Cavity_Name = GetTextValueFromTextBox(txtCavityNametab4);
+            dataItem.App_Cavity_Name = commonCavityName;
 
             return dataItem;
         }
@@ -471,6 +533,7 @@ namespace RawMat.Views.Setting
             tabFunctionCheckDetails.Enabled = (cboFunctionCheck.Text == "Yes");
             tabDimensionCheckDetails.Enabled = (cboDimensionCheck.Text == "Yes");
             tabAppearanceCheckDetails.Enabled = (cboAppearanceCheck.Text == "Yes");
+            //MoveCommonCavityToSelectedTab();
             //UpdateTabStatus_SelectedIndexChanged(null, null);
         }
 
@@ -521,8 +584,8 @@ namespace RawMat.Views.Setting
             string text = cbo.Text.Trim();
             string value = cbo.SelectedValue == null ? "" : cbo.SelectedValue.ToString().Trim();
 
-            return text.Equals("Strictness Table", StringComparison.OrdinalIgnoreCase)
-                || value.Equals("Strictness Table", StringComparison.OrdinalIgnoreCase);
+            return text.Equals("Sampling Table", StringComparison.OrdinalIgnoreCase)
+                || value.Equals("Sampling Table", StringComparison.OrdinalIgnoreCase);
         }
 
         private void btnSave_Click_1(object sender, EventArgs e)
@@ -650,28 +713,194 @@ namespace RawMat.Views.Setting
         {
             e.ThrowException = false;
         }
-        private void cboNormalReducetab4_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void BindCavitySyncEvents()
         {
+            txtQtyCavityTab1.TextChanged -= CavityTextChanged;
+            txtQtyCavityTab2.TextChanged -= CavityTextChanged;
+            txtQtyCavityTab3.TextChanged -= CavityTextChanged;
+            txtQtyCavityTab4.TextChanged -= CavityTextChanged;
+
+            txtCavityNameTab1.TextChanged -= CavityTextChanged;
+            txtCavityNameTab2.TextChanged -= CavityTextChanged;
+            txtCavityNameTab3.TextChanged -= CavityTextChanged;
+            txtCavityNameTab4.TextChanged -= CavityTextChanged;
+
+            txtQtyCavityTab1.TextChanged += CavityTextChanged;
+            txtQtyCavityTab2.TextChanged += CavityTextChanged;
+            txtQtyCavityTab3.TextChanged += CavityTextChanged;
+            txtQtyCavityTab4.TextChanged += CavityTextChanged;
+
+            txtCavityNameTab1.TextChanged += CavityTextChanged;
+            txtCavityNameTab2.TextChanged += CavityTextChanged;
+            txtCavityNameTab3.TextChanged += CavityTextChanged;
+            txtCavityNameTab4.TextChanged += CavityTextChanged;
         }
 
-        private void label28_Click(object sender, EventArgs e)
+        private void CavityTextChanged(object sender, EventArgs e)
         {
+            if (_isSyncingCavity)
+            {
+                return;
+            }
+
+            _isSyncingCavity = true;
+
+            if (sender == txtQtyCavityTab1 ||
+                sender == txtQtyCavityTab2 ||
+                sender == txtQtyCavityTab3 ||
+                sender == txtQtyCavityTab4)
+            {
+                TextBox source = sender as TextBox;
+                SyncTextBoxValue(source, txtQtyCavityTab1, txtQtyCavityTab2, txtQtyCavityTab3, txtQtyCavityTab4);
+            }
+
+            if (sender == txtCavityNameTab1 ||
+                sender == txtCavityNameTab2 ||
+                sender == txtCavityNameTab3 ||
+                sender == txtCavityNameTab4)
+            {
+                TextBox source = sender as TextBox;
+                SyncTextBoxValue(source, txtCavityNameTab1, txtCavityNameTab2, txtCavityNameTab3, txtCavityNameTab4);
+            }
+
+            _isSyncingCavity = false;
         }
 
-        private void cboInscpectionLeveltab4_SelectedIndexChanged(object sender, EventArgs e)
+        private void SyncTextBoxValue(TextBox source, params TextBox[] targets)
         {
+            if (source == null)
+            {
+                return;
+            }
+
+            foreach (TextBox target in targets)
+            {
+                if (target != source)
+                {
+                    target.Text = source.Text;
+                }
+            }
         }
 
-        private void label31_Click(object sender, EventArgs e)
+        private void BindCheckTabStatusEvents()
         {
+            cboRegularCheck.SelectedIndexChanged -= UpdateTabStatus_SelectedIndexChanged;
+            cboFunctionCheck.SelectedIndexChanged -= UpdateTabStatus_SelectedIndexChanged;
+            cboDimensionCheck.SelectedIndexChanged -= UpdateTabStatus_SelectedIndexChanged;
+            cboAppearanceCheck.SelectedIndexChanged -= UpdateTabStatus_SelectedIndexChanged;
+
+            cboRegularCheck.SelectedIndexChanged += UpdateTabStatus_SelectedIndexChanged;
+            cboFunctionCheck.SelectedIndexChanged += UpdateTabStatus_SelectedIndexChanged;
+            cboDimensionCheck.SelectedIndexChanged += UpdateTabStatus_SelectedIndexChanged;
+            cboAppearanceCheck.SelectedIndexChanged += UpdateTabStatus_SelectedIndexChanged;
         }
 
-        private void label33_Click(object sender, EventArgs e)
+        private void BindStatusCombo()
         {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("TEXT");
+            dt.Columns.Add("VALUE");
+
+            dt.Rows.Add("Active", "1");
+            dt.Rows.Add("InActive", "0");
+
+            cboStatus.DataSource = dt;
+            cboStatus.DisplayMember = "TEXT";
+            cboStatus.ValueMember = "VALUE";
+            cboStatus.SelectedValue = "1";
         }
 
-        private void txtCavityQtytab4_TextChanged(object sender, EventArgs e)
+        private string NormalizeStatusValue(object value)
         {
+            if (value == null || value == DBNull.Value)
+            {
+                return "1";
+            }
+
+            string text = value.ToString().Trim();
+
+            if (text == "1" ||
+                text.Equals("Active", StringComparison.OrdinalIgnoreCase) ||
+                text.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+            {
+                return "1";
+            }
+
+            if (text == "0" ||
+                text.Equals("InActive", StringComparison.OrdinalIgnoreCase) ||
+                text.Equals("Inactive", StringComparison.OrdinalIgnoreCase) ||
+                text.Equals("No", StringComparison.OrdinalIgnoreCase))
+            {
+                return "0";
+            }
+
+            return "1";
+        }
+
+        //private void InitCommonCavityPanel()
+        //{
+        //    tabDetails.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
+        //    MoveCommonCavityToSelectedTab();
+        //}
+
+
+        //private void MoveCommonCavityToSelectedTab()
+        //{
+        //    TabPage targetTab = null;
+
+        //    // ถ้า tab ที่เลือกอยู่เปิดใช้งานได้ ให้ใช้ tab นั้น
+        //    if (tabDetails.SelectedTab != null && tabDetails.SelectedTab.Enabled)
+        //    {
+        //        targetTab = tabDetails.SelectedTab;
+        //    }
+        //    else
+        //    {
+        //        // ถ้า tab ที่เลือกอยู่ disabled ให้หา tab แรกที่ enabled
+        //        targetTab = GetFirstEnabledTab();
+        //    }
+
+        //    if (targetTab == null)
+        //    {
+        //        pnlCommonCavity.Visible = false;
+        //        return;
+        //    }
+
+        //    pnlCommonCavity.Visible = true;
+        //    pnlCommonCavity.Parent = targetTab;
+        //    pnlCommonCavity.Location = _commonCavityLocation;
+        //    pnlCommonCavity.BringToFront();
+
+        //    // ให้ TabControl เลือกไปที่ tab ที่ใช้งานได้จริง
+        //    if (tabDetails.SelectedTab != targetTab)
+        //    {
+        //        tabDetails.SelectedTab = targetTab;
+        //    }
+        //}
+
+        private TabPage GetFirstEnabledTab()
+        {
+            if (tabRegularCheckDetails.Enabled)
+            {
+                return tabRegularCheckDetails;
+            }
+
+            if (tabFunctionCheckDetails.Enabled)
+            {
+                return tabFunctionCheckDetails;
+            }
+
+            if (tabDimensionCheckDetails.Enabled)
+            {
+                return tabDimensionCheckDetails;
+            }
+
+            if (tabAppearanceCheckDetails.Enabled)
+            {
+                return tabAppearanceCheckDetails;
+            }
+
+            return null;
         }
     }
 }
