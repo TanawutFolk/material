@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInspectionSetting));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -44,6 +44,8 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.dtgInspectionSetting = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.bunifuWebClient1 = new Bunifu.Framework.UI.BunifuWebClient(this.components);
+            this.cboStatus = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -63,7 +65,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Red;
+            this.label1.ForeColor = System.Drawing.Color.Black;
             this.label1.Location = new System.Drawing.Point(561, 1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(235, 31);
@@ -73,6 +75,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Controls.Add(this.label3);
+            this.panel2.Controls.Add(this.cboStatus);
             this.panel2.Controls.Add(this.btnAddNew);
             this.panel2.Controls.Add(this.btnClear);
             this.panel2.Controls.Add(this.btnSearch);
@@ -138,7 +142,7 @@
             this.btnClear.IconVisible = true;
             this.btnClear.IconZoom = 90D;
             this.btnClear.IsTab = false;
-            this.btnClear.Location = new System.Drawing.Point(698, 46);
+            this.btnClear.Location = new System.Drawing.Point(1054, 46);
             this.btnClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnClear.Name = "btnClear";
             this.btnClear.Normalcolor = System.Drawing.Color.DarkGray;
@@ -173,7 +177,7 @@
             this.btnSearch.IconVisible = true;
             this.btnSearch.IconZoom = 90D;
             this.btnSearch.IsTab = false;
-            this.btnSearch.Location = new System.Drawing.Point(484, 46);
+            this.btnSearch.Location = new System.Drawing.Point(840, 46);
             this.btnSearch.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Normalcolor = System.Drawing.Color.Red;
@@ -228,35 +232,35 @@
             // 
             // dtgInspectionSetting
             // 
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtgInspectionSetting.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtgInspectionSetting.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dtgInspectionSetting.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtgInspectionSetting.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtgInspectionSetting.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtgInspectionSetting.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Century Gothic", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtgInspectionSetting.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dtgInspectionSetting.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            //this.dtgInspectionSetting.DoubleBuffered = true;
+            this.dtgInspectionSetting.DoubleBuffered = true;
             this.dtgInspectionSetting.EnableHeadersVisualStyles = false;
             this.dtgInspectionSetting.HeaderBgColor = System.Drawing.Color.SeaGreen;
             this.dtgInspectionSetting.HeaderForeColor = System.Drawing.Color.SeaGreen;
             this.dtgInspectionSetting.Location = new System.Drawing.Point(17, 16);
             this.dtgInspectionSetting.Name = "dtgInspectionSetting";
             this.dtgInspectionSetting.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtgInspectionSetting.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtgInspectionSetting.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.dtgInspectionSetting.RowHeadersVisible = false;
             this.dtgInspectionSetting.RowTemplate.Height = 24;
             this.dtgInspectionSetting.Size = new System.Drawing.Size(1393, 693);
@@ -274,6 +278,27 @@
             this.bunifuWebClient1.Headers = ((System.Net.WebHeaderCollection)(resources.GetObject("bunifuWebClient1.Headers")));
             this.bunifuWebClient1.QueryString = ((System.Collections.Specialized.NameValueCollection)(resources.GetObject("bunifuWebClient1.QueryString")));
             this.bunifuWebClient1.UseDefaultCredentials = false;
+            // 
+            // cboStatus
+            // 
+            this.cboStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboStatus.FormattingEnabled = true;
+            this.cboStatus.Location = new System.Drawing.Point(514, 45);
+            this.cboStatus.Name = "cboStatus";
+            this.cboStatus.Size = new System.Drawing.Size(121, 33);
+            this.cboStatus.TabIndex = 5;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.White;
+            this.label3.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(514, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(71, 26);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Status";
             // 
             // frmInspectionSetting
             // 
@@ -310,5 +335,7 @@
         private Bunifu.Framework.UI.BunifuCustomDataGrid dtgInspectionSetting;
         private Bunifu.Framework.UI.BunifuWebClient bunifuWebClient1;
         private Bunifu.Framework.UI.BunifuFlatButton btnAddNew;
+        private System.Windows.Forms.ComboBox cboStatus;
+        private System.Windows.Forms.Label label3;
     }
 }

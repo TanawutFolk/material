@@ -608,6 +608,22 @@ namespace RawMat.Views.Setting
             dtg.MultiSelect = false;
             dtg.RowHeadersVisible = false;
 
+            // Header Style
+            dtg.EnableHeadersVisualStyles = false;
+            dtg.ColumnHeadersDefaultCellStyle.BackColor = Color.ForestGreen;
+            dtg.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dtg.ColumnHeadersDefaultCellStyle.Font = dtg.Font;
+            dtg.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtg.ColumnHeadersHeight = 35;
+            dtg.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+            // Row Style
+            dtg.DefaultCellStyle.Font = dtg.Font;
+            dtg.DefaultCellStyle.ForeColor = SystemColors.ControlText;
+            dtg.DefaultCellStyle.BackColor = SystemColors.Window;
+            dtg.DefaultCellStyle.SelectionBackColor = Color.LightGreen;
+            dtg.DefaultCellStyle.SelectionForeColor = Color.Black;
+
             dtg.Columns.Clear();
 
             dtg.Columns.Add(new DataGridViewTextBoxColumn

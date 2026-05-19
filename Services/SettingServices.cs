@@ -87,8 +87,6 @@ namespace RawMat.Services
             return _resultData;
         }
 
-        // --- เพิ่มโค้ดส่วนนี้ต่อท้ายก่อนปิดปีกกาของคลาส SettingServices ---
-
         public OutputOnDbProperty GetSamplingTypeList()
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

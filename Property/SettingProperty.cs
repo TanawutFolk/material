@@ -21,6 +21,7 @@ namespace RawMat.Property
 
         // --- Search & Meta ---
         public string Search_M_CODE { get; set; }
+        public string Search_Status { get; set; }
 
         // --- Tab 1: Regular Sampling ---
         public string Reg_Cavity_Qty { get; set; }

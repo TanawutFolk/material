@@ -47,7 +47,7 @@ namespace RawMat.SQLFactory
         public string SearchInspectionSettingList(SettingProperty dataItem)
         {
             string mCodeSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_M_CODE);
-
+            string statusSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_Status);
             sql = @"
                 SELECT 
                     a.M_CODE AS `M Code`,
@@ -67,7 +67,10 @@ namespace RawMat.SQLFactory
             {
                 sql += $" AND a.M_CODE LIKE '%{mCodeSearch}%' ";
             }
-
+            if (!string.IsNullOrWhiteSpace(statusSearch))
+            {
+                sql += $" AND IFNULL(a.INUSE, 1) = '{statusSearch}' ";
+            }
             return sql;
         }
 
