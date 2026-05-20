@@ -919,7 +919,6 @@
             this.cboAppearanceCheck.Name = "cboAppearanceCheck";
             this.cboAppearanceCheck.Size = new System.Drawing.Size(138, 30);
             this.cboAppearanceCheck.TabIndex = 14;
-            this.cboAppearanceCheck.SelectedIndexChanged += new System.EventHandler(this.UpdateTabStatus_SelectedIndexChanged);
             // 
             // label8
             // 
@@ -940,7 +939,6 @@
             this.cboDimensionCheck.Name = "cboDimensionCheck";
             this.cboDimensionCheck.Size = new System.Drawing.Size(138, 30);
             this.cboDimensionCheck.TabIndex = 12;
-            this.cboDimensionCheck.SelectedIndexChanged += new System.EventHandler(this.UpdateTabStatus_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -961,7 +959,6 @@
             this.cboFunctionCheck.Name = "cboFunctionCheck";
             this.cboFunctionCheck.Size = new System.Drawing.Size(138, 30);
             this.cboFunctionCheck.TabIndex = 10;
-            this.cboFunctionCheck.SelectedIndexChanged += new System.EventHandler(this.UpdateTabStatus_SelectedIndexChanged);
             // 
             // label6
             // 
@@ -982,7 +979,6 @@
             this.cboRegularCheck.Name = "cboRegularCheck";
             this.cboRegularCheck.Size = new System.Drawing.Size(138, 30);
             this.cboRegularCheck.TabIndex = 8;
-            this.cboRegularCheck.SelectedIndexChanged += new System.EventHandler(this.UpdateTabStatus_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -1042,7 +1038,12 @@
             this.ClientSize = new System.Drawing.Size(1258, 688);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmMCodeInspectionSetting";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Edit ";
             this.Load += new System.EventHandler(this.frmMCodeInspectionSetting_Load);
             this.panel1.ResumeLayout(false);

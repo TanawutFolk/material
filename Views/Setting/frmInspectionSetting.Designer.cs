@@ -36,6 +36,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cboStatus = new System.Windows.Forms.ComboBox();
             this.btnAddNew = new Bunifu.Framework.UI.BunifuFlatButton();
             this.btnClear = new Bunifu.Framework.UI.BunifuFlatButton();
             this.btnSearch = new Bunifu.Framework.UI.BunifuFlatButton();
@@ -44,8 +46,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.dtgInspectionSetting = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.bunifuWebClient1 = new Bunifu.Framework.UI.BunifuWebClient(this.components);
-            this.cboStatus = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -86,6 +86,27 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1421, 103);
             this.panel2.TabIndex = 1;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.White;
+            this.label3.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.Red;
+            this.label3.Location = new System.Drawing.Point(514, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(71, 26);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Status";
+            // 
+            // cboStatus
+            // 
+            this.cboStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboStatus.FormattingEnabled = true;
+            this.cboStatus.Location = new System.Drawing.Point(514, 45);
+            this.cboStatus.Name = "cboStatus";
+            this.cboStatus.Size = new System.Drawing.Size(121, 33);
+            this.cboStatus.TabIndex = 5;
             // 
             // btnAddNew
             // 
@@ -279,27 +300,6 @@
             this.bunifuWebClient1.QueryString = ((System.Collections.Specialized.NameValueCollection)(resources.GetObject("bunifuWebClient1.QueryString")));
             this.bunifuWebClient1.UseDefaultCredentials = false;
             // 
-            // cboStatus
-            // 
-            this.cboStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cboStatus.FormattingEnabled = true;
-            this.cboStatus.Location = new System.Drawing.Point(514, 45);
-            this.cboStatus.Name = "cboStatus";
-            this.cboStatus.Size = new System.Drawing.Size(121, 33);
-            this.cboStatus.TabIndex = 5;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.BackColor = System.Drawing.Color.White;
-            this.label3.Font = new System.Drawing.Font("Microsoft YaHei", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(514, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 26);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Status";
-            // 
             // frmInspectionSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -309,7 +309,11 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmInspectionSetting";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "M Code Inspection Setting";
             this.Load += new System.EventHandler(this.frmInspectionSetting_Load);
             this.panel1.ResumeLayout(false);

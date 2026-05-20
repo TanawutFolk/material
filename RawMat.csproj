@@ -459,6 +459,12 @@
     <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Setting\frmConfirm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\frmConfirm.Designer.cs">
+      <DependentUpon>frmConfirm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Setting\frmInspectionSetting.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -593,6 +599,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\frmConfirm.resx">
+      <DependentUpon>frmConfirm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Setting\frmInspectionSetting.resx">
       <DependentUpon>frmInspectionSetting.cs</DependentUpon>

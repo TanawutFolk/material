@@ -51,13 +51,13 @@ namespace RawMat.SQLFactory
             sql = @"
                 SELECT 
                     a.M_CODE AS `M Code`,
-                    CASE WHEN a.Keep_Data_Need = 1 THEN 'Yes' ELSE 'No' END AS `Keep Data`,
-                    CASE WHEN a.Packing_Check_Mode = 1 THEN 'Yes' ELSE 'No' END AS `Packing Check`,
-                    CASE WHEN a.Regular_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Regular Check`,
-                    a.Regular_Check_Ref AS `Regular Ref`,
-                    CASE WHEN a.Function_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Function Check`,
-                    CASE WHEN a.Dimension_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Dimension Check`,
-                    CASE WHEN a.Appearance_Check_Need = 1 THEN 'Yes' ELSE 'No' END AS `Appearance Check`,
+                    CASE WHEN a.Keep_Data_Need = 1 THEN 'Keep' ELSE 'No' END AS `Keep Data`,
+                    CASE WHEN a.Packing_Check_Mode = 1 THEN 'Check' ELSE 'No' END AS `Packing Check`,
+                    CASE WHEN a.Regular_Check_Need = 1 THEN 'Check' ELSE 'No' END AS `Regular Check`,
+                
+                    CASE WHEN a.Function_Check_Need = 1 THEN 'Check' ELSE 'No' END AS `Function Check`,
+                    CASE WHEN a.Dimension_Check_Need = 1 THEN 'Check' ELSE 'No' END AS `Dimension Check`,
+                    CASE WHEN a.Appearance_Check_Need = 1 THEN 'Check' ELSE 'No' END AS `Appearance Check`,
                     CASE WHEN IFNULL(a.INUSE, 1) = 1 THEN 'Active' ELSE 'InActive' END AS `Status`
                 FROM info_mat_inspection_list a
                 WHERE 1=1 ";
