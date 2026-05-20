@@ -680,14 +680,14 @@ namespace RawMat.Views.DimensionCheck
 
                 if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty))
                 {
-                    totalQty = qty;
+                    totalQty += qty;
                 }
 
             }
 
-            if (totalQty < Convert.ToInt32(propQA.SAMPLING_QTY))
+            if (totalQty != Convert.ToInt32(propQA.SAMPLING_QTY))
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

@@ -1470,67 +1470,110 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        private string ToSqlValue(object value)
+        {
+            if (value == null || value == DBNull.Value)
+            {
+                return "NULL";
+            }
+
+            string text = value.ToString();
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "NULL";
+            }
+
+            return $"'{text.Replace("'", "''")}'";
+        }
+
+        private string ToSqlTextValue(object value)
+        {
+            string text = value == null || value == DBNull.Value ? string.Empty : value.ToString();
+            return $"'{text.Replace("'", "''")}'";
+        }
+
         public List<string> InsertDimensionData(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
+
+            if (dataItem == null || dataItem.dtgDimData == null || dataItem.dtgDimData.DataSource == null)
+            {
+                return sqlList;
+            }
+
             DataTable dt = (DataTable)dataItem.dtgDimData.DataSource;
 
             foreach (DataRow row in dt.Rows)
             {
+                string reportNo = ToSqlTextValue(dataItem.Report_No);
+                string empId = ToSqlTextValue(dataItem.EMP_ID);
 
-                //sql = @"INSERT INTO `qa_system`.`db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
-                //        VALUES ('dataItem.REGULAR_NO',dataItem.CAVITY_NAME , 'dataItem.SAMPLING_NO', 'dataItem.EQUIPMENT_SERIAL_ID', 'dataItem.POINT_ORDER', 'dataItem.VALUE', 'dataItem.JUDGE', 'dataItem.EMP_ID' ,NOW() , 1);";
+                string samplingNo = ToSqlTextValue(row["SAMPLING_NO"]);
+                string pointOrder = ToSqlTextValue(row["POINT_ORDER"]);
+                string value = ToSqlTextValue(row["VALUE"]);
+                string judge = ToSqlTextValue(row["POINT_JUDGE"]);
+                string equipmentSerial = ToSqlTextValue(row["EQUIPMENT_SERIAL"]);
 
-                sql = @"
-                     -- อัปเดต `INUSE` ของรายการปัจจุบันให้เป็น 0
-                        UPDATE `db_dimension_data`
-                        SET `INUSE` = 0
-                        WHERE `Report_No` = 'dataItem.Report_No'
-                        AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
-                        AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
+                string cavityValue = "NULL";
 
-                        -- แทรกข้อมูลใหม่โดย `COUNT` เพิ่มขึ้นทีละ 1 และ `INUSE = 1`
-                        INSERT INTO `db_dimension_data` (`Report_No`, `CAVITY_NAME`, `SAMPLING_NO`, `COUNT`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`, `EMP_ID`, `DIMENSION_DATE`, `INUSE`)
-                        SELECT 
-                            'dataItem.Report_No',
-                            dataItem.CAVITY_NAME,
-                            'dataItem.SAMPLING_NO',
-                            COALESCE(MAX(`COUNT`), 0) + 1,  -- หาค่า COUNT สูงสุดและเพิ่ม 1
-                            'dataItem.EQUIPMENT_SERIAL_ID',
-                            'dataItem.POINT_ORDER',
-                            'dataItem.VALUE',
-                            'dataItem.JUDGE',
-                            'dataItem.EMP_ID',
-                            NOW(),
-                            1  -- ค่าใหม่ให้ INUSE = 1
-                        FROM `db_dimension_data`
-                        WHERE `Report_No` = 'dataItem.Report_No'
-                        AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
-                        AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
-                        
-                        ";
-
-                sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
-                sql = sql.Replace("dataItem.EMP_ID", dataItem.EMP_ID);
-                sql = sql.Replace("dataItem.SAMPLING_NO", row["SAMPLING_NO"].ToString());
-                sql = sql.Replace("dataItem.EQUIPMENT_SERIAL_ID", row["EQUIPMENT_SERIAL"].ToString());
-                sql = sql.Replace("dataItem.POINT_ORDER", row["POINT_ORDER"].ToString());
-                sql = sql.Replace("dataItem.VALUE", row["VALUE"].ToString());
-                sql = sql.Replace("dataItem.JUDGE", row["POINT_JUDGE"].ToString());
-
-                // ตรวจสอบว่าคอลัมน์ CAVITY_NAME มีอยู่ใน DataTable หรือไม่
                 if (dt.Columns.Contains("CAVITY_NAME"))
                 {
-                    // ตรวจสอบว่า row["CAVITY_NAME"] เป็น null หรือว่างหรือไม่
-                    string cavityName = row["CAVITY_NAME"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["CAVITY_NAME"].ToString())
-                        ? $"'{row["CAVITY_NAME"].ToString()}'"
-                        : "NULL";
-                    sql = sql.Replace("dataItem.CAVITY_NAME", cavityName);
+                    cavityValue = ToSqlValue(row["CAVITY_NAME"]);
+                }
+
+                string cavityWhere;
+
+                if (cavityValue == "NULL")
+                {
+                    cavityWhere = "(`CAVITY_NAME` IS NULL OR `CAVITY_NAME` = '')";
                 }
                 else
                 {
-                    sql = sql.Replace("dataItem.CAVITY_NAME", "NULL");
+                    cavityWhere = $"`CAVITY_NAME` = {cavityValue}";
                 }
+
+                sql = $@"
+            UPDATE `db_dimension_data`
+            SET `INUSE` = 0
+            WHERE `Report_No` = {reportNo}
+              AND {cavityWhere}
+              AND `POINT_ORDER` = {pointOrder}
+              AND `SAMPLING_NO` = {samplingNo};
+
+            INSERT INTO `db_dimension_data`
+            (
+                `Report_No`,
+                `CAVITY_NAME`,
+                `SAMPLING_NO`,
+                `COUNT`,
+                `EQUIPMENT_SERIAL_ID`,
+                `POINT_ORDER`,
+                `VALUE`,
+                `JUDGE`,
+                `EMP_ID`,
+                `DIMENSION_DATE`,
+                `INUSE`
+            )
+            SELECT
+                {reportNo},
+                {cavityValue},
+                {samplingNo},
+                COALESCE(MAX(`COUNT`), 0) + 1,
+                {equipmentSerial},
+                {pointOrder},
+                {value},
+                {judge},
+                {empId},
+                NOW(),
+                1
+            FROM `db_dimension_data`
+            WHERE `Report_No` = {reportNo}
+              AND {cavityWhere}
+              AND `POINT_ORDER` = {pointOrder}
+              AND `SAMPLING_NO` = {samplingNo};
+        ";
+
                 sqlList.Add(sql);
             }
 

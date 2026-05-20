@@ -66,7 +66,7 @@
             this.panelHeader2.Controls.Add(this.bt_status_rec_pending);
             this.panelHeader2.Controls.Add(this.bt_setting);
             this.panelHeader2.Location = new System.Drawing.Point(200, 62);
-            this.panelHeader2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelHeader2.Margin = new System.Windows.Forms.Padding(4);
             this.panelHeader2.Name = "panelHeader2";
             this.panelHeader2.Size = new System.Drawing.Size(1488, 138);
             this.panelHeader2.TabIndex = 7;
@@ -377,7 +377,7 @@
             this.panelHeader1.BackColor = System.Drawing.Color.LightPink;
             this.panelHeader1.Controls.Add(this.label1);
             this.panelHeader1.Location = new System.Drawing.Point(200, 0);
-            this.panelHeader1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelHeader1.Margin = new System.Windows.Forms.Padding(4);
             this.panelHeader1.Name = "panelHeader1";
             this.panelHeader1.Size = new System.Drawing.Size(1292, 63);
             this.panelHeader1.TabIndex = 11;
@@ -401,7 +401,7 @@
             // 
             this.panelLogin.BackColor = System.Drawing.Color.LightPink;
             this.panelLogin.Location = new System.Drawing.Point(0, 0);
-            this.panelLogin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelLogin.Margin = new System.Windows.Forms.Padding(4);
             this.panelLogin.Name = "panelLogin";
             this.panelLogin.Size = new System.Drawing.Size(200, 295);
             this.panelLogin.TabIndex = 14;
@@ -411,7 +411,7 @@
             this.bunifuProgressBar1.BackColor = System.Drawing.Color.Silver;
             this.bunifuProgressBar1.BorderRadius = 5;
             this.bunifuProgressBar1.Location = new System.Drawing.Point(-3, 1109);
-            this.bunifuProgressBar1.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.bunifuProgressBar1.Margin = new System.Windows.Forms.Padding(5);
             this.bunifuProgressBar1.MaximumValue = 100;
             this.bunifuProgressBar1.Name = "bunifuProgressBar1";
             this.bunifuProgressBar1.ProgressColor = System.Drawing.Color.Teal;
@@ -422,7 +422,7 @@
             // panelWH
             // 
             this.panelWH.Location = new System.Drawing.Point(0, 396);
-            this.panelWH.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelWH.Margin = new System.Windows.Forms.Padding(4);
             this.panelWH.Name = "panelWH";
             this.panelWH.Size = new System.Drawing.Size(200, 172);
             this.panelWH.TabIndex = 16;
@@ -430,7 +430,7 @@
             // panelMenu
             // 
             this.panelMenu.Location = new System.Drawing.Point(0, 576);
-            this.panelMenu.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelMenu.Margin = new System.Windows.Forms.Padding(4);
             this.panelMenu.Name = "panelMenu";
             this.panelMenu.Size = new System.Drawing.Size(200, 529);
             this.panelMenu.TabIndex = 17;
@@ -439,7 +439,7 @@
             // 
             this.panelMain.BackColor = System.Drawing.Color.Pink;
             this.panelMain.Location = new System.Drawing.Point(200, 199);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(4);
             this.panelMain.Name = "panelMain";
             this.panelMain.Size = new System.Drawing.Size(1487, 906);
             this.panelMain.TabIndex = 18;
@@ -448,7 +448,7 @@
             // 
             this.panelHome.Controls.Add(this.bt_home);
             this.panelHome.Location = new System.Drawing.Point(1488, 0);
-            this.panelHome.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelHome.Margin = new System.Windows.Forms.Padding(4);
             this.panelHome.Name = "panelHome";
             this.panelHome.Size = new System.Drawing.Size(196, 63);
             this.panelHome.TabIndex = 17;
@@ -489,8 +489,7 @@
             this.Controls.Add(this.panelHeader2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.MaximizeBox = false;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimizeBox = false;
             this.Name = "frmMain";
             this.Text = "Material Receiving Inspection System";

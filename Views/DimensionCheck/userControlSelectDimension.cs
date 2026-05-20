@@ -58,6 +58,19 @@ namespace RawMat.Views.DimensionCheck
 
         }
 
+        private int GetCavitySamplingQty(int totalSamplingQty, int cavityQty, int cavityIndex)
+        {
+            if (cavityQty <= 0)
+            {
+                return 0;
+            }
+
+            int baseQty = totalSamplingQty / cavityQty;
+            int remainder = totalSamplingQty % cavityQty;
+
+            return baseQty + (cavityIndex < remainder ? 1 : 0);
+        }
+
 
         private void userControlSelectDimension_Load(object sender, EventArgs e)
         {
@@ -312,8 +325,13 @@ namespace RawMat.Views.DimensionCheck
 
                                     for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                     {
+                                        int cavitySamplingQty = GetCavitySamplingQty(
+                                            Convert.ToInt32(propQA.SAMPLING_QTY),
+                                            Convert.ToInt32(propQA.CAVITY_QTY),
+                                            i);
+
                                         // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), cavitySamplingQty });
                                     }
 
                                 }
