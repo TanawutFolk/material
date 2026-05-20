@@ -82,5 +82,17 @@ namespace RawMat.Models
             resultData = services.GetEquipmentTypeList();
             return resultData;
         }
+
+        public OutputOnDbProperty SaveRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SaveRegularEquipmentSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SaveDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SaveDimensionEquipmentSetting(dataItem);
+            return resultData;
+        }
     }
 }

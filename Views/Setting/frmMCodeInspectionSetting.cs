@@ -73,6 +73,10 @@ namespace RawMat.Views.Setting
 
             dtgRegularEquipment.DataError += dtgEquipment_DataError;
             dtgDimensionEquipment.DataError += dtgEquipment_DataError;
+            dtgRegularEquipment.CellContentClick += dtgEquipment_CellContentClick;
+            dtgDimensionEquipment.CellContentClick += dtgEquipment_CellContentClick;
+            dtgRegularEquipment.UserDeletingRow += dtgEquipment_UserDeletingRow;
+            dtgDimensionEquipment.UserDeletingRow += dtgEquipment_UserDeletingRow;
 
             if (_isEditMode)
             {
@@ -84,7 +88,13 @@ namespace RawMat.Views.Setting
             {
                 txtMCode.Enabled = true;
                 txtMCode.Focus();
+                dtRegularEquipment = CreateEquipmentTable();
+                dtDimensionEquipment = CreateEquipmentTable();
+                dtgRegularEquipment.DataSource = dtRegularEquipment;
+                dtgDimensionEquipment.DataSource = dtDimensionEquipment;
             }
+
+            SetAllCheckTabStatus();
 
             foreach (var tab in _tabs)
             {
@@ -214,8 +224,9 @@ namespace RawMat.Views.Setting
                 (cboAppearanceCheck, tabAppearanceCheckDetails)
             })
             {
+                var capturedCbo = cbo;
                 var capturedTab = tab; // capture สำหรับ lambda
-                cbo.SelectedIndexChanged += (_, __) => capturedTab.Enabled = (cbo.Text == "Yes");
+                capturedCbo.SelectedIndexChanged += (_, __) => SetCheckTabStatus(capturedCbo, capturedTab);
             }
 
             // Strictness enable/disable ตาม Inspection Level
@@ -242,6 +253,25 @@ namespace RawMat.Views.Setting
                 var src = txt;
                 src.TextChanged += (_, __) => SyncCavityGroup(src, cavityNameBoxes);
             }
+        }
+
+        private void SetAllCheckTabStatus()
+        {
+            SetCheckTabStatus(cboRegularCheck, tabRegularCheckDetails);
+            SetCheckTabStatus(cboFunctionCheck, tabFunctionCheckDetails);
+            SetCheckTabStatus(cboDimensionCheck, tabDimensionCheckDetails);
+            SetCheckTabStatus(cboAppearanceCheck, tabAppearanceCheckDetails);
+        }
+
+        private void SetCheckTabStatus(ComboBox cbo, TabPage tab)
+        {
+            tab.Enabled = IsYesComboValue(cbo);
+        }
+
+        private static bool IsYesComboValue(ComboBox cbo)
+        {
+            string value = GetComboValue(cbo).Trim();
+            return value == VALUE_YES || cbo.Text.Trim().Equals("Yes", StringComparison.OrdinalIgnoreCase);
         }
 
         private void SyncCavityGroup(TextBox source, TextBox[] group)
@@ -348,8 +378,6 @@ namespace RawMat.Views.Setting
             string commonQty = GetNumberValueFromTextBox(txtQtyCavityTab1);
             string commonName = GetTextValueFromTextBox(txtCavityNameTab1);
 
-            var prefixes = new[] { "Reg", "Func", "Dim", "App" };
-
             var dataItem = new SettingProperty
             {
                 M_CODE = txtMCode.Text.Trim(),
@@ -391,10 +419,75 @@ namespace RawMat.Views.Setting
                 App_Sampling_Qty = GetNumberValueFromTextBox(txtInspectionQtytab4),
                 App_Strictness_Type = GetComboValue(cboNormalReducetab4),
                 App_Strictness_Level = GetComboValue(cboS1tab4),
-                App_Cavity_Name = commonName
+                App_Cavity_Name = commonName,
+
+                RegularEquipment = GetEquipmentTableFromGrid(dtgRegularEquipment),
+                DimensionEquipment = GetEquipmentTableFromGrid(dtgDimensionEquipment)
             };
 
             return dataItem;
+        }
+
+        private DataTable CreateEquipmentTable()
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("M_CODE");
+            dt.Columns.Add("POINT_ORDER");
+            dt.Columns.Add("EQUIPMENT_TYPE");
+            dt.Columns.Add("POINT_NAME");
+            dt.Columns.Add("POINT_CAL");
+            dt.Columns.Add("CRITERIA_MIN");
+            dt.Columns.Add("CRITERIA_MAX");
+            return dt;
+        }
+
+        private DataTable GetEquipmentTableFromGrid(DataGridView dtg)
+        {
+            dtg.EndEdit();
+            if (dtg.DataSource != null)
+            {
+                BindingContext[dtg.DataSource]?.EndCurrentEdit();
+            }
+
+            var result = CreateEquipmentTable();
+
+            foreach (DataGridViewRow gridRow in dtg.Rows)
+            {
+                if (gridRow.IsNewRow || IsEmptyEquipmentRow(gridRow))
+                {
+                    continue;
+                }
+
+                var row = result.NewRow();
+                row["M_CODE"] = txtMCode.Text.Trim();
+                row["POINT_ORDER"] = GetGridCellText(gridRow, "POINT_ORDER");
+                row["EQUIPMENT_TYPE"] = GetGridCellText(gridRow, "EQUIPMENT_TYPE");
+                row["POINT_NAME"] = GetGridCellText(gridRow, "POINT_NAME");
+                row["POINT_CAL"] = GetGridCellText(gridRow, "POINT_CAL");
+                row["CRITERIA_MIN"] = GetGridCellText(gridRow, "CRITERIA_MIN");
+                row["CRITERIA_MAX"] = GetGridCellText(gridRow, "CRITERIA_MAX");
+                result.Rows.Add(row);
+            }
+
+            return result;
+        }
+
+        private static string GetGridCellText(DataGridViewRow row, string columnName)
+        {
+            return row.Cells[columnName].Value?.ToString().Trim() ?? "";
+        }
+
+        private static bool IsEmptyEquipmentRow(DataGridViewRow row)
+        {
+            foreach (var columnName in new[] { "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_NAME", "POINT_CAL", "CRITERIA_MIN", "CRITERIA_MAX" })
+            {
+                if (!string.IsNullOrWhiteSpace(GetGridCellText(row, columnName)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         // ─── Validation & Save ────────────────────────────────────────────────────
@@ -418,6 +511,51 @@ namespace RawMat.Views.Setting
                     "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (confirm == DialogResult.No) return false;
+            }
+
+            if (!ValidateEquipmentGrid(dtgRegularEquipment, "Regular Equipment Set")) return false;
+            if (!ValidateEquipmentGrid(dtgDimensionEquipment, "Dimension Equipment Set")) return false;
+
+            return true;
+        }
+
+        private bool ValidateEquipmentGrid(DataGridView dtg, string gridName)
+        {
+            dtg.EndEdit();
+
+            foreach (DataGridViewRow row in dtg.Rows)
+            {
+                if (row.IsNewRow || IsEmptyEquipmentRow(row))
+                {
+                    continue;
+                }
+
+                string pointOrder = GetGridCellText(row, "POINT_ORDER");
+                string equipmentType = GetGridCellText(row, "EQUIPMENT_TYPE");
+
+                if (string.IsNullOrWhiteSpace(pointOrder))
+                {
+                    MessageBox.Show($"{gridName}: กรุณาระบุ Order", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtg.CurrentCell = row.Cells["POINT_ORDER"];
+                    dtg.Focus();
+                    return false;
+                }
+
+                if (!int.TryParse(pointOrder, out _))
+                {
+                    MessageBox.Show($"{gridName}: Order ต้องเป็นตัวเลข", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtg.CurrentCell = row.Cells["POINT_ORDER"];
+                    dtg.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(equipmentType))
+                {
+                    MessageBox.Show($"{gridName}: กรุณาเลือก Equipment", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtg.CurrentCell = row.Cells["EQUIPMENT_TYPE"];
+                    dtg.Focus();
+                    return false;
+                }
             }
 
             return true;
@@ -447,7 +585,14 @@ namespace RawMat.Views.Setting
                 if (frm.ShowDialog(this) != DialogResult.Yes) return;
             }
 
-            bool result = _controller.SaveInspectionSetting(GetDataFromScreen());
+            var dataItem = GetDataFromScreen();
+            bool result = _controller.SaveInspectionSetting(dataItem);
+
+            if (result)
+            {
+                result = _controller.SaveRegularEquipmentSetting(dataItem)
+                      && _controller.SaveDimensionEquipmentSetting(dataItem);
+            }
 
             if (result)
             {
@@ -499,12 +644,36 @@ namespace RawMat.Views.Setting
                     Width = 180,
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                 },
-                new DataGridViewTextBoxColumn { Name = "Equipment_Name", HeaderText = "Equipment Name", DataPropertyName = "Equipment_Name", Width = 160, ReadOnly = true },
                 new DataGridViewTextBoxColumn { Name = "POINT_NAME", HeaderText = "Point Name", DataPropertyName = "POINT_NAME", Width = 160 },
                 new DataGridViewTextBoxColumn { Name = "POINT_CAL", HeaderText = "Point Cal", DataPropertyName = "POINT_CAL", Width = 120 },
                 new DataGridViewTextBoxColumn { Name = "CRITERIA_MIN", HeaderText = "Min", DataPropertyName = "CRITERIA_MIN", Width = 80 },
-                new DataGridViewTextBoxColumn { Name = "CRITERIA_MAX", HeaderText = "Max", DataPropertyName = "CRITERIA_MAX", Width = 80 }
+                new DataGridViewTextBoxColumn { Name = "CRITERIA_MAX", HeaderText = "Max", DataPropertyName = "CRITERIA_MAX", Width = 80 },
+                new DataGridViewButtonColumn { Name = "DELETE_ROW", HeaderText = "", Text = "Delete", UseColumnTextForButtonValue = true, Width = 70 }
             );
+        }
+
+        private void dtgEquipment_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            var dtg = sender as DataGridView;
+            if (dtg == null || dtg.Columns[e.ColumnIndex].Name != "DELETE_ROW") return;
+            if (dtg.Rows[e.RowIndex].IsNewRow) return;
+
+            var confirm = MessageBox.Show("ต้องการลบ Equipment แถวนี้หรือไม่?",
+                "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes) return;
+
+            dtg.Rows.RemoveAt(e.RowIndex);
+        }
+
+        private void dtgEquipment_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            var confirm = MessageBox.Show("ต้องการลบ Equipment แถวนี้หรือไม่?",
+                "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            e.Cancel = confirm != DialogResult.Yes;
         }
 
         private void LoadEquipmentTypeList()
@@ -525,6 +694,9 @@ namespace RawMat.Views.Setting
 
             dtRegularEquipment = _controller.SearchRegularEquipmentSetting(dataItem);
             dtDimensionEquipment = _controller.SearchDimensionEquipmentSetting(dataItem);
+
+            if (dtRegularEquipment == null) dtRegularEquipment = CreateEquipmentTable();
+            if (dtDimensionEquipment == null) dtDimensionEquipment = CreateEquipmentTable();
 
             dtgRegularEquipment.DataSource = dtRegularEquipment;
             dtgDimensionEquipment.DataSource = dtDimensionEquipment;

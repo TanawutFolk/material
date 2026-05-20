@@ -23,15 +23,12 @@ namespace RawMat
         private static extern bool SetForegroundWindow(IntPtr hWnd);
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll")]  // ← เพิ่มตรงนี้
-        private static extern bool SetProcessDPIAware();
 
         private const int SW_RESTORE = 9;
 
         [STAThread]
         static void Main()
         {
-            SetProcessDPIAware();
             const string appName = "RawMatApp";
             bool createdNew;
 
@@ -57,7 +54,7 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmMain());
+                Application.Run(new frmInspectionSetting());
             }
             finally
             {

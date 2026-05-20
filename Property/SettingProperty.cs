@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,5 +55,9 @@ namespace RawMat.Property
         public string App_Sampling_Qty { get; set; }
         public string App_Strictness_Type { get; set; }
         public string App_Sampling_Type { get; set; }
+
+        // --- Equipment Set ---
+        public DataTable RegularEquipment { get; set; }
+        public DataTable DimensionEquipment { get; set; }
     }
 }

@@ -354,5 +354,55 @@ namespace RawMat.Controllers
 
             return result;
         }
+
+        public Boolean SaveRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.SaveRegularEquipmentSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
+        public Boolean SaveDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.SaveDimensionEquipmentSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
     }
 }

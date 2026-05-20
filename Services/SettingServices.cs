@@ -3,6 +3,7 @@ using BusinessData.Property;
 using RawMat.Property;
 using RawMat.SQLFactory;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace RawMat.Services
@@ -131,6 +132,24 @@ namespace RawMat.Services
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.GetEquipmentTypeList();
             _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SaveRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.SaveRegularEquipmentSetting(dataItem);
+            _resultData = base.InsertBySqlList(sqlList);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SaveDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.SaveDimensionEquipmentSetting(dataItem);
+            _resultData = base.InsertBySqlList(sqlList);
             return _resultData;
         }
     }

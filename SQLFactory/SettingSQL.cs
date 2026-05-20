@@ -1,5 +1,7 @@
 ﻿using RawMat.Property;
 using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace RawMat.SQLFactory
 {
@@ -42,6 +44,78 @@ namespace RawMat.SQLFactory
             }
 
             return $"'{CleanSqlText(value)}'";
+        }
+
+        private string GetSqlValue(DataRow row, string columnName)
+        {
+            if (row == null || row.RowState == DataRowState.Deleted || !row.Table.Columns.Contains(columnName))
+            {
+                return "";
+            }
+
+            return row[columnName]?.ToString() ?? "";
+        }
+
+        private List<string> BuildSaveEquipmentSettingSql(string tableName, string mCode, DataTable equipmentRows)
+        {
+            var sqlList = new List<string>
+            {
+                $"DELETE FROM {tableName} WHERE M_CODE = '{CleanSqlText(mCode)}';"
+            };
+
+            if (equipmentRows == null)
+            {
+                return sqlList;
+            }
+
+            foreach (DataRow row in equipmentRows.Rows)
+            {
+                if (row.RowState == DataRowState.Deleted)
+                {
+                    continue;
+                }
+
+                string pointOrder = GetSqlValue(row, "POINT_ORDER");
+                string equipmentType = GetSqlValue(row, "EQUIPMENT_TYPE");
+                string pointName = GetSqlValue(row, "POINT_NAME");
+                string pointCal = GetSqlValue(row, "POINT_CAL");
+                string criteriaMin = GetSqlValue(row, "CRITERIA_MIN");
+                string criteriaMax = GetSqlValue(row, "CRITERIA_MAX");
+
+                if (string.IsNullOrWhiteSpace(pointOrder) &&
+                    string.IsNullOrWhiteSpace(equipmentType) &&
+                    string.IsNullOrWhiteSpace(pointName) &&
+                    string.IsNullOrWhiteSpace(pointCal) &&
+                    string.IsNullOrWhiteSpace(criteriaMin) &&
+                    string.IsNullOrWhiteSpace(criteriaMax))
+                {
+                    continue;
+                }
+
+                sqlList.Add($@"
+                    INSERT INTO {tableName}
+                    (
+                        M_CODE,
+                        POINT_ORDER,
+                        EQUIPMENT_TYPE,
+                        POINT_NAME,
+                        POINT_CAL,
+                        CRITERIA_MIN,
+                        CRITERIA_MAX
+                    )
+                    VALUES
+                    (
+                        '{CleanSqlText(mCode)}',
+                        {ToSqlTextOrNull(pointOrder)},
+                        {ToSqlTextOrNull(equipmentType)},
+                        {ToSqlTextOrNull(pointName)},
+                        {ToSqlTextOrNull(pointCal)},
+                        {ToSqlTextOrNull(criteriaMin)},
+                        {ToSqlTextOrNull(criteriaMax)}
+                    );");
+            }
+
+            return sqlList;
         }
 
         public string SearchInspectionSettingList(SettingProperty dataItem)
@@ -374,8 +448,8 @@ namespace RawMat.SQLFactory
                 a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
-            FROM qa_system.info_regular_equipment a
-            LEFT JOIN qa_system.info_equipment_type b 
+            FROM info_regular_equipment a
+            LEFT JOIN info_equipment_type b 
                 ON a.EQUIPMENT_TYPE = b.Equipment_Type
             WHERE a.M_CODE = 'dataItem.M_CODE'
             ORDER BY a.POINT_ORDER ASC;
@@ -398,8 +472,8 @@ namespace RawMat.SQLFactory
                 a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
-            FROM qa_system.info_dimension_equipment a
-            LEFT JOIN qa_system.info_equipment_type b 
+            FROM info_dimension_equipment a
+            LEFT JOIN info_equipment_type b 
                 ON a.EQUIPMENT_TYPE = b.Equipment_Type
             WHERE a.M_CODE = 'dataItem.M_CODE'
             ORDER BY a.POINT_ORDER ASC;
@@ -416,11 +490,21 @@ namespace RawMat.SQLFactory
             SELECT 
                 Equipment_Type,
                 Equipment_Name
-            FROM qa_system.info_equipment_type
+            FROM info_equipment_type
             ORDER BY Equipment_Type ASC;
           ";
 
             return sql;
+        }
+
+        public List<string> SaveRegularEquipmentSetting(SettingProperty dataItem)
+        {
+            return BuildSaveEquipmentSettingSql("info_regular_equipment", dataItem.M_CODE, dataItem.RegularEquipment);
+        }
+
+        public List<string> SaveDimensionEquipmentSetting(SettingProperty dataItem)
+        {
+            return BuildSaveEquipmentSettingSql("info_dimension_equipment", dataItem.M_CODE, dataItem.DimensionEquipment);
         }
     }
 }
