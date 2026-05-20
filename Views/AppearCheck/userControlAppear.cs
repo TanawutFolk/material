@@ -310,7 +310,7 @@ namespace RawMat.Views.AppearCheck
             
             dtg_packing_size_appear.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dtg_packing_size_appear.AllowUserToAddRows = false;
-            dtg_packing_size_appear.ReadOnly = false; // Grid หลัก editable
+            dtg_packing_size_appear.ReadOnly = true;
 
             if (dtg_packing_size_appear.Columns["VALUE"] != null)
             {
@@ -331,7 +331,7 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"] != null)
             {
-                dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].HeaderText = "สุ่มตรวจ";
+                dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].HeaderText = "คงเหลือ";
                 dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].ReadOnly = true;
 
                 // *** เพิ่ม: การจัดการ NullValue สำหรับ int ***
@@ -356,9 +356,22 @@ namespace RawMat.Views.AppearCheck
                 dtg_packing_size_appear.Columns["PACKING_SIZE"].ReadOnly = true;
             }
 
+            if (dtg_packing_size_appear.Columns["INSPECTED_QTY"] != null)
+            {
+                dtg_packing_size_appear.Columns["INSPECTED_QTY"].HeaderText = "ตรวจแล้ว";
+                dtg_packing_size_appear.Columns["INSPECTED_QTY"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["INSPECTED_QTY"].DefaultCellStyle.NullValue = 0;
+                dtg_packing_size_appear.Columns["INSPECTED_QTY"].DefaultCellStyle.Format = "N0";
+            }
+
+            if (dtg_packing_size_appear.Columns["BATCH_STATUS"] != null)
+            {
+                dtg_packing_size_appear.Columns["BATCH_STATUS"].HeaderText = "สถานะ";
+                dtg_packing_size_appear.Columns["BATCH_STATUS"].ReadOnly = true;
+            }
+
              dtg_packing_size_appear.Refresh(); // Force update UI
             //dtg_packing_size_appear.Columns["NUMBER"].Visible = false;
-            dtg_packing_size_appear.DataBindingComplete -= dtg_packing_size_appear_DataBindingComplete;  // Subscribe ถ้าต้องการ
         }
 
         // Event Handler สำหรับ Timer
@@ -488,11 +501,6 @@ namespace RawMat.Views.AppearCheck
             {
                 return; // ไม่มีแถวที่เลือก ไม่อยากให้ทำต่อ
             }
-            else
-            {
-                dtg_packing_size_appear.Enabled = false;
-                bt_select_packing_size_appear.Enabled = false;
-            }
 
             var selectedRow = dtg_packing_size_appear.SelectedRows[0];
             propQA.BATCH = selectedRow.Cells["BATCH"].Value.ToString();
@@ -503,6 +511,22 @@ namespace RawMat.Views.AppearCheck
             maxQty = Convert.ToInt32(selectedRow.Cells["PACKING_SIZE"].Value.ToString()); // Total fixed for batch
             currentMaxQty = Convert.ToInt32(selectedRow.Cells["REMAIN_PACKING_SIZE"].Value.ToString()); // Remaining to inspect
             //currentMaxQty = Convert.ToInt32(propQA.REMAIN_PACKING_SIZE); // Remaining to inspect
+
+            string batchStatus = selectedRow.Cells["BATCH_STATUS"]?.Value?.ToString() ?? "";
+            if (currentMaxQty <= 0)
+            {
+                MessageBox.Show("ชุดนี้ตรวจครบแล้ว ไม่สามารถเลือกทำซ้ำได้", "Batch Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (batchStatus.Equals("NG", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("ชุดนี้ติด NG/Pending แล้ว ไม่สามารถเลือกทำต่อในหน้าปกติได้", "Batch NG", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            dtg_packing_size_appear.Enabled = false;
+            bt_select_packing_size_appear.Enabled = false;
 
             DataTable dt_show = conQA.SearchAppearData(propQA);
 
@@ -584,8 +608,35 @@ namespace RawMat.Views.AppearCheck
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
+            string status = "";
+            if (dtg_packing_size_appear.Columns.Contains("BATCH_STATUS"))
+            {
+                status = dtg_packing_size_appear.Rows[e.RowIndex].Cells["BATCH_STATUS"].Value?.ToString() ?? "";
+            }
+
+            if (status.Equals("OK", StringComparison.OrdinalIgnoreCase))
+            {
+                e.CellStyle.BackColor = Color.Honeydew;
+                e.CellStyle.ForeColor = Color.Black;
+            }
+            else if (status.Equals("NG", StringComparison.OrdinalIgnoreCase))
+            {
+                e.CellStyle.BackColor = Color.MistyRose;
+                e.CellStyle.ForeColor = Color.Black;
+            }
+            else if (status.Equals("In Progress", StringComparison.OrdinalIgnoreCase))
+            {
+                e.CellStyle.BackColor = Color.LemonChiffon;
+                e.CellStyle.ForeColor = Color.Black;
+            }
+            else
+            {
+                e.CellStyle.BackColor = Color.White;
+                e.CellStyle.ForeColor = Color.Black;
+            }
+
             // ตรวจสอบว่าเป็นคอลัมน์ REMAIN_PACKING_SIZE หรือไม่
-            if (dtg_packing_size_appear.Columns[e.ColumnIndex].Name == "REMAIN_PACKING_SIZE")
+            if (string.IsNullOrEmpty(status) && dtg_packing_size_appear.Columns[e.ColumnIndex].Name == "REMAIN_PACKING_SIZE")
             {
                 if (e.Value != null && int.TryParse(e.Value.ToString(), out int val))
                 {
@@ -623,6 +674,7 @@ namespace RawMat.Views.AppearCheck
                 // 2. ดึงค่าจากคอลัมน์ "REMAIN_PACKING_SIZE" (สุ่มตรวจ) โดยตรง
                 var cellValue = selectedRow.Cells["REMAIN_PACKING_SIZE"].Value;
                 int remainQty = 0;
+                string batchStatus = selectedRow.Cells["BATCH_STATUS"]?.Value?.ToString() ?? "";
 
                 // 3. แปลงค่าอย่างปลอดภัย (กัน Null/Error)
                 if (cellValue != null && cellValue != DBNull.Value)
@@ -632,7 +684,7 @@ namespace RawMat.Views.AppearCheck
 
                 // 4. ตรรกะการเปิดปุ่ม: 
                 // ถ้าจำนวนที่เหลือ (remainQty) มากกว่า 0 -> ให้กดเลือกทำได้
-                if (remainQty > 0)
+                if (remainQty > 0 && !batchStatus.Equals("NG", StringComparison.OrdinalIgnoreCase))
                 {
                     bt_select_packing_size_appear.Enabled = true;
                 }
@@ -935,6 +987,11 @@ namespace RawMat.Views.AppearCheck
                 return;
             }
 
+            if (qtyNG > 0 && !ValidateNgModeDetails(true))
+            {
+                return;
+            }
+
             string judge = (qtyNG > 0) ? "0" : "1"; // 0=NG, 1=OK
             string empId = employee.EMP_CODE ?? ""; // Use EMP_CODE as per load
             DateTime inputDate = DateTime.Now;
@@ -1012,6 +1069,9 @@ namespace RawMat.Views.AppearCheck
             // Step 4: Post-insert logic based on judge and Allow_Continue
             if (insertSuccess && ngDetailsSuccess)
             {
+                currentMaxQty = Math.Max(currentMaxQty - qtySelect, 0);
+                RefreshPackingGrid();
+
                 // Requery total inspected for this report (across all batches, INUSE=1)
                 int totalInspected = conQA.GetTotalInspected(propQA); // SUM(QTY_SELECT) WHERE REPORT_NO=..., INUSE=1
                 bool isAllComplete = totalInspected >= Convert.ToInt32(propQA.inspQty); // Total inspection qty
@@ -1026,6 +1086,7 @@ namespace RawMat.Views.AppearCheck
 
                         // Set status to Pending for NG
                         propQA.TOTAL_STATUS = "6"; // Pending
+                        propQA.reportStatus = propQA.TOTAL_STATUS;
                         conQA.UpdateReportStatus(propQA); // Update report status
 
                         MessageBox.Show("พบสิ่งผิดปกติ งานถูกตั้งเป็น Pending", "พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1038,6 +1099,7 @@ namespace RawMat.Views.AppearCheck
                         // For now, since details saved, message and stay (or check if all NG modes filled)
                         // Set status to Pending for NG
                         propQA.TOTAL_STATUS = "8"; // Not Finished yet
+                        propQA.reportStatus = propQA.TOTAL_STATUS;
                         conQA.UpdateReportStatus(propQA); // Update report status
 
                         MessageBox.Show("ทำต่อได้ แต่พบสิ่งผิดปกติ กรุณาตรวจสอบเพิ่มเติม", "ทำต่อได้ แต่พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1056,6 +1118,7 @@ namespace RawMat.Views.AppearCheck
                     {
                         // Complete: Set final status if needed (assume "9" for complete, but use existing logic)
                         propQA.TOTAL_STATUS = "9"; // Complete - adjust if needed
+                        propQA.reportStatus = propQA.TOTAL_STATUS;
                         conQA.UpdateReportStatus(propQA);
                         MessageBox.Show("ทำครบแล้ว", "ทำครบแล้ว", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         bt_Appear_Click(); // Back to select
@@ -1088,10 +1151,11 @@ namespace RawMat.Views.AppearCheck
         // Helper: Refresh packing grid with latest data (assume SearchSampleSize updates REMAIN if needed)
         private void RefreshPackingGrid()
         {
-            DataTable dt = conQA.SearchSampleSize(propQA);
+            DataTable dt = ConvertToSafeDataTable(conQA.SearchSampleSize(propQA));
+            dtg_packing_size_appear.DataSource = null;
             dtg_packing_size_appear.DataSource = dt;
             dtg_packing_size_appear.Enabled = true;
-            bt_select_packing_size_appear.Enabled = true;
+            bt_select_packing_size_appear.Enabled = false;
         }
 
         // Helper: Clear show grid to empty state (no rows, ready for new batch)
@@ -1467,6 +1531,7 @@ namespace RawMat.Views.AppearCheck
             totalNgRequired = requiredNgQty;
             isNgModeActive = true;
             gb_ngMode.Enabled = true;
+            tb_record.Enabled = false;
 
             // Suspend layout และ binding ก่อน reset
             dtg_ngMode.SuspendLayout();
@@ -1519,20 +1584,15 @@ namespace RawMat.Views.AppearCheck
             ngDt.Columns.Add("QTY_NG", typeof(int));
             ngDt.Columns.Add("NG_MODE", typeof(string));
 
-            // เพิ่ม row ว่าง
-            for (int i = 0; i < 1; i++)
-            {
-                DataRow newRow = ngDt.NewRow();
-                newRow["QTY_NG"] = 0;
-                newRow["NG_MODE"] = string.Empty;
-                ngDt.Rows.Add(newRow);
-            }
+            DataRow newRow = ngDt.NewRow();
+            newRow["QTY_NG"] = requiredNgQty;
+            newRow["NG_MODE"] = string.Empty;
+            ngDt.Rows.Add(newRow);
+
+            dtg_ngMode.AutoGenerateColumns = true;
 
             // Set DataSource หลัง reset เสร็จ
             dtg_ngMode.DataSource = ngDt;
-
-            // Auto-generate columns จาก DataTable
-            dtg_ngMode.AutoGenerateColumns = true;
 
             // Make editable
             if (dtg_ngMode.Rows.Count > 0)
@@ -1545,6 +1605,15 @@ namespace RawMat.Views.AppearCheck
 
             // Final refresh
             dtg_ngMode.Refresh();
+
+            this.BeginInvoke(new Action(() =>
+            {
+                if (dtg_ngMode.Rows.Count > 0 && dtg_ngMode.Columns["NG_MODE"] != null)
+                {
+                    dtg_ngMode.CurrentCell = dtg_ngMode.Rows[0].Cells["NG_MODE"];
+                    dtg_ngMode.BeginEdit(true);
+                }
+            }));
         }
 
         private void CloseNgMode()
@@ -1558,24 +1627,71 @@ namespace RawMat.Views.AppearCheck
         // Handle การเปลี่ยน QTY_NG ใน dtg_show_appear (เฉพาะเมื่อ JUDGE == "NG")
         private void HandleNgQtyChange(int newQtyNg)
         {
+            if (newQtyNg <= 0)
+            {
+                CloseNgMode();
+                return;
+            }
+
             if (isNgModeActive && newQtyNg != totalNgRequired)
             {
-                // Clear dtg_ngMode แต่ keep open
-                DataTable currentNgDt = (DataTable)dtg_ngMode.DataSource;
-                if (currentNgDt != null)
+                OpenNgMode(newQtyNg);
+            }
+        }
+
+        private bool ValidateNgModeDetails(bool showMessage)
+        {
+            if (!isNgModeActive || dtg_ngMode.DataSource == null)
+            {
+                if (showMessage)
                 {
-                    currentNgDt.Clear();
-                    // Re-add empty rows if needed
-                    for (int i = 0; i < 1; i++)
+                    MessageBox.Show("กรุณากรอก NG MODE ให้ครบก่อนบันทึก", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                return false;
+            }
+
+            DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
+            int totalNgSum = 0;
+            int firstInvalidRowIndex = -1;
+
+            for (int i = 0; i < ngDt.Rows.Count; i++)
+            {
+                DataRow row = ngDt.Rows[i];
+                int qty = row["QTY_NG"] is DBNull ? 0 : Convert.ToInt32(row["QTY_NG"]);
+                string mode = row["NG_MODE"] is DBNull ? "" : row["NG_MODE"].ToString().Trim();
+
+                if (qty > 0)
+                {
+                    totalNgSum += qty;
+                    if (string.IsNullOrEmpty(mode) && firstInvalidRowIndex < 0)
                     {
-                        DataRow newRow = currentNgDt.NewRow();
-                        newRow["QTY_NG"] = DBNull.Value;
-                        newRow["NG_MODE"] = string.Empty;
-                        currentNgDt.Rows.Add(newRow);
+                        firstInvalidRowIndex = i;
                     }
                 }
-                totalNgRequired = newQtyNg;
             }
+
+            if (totalNgSum != totalNgRequired)
+            {
+                if (showMessage)
+                {
+                    MessageBox.Show($"ผลรวม QTY NG ({totalNgSum}) ต้องเท่ากับจำนวนงานเสีย ({totalNgRequired})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                return false;
+            }
+
+            if (firstInvalidRowIndex >= 0)
+            {
+                if (showMessage)
+                {
+                    MessageBox.Show("กรุณากรอก NG MODE ในทุกแถวที่กรอก QTY NG แล้ว", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtg_ngMode.Rows[firstInvalidRowIndex].Cells["NG_MODE"].Style.BackColor = Color.Red;
+                    dtg_ngMode.CurrentCell = dtg_ngMode.Rows[firstInvalidRowIndex].Cells["NG_MODE"];
+                    dtg_ngMode.BeginEdit(true);
+                }
+                return false;
+            }
+
+            return true;
         }
 
         // Events สำหรับ dtg_ngMode
@@ -2031,7 +2147,9 @@ namespace RawMat.Views.AppearCheck
             safeDt.Columns.Add("PACK_COUNT", typeof(int));           // บังคับ int
             safeDt.Columns.Add("VALUE", typeof(int));                // บังคับ int
             safeDt.Columns.Add("PACKING_SIZE", typeof(int));         // บังคับ int
+            safeDt.Columns.Add("INSPECTED_QTY", typeof(int));        // บังคับ int
             safeDt.Columns.Add("REMAIN_PACKING_SIZE", typeof(int));  // บังคับ int
+            safeDt.Columns.Add("BATCH_STATUS", typeof(string));
 
             if (originalDt == null || originalDt.Rows.Count == 0) return safeDt;
 
@@ -2052,8 +2170,14 @@ namespace RawMat.Views.AppearCheck
                 // PACKING_SIZE
                 newRow["PACKING_SIZE"] = ParseIntSafe(oldRow["PACKING_SIZE"]);
 
+                // INSPECTED_QTY
+                newRow["INSPECTED_QTY"] = originalDt.Columns.Contains("INSPECTED_QTY") ? ParseIntSafe(oldRow["INSPECTED_QTY"]) : 0;
+
                 // REMAIN_PACKING_SIZE (ตัวปัญหา)
                 newRow["REMAIN_PACKING_SIZE"] = ParseIntSafe(oldRow["REMAIN_PACKING_SIZE"]);
+
+                // BATCH_STATUS
+                newRow["BATCH_STATUS"] = originalDt.Columns.Contains("BATCH_STATUS") ? oldRow["BATCH_STATUS"]?.ToString() ?? "Not Started" : "Not Started";
 
                 safeDt.Rows.Add(newRow);
             }

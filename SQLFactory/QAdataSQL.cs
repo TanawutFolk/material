@@ -1788,8 +1788,15 @@ namespace RawMat.SQLFactory
                         p.BATCH as `BATCH`,
                         p.PACK_COUNT as `PACK_COUNT`,
                         p.`VALUE` as `VALUE` ,
+                        p.`PACKING_SIZE` as `PACKING_SIZE`,
+                        COALESCE(SUM(a.qty_select), 0) as `INSPECTED_QTY`,
                         p.packing_size - COALESCE(SUM(a.qty_select), 0) as `REMAIN_PACKING_SIZE`,
-                        p.`PACKING_SIZE` as `PACKING_SIZE`
+                        CASE
+                            WHEN COALESCE(SUM(a.qty_select), 0) = 0 THEN 'Not Started'
+                            WHEN COALESCE(SUM(CASE WHEN a.QTY_NG > 0 OR a.JUDGE = 0 THEN 1 ELSE 0 END), 0) > 0 THEN 'NG'
+                            WHEN COALESCE(SUM(a.qty_select), 0) >= p.PACKING_SIZE THEN 'OK'
+                            ELSE 'In Progress'
+                        END as `BATCH_STATUS`
                 FROM 
                     db_packing_size p
                 LEFT JOIN 
@@ -1801,7 +1808,10 @@ namespace RawMat.SQLFactory
 
                 GROUP BY 
                     p.report_no,
-                    p.BATCH;
+                    p.BATCH,
+                    p.PACK_COUNT,
+                    p.`VALUE`,
+                    p.PACKING_SIZE;
                     ";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
@@ -1824,12 +1834,22 @@ namespace RawMat.SQLFactory
             int ngCount = 0;
             List<string> sqlList = new List<string>();
             DataTable dt = (DataTable)dataItem.dtg_ngMode.DataSource;
+            string ngDetailColumn = dt.Columns.Contains("NG_MODE") ? "NG_MODE" : "NG_DETAIL";
 
             foreach (DataRow row in dt.Rows)
             {
+                int qtyNg = 0;
+                int.TryParse(row["QTY_NG"].ToString(), out qtyNg);
+
+                if (qtyNg <= 0)
+                {
+                    continue;
+                }
+
+                string ngDetail = row[ngDetailColumn].ToString().Replace("'", "''");
 
                 sql = $"INSERT INTO `db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{row["NG_DETAIL"].ToString()}', NOW(), NOW())";
+                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{qtyNg}', '{ngDetail}', NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;
