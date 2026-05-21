@@ -1,4 +1,4 @@
-﻿using RawMat.Property;
+using RawMat.Property;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -65,7 +65,7 @@ namespace RawMat.SQLFactory
                         c.VENDOR_NAME AS `Vendor Name`, 
                         a.Emp_Issue_Report AS `Issued By`,
         
-                        -- ✅ สร้าง `Status` (แสดงเฉพาะ Pending หรือ Working)
+                        -- ? ????? `Status` (????????? Pending ???? Working)
                         CASE 
                             WHEN 'Working' IN (
                                 docStatus.STATUS_NAME, whStatus.STATUS_NAME, chkpStatus.STATUS_NAME, 
@@ -91,7 +91,7 @@ namespace RawMat.SQLFactory
                     LEFT JOIN info_status dimStatus ON (d.Dimension_Check = dimStatus.ID)
                     LEFT JOIN info_status appStatus ON (d.Appearance_Check = appStatus.ID)
 
-                    -- 🔥 เงื่อนไขที่ใช้ `WHERE` เพื่อกรองเฉพาะ `Pending` และ `Working`
+                    -- ?? ?????????????? `WHERE` ?????????????? `Pending` ??? `Working`
                     WHERE 
                         (docStatus.STATUS_NAME IN ('Pending', 'Working') OR
                          whStatus.STATUS_NAME IN ('Pending', 'Working') OR
@@ -116,7 +116,7 @@ namespace RawMat.SQLFactory
 
         public string SearchInspectionList(QAdataProperty dataItem)
         {
-            //I_model คือ mathName
+            //I_model ??? mathName
             sql = @"select COUNT(*) AS CNT from info_mat_inspection_list where M_CODE = 'dataItem.M_CODE' and INUSE = 1 
                     ";
 
@@ -127,7 +127,7 @@ namespace RawMat.SQLFactory
 
         //public string SearchMcodeSmartFFT(QAdataProperty dataItem)
         //{
-        //    //I_model คือ mathName
+        //    //I_model ??? mathName
         //    sql = @" select b.VENDOR_ID , c.VENDOR_NAME
 
         //            from item_manufacturing b
@@ -174,7 +174,7 @@ namespace RawMat.SQLFactory
         {
            
             sql = @" select b.VENDOR_ID , c.VENDOR_NAME
-                    from qa_system.info_mat_inspection_list a
+                    from info_mat_inspection_list a
                     join mes.item_manufacturing b on (a.M_Code = b.Item_code_for_support_mes)
                     join mes.vendor c on (b.VENDOR_ID = c.VENDOR_ID)
 
@@ -556,13 +556,13 @@ namespace RawMat.SQLFactory
             foreach (DataGridViewRow row in dataItem.dtgPackingSize.Rows)
             {
 
-                // ตรวจสอบว่าแถวนี้มีข้อมูล
+                // ????????????????????????
                 if (row.Cells["VALUE"].Value == null || row.Cells["PACK_COUNT"].Value == null)
                 {
-                    continue; // ข้ามแถวที่ไม่มีข้อมูล
+                    continue; // ?????????????????????
                 }
 
-                sql = @"INSERT INTO `qa_system`.`db_packing_size`(`Report_No`, `BATCH`, `VALUE`, `PACK_COUNT` , `PACKING_SIZE`) 
+                sql = @"INSERT INTO `db_packing_size`(`Report_No`, `BATCH`, `VALUE`, `PACK_COUNT` , `PACKING_SIZE`) 
                         VALUES ('dataItem.Report_No', 'dataItem.Batch', 'dataItem.Value', 'dataItem.Pack_Count' , dataItem.Packing_Size);";
 
                 sql = sql.Replace("dataItem.Batch", (i + 1).ToString());
@@ -590,13 +590,13 @@ namespace RawMat.SQLFactory
 
         public string UpdateStatus(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `qa_system`.`db_report_status` 
+            sql = @"UPDATE `db_report_status` 
                     SET `dataItem.process` = dataItem.inProcStatus , `Report_Status` = dataItem.reportStatus  WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
             sql = sql.Replace("dataItem.process", dataItem.process);
 
-            // ตรวจสอบค่า reg_check_status หากว่างให้ใส่ NULL
+            // ?????????? reg_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.inProcStatus))
             {
                 sql = sql.Replace("dataItem.inProcStatus", "NULL");
@@ -613,7 +613,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateStatusCancel(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `qa_system`.`db_report_status` 
+            sql = @"UPDATE `db_report_status` 
                     SET `Keep_Data` = 5, `Receive_WH` = 5 , `Report_Status` = 5  WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
@@ -623,7 +623,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateDataReceiveWH(QAdataProperty dataItem)
         {
-            sql = @" UPDATE `qa_system`.`db_report_status` 
+            sql = @" UPDATE `db_report_status` 
                     SET `EMP_RECEIVE_WH` = 'dataItem.EMP_ID', `RECEIVE_WH_DATE` = NOW() , `Receive_WH` = 'dataItem.inProcStatus' , `Report_Status` = 'dataItem.reportStatus'
                     WHERE `Report_No` = 'dataItem.Report_No'
                     ";
@@ -638,7 +638,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateRegularNo(QAdataProperty dataItem)
         {
-            sql = @" UPDATE `qa_system`.`db_receive_mat` SET `Regular_No` = 'dataItem.Regular_No' 
+            sql = @" UPDATE `db_receive_mat` SET `Regular_No` = 'dataItem.Regular_No' 
                     WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
@@ -653,13 +653,13 @@ namespace RawMat.SQLFactory
 
             foreach (DataGridViewRow row in dataItem.dtgRawMat.Rows)
             {
-                //if (row.IsNewRow) continue; // ข้ามแถวเปล่า (New Row)
+                //if (row.IsNewRow) continue; // ???????????? (New Row)
 
             
-                sql = @"INSERT INTO `qa_system`.`db_receive_mat`(`Report_No`, `Report_Type`, `Regular_No`, `M_Code`, `Material_Name`, `Invoice_No`, `Vendor_Name`, `Lot_Size` ,`Receive_Date`) 
+                sql = @"INSERT INTO `db_receive_mat`(`Report_No`, `Report_Type`, `Regular_No`, `M_Code`, `Material_Name`, `Invoice_No`, `Vendor_Name`, `Lot_Size` ,`Receive_Date`) 
                      VALUES ('dataItem.Report_No', 1, NULL, 'dataItem.M_CODE', 'dataItem.Material_Name', 'dataItem.Invoice_No', 'dataItem.Vendor_Name', 'dataItem.Qty' , 'dataItem.Receive_Date');
                     
-                     INSERT INTO `qa_system`.`db_report_status`(`Report_No`, `Keep_Data`, `Receive_WH`, `Report_Status`) 
+                     INSERT INTO `db_report_status`(`Report_No`, `Keep_Data`, `Receive_WH`, `Report_Status`) 
                      VALUES ('dataItem.Report_No', 2, 2, 2);
                     ";
 
@@ -681,10 +681,10 @@ namespace RawMat.SQLFactory
         public string InsertReportStatusAndReceiveMat(QAdataProperty dataItem)
         {
 
-            sql = @"INSERT INTO `qa_system`.`db_receive_mat`(`Report_No`, `Report_Type`, `Regular_No`, `M_Code`, `Material_Name`, `Invoice_No`, `Vendor_Name`, `Lot_Size` ,`Receive_Date` , `Emp_Issue_Report` ,`Issue_Date`) 
+            sql = @"INSERT INTO `db_receive_mat`(`Report_No`, `Report_Type`, `Regular_No`, `M_Code`, `Material_Name`, `Invoice_No`, `Vendor_Name`, `Lot_Size` ,`Receive_Date` , `Emp_Issue_Report` ,`Issue_Date`) 
        VALUES ('dataItem.Report_No', 'dataItem.Report_Type', NULL, 'dataItem.M_CODE', 'dataItem.Material_Name', 'dataItem.Invoice_No', 'dataItem.Vendor_Name', 'dataItem.Qty' , 'dataItem.Receive_Date' , 'dataItem.EMP_ID' , NOW());
        
-       INSERT INTO `qa_system`.`db_report_status`(`Report_No`, `Keep_Data`, `Receive_WH`, `Regular_Check`, `Inspection_Data_Check` ,`Function_Check` ,`Dimension_Check` ,`Appearance_Check` , `Report_Status`) 
+       INSERT INTO `db_report_status`(`Report_No`, `Keep_Data`, `Receive_WH`, `Regular_Check`, `Inspection_Data_Check` ,`Function_Check` ,`Dimension_Check` ,`Appearance_Check` , `Report_Status`) 
        VALUES ('dataItem.Report_No', dataItem.keep_data_status, 'dataItem.inProcStatus', dataItem.reg_check_status , dataItem.data_check_status , dataItem.func_check_status , dataItem.dim_check_status , dataItem.app_check_status , 'dataItem.reportStatus');
    ";
 
@@ -702,7 +702,7 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.inProcStatus", dataItem.inProcStatus);
             sql = sql.Replace("dataItem.reportStatus", dataItem.reportStatus);
 
-            // ตรวจสอบค่า keep_data_status หากว่างให้ใส่ NULL
+            // ?????????? keep_data_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.keep_data_status))
             {
                 sql = sql.Replace("dataItem.keep_data_status", "NULL");
@@ -712,7 +712,7 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.keep_data_status", $"'{dataItem.keep_data_status}'");
             }
 
-            // ตรวจสอบค่า reg_check_status หากว่างให้ใส่ NULL
+            // ?????????? reg_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.reg_check_status))
             {
                 sql = sql.Replace("dataItem.reg_check_status", "NULL");
@@ -722,7 +722,7 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.reg_check_status", $"'{dataItem.reg_check_status}'");
             }
 
-            // ตรวจสอบค่า function_check_status หากว่างให้ใส่ NULL
+            // ?????????? function_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.func_check_status))
             {
                 sql = sql.Replace("dataItem.func_check_status", "NULL");
@@ -732,7 +732,7 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.func_check_status", $"'{dataItem.func_check_status}'");
             }
 
-            // ตรวจสอบค่า dimension_check_status หากว่างให้ใส่ NULL
+            // ?????????? dimension_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.dim_check_status))
             {
                 sql = sql.Replace("dataItem.dim_check_status", "NULL");
@@ -742,7 +742,7 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.dim_check_status", $"'{dataItem.reg_check_status}'");
             }
 
-            // ตรวจสอบค่า data_check_status หากว่างให้ใส่ NULL
+            // ?????????? data_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.data_check_status))
             {
                 sql = sql.Replace("dataItem.data_check_status", "NULL");
@@ -752,7 +752,7 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.data_check_status", $"'{dataItem.data_check_status}'");
             }
 
-            // ตรวจสอบค่า app_check_status หากว่างให้ใส่ NULL
+            // ?????????? app_check_status ????????????? NULL
             if (string.IsNullOrEmpty(dataItem.app_check_status))
             {
                 sql = sql.Replace("dataItem.app_check_status", "NULL");
@@ -772,19 +772,19 @@ namespace RawMat.SQLFactory
             //var compiler = new MySqlCompiler();
             var queries = new List<string>();
 
-            // ส่วน SET @nextCount
-            // สร้าง raw SQL โดยฝังค่าจริงเข้าไป
-            var setCountQuery = $"SET @nextCount = (SELECT COALESCE(MAX(`COUNT`), 0) + 1 FROM `qa_system`.`db_packing_check` WHERE `REPORT_NO` = '{dataItem.Report_No}' AND `METHOD_ID` = '{dataItem.METHOD_ID}')";
+            // ???? SET @nextCount
+            // ????? raw SQL ???????????????????
+            var setCountQuery = $"SET @nextCount = (SELECT COALESCE(MAX(`COUNT`), 0) + 1 FROM `db_packing_check` WHERE `REPORT_NO` = '{dataItem.Report_No}' AND `METHOD_ID` = '{dataItem.METHOD_ID}')";
             queries.Add(setCountQuery);
 
-            // ส่วน INSERT
-            // สร้าง raw SQL โดยฝังค่าจริงเข้าไป
+            // ???? INSERT
+            // ????? raw SQL ???????????????????
             var detailJudgeValue = string.IsNullOrEmpty(dataItem.detail_Method) ? "NULL" : $"'{dataItem.detail_Method.Replace("'", "''")}'";
-            var insertQuery = $"INSERT INTO `qa_system`.`db_packing_check` (`REPORT_NO`, `METHOD_ID`, `COUNT`, `DETAIL_JUDGE`, `JUDGMENT`, `EMP_PACKING_CHECK`) " +
+            var insertQuery = $"INSERT INTO `db_packing_check` (`REPORT_NO`, `METHOD_ID`, `COUNT`, `DETAIL_JUDGE`, `JUDGMENT`, `EMP_PACKING_CHECK`) " +
                               $"VALUES ('{dataItem.Report_No}', '{dataItem.METHOD_ID}', @nextCount, {detailJudgeValue}, '{dataItem.judge}', '{dataItem.EMP_ID}')";
             queries.Add(insertQuery);
 
-            // รวม queries เป็น string เดียว
+            // ??? queries ???? string ?????
             var sql = string.Join(";\n", queries);
             return sql;
         }
@@ -792,12 +792,12 @@ namespace RawMat.SQLFactory
 
         public string InsertReportLotNo(QAdataProperty dataItem)
         {
-            sql = @"INSERT INTO `qa_system`.`db_report_lot_no`(`REPORT_NO`, `LOT_NO`) VALUES ('dataItem.Report_No', 'dataItem.Lot_No');";
+            sql = @"INSERT INTO `db_report_lot_no`(`REPORT_NO`, `LOT_NO`) VALUES ('dataItem.Report_No', 'dataItem.Lot_No');";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
             sql = sql.Replace("dataItem.Lot_No", dataItem.Lot_No);
 
-            // ตรวจสอบค่า Lot_No หากว่างให้ใส่ NULL
+            // ?????????? Lot_No ????????????? NULL
             //if (string.IsNullOrEmpty(dataItem.Lot_No))
             //{
             //    sql = sql.Replace("dataItem.Lot_No", "NULL");
@@ -815,14 +815,14 @@ namespace RawMat.SQLFactory
         public string UpdateReportLotNo(QAdataProperty dataItem)
         {
             sql = @"
-                    UPDATE `qa_system`.`db_report_lot_no`
+                    UPDATE `db_report_lot_no`
                     SET 
                         `LOT_NO` = @LotNo
                     WHERE 
                         `REPORT_NO` = @ReportNo;
                     ";
 
-            // ใส่ค่า parameter สำหรับ SQL
+            // ?????? parameter ?????? SQL
             sql = sql.Replace("@ReportNo", $"'{dataItem.Report_No}'");
             sql = sql.Replace("@LotNo", $"'{dataItem.Lot_No}'");
 
@@ -857,21 +857,21 @@ namespace RawMat.SQLFactory
 
         public string InsertEquipmentSerial(QAdataProperty dataItem)
         {
-            sql = @"ALTER TABLE `qa_system`.`info_equipment_serial`
+            sql = @"ALTER TABLE `info_equipment_serial`
                   AUTO_INCREMENT = 1;
 	
-                INSERT INTO `qa_system`.`info_equipment_serial` (EQUIPMENT_SERIAL, EQUIPMENT_TYPE_ID)
+                INSERT INTO `info_equipment_serial` (EQUIPMENT_SERIAL, EQUIPMENT_TYPE_ID)
                 SELECT 'dataItem.EQUIPMENT_SERIAL', 'dataItem.EQUIPMENT_TYPE_ID'
                 FROM DUAL
                 WHERE NOT EXISTS (
                     SELECT 1
-                    FROM `qa_system`.`info_equipment_serial`
+                    FROM `info_equipment_serial`
                     WHERE EQUIPMENT_SERIAL = 'dataItem.EQUIPMENT_SERIAL' and EQUIPMENT_TYPE_ID = 'dataItem.EQUIPMENT_TYPE_ID'
                 );
 
 
                 SELECT id AS id
-                FROM `qa_system`.`info_equipment_serial`
+                FROM `info_equipment_serial`
                 WHERE EQUIPMENT_SERIAL = 'dataItem.EQUIPMENT_SERIAL' and EQUIPMENT_TYPE_ID = 'dataItem.EQUIPMENT_TYPE_ID';";
 
             sql = sql.Replace("dataItem.EQUIPMENT_SERIAL", dataItem.EQUIPMENT_SERIAL);
@@ -889,31 +889,31 @@ namespace RawMat.SQLFactory
             foreach (DataRow row in dt.Rows)
             {
 
-                //sql = @"INSERT INTO `qa_system`.`db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
+                //sql = @"INSERT INTO `db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
                 //        VALUES ('dataItem.REGULAR_NO',dataItem.CAVITY_NAME , 'dataItem.SAMPLING_NO', 'dataItem.EQUIPMENT_SERIAL_ID', 'dataItem.POINT_ORDER', 'dataItem.VALUE', 'dataItem.JUDGE', 'dataItem.EMP_ID' ,NOW() , 1);";
 
                 sql = @"
-                     -- อัปเดต `INUSE` ของรายการปัจจุบันให้เป็น 0
+                     -- ?????? `INUSE` ???????????????????????? 0
                         UPDATE `db_regular_data`
                         SET `INUSE` = 0
                         WHERE `REGULAR_NO` = 'dataItem.REGULAR_NO'
                         AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
                         AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
 
-                        -- แทรกข้อมูลใหม่โดย `COUNT` เพิ่มขึ้นทีละ 1 และ `INUSE = 1`
+                        -- ????????????????? `COUNT` ????????????? 1 ??? `INUSE = 1`
                         INSERT INTO `db_regular_data` (`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `COUNT`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`, `EMP_ID`, `REGULAR_DATE`, `INUSE`)
                         SELECT 
                             'dataItem.REGULAR_NO',
                             dataItem.CAVITY_NAME,
                             'dataItem.SAMPLING_NO',
-                            COALESCE(MAX(`COUNT`), 0) + 1,  -- หาค่า COUNT สูงสุดและเพิ่ม 1
+                            COALESCE(MAX(`COUNT`), 0) + 1,  -- ????? COUNT ?????????????? 1
                             'dataItem.EQUIPMENT_SERIAL_ID',
                             'dataItem.POINT_ORDER',
                             'dataItem.VALUE',
                             'dataItem.JUDGE',
                             'dataItem.EMP_ID',
                             NOW(),
-                            1  -- ค่าใหม่ให้ INUSE = 1
+                            1  -- ?????????? INUSE = 1
                         FROM `db_regular_data`
                         WHERE `REGULAR_NO` = 'dataItem.REGULAR_NO'
                         AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
@@ -929,10 +929,10 @@ namespace RawMat.SQLFactory
                 sql = sql.Replace("dataItem.VALUE", row["VALUE"].ToString());
                 sql = sql.Replace("dataItem.JUDGE", row["POINT_JUDGE"].ToString());
 
-                // ตรวจสอบว่าคอลัมน์ CAVITY_NAME มีอยู่ใน DataTable หรือไม่
+                // ????????????????? CAVITY_NAME ???????? DataTable ???????
                 if (dt.Columns.Contains("CAVITY_NAME"))
                 {
-                    // ตรวจสอบว่า row["CAVITY_NAME"] เป็น null หรือว่างหรือไม่
+                    // ?????????? row["CAVITY_NAME"] ???? null ???????????????
                     string cavityName = row["CAVITY_NAME"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["CAVITY_NAME"].ToString())
                         ? $"'{row["CAVITY_NAME"].ToString()}'"
                         : "NULL";
@@ -1030,11 +1030,11 @@ namespace RawMat.SQLFactory
         public string UpdateRegularRef(QAdataProperty dataItem)
         {
             sql = @"
-                    UPDATE  `qa_system`.`db_receive_mat`
+                    UPDATE  `db_receive_mat`
                     SET `Regular_No` = 'dataItem.REGULAR_NO_REF' WHERE `Report_No` = 'dataItem.Report_No' ;  
 
      
-                    UPDATE `qa_system`.`db_report_status` 
+                    UPDATE `db_report_status` 
                     SET `dataItem.process` = dataItem.inProcStatus , `Report_Status` = dataItem.reportStatus  WHERE `Report_No` = 'dataItem.Report_No';
             ";
 
@@ -1046,7 +1046,7 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
-        //เพิ่ม prevProcess ที่มีโอกาสเป็น skip = 3
+        //????? prevProcess ?????????????? skip = 3
         public string SearchForOpFunction(QAdataProperty dataItem)
         {
             sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
@@ -1105,7 +1105,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateReportStatusLotNo(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `qa_system`.`db_report_status` 
+            sql = @"UPDATE `db_report_status` 
              SET `dataItem.process_Lot_No` = 'dataItem.LotNo' , `dataItem.process` = dataItem.inProcStatus    WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
@@ -1124,7 +1124,7 @@ namespace RawMat.SQLFactory
 
             foreach (DataRow row in dt.Rows)
             {
-                sql = @"INSERT IGNORE INTO `qa_system`.`db_report_lot_no`(`REPORT_NO`, `LOT_NO`) VALUES ('dataItem.Report_No', 'dataItem.Lot_No');";
+                sql = @"INSERT IGNORE INTO `db_report_lot_no`(`REPORT_NO`, `LOT_NO`) VALUES ('dataItem.Report_No', 'dataItem.Lot_No');";
     
                 sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
                 sql = sql.Replace("dataItem.Lot_No", row["Lot_No"].ToString());
@@ -1142,29 +1142,29 @@ namespace RawMat.SQLFactory
         //    foreach (DataRow row in dataItem.dtFuncData.Rows)
         //    {
 
-        //        //sql = @"INSERT INTO `qa_system`.`db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
+        //        //sql = @"INSERT INTO `db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
         //        //        VALUES ('dataItem.REGULAR_NO',dataItem.CAVITY_NAME , 'dataItem.SAMPLING_NO', 'dataItem.EQUIPMENT_SERIAL_ID', 'dataItem.POINT_ORDER', 'dataItem.VALUE', 'dataItem.JUDGE', 'dataItem.EMP_ID' ,NOW() , 1);";
 
         //        sql = @"
-        //         -- อัปเดต `INUSE` ของรายการปัจจุบันให้เป็น 0
+        //         -- ?????? `INUSE` ???????????????????????? 0
         //            UPDATE `db_function_data`
         //            SET `INUSE` = 0
         //            WHERE `REPORT_NO` = 'dataItem.REPORT_NO'
         //            AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
 
-        //            -- แทรกข้อมูลใหม่โดย `COUNT` เพิ่มขึ้นทีละ 1 และ `INUSE = 1`
+        //            -- ????????????????? `COUNT` ????????????? 1 ??? `INUSE = 1`
         //            INSERT INTO `db_regular_data` (`REPORT_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `LOT_NO` , `COUNT`, `JUDGE`, `REMARK` , `EMP_ID`, `FUNCTION_DATE`, `INUSE`)
         //            SELECT 
         //                'dataItem.REPORT_NO',
         //                dataItem.CAVITY_NAME,
         //                'dataItem.SAMPLING_NO',
         //                'dataItem.LOT_NO',
-        //                COALESCE(MAX(`COUNT`), 0) + 1,  -- หาค่า COUNT สูงสุดและเพิ่ม 1
+        //                COALESCE(MAX(`COUNT`), 0) + 1,  -- ????? COUNT ?????????????? 1
         //                'dataItem.JUDGE',
         //                'dataItem.REMARK',
         //                'dataItem.EMP_ID',
         //                NOW(),
-        //                1  -- ค่าใหม่ให้ INUSE = 1
+        //                1  -- ?????????? INUSE = 1
         //            FROM `db_function_data`
         //            WHERE `REPORT_NO` = 'dataItem.REPORT_NO'
         //            AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
@@ -1177,10 +1177,10 @@ namespace RawMat.SQLFactory
         //        sql = sql.Replace("dataItem.LOT_NO", row["LOT_NO"].ToString());
         //        sql = sql.Replace("dataItem.JUDGE", row["POINT_JUDGE"].ToString());
 
-        //        // ตรวจสอบว่าคอลัมน์ CAVITY_NAME มีอยู่ใน DataTable หรือไม่
+        //        // ????????????????? CAVITY_NAME ???????? DataTable ???????
         //        if (dataItem.dtFuncData.Columns.Contains("CAVITY_NAME"))
         //        {
-        //            // ตรวจสอบว่า row["CAVITY_NAME"] เป็น null หรือว่างหรือไม่
+        //            // ?????????? row["CAVITY_NAME"] ???? null ???????????????
         //            string cavityName = row["CAVITY_NAME"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["CAVITY_NAME"].ToString())
         //                ? $"'{row["CAVITY_NAME"].ToString()}'"
         //                : "NULL";
@@ -1191,10 +1191,10 @@ namespace RawMat.SQLFactory
         //            sql = sql.Replace("dataItem.CAVITY_NAME", "NULL");
         //        }
 
-        //        // ตรวจสอบว่าคอลัมน์ CAVITY_NAME มีอยู่ใน DataTable หรือไม่
+        //        // ????????????????? CAVITY_NAME ???????? DataTable ???????
         //        if (dataItem.dtFuncData.Columns.Contains("REMARK"))
         //        {
-        //            // ตรวจสอบว่า row["CAVITY_NAME"] เป็น null หรือว่างหรือไม่
+        //            // ?????????? row["CAVITY_NAME"] ???? null ???????????????
         //            string remark = row["REMARK"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["REMARK"].ToString())
         //                ? $"'{row["REMARK"].ToString()}'"
         //                : "NULL";
@@ -1217,19 +1217,19 @@ namespace RawMat.SQLFactory
 
             foreach (DataRow row in dataItem.dtFuncData.Rows)
             {
-                // อัปเดตค่า INUSE เป็น 0 สำหรับข้อมูลเก่า
+                // ????????? INUSE ???? 0 ????????????????
                 var updateQuery = $"UPDATE `db_function_data` " +
                                   $"SET `INUSE` = 0 " +
                                   $"WHERE `REPORT_NO` = '{dataItem.Report_No}' " +
                                   $"AND `SAMPLING_NO` = '{row["SAMPLING_NO"].ToString()}';";
                 sqlList.Add(updateQuery);
 
-                // ใช้ Derived Table เพื่อแก้ Error 1093
+                // ??? Derived Table ???????? Error 1093
                 var countSubQuery = $"(SELECT COALESCE(MAX(tmp.`COUNT`), 0) + 1 FROM " +
                                     $"(SELECT `COUNT` FROM `db_function_data` WHERE `REPORT_NO` = '{dataItem.Report_No}' " +
                                     $"AND `SAMPLING_NO` = '{row["SAMPLING_NO"].ToString()}') AS tmp)";
 
-                // กำหนดค่าให้ CAVITY_NAME และ REMARK
+                // ??????????? CAVITY_NAME ??? REMARK
                 var cavityNameValue = row.Table.Columns.Contains("CAVITY_NAME") && row["CAVITY_NAME"] != DBNull.Value
                     ? $"'{row["CAVITY_NAME"].ToString().Replace("'", "''")}'"
                     : "NULL";
@@ -1237,14 +1237,14 @@ namespace RawMat.SQLFactory
                     ? $"'{row["REMARK"].ToString().Replace("'", "''")}'"
                     : "NULL";
 
-                // คำสั่ง INSERT ที่ใช้ Derived Table
+                // ?????? INSERT ?????? Derived Table
                 var insertQuery = $"INSERT INTO `db_function_data` (`REPORT_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `LOT_NO`, `COUNT`, `JUDGE`, `REMARK`, `EMP_ID`, `FUNCTION_DATE`, `INUSE`) " +
                                   $"VALUES ('{dataItem.Report_No}', {cavityNameValue}, '{row["SAMPLING_NO"].ToString()}', '{row["LOT_NO"].ToString()}', " +
                                   $"{countSubQuery}, '{row["POINT_JUDGE"].ToString()}', {remarkValue}, '{dataItem.EMP_ID}', NOW(), 1);";
                 sqlList.Add(insertQuery);
             }
 
-            // อัปเดตสถานะ Report
+            // ??????????? Report
             var updateStatusQuery = $"UPDATE `db_report_status` " +
                                     $"SET `Function_Check` = '{dataItem.inProcStatus}' " +
                                     $"WHERE `Report_No` = '{dataItem.Report_No}';";
@@ -1353,7 +1353,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateReportStatus(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `qa_system`.`db_report_status` 
+            sql = @"UPDATE `db_report_status` 
       SET `report_status` = 'dataItem.reportStatus' WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
@@ -1470,67 +1470,110 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        private string ToSqlValue(object value)
+        {
+            if (value == null || value == DBNull.Value)
+            {
+                return "NULL";
+            }
+
+            string text = value.ToString();
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "NULL";
+            }
+
+            return $"'{text.Replace("'", "''")}'";
+        }
+
+        private string ToSqlTextValue(object value)
+        {
+            string text = value == null || value == DBNull.Value ? string.Empty : value.ToString();
+            return $"'{text.Replace("'", "''")}'";
+        }
+
         public List<string> InsertDimensionData(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
+
+            if (dataItem == null || dataItem.dtgDimData == null || dataItem.dtgDimData.DataSource == null)
+            {
+                return sqlList;
+            }
+
             DataTable dt = (DataTable)dataItem.dtgDimData.DataSource;
 
             foreach (DataRow row in dt.Rows)
             {
+                string reportNo = ToSqlTextValue(dataItem.Report_No);
+                string empId = ToSqlTextValue(dataItem.EMP_ID);
 
-                //sql = @"INSERT INTO `qa_system`.`db_regular_data`(`REGULAR_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`,`EMP_ID`,`REGULAR_DATE`,`INUSE`) 
-                //        VALUES ('dataItem.REGULAR_NO',dataItem.CAVITY_NAME , 'dataItem.SAMPLING_NO', 'dataItem.EQUIPMENT_SERIAL_ID', 'dataItem.POINT_ORDER', 'dataItem.VALUE', 'dataItem.JUDGE', 'dataItem.EMP_ID' ,NOW() , 1);";
+                string samplingNo = ToSqlTextValue(row["SAMPLING_NO"]);
+                string pointOrder = ToSqlTextValue(row["POINT_ORDER"]);
+                string value = ToSqlTextValue(row["VALUE"]);
+                string judge = ToSqlTextValue(row["POINT_JUDGE"]);
+                string equipmentSerial = ToSqlTextValue(row["EQUIPMENT_SERIAL"]);
 
-                sql = @"
-                     -- อัปเดต `INUSE` ของรายการปัจจุบันให้เป็น 0
-                        UPDATE `db_dimension_data`
-                        SET `INUSE` = 0
-                        WHERE `Report_No` = 'dataItem.Report_No'
-                        AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
-                        AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
+                string cavityValue = "NULL";
 
-                        -- แทรกข้อมูลใหม่โดย `COUNT` เพิ่มขึ้นทีละ 1 และ `INUSE = 1`
-                        INSERT INTO `db_dimension_data` (`Report_No`, `CAVITY_NAME`, `SAMPLING_NO`, `COUNT`, `EQUIPMENT_SERIAL_ID`, `POINT_ORDER`, `VALUE`, `JUDGE`, `EMP_ID`, `DIMENSION_DATE`, `INUSE`)
-                        SELECT 
-                            'dataItem.Report_No',
-                            dataItem.CAVITY_NAME,
-                            'dataItem.SAMPLING_NO',
-                            COALESCE(MAX(`COUNT`), 0) + 1,  -- หาค่า COUNT สูงสุดและเพิ่ม 1
-                            'dataItem.EQUIPMENT_SERIAL_ID',
-                            'dataItem.POINT_ORDER',
-                            'dataItem.VALUE',
-                            'dataItem.JUDGE',
-                            'dataItem.EMP_ID',
-                            NOW(),
-                            1  -- ค่าใหม่ให้ INUSE = 1
-                        FROM `db_dimension_data`
-                        WHERE `Report_No` = 'dataItem.Report_No'
-                        AND `POINT_ORDER` = 'dataItem.POINT_ORDER'
-                        AND `SAMPLING_NO` = 'dataItem.SAMPLING_NO';
-                        
-                        ";
-
-                sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
-                sql = sql.Replace("dataItem.EMP_ID", dataItem.EMP_ID);
-                sql = sql.Replace("dataItem.SAMPLING_NO", row["SAMPLING_NO"].ToString());
-                sql = sql.Replace("dataItem.EQUIPMENT_SERIAL_ID", row["EQUIPMENT_SERIAL"].ToString());
-                sql = sql.Replace("dataItem.POINT_ORDER", row["POINT_ORDER"].ToString());
-                sql = sql.Replace("dataItem.VALUE", row["VALUE"].ToString());
-                sql = sql.Replace("dataItem.JUDGE", row["POINT_JUDGE"].ToString());
-
-                // ตรวจสอบว่าคอลัมน์ CAVITY_NAME มีอยู่ใน DataTable หรือไม่
                 if (dt.Columns.Contains("CAVITY_NAME"))
                 {
-                    // ตรวจสอบว่า row["CAVITY_NAME"] เป็น null หรือว่างหรือไม่
-                    string cavityName = row["CAVITY_NAME"] != DBNull.Value && !string.IsNullOrWhiteSpace(row["CAVITY_NAME"].ToString())
-                        ? $"'{row["CAVITY_NAME"].ToString()}'"
-                        : "NULL";
-                    sql = sql.Replace("dataItem.CAVITY_NAME", cavityName);
+                    cavityValue = ToSqlValue(row["CAVITY_NAME"]);
+                }
+
+                string cavityWhere;
+
+                if (cavityValue == "NULL")
+                {
+                    cavityWhere = "(`CAVITY_NAME` IS NULL OR `CAVITY_NAME` = '')";
                 }
                 else
                 {
-                    sql = sql.Replace("dataItem.CAVITY_NAME", "NULL");
+                    cavityWhere = $"`CAVITY_NAME` = {cavityValue}";
                 }
+
+                sql = $@"
+            UPDATE `db_dimension_data`
+            SET `INUSE` = 0
+            WHERE `Report_No` = {reportNo}
+              AND {cavityWhere}
+              AND `POINT_ORDER` = {pointOrder}
+              AND `SAMPLING_NO` = {samplingNo};
+
+            INSERT INTO `db_dimension_data`
+            (
+                `Report_No`,
+                `CAVITY_NAME`,
+                `SAMPLING_NO`,
+                `COUNT`,
+                `EQUIPMENT_SERIAL_ID`,
+                `POINT_ORDER`,
+                `VALUE`,
+                `JUDGE`,
+                `EMP_ID`,
+                `DIMENSION_DATE`,
+                `INUSE`
+            )
+            SELECT
+                {reportNo},
+                {cavityValue},
+                {samplingNo},
+                COALESCE(MAX(`COUNT`), 0) + 1,
+                {equipmentSerial},
+                {pointOrder},
+                {value},
+                {judge},
+                {empId},
+                NOW(),
+                1
+            FROM `db_dimension_data`
+            WHERE `Report_No` = {reportNo}
+              AND {cavityWhere}
+              AND `POINT_ORDER` = {pointOrder}
+              AND `SAMPLING_NO` = {samplingNo};
+        ";
+
                 sqlList.Add(sql);
             }
 
@@ -1576,28 +1619,28 @@ namespace RawMat.SQLFactory
         {
             //var compiler = new MySqlCompiler();
             var queries = new List<string>();
-            var setUpdateInuse = $"UPDATE `qa_system`.`db_inspection_data` SET `INUSE` = 0 WHERE `REPORT_NO` = '{dataItem.Report_No}'";
+            var setUpdateInuse = $"UPDATE `db_inspection_data` SET `INUSE` = 0 WHERE `REPORT_NO` = '{dataItem.Report_No}'";
             queries.Add(setUpdateInuse);
 
-            // ส่วน SET @nextCount"
-            // สร้าง raw SQL โดยฝังค่าจริงเข้าไป
-            var setCountQuery = $"SET @nextCount = (SELECT COALESCE(MAX(`COUNT`), 0) + 1 FROM `qa_system`.`db_inspection_data` WHERE `REPORT_NO` = '{dataItem.Report_No}')";
+            // ???? SET @nextCount"
+            // ????? raw SQL ???????????????????
+            var setCountQuery = $"SET @nextCount = (SELECT COALESCE(MAX(`COUNT`), 0) + 1 FROM `db_inspection_data` WHERE `REPORT_NO` = '{dataItem.Report_No}')";
             queries.Add(setCountQuery);
 
-            // ส่วน INSERT
-            // สร้าง raw SQL โดยฝังค่าจริงเข้าไป
+            // ???? INSERT
+            // ????? raw SQL ???????????????????
             var detailJudgeValue = string.IsNullOrEmpty(dataItem.data_detail) ? "NULL" : $"'{dataItem.data_detail.Replace("'", "''")}'";
-            var insertQuery = $"INSERT INTO `qa_system`.`db_inspection_data` (`REPORT_NO`, `COUNT`, `REMARK`, `JUDGE`, `EMP_ID` , `INSPECTION_DATA_DATE`, `INUSE`) " +
+            var insertQuery = $"INSERT INTO `db_inspection_data` (`REPORT_NO`, `COUNT`, `REMARK`, `JUDGE`, `EMP_ID` , `INSPECTION_DATA_DATE`, `INUSE`) " +
                               $"VALUES ('{dataItem.Report_No}', @nextCount, {detailJudgeValue}, '{dataItem.judge}', '{dataItem.EMP_ID}' , NOW() , 1 )";
             queries.Add(insertQuery);
 
-            // อัปเดตสถานะ Report
+            // ??????????? Report
             var updateStatusQuery = $"UPDATE `db_report_status` " +
                                 $"SET `inspection_data_Check` = '{dataItem.judge}' , `report_status` = '{dataItem.judge}' " + 
                             $"WHERE `Report_No` = '{dataItem.Report_No}'";
             queries.Add(updateStatusQuery);
 
-            // รวม queries เป็น string เดียว
+            // ??? queries ???? string ?????
             var sql = string.Join(";\n", queries);
             return sql;
         }
@@ -1705,7 +1748,7 @@ namespace RawMat.SQLFactory
 
         public string UpdateInspQtyAppear(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `qa_system`.`db_receive_mat` 
+            sql = @"UPDATE `db_receive_mat` 
                     SET `Inspection_Qty` = dataItem.inspQty WHERE `Report_No` = 'dataItem.Report_No'";
 
             sql = sql.Replace("dataItem.inspQty", dataItem.inspQty);
@@ -1769,7 +1812,7 @@ namespace RawMat.SQLFactory
         public string InsertAppearData(QAdataProperty dataItem)
         {
 
-            sql = @"INSERT INTO `qa_system`.`db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`,`QTY_OK`,`QTY_NG`, `EMP_ID` , `JUDGE` , `INSPECTION_DATA_DATE`, `INUSE`) " +
+            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`,`QTY_OK`,`QTY_NG`, `EMP_ID` , `JUDGE` , `INSPECTION_DATA_DATE`, `INUSE`) " +
             $"VALUES ('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{dataItem.QTY_SELECT}', '{dataItem.QTY_OK}', '{dataItem.QTY_NG}', '{dataItem.EMP_ID}' , '{dataItem.judge}', NOW() , 1 )";
 
             return sql;
@@ -1785,7 +1828,7 @@ namespace RawMat.SQLFactory
             foreach (DataRow row in dt.Rows)
             {
 
-                sql = $"INSERT INTO `qa_system`.`db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `APPEARANCE_DATE`, `UPDATETIME`) " +
+                sql = $"INSERT INTO `db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `APPEARANCE_DATE`, `UPDATETIME`) " +
                       $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{row["NG_DETAIL"].ToString()}', NOW(), NOW())";
 
                 sqlList.Add(sql);

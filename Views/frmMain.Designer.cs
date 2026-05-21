@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.panelHeader2 = new System.Windows.Forms.Panel();
+            this.bt_refresh = new Bunifu.Framework.UI.BunifuTileButton();
             this.bt_status_dimension_pending = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bt_status_function_pending = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bt_appear_pending = new Bunifu.Framework.UI.BunifuFlatButton();
@@ -38,7 +39,6 @@
             this.bt_status_regular_pending = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bt_status_rec_pending = new Bunifu.Framework.UI.BunifuFlatButton();
             this.bt_setting = new Bunifu.Framework.UI.BunifuTileButton();
-            this.bt_refresh = new Bunifu.Framework.UI.BunifuTileButton();
             this.panelHeader1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panelLogin = new System.Windows.Forms.Panel();
@@ -65,10 +65,32 @@
             this.panelHeader2.Controls.Add(this.bt_status_regular_pending);
             this.panelHeader2.Controls.Add(this.bt_status_rec_pending);
             this.panelHeader2.Controls.Add(this.bt_setting);
-            this.panelHeader2.Location = new System.Drawing.Point(150, 50);
+            this.panelHeader2.Location = new System.Drawing.Point(200, 62);
+            this.panelHeader2.Margin = new System.Windows.Forms.Padding(4);
             this.panelHeader2.Name = "panelHeader2";
-            this.panelHeader2.Size = new System.Drawing.Size(1116, 112);
+            this.panelHeader2.Size = new System.Drawing.Size(1488, 138);
             this.panelHeader2.TabIndex = 7;
+            // 
+            // bt_refresh
+            // 
+            this.bt_refresh.BackColor = System.Drawing.Color.LightPink;
+            this.bt_refresh.color = System.Drawing.Color.LightPink;
+            this.bt_refresh.colorActive = System.Drawing.Color.HotPink;
+            this.bt_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.bt_refresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_refresh.ForeColor = System.Drawing.Color.DarkRed;
+            this.bt_refresh.Image = global::RawMat.Properties.Resources.refresh;
+            this.bt_refresh.ImagePosition = 10;
+            this.bt_refresh.ImageZoom = 40;
+            this.bt_refresh.LabelPosition = 15;
+            this.bt_refresh.LabelText = "Refresh";
+            this.bt_refresh.Location = new System.Drawing.Point(1416, 66);
+            this.bt_refresh.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
+            this.bt_refresh.Name = "bt_refresh";
+            this.bt_refresh.Size = new System.Drawing.Size(61, 62);
+            this.bt_refresh.TabIndex = 32;
+            this.bt_refresh.Visible = false;
+            this.bt_refresh.Click += new System.EventHandler(this.bt_refresh_Click);
             // 
             // bt_status_dimension_pending
             // 
@@ -92,14 +114,14 @@
             this.bt_status_dimension_pending.IconVisible = true;
             this.bt_status_dimension_pending.IconZoom = 40D;
             this.bt_status_dimension_pending.IsTab = false;
-            this.bt_status_dimension_pending.Location = new System.Drawing.Point(730, 4);
+            this.bt_status_dimension_pending.Location = new System.Drawing.Point(973, 5);
             this.bt_status_dimension_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_dimension_pending.Name = "bt_status_dimension_pending";
             this.bt_status_dimension_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_dimension_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_dimension_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_dimension_pending.selected = false;
-            this.bt_status_dimension_pending.Size = new System.Drawing.Size(168, 100);
+            this.bt_status_dimension_pending.Size = new System.Drawing.Size(224, 123);
             this.bt_status_dimension_pending.TabIndex = 40;
             this.bt_status_dimension_pending.Text = "Dimension Pending \n0 Report";
             this.bt_status_dimension_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -129,14 +151,14 @@
             this.bt_status_function_pending.IconVisible = true;
             this.bt_status_function_pending.IconZoom = 40D;
             this.bt_status_function_pending.IsTab = false;
-            this.bt_status_function_pending.Location = new System.Drawing.Point(593, 4);
+            this.bt_status_function_pending.Location = new System.Drawing.Point(791, 5);
             this.bt_status_function_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_function_pending.Name = "bt_status_function_pending";
             this.bt_status_function_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_function_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_function_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_function_pending.selected = false;
-            this.bt_status_function_pending.Size = new System.Drawing.Size(146, 100);
+            this.bt_status_function_pending.Size = new System.Drawing.Size(195, 123);
             this.bt_status_function_pending.TabIndex = 35;
             this.bt_status_function_pending.Text = "Function Pending \n0 Report";
             this.bt_status_function_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -166,14 +188,14 @@
             this.bt_appear_pending.IconVisible = true;
             this.bt_appear_pending.IconZoom = 40D;
             this.bt_appear_pending.IsTab = false;
-            this.bt_appear_pending.Location = new System.Drawing.Point(898, 4);
+            this.bt_appear_pending.Location = new System.Drawing.Point(1197, 5);
             this.bt_appear_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_appear_pending.Name = "bt_appear_pending";
             this.bt_appear_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_appear_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_appear_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_appear_pending.selected = false;
-            this.bt_appear_pending.Size = new System.Drawing.Size(159, 100);
+            this.bt_appear_pending.Size = new System.Drawing.Size(212, 123);
             this.bt_appear_pending.TabIndex = 39;
             this.bt_appear_pending.Text = "Appearance Pending \n0 report";
             this.bt_appear_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -203,14 +225,14 @@
             this.bt_status_data_pending.IconVisible = true;
             this.bt_status_data_pending.IconZoom = 40D;
             this.bt_status_data_pending.IsTab = false;
-            this.bt_status_data_pending.Location = new System.Drawing.Point(436, 4);
+            this.bt_status_data_pending.Location = new System.Drawing.Point(581, 5);
             this.bt_status_data_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_data_pending.Name = "bt_status_data_pending";
             this.bt_status_data_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_data_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_data_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_data_pending.selected = false;
-            this.bt_status_data_pending.Size = new System.Drawing.Size(157, 100);
+            this.bt_status_data_pending.Size = new System.Drawing.Size(209, 123);
             this.bt_status_data_pending.TabIndex = 38;
             this.bt_status_data_pending.Text = "Insp. Data \nPending \n0 report";
             this.bt_status_data_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -240,14 +262,14 @@
             this.bt_status_packing_check_pending.IconVisible = true;
             this.bt_status_packing_check_pending.IconZoom = 40D;
             this.bt_status_packing_check_pending.IsTab = false;
-            this.bt_status_packing_check_pending.Location = new System.Drawing.Point(137, 4);
+            this.bt_status_packing_check_pending.Location = new System.Drawing.Point(183, 5);
             this.bt_status_packing_check_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_packing_check_pending.Name = "bt_status_packing_check_pending";
             this.bt_status_packing_check_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_packing_check_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_packing_check_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_packing_check_pending.selected = false;
-            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(152, 100);
+            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(203, 123);
             this.bt_status_packing_check_pending.TabIndex = 37;
             this.bt_status_packing_check_pending.Text = "Packing Check Pending \n0 report";
             this.bt_status_packing_check_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -277,14 +299,14 @@
             this.bt_status_regular_pending.IconVisible = true;
             this.bt_status_regular_pending.IconZoom = 40D;
             this.bt_status_regular_pending.IsTab = false;
-            this.bt_status_regular_pending.Location = new System.Drawing.Point(289, 4);
+            this.bt_status_regular_pending.Location = new System.Drawing.Point(385, 5);
             this.bt_status_regular_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_regular_pending.Name = "bt_status_regular_pending";
             this.bt_status_regular_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_regular_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_regular_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_regular_pending.selected = false;
-            this.bt_status_regular_pending.Size = new System.Drawing.Size(147, 100);
+            this.bt_status_regular_pending.Size = new System.Drawing.Size(196, 123);
             this.bt_status_regular_pending.TabIndex = 36;
             this.bt_status_regular_pending.Text = "Regular Pending \n0 report";
             this.bt_status_regular_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -314,14 +336,14 @@
             this.bt_status_rec_pending.IconVisible = true;
             this.bt_status_rec_pending.IconZoom = 40D;
             this.bt_status_rec_pending.IsTab = false;
-            this.bt_status_rec_pending.Location = new System.Drawing.Point(3, 4);
+            this.bt_status_rec_pending.Location = new System.Drawing.Point(4, 5);
             this.bt_status_rec_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_rec_pending.Name = "bt_status_rec_pending";
             this.bt_status_rec_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_rec_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_rec_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_rec_pending.selected = false;
-            this.bt_status_rec_pending.Size = new System.Drawing.Size(148, 100);
+            this.bt_status_rec_pending.Size = new System.Drawing.Size(197, 123);
             this.bt_status_rec_pending.TabIndex = 17;
             this.bt_status_rec_pending.Text = "Receive WH \nPending \n0 Report";
             this.bt_status_rec_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -342,41 +364,22 @@
             this.bt_setting.ImageZoom = 40;
             this.bt_setting.LabelPosition = 15;
             this.bt_setting.LabelText = "Settings";
-            this.bt_setting.Location = new System.Drawing.Point(1062, 5);
-            this.bt_setting.Margin = new System.Windows.Forms.Padding(5);
+            this.bt_setting.Location = new System.Drawing.Point(1416, 6);
+            this.bt_setting.Margin = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.bt_setting.Name = "bt_setting";
-            this.bt_setting.Size = new System.Drawing.Size(46, 50);
+            this.bt_setting.Size = new System.Drawing.Size(61, 62);
             this.bt_setting.TabIndex = 34;
             this.bt_setting.Visible = false;
-            // 
-            // bt_refresh
-            // 
-            this.bt_refresh.BackColor = System.Drawing.Color.LightPink;
-            this.bt_refresh.color = System.Drawing.Color.LightPink;
-            this.bt_refresh.colorActive = System.Drawing.Color.HotPink;
-            this.bt_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.bt_refresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_refresh.ForeColor = System.Drawing.Color.DarkRed;
-            this.bt_refresh.Image = global::RawMat.Properties.Resources.refresh;
-            this.bt_refresh.ImagePosition = 10;
-            this.bt_refresh.ImageZoom = 40;
-            this.bt_refresh.LabelPosition = 15;
-            this.bt_refresh.LabelText = "Refresh";
-            this.bt_refresh.Location = new System.Drawing.Point(1062, 54);
-            this.bt_refresh.Margin = new System.Windows.Forms.Padding(5);
-            this.bt_refresh.Name = "bt_refresh";
-            this.bt_refresh.Size = new System.Drawing.Size(46, 50);
-            this.bt_refresh.TabIndex = 32;
-            this.bt_refresh.Visible = false;
-            this.bt_refresh.Click += new System.EventHandler(this.bt_refresh_Click);
+            this.bt_setting.Click += new System.EventHandler(this.bt_setting_Click);
             // 
             // panelHeader1
             // 
             this.panelHeader1.BackColor = System.Drawing.Color.LightPink;
             this.panelHeader1.Controls.Add(this.label1);
-            this.panelHeader1.Location = new System.Drawing.Point(150, 0);
+            this.panelHeader1.Location = new System.Drawing.Point(200, 0);
+            this.panelHeader1.Margin = new System.Windows.Forms.Padding(4);
             this.panelHeader1.Name = "panelHeader1";
-            this.panelHeader1.Size = new System.Drawing.Size(969, 51);
+            this.panelHeader1.Size = new System.Drawing.Size(1292, 63);
             this.panelHeader1.TabIndex = 11;
             // 
             // label1
@@ -387,9 +390,10 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.DarkRed;
-            this.label1.Location = new System.Drawing.Point(264, 0);
+            this.label1.Location = new System.Drawing.Point(352, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(624, 33);
+            this.label1.Size = new System.Drawing.Size(780, 41);
             this.label1.TabIndex = 0;
             this.label1.Text = "MATERIAL RECEIVING INSPECTION SYSTEM";
             // 
@@ -397,50 +401,56 @@
             // 
             this.panelLogin.BackColor = System.Drawing.Color.LightPink;
             this.panelLogin.Location = new System.Drawing.Point(0, 0);
+            this.panelLogin.Margin = new System.Windows.Forms.Padding(4);
             this.panelLogin.Name = "panelLogin";
-            this.panelLogin.Size = new System.Drawing.Size(150, 240);
+            this.panelLogin.Size = new System.Drawing.Size(200, 295);
             this.panelLogin.TabIndex = 14;
             // 
             // bunifuProgressBar1
             // 
             this.bunifuProgressBar1.BackColor = System.Drawing.Color.Silver;
             this.bunifuProgressBar1.BorderRadius = 5;
-            this.bunifuProgressBar1.Location = new System.Drawing.Point(-2, 901);
+            this.bunifuProgressBar1.Location = new System.Drawing.Point(-3, 1109);
+            this.bunifuProgressBar1.Margin = new System.Windows.Forms.Padding(5);
             this.bunifuProgressBar1.MaximumValue = 100;
             this.bunifuProgressBar1.Name = "bunifuProgressBar1";
             this.bunifuProgressBar1.ProgressColor = System.Drawing.Color.Teal;
-            this.bunifuProgressBar1.Size = new System.Drawing.Size(1268, 22);
+            this.bunifuProgressBar1.Size = new System.Drawing.Size(1691, 27);
             this.bunifuProgressBar1.TabIndex = 15;
             this.bunifuProgressBar1.Value = 0;
             // 
             // panelWH
             // 
-            this.panelWH.Location = new System.Drawing.Point(0, 322);
+            this.panelWH.Location = new System.Drawing.Point(0, 396);
+            this.panelWH.Margin = new System.Windows.Forms.Padding(4);
             this.panelWH.Name = "panelWH";
-            this.panelWH.Size = new System.Drawing.Size(150, 140);
+            this.panelWH.Size = new System.Drawing.Size(200, 172);
             this.panelWH.TabIndex = 16;
             // 
             // panelMenu
             // 
-            this.panelMenu.Location = new System.Drawing.Point(0, 468);
+            this.panelMenu.Location = new System.Drawing.Point(0, 576);
+            this.panelMenu.Margin = new System.Windows.Forms.Padding(4);
             this.panelMenu.Name = "panelMenu";
-            this.panelMenu.Size = new System.Drawing.Size(150, 430);
+            this.panelMenu.Size = new System.Drawing.Size(200, 529);
             this.panelMenu.TabIndex = 17;
             // 
             // panelMain
             // 
             this.panelMain.BackColor = System.Drawing.Color.Pink;
-            this.panelMain.Location = new System.Drawing.Point(150, 162);
+            this.panelMain.Location = new System.Drawing.Point(200, 199);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(4);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Size = new System.Drawing.Size(1115, 736);
+            this.panelMain.Size = new System.Drawing.Size(1487, 906);
             this.panelMain.TabIndex = 18;
             // 
             // panelHome
             // 
             this.panelHome.Controls.Add(this.bt_home);
-            this.panelHome.Location = new System.Drawing.Point(1116, 0);
+            this.panelHome.Location = new System.Drawing.Point(1488, 0);
+            this.panelHome.Margin = new System.Windows.Forms.Padding(4);
             this.panelHome.Name = "panelHome";
-            this.panelHome.Size = new System.Drawing.Size(147, 51);
+            this.panelHome.Size = new System.Drawing.Size(196, 63);
             this.panelHome.TabIndex = 17;
             // 
             // bt_home
@@ -457,18 +467,18 @@
             this.bt_home.LabelPosition = 20;
             this.bt_home.LabelText = "Home";
             this.bt_home.Location = new System.Drawing.Point(0, 0);
-            this.bt_home.Margin = new System.Windows.Forms.Padding(6);
+            this.bt_home.Margin = new System.Windows.Forms.Padding(8, 7, 8, 7);
             this.bt_home.Name = "bt_home";
-            this.bt_home.Size = new System.Drawing.Size(147, 51);
+            this.bt_home.Size = new System.Drawing.Size(196, 63);
             this.bt_home.TabIndex = 24;
             this.bt_home.Click += new System.EventHandler(this.bt_home_Click);
             // 
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(1264, 921);
+            this.ClientSize = new System.Drawing.Size(1685, 1134);
             this.Controls.Add(this.panelHome);
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelMenu);
@@ -479,7 +489,7 @@
             this.Controls.Add(this.panelHeader2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimizeBox = false;
             this.Name = "frmMain";
             this.Text = "Material Receiving Inspection System";

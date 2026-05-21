@@ -465,6 +465,8 @@ namespace RawMat.Views.RegularCheck
             // ตรวจสอบว่าไม่มี Cell ว่าง
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
+                if (row.IsNewRow) continue;
+
                 foreach (DataGridViewCell cell in row.Cells)
                 {
                     if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
@@ -473,34 +475,44 @@ namespace RawMat.Views.RegularCheck
                         return;
                     }
                 }
-
             }
 
-            // คำนวณผลรวมของ QTY
+            // คำนวณผลรวมของ SAMPLING_QTY
             int totalQty = 0;
+
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
+                if (row.IsNewRow) continue;
 
                 if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty))
                 {
-                    totalQty = qty;
+                    totalQty += qty; // จุดที่ผิด เดิมใช้ = ทำให้ค่าถูกทับ
                 }
-
+                else
+                {
+                    MessageBox.Show("SAMPLING_QTY ต้องเป็นตัวเลขเท่านั้น!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
             }
 
-            // ตรวจสอบว่าผลรวมไม่เกิน 10
-            if (totalQty != (Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)))
+            int expectedQty = Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY);
+
+            // ตรวจสอบว่าผลรวมตรงกับที่ต้องการ
+            if (totalQty != expectedQty)
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    $"ผลรวมของ QTY ต้องได้ {expectedQty}  (ปัจจุบัน: {totalQty})",
+                    "Warning",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
                 return;
             }
 
-            // ล็อก dtg_data ไม่ให้แก้ไขข้อมูล
+            // ล็อก dtg_cavity ไม่ให้แก้ไขข้อมูล
             dtg_cavity.ReadOnly = true;
 
-
             GenerateDataTableRegular(dtg_cavity, 0);
-
         }
 
         // ฟังก์ชันแสดงเฉพาะแถวที่เป็น POINT_ORDER ของหน้าปัจจุบัน
