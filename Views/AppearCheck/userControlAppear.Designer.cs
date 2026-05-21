@@ -60,6 +60,7 @@
             this.bt_select_packing_size_appear = new System.Windows.Forms.Button();
             this.dtg_packing_size_appear = new System.Windows.Forms.DataGridView();
             this.gb_input = new System.Windows.Forms.GroupBox();
+            this.lb_currentTask = new System.Windows.Forms.Label();
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
@@ -217,7 +218,7 @@
             this.dtg_show_appear.EnableHeadersVisualStyles = false;
             this.dtg_show_appear.HeaderBgColor = System.Drawing.Color.SeaGreen;
             this.dtg_show_appear.HeaderForeColor = System.Drawing.Color.Cyan;
-            this.dtg_show_appear.Location = new System.Drawing.Point(6, 19);
+            this.dtg_show_appear.Location = new System.Drawing.Point(6, 43);
             this.dtg_show_appear.Name = "dtg_show_appear";
             this.dtg_show_appear.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -232,7 +233,7 @@
             this.dtg_show_appear.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtg_show_appear.RowTemplate.Height = 41;
             this.dtg_show_appear.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dtg_show_appear.Size = new System.Drawing.Size(684, 287);
+            this.dtg_show_appear.Size = new System.Drawing.Size(684, 263);
             this.dtg_show_appear.TabIndex = 81;
             this.dtg_show_appear.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dtg_show_appear_DataBindingComplete);
             // 
@@ -254,9 +255,9 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(6, 14);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(170, 20);
+            this.label2.Size = new System.Drawing.Size(207, 20);
             this.label2.TabIndex = 87;
-            this.label2.Text = "จำนวน QTY NG ที่เลือก : ";
+            this.label2.Text = "ระบุอาการเสียแล้ว: 0 / 0 ชิ้น";
             // 
             // dtg_ngMode
             // 
@@ -286,7 +287,7 @@
             // NG_MODE
             // 
             this.NG_MODE.HeaderText = "NG MODE";
-            this.NG_MODE.Name = "NG_MODE";
+            this.NG_MODE.Name = "NG_DETAIL";
             this.NG_MODE.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // gb_pack
@@ -300,7 +301,7 @@
             this.gb_pack.Size = new System.Drawing.Size(703, 162);
             this.gb_pack.TabIndex = 86;
             this.gb_pack.TabStop = false;
-            this.gb_pack.Text = "เลือก pack";
+            this.gb_pack.Text = "เลือกชุดตรวจ";
             // 
             // bt_Clear
             // 
@@ -309,7 +310,7 @@
             this.bt_Clear.Name = "bt_Clear";
             this.bt_Clear.Size = new System.Drawing.Size(126, 49);
             this.bt_Clear.TabIndex = 89;
-            this.bt_Clear.Text = "CLEAR";
+            this.bt_Clear.Text = "เลือกชุดอื่น";
             this.bt_Clear.UseVisualStyleBackColor = true;
             this.bt_Clear.Click += new System.EventHandler(this.bt_Clear_Click);
             // 
@@ -319,9 +320,9 @@
             this.label3.Font = new System.Drawing.Font("Tahoma", 10.25F);
             this.label3.Location = new System.Drawing.Point(6, 16);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(136, 17);
+            this.label3.Size = new System.Drawing.Size(227, 17);
             this.label3.TabIndex = 88;
-            this.label3.Text = "จำนวน QTY ที่เหลือ : ";
+            this.label3.Text = "เลือกชุดที่มีจำนวนเหลือตรวจมากกว่า 0";
             // 
             // bt_select_packing_size_appear
             // 
@@ -330,7 +331,7 @@
             this.bt_select_packing_size_appear.Name = "bt_select_packing_size_appear";
             this.bt_select_packing_size_appear.Size = new System.Drawing.Size(126, 49);
             this.bt_select_packing_size_appear.TabIndex = 1;
-            this.bt_select_packing_size_appear.Text = "เลือกทำ";
+            this.bt_select_packing_size_appear.Text = "เริ่มตรวจ";
             this.bt_select_packing_size_appear.UseVisualStyleBackColor = true;
             this.bt_select_packing_size_appear.Click += new System.EventHandler(this.bt_Select_Click);
             // 
@@ -370,6 +371,7 @@
             // 
             // gb_input
             // 
+            this.gb_input.Controls.Add(this.lb_currentTask);
             this.gb_input.Controls.Add(this.tb_record);
             this.gb_input.Controls.Add(this.dtg_show_appear);
             this.gb_input.Enabled = false;
@@ -378,7 +380,17 @@
             this.gb_input.Size = new System.Drawing.Size(709, 377);
             this.gb_input.TabIndex = 87;
             this.gb_input.TabStop = false;
-            this.gb_input.Text = "งานที่ input";
+            this.gb_input.Text = "กรอกผลตรวจ";
+            // 
+            // lb_currentTask
+            // 
+            this.lb_currentTask.AutoSize = true;
+            this.lb_currentTask.Font = new System.Drawing.Font("Tahoma", 10.25F, System.Drawing.FontStyle.Bold);
+            this.lb_currentTask.Location = new System.Drawing.Point(6, 19);
+            this.lb_currentTask.Name = "lb_currentTask";
+            this.lb_currentTask.Size = new System.Drawing.Size(231, 17);
+            this.lb_currentTask.TabIndex = 83;
+            this.lb_currentTask.Text = "เลือกชุดตรวจเพื่อเริ่มกรอกผล";
             // 
             // tb_record
             // 
@@ -386,7 +398,7 @@
             this.tb_record.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
             this.tb_record.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.tb_record.BorderRadius = 0;
-            this.tb_record.ButtonText = "Record Data";
+            this.tb_record.ButtonText = "บันทึกผล";
             this.tb_record.Cursor = System.Windows.Forms.Cursors.Hand;
             this.tb_record.DisabledColor = System.Drawing.Color.Gray;
             this.tb_record.Enabled = false;
@@ -412,7 +424,7 @@
             this.tb_record.selected = false;
             this.tb_record.Size = new System.Drawing.Size(172, 58);
             this.tb_record.TabIndex = 82;
-            this.tb_record.Text = "Record Data";
+            this.tb_record.Text = "บันทึกผล";
             this.tb_record.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.tb_record.Textcolor = System.Drawing.Color.Lavender;
             this.tb_record.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -480,6 +492,7 @@
         private System.Windows.Forms.Button bt_select_packing_size_appear;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox gb_input;
+        private System.Windows.Forms.Label lb_currentTask;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;
         private System.Windows.Forms.Button bt_Clear;
         private System.Windows.Forms.DataGridViewTextBoxColumn QTY_NG;
