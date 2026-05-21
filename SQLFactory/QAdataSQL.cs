@@ -1829,7 +1829,7 @@ namespace RawMat.SQLFactory
             {
 
                 sql = $"INSERT INTO `qa_system`.`db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{row["NG_DETAIL"].ToString()}', NOW(), NOW())";
+                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{row["NG_MODE"].ToString()}', NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;
