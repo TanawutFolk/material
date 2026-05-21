@@ -103,7 +103,7 @@
             this.bt_status_dimension_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_dimension_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_dimension_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_dimension_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_dimension_pending.Iconimage = null;
             this.bt_status_dimension_pending.Iconimage_right = null;
             this.bt_status_dimension_pending.Iconimage_right_Selected = null;
             this.bt_status_dimension_pending.Iconimage_Selected = null;
@@ -124,7 +124,7 @@
             this.bt_status_dimension_pending.Size = new System.Drawing.Size(224, 123);
             this.bt_status_dimension_pending.TabIndex = 40;
             this.bt_status_dimension_pending.Text = "Dimension Pending \n0 Report";
-            this.bt_status_dimension_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_dimension_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_dimension_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_dimension_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_dimension_pending.Click += new System.EventHandler(this.bt_status_dimension_pending_Click);
@@ -140,7 +140,7 @@
             this.bt_status_function_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_function_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_function_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_function_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_function_pending.Iconimage = null;
             this.bt_status_function_pending.Iconimage_right = null;
             this.bt_status_function_pending.Iconimage_right_Selected = null;
             this.bt_status_function_pending.Iconimage_Selected = null;
@@ -161,7 +161,7 @@
             this.bt_status_function_pending.Size = new System.Drawing.Size(195, 123);
             this.bt_status_function_pending.TabIndex = 35;
             this.bt_status_function_pending.Text = "Function Pending \n0 Report";
-            this.bt_status_function_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_function_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_function_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_function_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_function_pending.Click += new System.EventHandler(this.bt_status_function_pending_Click);
@@ -177,7 +177,7 @@
             this.bt_appear_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_appear_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_appear_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_appear_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_appear_pending.Iconimage = null;
             this.bt_appear_pending.Iconimage_right = null;
             this.bt_appear_pending.Iconimage_right_Selected = null;
             this.bt_appear_pending.Iconimage_Selected = null;
@@ -198,7 +198,7 @@
             this.bt_appear_pending.Size = new System.Drawing.Size(212, 123);
             this.bt_appear_pending.TabIndex = 39;
             this.bt_appear_pending.Text = "Appearance Pending \n0 report";
-            this.bt_appear_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_appear_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_appear_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_appear_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_appear_pending.Click += new System.EventHandler(this.bt_appear_pending_Click);
@@ -214,7 +214,7 @@
             this.bt_status_data_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_data_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_data_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_data_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_data_pending.Iconimage = null;
             this.bt_status_data_pending.Iconimage_right = null;
             this.bt_status_data_pending.Iconimage_right_Selected = null;
             this.bt_status_data_pending.Iconimage_Selected = null;
@@ -235,7 +235,7 @@
             this.bt_status_data_pending.Size = new System.Drawing.Size(209, 123);
             this.bt_status_data_pending.TabIndex = 38;
             this.bt_status_data_pending.Text = "Insp. Data \nPending \n0 report";
-            this.bt_status_data_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_data_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_data_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_data_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_data_pending.Click += new System.EventHandler(this.bt_status_data_pending_Click);
@@ -251,7 +251,7 @@
             this.bt_status_packing_check_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_packing_check_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_packing_check_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_packing_check_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_packing_check_pending.Iconimage = null;
             this.bt_status_packing_check_pending.Iconimage_right = null;
             this.bt_status_packing_check_pending.Iconimage_right_Selected = null;
             this.bt_status_packing_check_pending.Iconimage_Selected = null;
@@ -272,7 +272,7 @@
             this.bt_status_packing_check_pending.Size = new System.Drawing.Size(203, 123);
             this.bt_status_packing_check_pending.TabIndex = 37;
             this.bt_status_packing_check_pending.Text = "Packing Check Pending \n0 report";
-            this.bt_status_packing_check_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_packing_check_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_packing_check_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_packing_check_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_packing_check_pending.Click += new System.EventHandler(this.bt_status_packing_check_pending_Click);
@@ -288,7 +288,7 @@
             this.bt_status_regular_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_regular_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_regular_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_regular_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_regular_pending.Iconimage = null;
             this.bt_status_regular_pending.Iconimage_right = null;
             this.bt_status_regular_pending.Iconimage_right_Selected = null;
             this.bt_status_regular_pending.Iconimage_Selected = null;
@@ -309,7 +309,7 @@
             this.bt_status_regular_pending.Size = new System.Drawing.Size(196, 123);
             this.bt_status_regular_pending.TabIndex = 36;
             this.bt_status_regular_pending.Text = "Regular Pending \n0 report";
-            this.bt_status_regular_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_regular_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_regular_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_regular_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_regular_pending.Click += new System.EventHandler(this.bt_status_regular_pending_Click);
@@ -325,7 +325,7 @@
             this.bt_status_rec_pending.DisabledColor = System.Drawing.Color.Gray;
             this.bt_status_rec_pending.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_rec_pending.Iconcolor = System.Drawing.Color.Transparent;
-            this.bt_status_rec_pending.Iconimage = global::RawMat.Properties.Resources.report_approve;
+            this.bt_status_rec_pending.Iconimage = null;
             this.bt_status_rec_pending.Iconimage_right = null;
             this.bt_status_rec_pending.Iconimage_right_Selected = null;
             this.bt_status_rec_pending.Iconimage_Selected = null;
@@ -346,7 +346,7 @@
             this.bt_status_rec_pending.Size = new System.Drawing.Size(197, 123);
             this.bt_status_rec_pending.TabIndex = 17;
             this.bt_status_rec_pending.Text = "Receive WH \nPending \n0 Report";
-            this.bt_status_rec_pending.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.bt_status_rec_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_rec_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
             this.bt_status_rec_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_rec_pending.Click += new System.EventHandler(this.bt_status_rec_pending_Click);
