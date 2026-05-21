@@ -287,7 +287,7 @@
             // NG_MODE
             // 
             this.NG_MODE.HeaderText = "NG MODE";
-            this.NG_MODE.Name = "NG_MODE";
+            this.NG_MODE.Name = "NG_DETAIL";
             this.NG_MODE.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // gb_pack
