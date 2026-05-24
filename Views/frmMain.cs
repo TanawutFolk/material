@@ -579,19 +579,19 @@ namespace RawMat
             SetPendingButtonText(bt_status_rec_pending, "Receive WH", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Packing_Check";
-            SetPendingButtonText(bt_status_packing_check_pending, "Packing\nCheck", qaCon.CountProcessStatusPending(qaProp));
+            SetPendingButtonText(bt_status_packing_check_pending, "Packing Check", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Regular_Check";
-            SetPendingButtonText(bt_status_regular_pending, "Regular\nCheck", qaCon.CountProcessStatusPending(qaProp));
+            SetPendingButtonText(bt_status_regular_pending, "Regular Check", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Function_Check";
-            SetPendingButtonText(bt_status_function_pending, "Function\nCheck", qaCon.CountProcessStatusPending(qaProp));
+            SetPendingButtonText(bt_status_function_pending, "Function Check", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Dimension_Check";
-            SetPendingButtonText(bt_status_dimension_pending, "Dimension\nCheck", qaCon.CountProcessStatusPending(qaProp));
+            SetPendingButtonText(bt_status_dimension_pending, "Dimension Check", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Inspection_Data_Check";
-            SetPendingButtonText(bt_status_data_pending, "Insp. Data\nCheck", qaCon.CountProcessStatusPending(qaProp));
+            SetPendingButtonText(bt_status_data_pending, "Insp. Data Check", qaCon.CountProcessStatusPending(qaProp));
 
             SetPendingButtonText(bt_appear_pending, "Appearance", 0);
 
