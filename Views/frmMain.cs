@@ -562,28 +562,38 @@ namespace RawMat
             _navigationService.NavigateTo(usrSearch); // ใช้ NavigationService
         }
 
+        private void SetPendingButtonText(BunifuFlatButton button, string title, int reportCount)
+        {
+            string buttonText = $"{title}\nPending\n{reportCount} Report";
+
+            button.ButtonText = buttonText;
+            button.Text = buttonText;
+        }
+
 
 
      
         public void LoadStatus()
         {
             qaProp.process = "Keep_Data";
-            bt_status_rec_pending.Text = $"Receive WH \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_rec_pending, "Receive WH", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Packing_Check";
-            bt_status_packing_check_pending.Text = $"Packing Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_packing_check_pending, "Packing", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Regular_Check";
-            bt_status_regular_pending.Text = $"Regular Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_regular_pending, "Regular", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Function_Check";
-            bt_status_function_pending.Text = $"Function Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_function_pending, "Function", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Dimension_Check";
-            bt_status_dimension_pending.Text = $"Dimension Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_dimension_pending, "Dimension", qaCon.CountProcessStatusPending(qaProp));
 
             qaProp.process = "Inspection_Data_Check";
-            bt_status_data_pending.Text = $"Insp. Data Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetPendingButtonText(bt_status_data_pending, "Insp. Data", qaCon.CountProcessStatusPending(qaProp));
+
+            SetPendingButtonText(bt_appear_pending, "Appearance", 0);
 
         }
 
