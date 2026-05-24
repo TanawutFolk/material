@@ -84,7 +84,7 @@
             this.bt_refresh.LabelPosition = 15;
             this.bt_refresh.LabelText = "Refresh";
             this.bt_refresh.Location = new System.Drawing.Point(1062, 54);
-            this.bt_refresh.Margin = new System.Windows.Forms.Padding(5);
+            this.bt_refresh.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.bt_refresh.Name = "bt_refresh";
             this.bt_refresh.Size = new System.Drawing.Size(46, 50);
             this.bt_refresh.TabIndex = 32;
@@ -120,12 +120,12 @@
             this.bt_status_dimension_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_dimension_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_dimension_pending.selected = false;
-            this.bt_status_dimension_pending.Size = new System.Drawing.Size(178, 100);
+            this.bt_status_dimension_pending.Size = new System.Drawing.Size(168, 100);
             this.bt_status_dimension_pending.TabIndex = 40;
             this.bt_status_dimension_pending.Text = "Dimension Pending \n0 Report";
             this.bt_status_dimension_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_dimension_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_dimension_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_dimension_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_dimension_pending.Click += new System.EventHandler(this.bt_status_dimension_pending_Click);
             // 
             // bt_status_function_pending
@@ -157,12 +157,12 @@
             this.bt_status_function_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_function_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_function_pending.selected = false;
-            this.bt_status_function_pending.Size = new System.Drawing.Size(161, 100);
+            this.bt_status_function_pending.Size = new System.Drawing.Size(146, 100);
             this.bt_status_function_pending.TabIndex = 35;
             this.bt_status_function_pending.Text = "Function Pending \n0 Report";
             this.bt_status_function_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_function_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_function_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_function_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_function_pending.Click += new System.EventHandler(this.bt_status_function_pending_Click);
             // 
             // bt_appear_pending
@@ -199,7 +199,7 @@
             this.bt_appear_pending.Text = "Appearance Pending \n0 report";
             this.bt_appear_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_appear_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_appear_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_appear_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_appear_pending.Click += new System.EventHandler(this.bt_appear_pending_Click);
             // 
             // bt_status_data_pending
@@ -231,12 +231,12 @@
             this.bt_status_data_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_data_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_data_pending.selected = false;
-            this.bt_status_data_pending.Size = new System.Drawing.Size(170, 100);
+            this.bt_status_data_pending.Size = new System.Drawing.Size(157, 100);
             this.bt_status_data_pending.TabIndex = 38;
             this.bt_status_data_pending.Text = "Insp. Data \nPending \n0 report";
             this.bt_status_data_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_data_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_data_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_data_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_data_pending.Click += new System.EventHandler(this.bt_status_data_pending_Click);
             // 
             // bt_status_packing_check_pending
@@ -268,12 +268,12 @@
             this.bt_status_packing_check_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_packing_check_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_packing_check_pending.selected = false;
-            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(165, 100);
+            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(152, 100);
             this.bt_status_packing_check_pending.TabIndex = 37;
             this.bt_status_packing_check_pending.Text = "Packing Check Pending \n0 report";
             this.bt_status_packing_check_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_packing_check_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_packing_check_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_packing_check_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_packing_check_pending.Click += new System.EventHandler(this.bt_status_packing_check_pending_Click);
             // 
             // bt_status_regular_pending
@@ -305,12 +305,12 @@
             this.bt_status_regular_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_regular_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_regular_pending.selected = false;
-            this.bt_status_regular_pending.Size = new System.Drawing.Size(158, 100);
+            this.bt_status_regular_pending.Size = new System.Drawing.Size(147, 100);
             this.bt_status_regular_pending.TabIndex = 36;
             this.bt_status_regular_pending.Text = "Regular Pending \n0 report";
             this.bt_status_regular_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_regular_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_regular_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_regular_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_regular_pending.Click += new System.EventHandler(this.bt_status_regular_pending_Click);
             // 
             // bt_status_rec_pending
@@ -347,7 +347,7 @@
             this.bt_status_rec_pending.Text = "Receive WH \nPending \n0 Report";
             this.bt_status_rec_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.bt_status_rec_pending.Textcolor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(10)))), ((int)(((byte)(16)))));
-            this.bt_status_rec_pending.TextFont = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_status_rec_pending.TextFont = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_status_rec_pending.Click += new System.EventHandler(this.bt_status_rec_pending_Click);
             // 
             // bt_setting
@@ -364,7 +364,7 @@
             this.bt_setting.LabelPosition = 15;
             this.bt_setting.LabelText = "Settings";
             this.bt_setting.Location = new System.Drawing.Point(1062, 5);
-            this.bt_setting.Margin = new System.Windows.Forms.Padding(5);
+            this.bt_setting.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
             this.bt_setting.Name = "bt_setting";
             this.bt_setting.Size = new System.Drawing.Size(46, 50);
             this.bt_setting.TabIndex = 34;
@@ -407,7 +407,7 @@
             this.bunifuProgressBar1.BackColor = System.Drawing.Color.Silver;
             this.bunifuProgressBar1.BorderRadius = 5;
             this.bunifuProgressBar1.Location = new System.Drawing.Point(-2, 901);
-            this.bunifuProgressBar1.Margin = new System.Windows.Forms.Padding(4);
+            this.bunifuProgressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.bunifuProgressBar1.MaximumValue = 100;
             this.bunifuProgressBar1.Name = "bunifuProgressBar1";
             this.bunifuProgressBar1.ProgressColor = System.Drawing.Color.Teal;
@@ -459,7 +459,7 @@
             this.bt_home.LabelPosition = 20;
             this.bt_home.LabelText = "Home";
             this.bt_home.Location = new System.Drawing.Point(0, 0);
-            this.bt_home.Margin = new System.Windows.Forms.Padding(6);
+            this.bt_home.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.bt_home.Name = "bt_home";
             this.bt_home.Size = new System.Drawing.Size(147, 51);
             this.bt_home.TabIndex = 24;
