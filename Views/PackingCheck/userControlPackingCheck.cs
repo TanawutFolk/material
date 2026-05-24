@@ -466,14 +466,16 @@ namespace RawMat.Views.PackingCheck
                 // ตรวจสอบว่า Method ที่เป็น NG มีผลต่อ Method ถัดไปหรือไม่
                 if (rb_ng_method1.Checked && (rb_ok_method2.Checked || rb_ok_method3.Checked))
                 {
-                    MessageBox.Show("กล่อง 1 เลือก NG ไม่สามารถเลือก OK ใน กล่อง 2 และ 3 ได้",
+                    //"กล่อง 1 เลือก NG ไม่สามารถเลือก OK ใน กล่อง 2 และ 3 ได้"
+                    MessageBox.Show("เลือก NG ไม่สามารถเลือก OK",
                                     "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
                 if (rb_ng_method2.Checked && (rb_ok_method3.Checked))
                 {
-                    MessageBox.Show("กล่อง 2 เลือก NG ไม่สามารถเลือก OK ใน กล่อง 3 ได้",
+                    //กล่อง 2 เลือก NG ไม่สามารถเลือก OK ใน กล่อง 3 ได้
+                    MessageBox.Show("เลือก NG ไม่สามารถเลือก OK",
                                     "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }

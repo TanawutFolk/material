@@ -388,7 +388,7 @@ namespace RawMat.Views.RegularCheck
                                         MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Working ได้");
                                         return;
                                     }
-
+                                    bt_reg_Click();
                                     return;
          
                                 }

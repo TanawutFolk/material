@@ -774,13 +774,15 @@ namespace RawMat.Views.ReceiveWH
 
                 if (dt != null && dt.Rows.Count > 0 && !string.IsNullOrEmpty(qaProp?.process))
                 {
-                    string processValue = dt.Rows[0][qaProp.process].ToString();
 
+                    string processValue = dt.Rows[0][qaProp.process].ToString();
+                    string failMsg;
                     // 1=ok เก็บ , 3=skipProcess ไม่เก็บ
                     // ตรวจสอบว่าค่าเป็น "1" หรือ "3" หรือไม่
                     if (processValue == "1" || processValue == "3")
                     {
                         // --- 1. กำหนดค่าตัวแปรที่จะแสดงผลลัพธ์ตามเงื่อนไข ---
+                        //string failMsg;
                         string messagePrefix;
                         Color? msgBackColor = null; // ใช้ Nullable Color
 
@@ -839,11 +841,11 @@ namespace RawMat.Views.ReceiveWH
                             //}
 
                             // --- 4. แสดงผลลัพธ์ "ไม่สำเร็จ" ---
-                            string failMsg = $"ไม่สำเร็จ M-Code :{qaProp.M_CODE} พบดาต้าเบส error ลองอีกครั้ง";
+                            failMsg = $"ไม่สำเร็จ M-Code :{qaProp.M_CODE} พบดาต้าเบส error ลองอีกครั้ง";
 
                             if (msgBackColor.HasValue)
                             {
-                                CustomMsgBoxBase.ShowCustomMessageBox( 
+                                CustomMsgBoxBase.ShowCustomMessageBox(
                                     failMsg, "ไม่สำเร็จ",
                                     CustomMsgBoxBase.MessageBoxIconType.NG,
                                     backColor: Color.Red);
@@ -857,6 +859,13 @@ namespace RawMat.Views.ReceiveWH
 
                             // row.Cells["INS_DATA"].Value = ... (ส่วนนี้ยังถูก comment ไว้เหมือนเดิม)
                         }
+                    }
+                    else
+                    {
+                        failMsg = $"{qaProp.M_CODE} ไม่พบ พบดาต้าเบส error ลองอีกครั้ง";
+                        CustomMsgBoxBase.ShowCustomMessageBox(
+                                    failMsg, "ไม่สำเร็จ",
+                                    CustomMsgBoxBase.MessageBoxIconType.NG, backColor: Color.Red);
                     }
                 }
             }

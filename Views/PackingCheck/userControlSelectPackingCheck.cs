@@ -121,19 +121,14 @@ namespace RawMat.Views.PackingCheck
                                         //// ลบสำเร็จ ทำการเข้าใช้งาน
                                         propQA.inProcStatus = ((int)ProcStatus.Unfinished).ToString();
                                         propQA.reportStatus = ((int)ProcStatus.Unfinished).ToString();
-
+                                        
                                         if (conQA.UpdateStatus(propQA) == false)
                                         {
                                             MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Working ได้");
                                             return;
                                         }
 
-                                        //// Insert ข้อมูลใหม่สำหรับผู้ใช้งานปัจจุบัน
-                                        //if (conQA.InsertReportActive(propQA) == false)
-                                        //{
-                                        //    MessageBox.Show("ไม่สามารถเพิ่ม report no กับ IP ได้");
-                                        //    return;
-                                        //}
+                                        bt_rec_pack_Click();
 
                                         return;
                                         //propQA.packing_check_mode = conQA.PackingCheckMode(propQA);
@@ -265,8 +260,8 @@ namespace RawMat.Views.PackingCheck
 
             usrControlSelectPackingCheck.propQA.dtgRawMat.DataSource = dt;
 
-            var parentForm = this.FindForm() as frmMain;
-            parentForm?.ControlLevel(employee);
+            //var parentForm = this.FindForm() as frmMain;
+            //parentForm?.ControlLevel(employee);
 
             Form mainForm = this.FindForm();
 

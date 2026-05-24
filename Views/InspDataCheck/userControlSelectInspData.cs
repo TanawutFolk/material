@@ -114,15 +114,17 @@ namespace RawMat.Views.InspDataCheck
                                     if (conQA.DeleteReportActive(propQA))
                                     {
                                         //// ลบสำเร็จ ทำการเข้าใช้งาน
-                                        //propQA.inProcStatus = ((int)ProcStatus.Working).ToString();
-                                        //propQA.reportStatus = ((int)ProcStatus.Working).ToString();
+                                        propQA.inProcStatus = ((int)ProcStatus.Unfinished).ToString();
+                                        propQA.reportStatus = ((int)ProcStatus.Unfinished).ToString();
 
-                                        //if (conQA.UpdateStatus(propQA) == false)
-                                        //{
-                                        //    MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Working ได้");
-                                        //    return;
-                                        //}
+                                        if (conQA.UpdateStatus(propQA) == false)
+                                        {
+                                            MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Working ได้");
+                                            return;
+                                        }
 
+                                        bt_data_Click();
+                                        return;
                                         //// Insert ข้อมูลใหม่สำหรับผู้ใช้งานปัจจุบัน
                                         //if (conQA.InsertReportActive(propQA) == false)
                                         //{

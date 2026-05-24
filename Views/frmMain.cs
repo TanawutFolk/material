@@ -425,7 +425,39 @@ namespace RawMat
                 ProfileControl_Logout(this, EventArgs.Empty);
             }
         }
+        public void ControlBackLevel(EmployeeProperty empProp)
+        {
+            panelHeader2.Enabled = true;
+            bt_home.Visible = true;
 
+            if (empProp.EMP_LEVEL == "1")
+            //if level 1
+            {
+                AddUserControlAdmin();
+            }
+            else if (empProp.EMP_LEVEL == "2")
+            {
+                AddUserControlFullOperator();
+            }
+            else if (empProp.EMP_LEVEL == "3")
+            {
+                AddUserControlRecWHOperator();
+            }
+            else if (empProp.EMP_LEVEL == "4")
+            {
+                AddUserControlInspOperator();
+            }
+            else
+            {
+                //AddUserControlGuest();
+                CustomMsgBoxBase.ShowCustomMessageBox(
+                                "พนักงานไม่มี Skill ไม่สามารถเข้าปฏิบัติงานได้",
+                                "ข้อผิดพลาด",
+                                CustomMsgBoxBase.MessageBoxIconType.NG);
+
+                ProfileControl_Logout(this, EventArgs.Empty);
+            }
+        }
         public void VisibleControl()
         {
             panelWH.Controls.Clear();
