@@ -359,14 +359,9 @@ namespace RawMat.Views.FunctionCheck
                                         return;
                                     }
 
-                                    //// Insert ข้อมูลใหม่สำหรับผู้ใช้งานปัจจุบัน
-                                    //if (conQA.InsertReportActive(propQA) == false)
-                                    //{
-                                    //    MessageBox.Show("ไม่สามารถเพิ่ม report no กับ IP ได้");
-                                    //    return;
-                                    //}
-
+                                    bt_function_Click();
                                     return;
+                                    //// Insert ข้อมูลใหม่สำหรับผู้ใช้งานปัจจุบัน
                                     //propQA.packing_check_mode = conQA.PackingCheckMode(propQA);
 
                                     //if (propQA.process == "Packing_Check")

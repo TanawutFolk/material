@@ -455,6 +455,7 @@ namespace RawMat.Views.DimensionCheck
                                     }
 
                                     bt_dim_Click();
+                                    return;
                                     //// Insert ข้อมูลใหม่สำหรับผู้ใช้งานปัจจุบัน
                                     //if (conQA.InsertReportActive(propQA) == false)
                                     //{

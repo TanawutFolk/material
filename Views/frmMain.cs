@@ -177,6 +177,56 @@ namespace RawMat
             panelMenu.Controls.Add(usrMenu);
         }
 
+        private void AddUserControlAdminBack()
+        {
+            bt_setting.Visible = true;
+            LoadWHAndMenuPanels();
+        }
+
+        private void AddUserControlFullOperatorBack()
+        {
+            bt_setting.Visible = false;
+            bt_home.Visible = false;
+            LoadWHAndMenuPanels();
+        }
+
+        private void AddUserControlRecWHOperatorBack()
+        {
+            bt_setting.Visible = false;
+            bt_home.Visible = false;
+
+            userControlWH usrConWH = new userControlWH();
+            usrConWH.AddUserControlRequested += AddUserControlToPanel;
+            usrConWH.Dock = DockStyle.Fill;
+            panelWH.Controls.Add(usrConWH);
+        }
+
+        private void AddUserControlInspOperatorBack()
+        {
+            bt_setting.Visible = false;
+            bt_home.Visible = false;
+
+            userControlMenu usrMenu = new userControlMenu();
+            ReorderButtons(usrMenu);
+            usrMenu.AddUserControlRequested += AddUserControlToPanel;
+            usrMenu.Dock = DockStyle.Fill;
+            panelMenu.Controls.Add(usrMenu);
+        }
+
+        private void LoadWHAndMenuPanels()
+        {
+            userControlWH usrConWH = new userControlWH();
+            usrConWH.AddUserControlRequested += AddUserControlToPanel;
+            usrConWH.Dock = DockStyle.Fill;
+            panelWH.Controls.Add(usrConWH);
+
+            userControlMenu usrMenu = new userControlMenu();
+            ReorderButtons(usrMenu);
+            usrMenu.AddUserControlRequested += AddUserControlToPanel;
+            usrMenu.Dock = DockStyle.Fill;
+            panelMenu.Controls.Add(usrMenu);
+        }
+
         private void AddUserControlGuest()
         {
 
@@ -430,22 +480,25 @@ namespace RawMat
             panelHeader2.Enabled = true;
             bt_home.Visible = true;
 
+            panelWH.Controls.Clear();
+            panelMenu.Controls.Clear();
+
             if (empProp.EMP_LEVEL == "1")
             //if level 1
             {
-                AddUserControlAdmin();
+                AddUserControlAdminBack();
             }
             else if (empProp.EMP_LEVEL == "2")
             {
-                AddUserControlFullOperator();
+                AddUserControlFullOperatorBack();
             }
             else if (empProp.EMP_LEVEL == "3")
             {
-                AddUserControlRecWHOperator();
+                AddUserControlRecWHOperatorBack();
             }
             else if (empProp.EMP_LEVEL == "4")
             {
-                AddUserControlInspOperator();
+                AddUserControlInspOperatorBack();
             }
             else
             {
