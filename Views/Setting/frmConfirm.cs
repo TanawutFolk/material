@@ -26,7 +26,7 @@ namespace RawMat.Views.Setting
 
         private void btnCancle_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Yes;
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }
