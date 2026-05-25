@@ -59,5 +59,19 @@ namespace RawMat.Property
         // --- Equipment Set ---
         public DataTable RegularEquipment { get; set; }
         public DataTable DimensionEquipment { get; set; }
+
+        // --- Employee Setting ---
+        public string Employee_ID { get; set; }
+        public string Employee_Level_ID { get; set; }
+        public string Employee_Level_Name { get; set; }
+        public string Phone_Ext { get; set; }
+        public string Search_Employee_ID { get; set; }
+        public string Search_Employee_Level_ID { get; set; }
+
+        // --- Equipment Type Setting ---
+        public string Equipment_Type { get; set; }
+        public string Equipment_Name { get; set; }
+        public string Search_Equipment_Type { get; set; }
+        public string Search_Equipment_Name { get; set; }
     }
 }

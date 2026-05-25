@@ -506,5 +506,233 @@ namespace RawMat.SQLFactory
         {
             return BuildSaveEquipmentSettingSql("info_dimension_equipment", dataItem.M_CODE, dataItem.DimensionEquipment);
         }
+        //--------------- Employee Setting ---------------------------
+        public string SearchEmployeeSettingList(SettingProperty dataItem)
+        {
+            string employeeSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_Employee_ID);
+            string levelSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_Employee_Level_ID);
+
+            sql = @"
+                SELECT
+                    a.Employee_ID AS `Employee ID`,
+                    a.Employee_Level_ID AS `Employee Level ID`,
+                    b.Employee_Level_Name AS `Employee Level Name`,
+                    a.Phone_Ext AS `Phone Ext`
+                FROM info_employee a
+                LEFT JOIN info_employee_level b
+                    ON a.Employee_Level_ID = b.Employee_Level_ID
+                WHERE 1=1 ";
+
+            if (!string.IsNullOrWhiteSpace(employeeSearch))
+            {
+                sql += $" AND a.Employee_ID LIKE '%{employeeSearch}%' ";
+            }
+
+            if (short.TryParse(levelSearch, out short employeeLevelId))
+            {
+                sql += $" AND a.Employee_Level_ID = {employeeLevelId} ";
+            }
+
+            sql += " ORDER BY a.Employee_ID ASC;";
+            return sql;
+        }
+
+        public string SearchEmployeeSettingByEmployeeID(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT
+                    a.Employee_ID,
+                    a.Employee_Level_ID,
+                    b.Employee_Level_Name,
+                    a.Phone_Ext
+                FROM info_employee a
+                LEFT JOIN info_employee_level b
+                    ON a.Employee_Level_ID = b.Employee_Level_ID
+                WHERE a.Employee_ID = 'dataItem.Employee_ID';";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            return sql;
+        }
+
+        public string CountEmployeeSettingByEmployeeID(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT COUNT(*) AS CNT
+                FROM info_employee
+                WHERE Employee_ID = 'dataItem.Employee_ID';";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            return sql;
+        }
+
+        public string InsertEmployeeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                INSERT INTO info_employee
+                (
+                    Employee_ID,
+                    Employee_Level_ID,
+                    Phone_Ext
+                )
+                VALUES
+                (
+                    'dataItem.Employee_ID',
+                    dataItem.Employee_Level_ID,
+                    dataItem.Phone_Ext
+                );";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            sql = sql.Replace("dataItem.Employee_Level_ID", ToSqlSmallIntOrNull(dataItem.Employee_Level_ID));
+            sql = sql.Replace("dataItem.Phone_Ext", ToSqlTextOrNull(dataItem.Phone_Ext));
+            return sql;
+        }
+
+        public string UpdateEmployeeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                UPDATE info_employee
+                SET Employee_Level_ID = dataItem.Employee_Level_ID,
+                    Phone_Ext = dataItem.Phone_Ext
+                WHERE Employee_ID = 'dataItem.Employee_ID';";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            sql = sql.Replace("dataItem.Employee_Level_ID", ToSqlSmallIntOrNull(dataItem.Employee_Level_ID));
+            sql = sql.Replace("dataItem.Phone_Ext", ToSqlTextOrNull(dataItem.Phone_Ext));
+            return sql;
+        }
+
+        public string DeleteEmployeeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                DELETE FROM info_employee
+                WHERE Employee_ID = 'dataItem.Employee_ID';";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            return sql;
+        }
+
+        public string GetEmployeeLevelList()
+        {
+            sql = @"
+                SELECT
+                    Employee_Level_ID AS VALUE,
+                    Employee_Level_Name AS TEXT
+                FROM info_employee_level
+                ORDER BY Employee_Level_ID ASC;";
+
+            return sql;
+        }
+
+        private string ToSqlSmallIntOrNull(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "NULL";
+            }
+
+            return short.TryParse(value.Trim(), out short number) ? number.ToString() : "NULL";
+        }
+
+        //--------------- Equipment Add ---------------------------
+        public string SearchEquipmentTypeSettingList(SettingProperty dataItem)
+        {
+            string equipmentTypeSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_Equipment_Type);
+            string equipmentNameSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_Equipment_Name);
+
+            sql = @"
+                SELECT
+                    Equipment_Type AS `Equipment Type`,
+                    Equipment_Name AS `Equipment Name`
+                FROM info_equipment_type
+                WHERE 1=1 ";
+
+            if (short.TryParse(equipmentTypeSearch, out short equipmentType))
+            {
+                sql += $" AND Equipment_Type = {equipmentType} ";
+            }
+
+            if (!string.IsNullOrWhiteSpace(equipmentNameSearch))
+            {
+                sql += $" AND Equipment_Name LIKE '%{equipmentNameSearch}%' ";
+            }
+
+            sql += " ORDER BY Equipment_Type ASC;";
+            return sql;
+        }
+
+        public string SearchEquipmentTypeSettingByEquipmentType(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT
+                    Equipment_Type,
+                    Equipment_Name
+                FROM info_equipment_type
+                WHERE Equipment_Type = dataItem.Equipment_Type;";
+
+            sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
+            return sql;
+        }
+
+        public string CountEquipmentTypeSettingByEquipmentType(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT COUNT(*) AS CNT
+                FROM info_equipment_type
+                WHERE Equipment_Type = dataItem.Equipment_Type;";
+
+            sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
+            return sql;
+        }
+
+        public string InsertEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                INSERT INTO info_equipment_type
+                (
+                    Equipment_Type,
+                    Equipment_Name
+                )
+                VALUES
+                (
+                    dataItem.Equipment_Type,
+                    dataItem.Equipment_Name
+                );";
+
+            sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNextEquipmentType(dataItem.Equipment_Type));
+            sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
+            return sql;
+        }
+
+        public string UpdateEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                UPDATE info_equipment_type
+                SET Equipment_Name = dataItem.Equipment_Name
+                WHERE Equipment_Type = dataItem.Equipment_Type;";
+
+            sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
+            sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
+            return sql;
+        }
+
+        public string DeleteEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                DELETE FROM info_equipment_type
+                WHERE Equipment_Type = dataItem.Equipment_Type;";
+
+            sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
+            return sql;
+        }
+
+        private string ToSqlSmallIntOrNextEquipmentType(string value)
+        {
+            if (short.TryParse(value?.Trim(), out short number))
+            {
+                return number.ToString();
+            }
+
+            return "(SELECT IFNULL(MAX(x.Equipment_Type) + 1, 0) FROM info_equipment_type x)";
+        }
     }
 }

@@ -152,5 +152,109 @@ namespace RawMat.Services
             _resultData = base.InsertBySqlList(sqlList);
             return _resultData;
         }
+
+        public OutputOnDbProperty SearchEmployeeSettingList(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchEmployeeSettingList(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchEmployeeSettingByEmployeeID(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchEmployeeSettingByEmployeeID(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty CountEmployeeSettingByEmployeeID(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.CountEmployeeSettingByEmployeeID(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty InsertEmployeeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.InsertEmployeeSetting(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty UpdateEmployeeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateEmployeeSetting(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty DeleteEmployeeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.DeleteEmployeeSetting(dataItem);
+            _resultData = base.DeleteBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetEmployeeLevelList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetEmployeeLevelList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchEquipmentTypeSettingList(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchEquipmentTypeSettingList(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchEquipmentTypeSettingByEquipmentType(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchEquipmentTypeSettingByEquipmentType(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty CountEquipmentTypeSettingByEquipmentType(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.CountEquipmentTypeSettingByEquipmentType(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty InsertEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.InsertEquipmentTypeSetting(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty UpdateEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateEquipmentTypeSetting(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty DeleteEquipmentTypeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.DeleteEquipmentTypeSetting(dataItem);
+            _resultData = base.DeleteBySql(sql);
+            return _resultData;
+        }
     }
 }

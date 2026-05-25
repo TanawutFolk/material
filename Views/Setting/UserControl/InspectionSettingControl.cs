@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RawMat.Views.Setting
 {
-    public partial class frmSetting : Form
+    public partial class InspectionSettingControl : UserControl
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
-        // ── Column name constants ─────────────────────────────────────────────
         private const string ColRevise = "Revise";
         private const string ColMCode = "M Code";
         private const string ColKeepData = "Keep Data";
@@ -24,11 +24,9 @@ namespace RawMat.Views.Setting
         private const string ColAppearanceCheck = "Appearance Check";
         private const string ColStatus = "Status";
 
-        // ── Status values ─────────────────────────────────────────────────────
         private const string StatusActive = "1";
         private const string StatusInactive = "0";
 
-        // ── Style constants ───────────────────────────────────────────────────
         private static readonly Color HeaderBackColor = Color.ForestGreen;
         private static readonly Color HeaderForeColor = Color.White;
         private static readonly Color SelectionBackColor = Color.Pink;
@@ -60,26 +58,26 @@ namespace RawMat.Views.Setting
         };
 
         private int _statusColumnIndex = -1;
+        private bool _gridConfigured;
+        private bool _isLoadingData;
 
-        // ─────────────────────────────────────────────────────────────────────
-        public frmSetting()
+        public InspectionSettingControl()
         {
             InitializeComponent();
         }
 
-        // ── Lifecycle ─────────────────────────────────────────────────────────
-        private void frmInspectionSetting_Load(object sender, EventArgs e)
+        private void InspectionSettingControl_Load(object sender, EventArgs e)
         {
             BindStatusCombo();
-            ConfigureGrid();           // renamed: shorter, unambiguous
-            LoadData();                // renamed: short verb-noun
+            ConfigureGrid();
+            LoadData();
         }
 
-        // ── Grid configuration (run ONCE on load) ─────────────────────────────
         private void ConfigureGrid()
         {
-            var grid = dtgInspectionSetting;
+            if (_gridConfigured) return;
 
+            var grid = dtgInspectionSetting;
             grid.ReadOnly = true;
             grid.AllowUserToAddRows = false;
             grid.AllowUserToDeleteRows = false;
@@ -103,7 +101,6 @@ namespace RawMat.Views.Setting
             grid.DefaultCellStyle.SelectionBackColor = SelectionBackColor;
             grid.DefaultCellStyle.SelectionForeColor = Color.Black;
             grid.DefaultCellStyle.Font = grid.Font;
-
             grid.AlternatingRowsDefaultCellStyle.BackColor = AlternateRowBackColor;
 
             grid.BackgroundColor = Color.White;
@@ -117,23 +114,54 @@ namespace RawMat.Views.Setting
             grid.AdvancedCellBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.Single;
             grid.AdvancedCellBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.Single;
 
-            // Subscribe ONCE here — not inside LoadData
             grid.CellFormatting += OnCellFormatting;
+            _gridConfigured = true;
         }
 
-        // ── Data loading ──────────────────────────────────────────────────────
         private void LoadData()
         {
-            DataTable dt = FetchData();
-            BindGrid(dt);
+            if (_isLoadingData) return;
+
+            _isLoadingData = true;
+            btnSearch.Enabled = false;
+
+            string searchMCode = txtMCodeSearch.Text.Trim();
+            string searchStatus = Convert.ToString(cboStatus.SelectedValue);
+
+            Cursor = Cursors.WaitCursor;
+
+            Task.Run(() => FetchData(searchMCode, searchStatus))
+                .ContinueWith(task =>
+                {
+                    if (IsDisposed || Disposing) return;
+
+                    try
+                    {
+                        if (task.IsFaulted)
+                        {
+                            MessageBox.Show(
+                                task.Exception?.GetBaseException().Message ?? "Load inspection setting failed.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        BindGrid(task.Result);
+                    }
+                    finally
+                    {
+                        _isLoadingData = false;
+                        btnSearch.Enabled = true;
+                        Cursor = Cursors.Default;
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private DataTable FetchData()
+        private DataTable FetchData(string searchMCode, string searchStatus)
         {
             var filter = new SettingProperty
             {
-                Search_M_CODE = txtMCodeSearch.Text.Trim(),
-                Search_Status = Convert.ToString(cboStatus.SelectedValue)
+                Search_M_CODE = searchMCode,
+                Search_Status = searchStatus
             };
             return _controller.SearchInspectionSettingList(filter);
         }
@@ -154,7 +182,6 @@ namespace RawMat.Views.Setting
             }
         }
 
-        // ── Column formatting ─────────────────────────────────────────────────
         private void ApplyColumnFormat()
         {
             if (dtgInspectionSetting.Columns.Count == 0)
@@ -170,7 +197,7 @@ namespace RawMat.Views.Setting
                 SetColumnAlignment(name, DataGridViewContentAlignment.MiddleCenter);
 
             DataGridViewColumn statusCol = FindColumn(ColStatus);
-            _statusColumnIndex = statusCol?.Index ?? -1;   // null-conditional + null-coalescing
+            _statusColumnIndex = statusCol?.Index ?? -1;
         }
 
         private void EnsureEditButtonColumn()
@@ -192,7 +219,6 @@ namespace RawMat.Views.Setting
             dtgInspectionSetting.Columns.Insert(0, btn);
         }
 
-        // ── Cell formatting ───────────────────────────────────────────────────
         private void OnCellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex != _statusColumnIndex)
@@ -223,7 +249,6 @@ namespace RawMat.Views.Setting
             }
         }
 
-        // ── Combo setup ───────────────────────────────────────────────────────
         private void BindStatusCombo()
         {
             var dt = new DataTable();
@@ -239,7 +264,6 @@ namespace RawMat.Views.Setting
             cboStatus.SelectedValue = StatusActive;
         }
 
-        // ── Grid helpers ──────────────────────────────────────────────────────
         private DataGridViewColumn FindColumn(string name) =>
             dtgInspectionSetting.Columns.Contains(name)
                 ? dtgInspectionSetting.Columns[name]
@@ -257,7 +281,6 @@ namespace RawMat.Views.Setting
             if (col != null) col.DefaultCellStyle.Alignment = alignment;
         }
 
-        // ── UI event handlers ─────────────────────────────────────────────────
         private void btnSearch_Click(object sender, EventArgs e) => LoadData();
 
         private void btnClear_Click(object sender, EventArgs e)
@@ -270,7 +293,7 @@ namespace RawMat.Views.Setting
         private void btnAddNew_Click(object sender, EventArgs e)
         {
             using (var frm = new frmMCodeInspectionSetting())
-                frm.ShowDialog();
+                frm.ShowDialog(this);
 
             LoadData();
         }
@@ -288,7 +311,7 @@ namespace RawMat.Views.Setting
                 return;
 
             using (var frm = new frmMCodeInspectionSetting(mCode))
-                frm.ShowDialog();
+                frm.ShowDialog(this);
 
             LoadData();
         }

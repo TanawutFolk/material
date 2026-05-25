@@ -459,23 +459,53 @@
     <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmConfirm.cs">
+    <Compile Include="Views\Setting\form\frmConfirm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmConfirm.Designer.cs">
+    <Compile Include="Views\Setting\form\frmConfirm.Designer.cs">
       <DependentUpon>frmConfirm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.cs">
+    <Compile Include="Views\Setting\form\frmSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmSetting.Designer.cs">
+    <Compile Include="Views\Setting\form\frmSetting.Designer.cs">
       <DependentUpon>frmSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\frmMCodeInspectionSetting.cs">
+    <Compile Include="Views\Setting\form\frmMCodeInspectionSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\frmMCodeInspectionSetting.Designer.cs">
+    <Compile Include="Views\Setting\form\frmMCodeInspectionSetting.Designer.cs">
       <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\form\frmEditEmployee.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\form\frmEditEmployee.Designer.cs">
+      <DependentUpon>frmEditEmployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\form\frmAddEquipment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\form\frmAddEquipment.Designer.cs">
+      <DependentUpon>frmAddEquipment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\InspectionSettingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\InspectionSettingControl.Designer.cs">
+      <DependentUpon>InspectionSettingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\EmployeeSettingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\EmployeeSettingControl.Designer.cs">
+      <DependentUpon>EmployeeSettingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\EqupmentSetingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\EqupmentSetingControl.Designer.cs">
+      <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
       <DependentUpon>userControlAppear.cs</DependentUpon>
@@ -600,14 +630,29 @@
     <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmConfirm.resx">
+    <EmbeddedResource Include="Views\Setting\form\frmConfirm.resx">
       <DependentUpon>frmConfirm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmSetting.resx">
+    <EmbeddedResource Include="Views\Setting\form\frmSetting.resx">
       <DependentUpon>frmSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\frmMCodeInspectionSetting.resx">
+    <EmbeddedResource Include="Views\Setting\form\frmMCodeInspectionSetting.resx">
       <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\form\frmEditEmployee.resx">
+      <DependentUpon>frmEditEmployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\form\frmAddEquipment.resx">
+      <DependentUpon>frmAddEquipment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\UserControl\EqupmentSetingControl.resx">
+      <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\UserControl\InspectionSettingControl.resx">
+      <DependentUpon>InspectionSettingControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\UserControl\EmployeeSettingControl.resx">
+      <DependentUpon>EmployeeSettingControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
