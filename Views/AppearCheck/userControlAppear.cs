@@ -406,7 +406,7 @@ namespace RawMat.Views.AppearCheck
             usrConSelectAppear.propQA.dtgRawMat.DataSource = dt;
 
             var parentForm = this.FindForm() as frmMain;
-            parentForm?.ControlLevel(employee);
+            parentForm?.ControlBackLevel(employee);
 
             Form mainForm = this.FindForm();
 

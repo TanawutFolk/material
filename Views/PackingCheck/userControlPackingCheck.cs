@@ -952,7 +952,7 @@ namespace RawMat.Views.PackingCheck
             }
             selectPackingCheck.propQA.dtgRawMat = new DataGridView { DataSource = dt };
             var parentForm = this.FindForm() as frmMain;
-            parentForm?.ControlLevel(employee);
+            parentForm?.ControlBackLevel(employee);
             if (parentForm != null)
             {
                 Control[] foundPanels = parentForm.Controls.Find("panelMain", true);
@@ -1247,7 +1247,7 @@ namespace RawMat.Views.PackingCheck
             }
             usrControlSelectPackingCheck.propQA.dtgRawMat = new DataGridView { DataSource = dt };
             var parentForm = this.FindForm() as frmMain;
-            parentForm?.ControlLevel(employee);
+            parentForm?.ControlBackLevel(employee);
             if (parentForm != null)
             {
                 Control[] foundPanels = parentForm.Controls.Find("panelMain", true);
