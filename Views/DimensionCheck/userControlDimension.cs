@@ -260,6 +260,8 @@ namespace RawMat.Views.DimensionCheck
 
             if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
             {
+                lb_TotalCavity.Visible = true;
+                lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
 
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE);
                 //picbox_dim.Image = imgCls.LoadDimensionImage(propQA.M_CODE);
@@ -287,6 +289,7 @@ namespace RawMat.Views.DimensionCheck
             else
             {
                 gb_cavity.Visible = false;
+                lb_TotalCavity.Visible = false;
                 
                 picbox_dim.Location = new System.Drawing.Point(17, 113);
                 picbox_dim.Size = new Size(1076, 556);
@@ -659,30 +662,34 @@ namespace RawMat.Views.DimensionCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
-            // ตรวจสอบว่าไม่มี Cell ว่าง
-            foreach (DataGridViewRow row in dtg_cavity.Rows)
-            {
-                foreach (DataGridViewCell cell in row.Cells)
-                {
-                    if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
-                    {
-                        MessageBox.Show("กรุณากรอกข้อมูลให้ครบทุกช่อง!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                }
+            dtg_cavity.EndEdit();
 
-            }
-
-            // คำนวณผลรวมของ QTY
             int totalQty = 0;
+
+            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขมากกว่า 0 ทุกแถว
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
-
-                if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty))
+                if (row.IsNewRow)
                 {
-                    totalQty += qty;
+                    continue;
                 }
 
+                string cavityName = row.Cells["CAVITY_NAME"].Value?.ToString();
+                string samplingQty = row.Cells["SAMPLING_QTY"].Value?.ToString();
+
+                if (string.IsNullOrWhiteSpace(cavityName))
+                {
+                    MessageBox.Show("กรุณากรอกชื่อ Cavity ให้ครบทุกแถว!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!int.TryParse(samplingQty, out int qty) || qty <= 0)
+                {
+                    MessageBox.Show("กรุณากรอกจำนวน Cavity เป็นตัวเลขมากกว่า 0 ทุกแถว!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                totalQty += qty;
             }
 
             if (totalQty != Convert.ToInt32(propQA.SAMPLING_QTY))
@@ -752,8 +759,14 @@ namespace RawMat.Views.DimensionCheck
 
             if (e.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
-                // ตรวจสอบว่าเป็นตัวเลขหรือไม่
-                if (!int.TryParse(e.FormattedValue.ToString(), out _))
+                string value = e.FormattedValue?.ToString();
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return;
+                }
+
+                // ตรวจสอบว่าเป็นตัวเลขมากกว่า 0 หรือไม่
+                if (!int.TryParse(value, out int qty) || qty <= 0)
                 {
                     e.Cancel = true; // ยกเลิกการออกจากเซลล์โดยไม่แสดงข้อความ
                 }

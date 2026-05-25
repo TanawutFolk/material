@@ -39,6 +39,12 @@ namespace RawMat.Views.AppearCheck
         // Setup empty grid for input (first row with count=1, last row editable)
         private int currentMaxQty = 0;
         private int maxQty = 0;
+        private int selectedPackCount = 1;
+        private int selectedBatchSampleTotal = 0;
+        private int selectedPackingValue = 0;
+        private int selectedLotSize = 0;
+        private int samplePerPackQty = 0;
+        private int currentEntryMaxQty = 0;
 
         private BindingSource bindingSource = new BindingSource();
         private DataTable originalDataTable;
@@ -133,7 +139,7 @@ namespace RawMat.Views.AppearCheck
                 DataTable rawDt = conQA.SearchSampleSize(propQA);
 
                 // 2. แปลงข้อมูลให้ปลอดภัย (Clean Data Type)
-                DataTable safeDt = ConvertToSafeDataTable(rawDt);
+                DataTable safeDt = BuildPackingSelectionTable(ConvertToSafeDataTable(rawDt));
 
                 // 3. Bind Data
                 dtg_packing_size_appear.DataSource = null; // ล้างก่อน
@@ -310,12 +316,56 @@ namespace RawMat.Views.AppearCheck
             
             dtg_packing_size_appear.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dtg_packing_size_appear.AllowUserToAddRows = false;
-            dtg_packing_size_appear.ReadOnly = false; // Grid หลัก editable
+            dtg_packing_size_appear.ReadOnly = true;
+
+            if (dtg_packing_size_appear.Columns["DISPLAY_NO"] != null)
+            {
+                dtg_packing_size_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับ";
+                dtg_packing_size_appear.Columns["DISPLAY_NO"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["DISPLAY_NO"].Width = 70;
+            }
+
+            if (dtg_packing_size_appear.Columns["PACKING_VALUE"] != null)
+            {
+                dtg_packing_size_appear.Columns["PACKING_VALUE"].HeaderText = "Packing size";
+                dtg_packing_size_appear.Columns["PACKING_VALUE"].ReadOnly = true;
+            }
+
+            if (dtg_packing_size_appear.Columns["CUMULATIVE_QTY"] != null)
+            {
+                dtg_packing_size_appear.Columns["CUMULATIVE_QTY"].HeaderText = "จำนวนรวม";
+                dtg_packing_size_appear.Columns["CUMULATIVE_QTY"].ReadOnly = true;
+            }
+
+            if (dtg_packing_size_appear.Columns["QTY_SELECT"] != null)
+            {
+                dtg_packing_size_appear.Columns["QTY_SELECT"].HeaderText = "จำนวนที่หยิบจากแพ็ค";
+                dtg_packing_size_appear.Columns["QTY_SELECT"].ReadOnly = true;
+            }
+
+            if (dtg_packing_size_appear.Columns["QTY_OK"] != null)
+            {
+                dtg_packing_size_appear.Columns["QTY_OK"].HeaderText = "OK";
+                dtg_packing_size_appear.Columns["QTY_OK"].ReadOnly = true;
+            }
+
+            if (dtg_packing_size_appear.Columns["QTY_NG"] != null)
+            {
+                dtg_packing_size_appear.Columns["QTY_NG"].HeaderText = "Pending";
+                dtg_packing_size_appear.Columns["QTY_NG"].ReadOnly = true;
+            }
+
+            if (dtg_packing_size_appear.Columns["JUDGE_LOT_SIZE"] != null)
+            {
+                dtg_packing_size_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgement\r\n(Lot size)";
+                dtg_packing_size_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
+            }
 
             if (dtg_packing_size_appear.Columns["VALUE"] != null)
             {
                 dtg_packing_size_appear.Columns["VALUE"].HeaderText = "ตัว/แพ๊ค";
                 dtg_packing_size_appear.Columns["VALUE"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["VALUE"].Visible = false;
 
                 // *** เพิ่ม: Safe format สำหรับ int columns ***
                 dtg_packing_size_appear.Columns["VALUE"].DefaultCellStyle.Format = "N0";  // No decimal
@@ -327,12 +377,14 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_packing_size_appear.Columns["PACK_COUNT"].HeaderText = "จำนวนแพ็ค";
                 dtg_packing_size_appear.Columns["PACK_COUNT"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["PACK_COUNT"].Visible = false;
             }
 
             if (dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"] != null)
             {
                 dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].HeaderText = "เหลือตรวจ";
                 dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].Visible = false;
 
                 // *** เพิ่ม: การจัดการ NullValue สำหรับ int ***
                 dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].DefaultCellStyle.NullValue = 0;
@@ -344,6 +396,7 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_packing_size_appear.Columns["BATCH"].HeaderText = "ชุดที่";
                 dtg_packing_size_appear.Columns["BATCH"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["BATCH"].Visible = false;
 
                 // *** เพิ่ม: สำหรับ string ***
                 //dtg_packing_size_appear.Columns["BATCH"].DefaultCellStyle.NullValue = "";  // Null แสดง empty
@@ -354,6 +407,16 @@ namespace RawMat.Views.AppearCheck
                 //dtg_packing_size_appear.Columns["PACKING_SIZE"].Visible = false;
                 dtg_packing_size_appear.Columns["PACKING_SIZE"].HeaderText = "ต้องตรวจทั้งหมด";
                 dtg_packing_size_appear.Columns["PACKING_SIZE"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["PACKING_SIZE"].Visible = false;
+            }
+
+            string[] hiddenColumns = { "COUNT", "ORIGINAL_PACK_COUNT", "TOTAL_PACKING_SIZE", "LOT_SIZE", "IS_SELECTABLE" };
+            foreach (string colName in hiddenColumns)
+            {
+                if (dtg_packing_size_appear.Columns[colName] != null)
+                {
+                    dtg_packing_size_appear.Columns[colName].Visible = false;
+                }
             }
 
              dtg_packing_size_appear.Refresh(); // Force update UI
@@ -482,23 +545,472 @@ namespace RawMat.Views.AppearCheck
             }
         }
 
+        private void SetSelectedBatchSamplingContext(DataGridViewRow selectedRow)
+        {
+            selectedPackCount = Math.Max(ParseIntSafe(selectedRow.Cells["ORIGINAL_PACK_COUNT"].Value), 1);
+            selectedPackingValue = ParseIntSafe(selectedRow.Cells["VALUE"].Value);
+            selectedLotSize = ParseIntSafe(selectedRow.Cells["LOT_SIZE"].Value);
+            selectedBatchSampleTotal = ParseIntSafe(selectedRow.Cells["TOTAL_PACKING_SIZE"].Value);
+            maxQty = selectedBatchSampleTotal;
+            currentMaxQty = ParseIntSafe(selectedRow.Cells["REMAIN_PACKING_SIZE"].Value);
+            samplePerPackQty = ParseIntSafe(selectedRow.Cells["PACKING_SIZE"].Value);
+
+            if (samplePerPackQty <= 0)
+            {
+                samplePerPackQty = currentMaxQty;
+            }
+
+            currentEntryMaxQty = CalculateEntryLimitForRemaining(currentMaxQty);
+        }
+
+        private void ResetBatchSamplingContext()
+        {
+            currentMaxQty = 0;
+            maxQty = 0;
+            selectedPackCount = 1;
+            selectedBatchSampleTotal = 0;
+            selectedPackingValue = 0;
+            selectedLotSize = 0;
+            samplePerPackQty = 0;
+            currentEntryMaxQty = 0;
+        }
+
+        private int GetPerPackLimit()
+        {
+            if (samplePerPackQty > 0)
+            {
+                return samplePerPackQty;
+            }
+
+            return maxQty > 0 ? maxQty : currentMaxQty;
+        }
+
+        private int CalculateEntryLimitForRemaining(int remainingQty)
+        {
+            if (remainingQty <= 0)
+            {
+                return 0;
+            }
+
+            int perPackLimit = GetPerPackLimit();
+            return perPackLimit > 0 ? Math.Min(perPackLimit, remainingQty) : remainingQty;
+        }
+
+        private void UpdateEntryLimitFromInspectedQty(int inspectedQty)
+        {
+            currentMaxQty = Math.Max(maxQty - inspectedQty, 0);
+            currentEntryMaxQty = CalculateEntryLimitForRemaining(currentMaxQty);
+        }
+
+        private int GetInspectedQtyFromCurrentGrid()
+        {
+            if (dtg_show_appear?.DataSource is DataTable dt)
+            {
+                return GetInspectedQtyFromTable(dt);
+            }
+
+            return 0;
+        }
+
+        private int GetInspectedQtyFromTable(DataTable dt)
+        {
+            if (dt == null)
+            {
+                return 0;
+            }
+
+            int inspectedQty = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                string judge = row.Table.Columns.Contains("JUDGE") ? row["JUDGE"]?.ToString() ?? "" : "";
+                if (string.IsNullOrWhiteSpace(judge) || judge.Equals("ERR", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                inspectedQty += row.Table.Columns.Contains("QTY_SELECT") ? ParseInt(row["QTY_SELECT"]) : 0;
+            }
+
+            return inspectedQty;
+        }
+
+        private int GetRemainingQtyFromPackingGrid()
+        {
+            if (!(dtg_packing_size_appear?.DataSource is DataTable dt) || !dt.Columns.Contains("REMAIN_PACKING_SIZE"))
+            {
+                return currentMaxQty;
+            }
+
+            int remainingQty = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                remainingQty += ParseInt(row["REMAIN_PACKING_SIZE"]);
+            }
+
+            return remainingQty;
+        }
+
+        private bool IsCurrentBatchComplete(int inspectedQty)
+        {
+            return maxQty > 0 && inspectedQty >= maxQty;
+        }
+
+        private void PrepareForNextBatchSelection()
+        {
+            RefreshPackingGrid();
+            ClearShowGridForNextBatch();
+            ResetCurrentTaskLabel();
+            CloseNgMode();
+            dtg_packing_size_appear.ClearSelection();
+            label3.Text = "เลือกชุดที่มีจำนวนเหลือตรวจมากกว่า 0";
+            dtg_packing_size_appear.Focus();
+        }
+
+        private DataTable CreateAppearancePlanTable()
+        {
+            DataTable dataSource = new DataTable();
+            dataSource.Columns.Add("DISPLAY_NO", typeof(int));
+            dataSource.Columns.Add("PACKING_VALUE", typeof(int));
+            dataSource.Columns.Add("CUMULATIVE_QTY", typeof(int));
+            dataSource.Columns.Add("QTY_SELECT", typeof(string));
+            dataSource.Columns.Add("QTY_OK", typeof(string));
+            dataSource.Columns.Add("QTY_NG", typeof(string));
+            dataSource.Columns.Add("JUDGE_LOT_SIZE", typeof(string));
+            dataSource.Columns.Add("ROW_STATE", typeof(string));
+
+            dataSource.Columns.Add("APPEARANCE_DATE", typeof(string));
+            dataSource.Columns.Add("BATCH", typeof(string));
+            dataSource.Columns.Add("COUNT", typeof(int));
+            dataSource.Columns.Add("JUDGE", typeof(string));
+            dataSource.Columns.Add("EMP_ID", typeof(string));
+            return dataSource;
+        }
+
+        private DataTable BuildAppearancePlanDataSource(DataTable savedData)
+        {
+            DataTable dataSource = CreateAppearancePlanTable();
+            DataRow[] savedRows = savedData == null
+                ? new DataRow[0]
+                : savedData.AsEnumerable()
+                    .OrderBy(r => ParseInt(r["COUNT"]))
+                    .ToArray();
+
+            int cumulativeQty = 0;
+            int rowNo = 1;
+
+            foreach (DataRow savedRow in savedRows)
+            {
+                int qtySelect = ParseInt(savedRow["QTY_SELECT"]);
+                cumulativeQty += qtySelect;
+                AddAppearancePlanRow(
+                    dataSource,
+                    rowNo,
+                    cumulativeQty,
+                    qtySelect,
+                    ParseInt(savedRow["QTY_OK"]),
+                    ParseInt(savedRow["QTY_NG"]),
+                    savedRow["JUDGE"]?.ToString() ?? "",
+                    "SAVED",
+                    savedRow["APPEARANCE_DATE"]?.ToString() ?? "",
+                    ParseInt(savedRow["COUNT"]));
+
+                rowNo++;
+            }
+
+            int remaining = Math.Max(maxQty - cumulativeQty, 0);
+            if (remaining > 0)
+            {
+                int inputQty = CalculateEntryLimitForRemaining(remaining);
+                cumulativeQty += inputQty;
+                AddAppearancePlanRow(
+                    dataSource,
+                    rowNo,
+                    cumulativeQty,
+                    inputQty,
+                    inputQty,
+                    0,
+                    "",
+                    "INPUT",
+                    DateTime.Now.ToString("dd-MMM-yyyy"),
+                    rowNo);
+
+                rowNo++;
+                remaining = Math.Max(maxQty - cumulativeQty, 0);
+            }
+
+            while (remaining > 0)
+            {
+                int planQty = CalculateEntryLimitForRemaining(remaining);
+                if (planQty <= 0)
+                {
+                    break;
+                }
+
+                cumulativeQty += planQty;
+                remaining = Math.Max(maxQty - cumulativeQty, 0);
+                AddAppearancePlanRow(
+                    dataSource,
+                    rowNo,
+                    cumulativeQty,
+                    planQty,
+                    planQty,
+                    0,
+                    "",
+                    "PLAN",
+                    "",
+                    rowNo);
+
+                rowNo++;
+            }
+
+            MarkLastPlanRowLotSize(dataSource);
+            UpdateEntryLimitFromInspectedQty(GetSavedQtyFromPlanTable(dataSource));
+            return dataSource;
+        }
+
+        private void AddAppearancePlanRow(DataTable dataSource, int rowNo, int cumulativeQty, int qtySelect, int qtyOk, int qtyNg, string judge, string rowState, string appearanceDate, int count)
+        {
+            DataRow row = dataSource.NewRow();
+            row["DISPLAY_NO"] = rowNo;
+            row["PACKING_VALUE"] = selectedPackingValue;
+            row["CUMULATIVE_QTY"] = cumulativeQty;
+            row["QTY_SELECT"] = qtySelect.ToString();
+            row["QTY_OK"] = qtyOk > 0 ? qtyOk.ToString() : "";
+            row["QTY_NG"] = qtyNg > 0 ? qtyNg.ToString() : "";
+            row["JUDGE_LOT_SIZE"] = "";
+            row["ROW_STATE"] = rowState;
+            row["APPEARANCE_DATE"] = appearanceDate;
+            row["BATCH"] = propQA.BATCH;
+            row["COUNT"] = count;
+            row["JUDGE"] = judge;
+            row["EMP_ID"] = propQA.EMP_ID;
+            dataSource.Rows.Add(row);
+        }
+
+        private void MarkLastPlanRowLotSize(DataTable dataSource)
+        {
+            if (dataSource.Rows.Count == 0 || selectedLotSize <= 0)
+            {
+                return;
+            }
+
+            dataSource.Rows[dataSource.Rows.Count - 1]["JUDGE_LOT_SIZE"] = selectedLotSize.ToString();
+        }
+
+        private int GetSavedQtyFromPlanTable(DataTable dt)
+        {
+            if (dt == null || !dt.Columns.Contains("ROW_STATE"))
+            {
+                return 0;
+            }
+
+            int qty = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if ((row["ROW_STATE"]?.ToString() ?? "") == "SAVED")
+                {
+                    qty += ParseInt(row["QTY_SELECT"]);
+                }
+            }
+            return qty;
+        }
+
+        private DataRow GetActiveInputDataRow()
+        {
+            if (!(dtg_show_appear?.DataSource is DataTable dt) || !dt.Columns.Contains("ROW_STATE"))
+            {
+                return null;
+            }
+
+            foreach (DataRow row in dt.Rows)
+            {
+                if ((row["ROW_STATE"]?.ToString() ?? "") == "INPUT")
+                {
+                    return row;
+                }
+            }
+
+            return null;
+        }
+
+        private int GetActiveInputGridRowIndex()
+        {
+            if (dtg_show_appear?.Rows == null || !dtg_show_appear.Columns.Contains("ROW_STATE"))
+            {
+                return -1;
+            }
+
+            for (int i = 0; i < dtg_show_appear.Rows.Count; i++)
+            {
+                string state = dtg_show_appear.Rows[i].Cells["ROW_STATE"].Value?.ToString() ?? "";
+                if (state == "INPUT")
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private bool IsInputGridRow(int rowIndex)
+        {
+            if (rowIndex < 0 || dtg_show_appear == null || !dtg_show_appear.Columns.Contains("ROW_STATE"))
+            {
+                return false;
+            }
+
+            return (dtg_show_appear.Rows[rowIndex].Cells["ROW_STATE"].Value?.ToString() ?? "") == "INPUT";
+        }
+
+        private DataTable CreatePackingSelectionTable()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("DISPLAY_NO", typeof(int));
+            dt.Columns.Add("PACKING_VALUE", typeof(int));
+            dt.Columns.Add("CUMULATIVE_QTY", typeof(int));
+            dt.Columns.Add("QTY_SELECT", typeof(int));
+            dt.Columns.Add("QTY_OK", typeof(string));
+            dt.Columns.Add("QTY_NG", typeof(string));
+            dt.Columns.Add("JUDGE_LOT_SIZE", typeof(string));
+
+            dt.Columns.Add("BATCH", typeof(string));
+            dt.Columns.Add("COUNT", typeof(int));
+            dt.Columns.Add("VALUE", typeof(int));
+            dt.Columns.Add("PACK_COUNT", typeof(int));
+            dt.Columns.Add("ORIGINAL_PACK_COUNT", typeof(int));
+            dt.Columns.Add("PACKING_SIZE", typeof(int));
+            dt.Columns.Add("TOTAL_PACKING_SIZE", typeof(int));
+            dt.Columns.Add("REMAIN_PACKING_SIZE", typeof(int));
+            dt.Columns.Add("LOT_SIZE", typeof(int));
+            dt.Columns.Add("IS_SELECTABLE", typeof(bool));
+            return dt;
+        }
+
+        private DataTable BuildPackingSelectionTable(DataTable packingDt)
+        {
+            DataTable expandedDt = CreatePackingSelectionTable();
+            if (packingDt == null)
+            {
+                return expandedDt;
+            }
+
+            string originalBatch = propQA.BATCH;
+
+            foreach (DataRow packingRow in packingDt.Rows)
+            {
+                string batch = packingRow["BATCH"]?.ToString() ?? "";
+                int packCount = Math.Max(ParseIntSafe(packingRow["PACK_COUNT"]), 1);
+                int packingValue = ParseIntSafe(packingRow["VALUE"]);
+                int totalSampleQty = ParseIntSafe(packingRow["PACKING_SIZE"]);
+                int lotSize = packingValue * packCount;
+                int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
+
+                propQA.BATCH = batch;
+                DataTable savedData = conQA.SearchAppearData(propQA);
+                Dictionary<int, int> savedQtyByCount = new Dictionary<int, int>();
+                Dictionary<int, int> savedOkByCount = new Dictionary<int, int>();
+                Dictionary<int, int> savedNgByCount = new Dictionary<int, int>();
+                int latestSavedCount = 0;
+
+                if (savedData != null)
+                {
+                    foreach (DataRow savedRow in savedData.Rows)
+                    {
+                        int count = ParseInt(savedRow["COUNT"]);
+                        int qty = ParseInt(savedRow["QTY_SELECT"]);
+
+                        if (!savedQtyByCount.ContainsKey(count))
+                        {
+                            savedQtyByCount[count] = 0;
+                            savedOkByCount[count] = 0;
+                            savedNgByCount[count] = 0;
+                        }
+
+                        savedQtyByCount[count] += qty;
+                        savedOkByCount[count] += ParseInt(savedRow["QTY_OK"]);
+                        savedNgByCount[count] += ParseInt(savedRow["QTY_NG"]);
+                        latestSavedCount = Math.Max(latestSavedCount, count);
+                    }
+                }
+
+                int cumulativeQty = 0;
+                int remainingPlanQty = totalSampleQty;
+
+                for (int packSeq = 1; packSeq <= packCount && remainingPlanQty > 0; packSeq++)
+                {
+                    int planQty = Math.Min(perPackQty, remainingPlanQty);
+                    remainingPlanQty -= planQty;
+                    cumulativeQty += planQty;
+
+                    int savedQty = savedQtyByCount.ContainsKey(packSeq) ? savedQtyByCount[packSeq] : 0;
+                    int savedOk = savedOkByCount.ContainsKey(packSeq) ? savedOkByCount[packSeq] : 0;
+                    int savedNg = savedNgByCount.ContainsKey(packSeq) ? savedNgByCount[packSeq] : 0;
+                    int remainQty = Math.Max(planQty - savedQty, 0);
+                    bool isSelectable = remainQty > 0 && packSeq == latestSavedCount + 1;
+
+                    DataRow expandedRow = expandedDt.NewRow();
+                    expandedRow["DISPLAY_NO"] = packSeq;
+                    expandedRow["PACKING_VALUE"] = packingValue;
+                    expandedRow["CUMULATIVE_QTY"] = cumulativeQty;
+                    expandedRow["QTY_SELECT"] = planQty;
+                    expandedRow["QTY_OK"] = savedOk > 0 ? savedOk.ToString() : "";
+                    expandedRow["QTY_NG"] = savedNg > 0 ? savedNg.ToString() : "";
+                    expandedRow["JUDGE_LOT_SIZE"] = packSeq == packCount ? lotSize.ToString() : "";
+                    expandedRow["BATCH"] = batch;
+                    expandedRow["COUNT"] = packSeq;
+                    expandedRow["VALUE"] = packingValue;
+                    expandedRow["PACK_COUNT"] = 1;
+                    expandedRow["ORIGINAL_PACK_COUNT"] = packCount;
+                    expandedRow["PACKING_SIZE"] = planQty;
+                    expandedRow["TOTAL_PACKING_SIZE"] = totalSampleQty;
+                    expandedRow["REMAIN_PACKING_SIZE"] = remainQty;
+                    expandedRow["LOT_SIZE"] = lotSize;
+                    expandedRow["IS_SELECTABLE"] = isSelectable;
+                    expandedDt.Rows.Add(expandedRow);
+                }
+            }
+
+            propQA.BATCH = originalBatch;
+            return expandedDt;
+        }
+
+        private DataTable BuildSinglePackInputDataSource(DataGridViewRow selectedRow)
+        {
+            DataTable dataSource = CreateAppearancePlanTable();
+            int displayNo = ParseIntSafe(selectedRow.Cells["DISPLAY_NO"].Value);
+            int cumulativeQty = ParseIntSafe(selectedRow.Cells["CUMULATIVE_QTY"].Value);
+            int qtySelect = ParseIntSafe(selectedRow.Cells["QTY_SELECT"].Value);
+            int count = ParseIntSafe(selectedRow.Cells["COUNT"].Value);
+
+            AddAppearancePlanRow(
+                dataSource,
+                displayNo,
+                cumulativeQty,
+                qtySelect,
+                qtySelect,
+                0,
+                "",
+                "INPUT",
+                DateTime.Now.ToString("dd-MMM-yyyy"),
+                count);
+
+            if (selectedRow.Cells["JUDGE_LOT_SIZE"].Value != null)
+            {
+                dataSource.Rows[0]["JUDGE_LOT_SIZE"] = selectedRow.Cells["JUDGE_LOT_SIZE"].Value.ToString();
+            }
+
+            return dataSource;
+        }
+
         private void UpdateCurrentTaskLabel()
         {
             if (lb_currentTask == null) return;
 
-            int inspectedInBatch = 0;
-            if (dtg_show_appear?.DataSource is DataTable dt)
-            {
-                foreach (DataRow row in dt.Rows)
-                {
-                    string judge = row.Table.Columns.Contains("JUDGE") ? row["JUDGE"]?.ToString() ?? "" : "";
-                    if (string.IsNullOrWhiteSpace(judge)) continue;
-                    inspectedInBatch += ParseInt(row["QTY_SELECT"]);
-                }
-            }
+            int remaining = GetRemainingQtyFromPackingGrid();
+            int inspectedInBatch = Math.Max(maxQty - remaining, 0);
+            int roundLimit = Math.Min(GetPerPackLimit(), remaining);
 
-            int remaining = Math.Max(maxQty - inspectedInBatch, 0);
-            lb_currentTask.Text = $"กำลังตรวจชุดที่ {propQA.BATCH} | ต้องตรวจทั้งหมด {maxQty} ชิ้น | เหลือตรวจ {remaining} ชิ้น";
+            lb_currentTask.Text = $"ชุดที่ {propQA.BATCH} | หยิบไม่เกิน {GetPerPackLimit()} ชิ้นต่อ pack | รอบนี้ไม่เกิน {roundLimit} ชิ้น | ตรวจรวม {inspectedInBatch}/{maxQty} | เหลือ {remaining} ชิ้น";
         }
 
         private void ResetCurrentTaskLabel()
@@ -529,78 +1041,24 @@ namespace RawMat.Views.AppearCheck
             var selectedRow = dtg_packing_size_appear.SelectedRows[0];
             propQA.BATCH = selectedRow.Cells["BATCH"].Value.ToString();
 
-            //propQA.PACKING_SIZE = selectedRow.Cells["PACKING_SIZE"].Value.ToString(); // Total fixed for batch
-            //propQA.REMAIN_PACKING_SIZE = selectedRow.Cells["REMAIN_PACKING_SIZE"].Value.ToString();
+            SetSelectedBatchSamplingContext(selectedRow);
 
-            maxQty = Convert.ToInt32(selectedRow.Cells["PACKING_SIZE"].Value.ToString()); // Total fixed for batch
-            currentMaxQty = Convert.ToInt32(selectedRow.Cells["REMAIN_PACKING_SIZE"].Value.ToString()); // Remaining to inspect
-            //currentMaxQty = Convert.ToInt32(propQA.REMAIN_PACKING_SIZE); // Remaining to inspect
-
-            DataTable dt_show = conQA.SearchAppearData(propQA);
-
-
-            // สร้าง DataTable ใหม่เสมอเพื่อควบคุมโครงสร้างคอลัมน์ให้คงที่และเรียงลำดับถูกต้อง (APPEARANCE_DATE อยู่ด้านหน้า)
-            DataTable dataSource = new DataTable();
-            string[] requiredColumns = { "APPEARANCE_DATE", "BATCH", "COUNT", "QTY_SELECT", "QTY_OK", "QTY_NG", "JUDGE" };
-            foreach (string colName in requiredColumns)
-            {
-                dataSource.Columns.Add(colName, typeof(string));
-            }
-
-            // คัดลอกข้อมูลจาก dt_show ถ้ามี (เฉพาะคอลัมน์ที่ตรงกัน เพื่อหลีกเลี่ยง duplicates)
-            if (dt_show != null && dt_show.Rows.Count > 0)
-            {
-                foreach (DataRow oldRow in dt_show.Rows)
-                {
-                    DataRow copiedRow = dataSource.NewRow();  // เปลี่ยนชื่อเพื่อหลีกเลี่ยง conflict
-                    foreach (string colName in requiredColumns)
-                    {
-                        if (dt_show.Columns.Contains(colName))
-                        {
-                            copiedRow[colName] = oldRow[colName];
-                        }
-                        // ถ้าคอลัมน์ไม่มีใน dt_show จะเป็น DBNull อัตโนมัติ
-                    }
-                    dataSource.Rows.Add(copiedRow);
-                }
-            }
-
-            // คำนวณ lastCount อย่างปลอดภัย
-            int lastCount = 0;
-            if (dataSource.Rows.Count > 0)
-            {
-                object lastCountObj = dataSource.Rows[dataSource.Rows.Count - 1]["COUNT"];
-                if (lastCountObj != DBNull.Value && int.TryParse(lastCountObj.ToString(), out int parsedCount))
-                {
-                    lastCount = parsedCount;
-                }
-            }
-
-            // เพิ่มแถวใหม่สำหรับ input เสมอ
-            string dateStr = DateTime.Now.ToString("dd-MMM-yyyy");
-            DataRow newRow = dataSource.NewRow();
-            newRow["APPEARANCE_DATE"] = dateStr;
-            newRow["BATCH"] = propQA.BATCH;
-            newRow["COUNT"] = (lastCount + 1).ToString();
-            newRow["QTY_SELECT"] = DBNull.Value;
-            newRow["QTY_OK"] = DBNull.Value;
-            newRow["QTY_NG"] = DBNull.Value;
-            newRow["JUDGE"] = DBNull.Value;
-            dataSource.Rows.Add(newRow);
+            DataTable dataSource = BuildSinglePackInputDataSource(selectedRow);
 
             // ล้าง DataSource ก่อนเพื่อรีเซ็ต grid (ป้องกันคอลัมน์เก่าค้าง)
             dtg_show_appear.DataSource = null;
+            dtg_show_appear.AutoGenerateColumns = true;
             dtg_show_appear.DataSource = dataSource;
 
-            gb_input.Enabled = true;
+            gb_input.Enabled = currentMaxQty > 0;
             ApplyRowReadOnly();  // ให้เฉพาะแถวสุดท้ายแก้ไขได้
             UpdateCurrentTaskLabel();
             dtg_show_appear.Refresh();
 
-            // โฟกัสที่เซลล์ JUDGE ของแถวสุดท้าย
-            if (dtg_show_appear.Rows.Count > 0 && dtg_show_appear.Columns["JUDGE"] != null)
+            int inputRowIndex = GetActiveInputGridRowIndex();
+            if (inputRowIndex >= 0 && dtg_show_appear.Columns["QTY_OK"] != null)
             {
-                dtg_show_appear.CurrentCell = dtg_show_appear.Rows[dtg_show_appear.Rows.Count - 1].Cells["JUDGE"];
+                dtg_show_appear.CurrentCell = dtg_show_appear.Rows[inputRowIndex].Cells["QTY_OK"];
             }
 
             // Refresh UI สำหรับ NG mode (ปิดก่อน)
@@ -609,7 +1067,7 @@ namespace RawMat.Views.AppearCheck
             totalNgRequired = 0;
             InitializeNgModeDataTable();
 
-            tb_record.Enabled = false; // Disable จนกว่าจะ ready
+            tb_record.Enabled = GetActiveInputGridRowIndex() >= 0;
 
         }
 
@@ -654,6 +1112,12 @@ namespace RawMat.Views.AppearCheck
                 // 1. ดึงแถวที่เลือกมา
                 var selectedRow = dtg_packing_size_appear.SelectedRows[0];
 
+                bool isSelectable = true;
+                if (dtg_packing_size_appear.Columns["IS_SELECTABLE"] != null)
+                {
+                    bool.TryParse(selectedRow.Cells["IS_SELECTABLE"].Value?.ToString(), out isSelectable);
+                }
+
                 // 2. ดึงค่าจากคอลัมน์ "REMAIN_PACKING_SIZE" (สุ่มตรวจ) โดยตรง
                 var cellValue = selectedRow.Cells["REMAIN_PACKING_SIZE"].Value;
                 int remainQty = 0;
@@ -666,19 +1130,22 @@ namespace RawMat.Views.AppearCheck
 
                 // 4. ตรรกะการเปิดปุ่ม: 
                 // ถ้าจำนวนที่เหลือ (remainQty) มากกว่า 0 -> ให้กดเลือกทำได้
-                if (remainQty > 0)
+                if (remainQty > 0 && isSelectable)
                 {
                     bt_select_packing_size_appear.Enabled = true;
-                    string batch = selectedRow.Cells["BATCH"].Value?.ToString() ?? "";
-                    int totalQty = ParseIntSafe(selectedRow.Cells["PACKING_SIZE"].Value);
-                    label3.Text = $"เลือกชุดที่ {batch}: เหลือตรวจ {remainQty} / {totalQty} ชิ้น";
+                    string displayNo = selectedRow.Cells["DISPLAY_NO"].Value?.ToString() ?? "";
+                    int roundQty = ParseIntSafe(selectedRow.Cells["PACKING_SIZE"].Value);
+                    int totalQty = ParseIntSafe(selectedRow.Cells["TOTAL_PACKING_SIZE"].Value);
+                    label3.Text = $"เลือกชุดที่ {displayNo}: เหลือตรวจ {remainQty} / {roundQty} ชิ้น จากทั้งหมด {totalQty} ชิ้น";
                 }
                 else
                 {
                     // ถ้าเป็น 0 (ตรวจหมดแล้ว) -> ปิดปุ่ม ห้ามเลือกทำซ้ำ
                     bt_select_packing_size_appear.Enabled = false;
-                    string batch = selectedRow.Cells["BATCH"].Value?.ToString() ?? "";
-                    label3.Text = $"ชุดที่ {batch} ตรวจครบแล้ว กรุณาเลือกชุดอื่น";
+                    string displayNo = selectedRow.Cells["DISPLAY_NO"].Value?.ToString() ?? "";
+                    label3.Text = remainQty <= 0
+                        ? $"ชุดที่ {displayNo} ตรวจครบแล้ว กรุณาเลือกชุดอื่น"
+                        : $"กรุณาตรวจตามลำดับก่อน ชุดที่ {displayNo} ยังไม่ถึงคิว";
 
                     // (Optional) ถ้าอยากให้มันเด้งออกจากการเลือกด้วย ให้ใช้ ClearSelection
                     // แต่ระวัง Loop นรก ถ้าใช้บรรทัดล่างนี้ ต้องมั่นใจว่าจัดการ Flag ดีๆ
@@ -748,39 +1215,61 @@ namespace RawMat.Views.AppearCheck
 
         private void dtg_show_appear_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
+            if (dtg_show_appear.Columns["DISPLAY_NO"] != null)
+            {
+                dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับ";
+                dtg_show_appear.Columns["DISPLAY_NO"].ReadOnly = true;
+                dtg_show_appear.Columns["DISPLAY_NO"].Width = 70;
+            }
+
+            if (dtg_show_appear.Columns["PACKING_VALUE"] != null)
+            {
+                dtg_show_appear.Columns["PACKING_VALUE"].HeaderText = "Packing size";
+                dtg_show_appear.Columns["PACKING_VALUE"].ReadOnly = true;
+            }
+
+            if (dtg_show_appear.Columns["CUMULATIVE_QTY"] != null)
+            {
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].HeaderText = "จำนวนรวม";
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].ReadOnly = true;
+            }
+
             if (dtg_show_appear.Columns["APPEARANCE_DATE"] != null)
             {
                 dtg_show_appear.Columns["APPEARANCE_DATE"].HeaderText = "วันที่";
                 dtg_show_appear.Columns["APPEARANCE_DATE"].ReadOnly = true;
+                dtg_show_appear.Columns["APPEARANCE_DATE"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["BATCH"] != null)
             {
                 dtg_show_appear.Columns["BATCH"].HeaderText = "ชุดที่";
                 dtg_show_appear.Columns["BATCH"].ReadOnly = true;
+                dtg_show_appear.Columns["BATCH"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["COUNT"] != null)
             {
                 dtg_show_appear.Columns["COUNT"].HeaderText = "ครั้งที่";
                 dtg_show_appear.Columns["COUNT"].ReadOnly = true;
+                dtg_show_appear.Columns["COUNT"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["QTY_SELECT"] != null)
             {
-                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = "จำนวนที่เลือก";
+                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = "จำนวนที่หยิบจากแพ็ค";
                 dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = false;
             }
 
             if (dtg_show_appear.Columns["QTY_OK"] != null)
             {
-                dtg_show_appear.Columns["QTY_OK"].HeaderText = "จำนวนงานดี";
+                dtg_show_appear.Columns["QTY_OK"].HeaderText = "OK";
                 dtg_show_appear.Columns["QTY_OK"].ReadOnly = false;
             }
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
             {
-                dtg_show_appear.Columns["QTY_NG"].HeaderText = "จำนวนงานเสีย";
+                dtg_show_appear.Columns["QTY_NG"].HeaderText = "Pending";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
             }
 
@@ -788,6 +1277,23 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["JUDGE"].HeaderText = "ผล";
                 dtg_show_appear.Columns["JUDGE"].ReadOnly = true;  // Editable only in last row
+                dtg_show_appear.Columns["JUDGE"].Visible = false;
+            }
+
+            if (dtg_show_appear.Columns["JUDGE_LOT_SIZE"] != null)
+            {
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgement\r\n(Lot size)";
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
+            }
+
+            if (dtg_show_appear.Columns["ROW_STATE"] != null)
+            {
+                dtg_show_appear.Columns["ROW_STATE"].Visible = false;
+            }
+
+            if (dtg_show_appear.Columns["EMP_ID"] != null)
+            {
+                dtg_show_appear.Columns["EMP_ID"].Visible = false;
             }
 
             // Make all rows except last read-only, and hide headers if needed (set RowHeadersVisible = false)
@@ -800,16 +1306,16 @@ namespace RawMat.Views.AppearCheck
         // Apply ReadOnly to all rows except the last one
         private void ApplyRowReadOnly()
         {
-            for (int i = 0; i < dtg_show_appear.Rows.Count - 1; i++)  // All but last row
+            for (int i = 0; i < dtg_show_appear.Rows.Count; i++)
             {
-                dtg_show_appear.Rows[i].ReadOnly = true;  // Lock entire row (overrides column settings for previous rows)
+                dtg_show_appear.Rows[i].ReadOnly = true;
             }
 
-            if (dtg_show_appear.Rows.Count > 0)
+            int inputRowIndex = GetActiveInputGridRowIndex();
+            if (inputRowIndex >= 0)
             {
-                // Last row: Unlock row to allow editing in editable columns (white background)
-                dtg_show_appear.Rows[dtg_show_appear.Rows.Count - 1].ReadOnly = false;
-                dtg_show_appear.Rows[dtg_show_appear.Rows.Count - 1].DefaultCellStyle.BackColor = Color.White;
+                dtg_show_appear.Rows[inputRowIndex].ReadOnly = false;
+                dtg_show_appear.Rows[inputRowIndex].DefaultCellStyle.BackColor = Color.White;
             }
         }
 
@@ -932,10 +1438,10 @@ namespace RawMat.Views.AppearCheck
                 return;
             }
 
-            // Validation: QTY_SELECT ไม่เกิน currentMaxQty (จาก grid ด้านบน)
-            if (qtySelect > currentMaxQty)
+            // Validation: QTY_SELECT ไม่เกินจำนวนที่ควรหยิบต่อครั้ง/ต่อ pack
+            if (qtySelect > currentEntryMaxQty)
             {
-                MessageBox.Show($"จำนวนที่เลือกตรวจ ({qtySelect}) เกินจำนวนที่เหลือ ({currentMaxQty}) แล้วค่ะ กรุณาเลือกให้น้อยลง");
+                MessageBox.Show($"จำนวนที่เลือกตรวจ ({qtySelect}) เกินจำนวนที่ควรหยิบต่อครั้ง ({currentEntryMaxQty}) แล้วค่ะ กรุณาเลือกให้น้อยลง");
                 dtg_show_appear.CurrentCell = dtg_show_appear.Rows[dtg_show_appear.Rows.Count - 1].Cells["QTY_SELECT"];
                 return;
             }
@@ -969,8 +1475,13 @@ namespace RawMat.Views.AppearCheck
             DataTable dt = (DataTable)dtg_show_appear.DataSource;
             if (dt == null || dt.Rows.Count == 0) return;
 
-            // สมมติ row สุดท้ายคือ row ที่จะบันทึก (input row)
-            DataRow inputRow = dt.Rows[dt.Rows.Count - 1];
+            DataRow inputRow = GetActiveInputDataRow();
+            if (inputRow == null)
+            {
+                MessageBox.Show("ไม่มีแถวที่พร้อมบันทึก กรุณาเลือกชุดตรวจใหม่", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             string batch = inputRow["BATCH"].ToString();
 
             // Validate ข้อมูลพื้นฐานใน input row
@@ -980,12 +1491,18 @@ namespace RawMat.Views.AppearCheck
                 return;
             }
 
-            int qtyOK = inputRow["QTY_OK"] == DBNull.Value ? 0 : Convert.ToInt32(inputRow["QTY_OK"]);
-            int qtyNG = inputRow["QTY_NG"] == DBNull.Value ? 0 : Convert.ToInt32(inputRow["QTY_NG"]);
+            int qtyOK = ParseInt(inputRow["QTY_OK"]);
+            int qtyNG = ParseInt(inputRow["QTY_NG"]);
 
             if (qtyOK + qtyNG != qtySelect)
             {
                 MessageBox.Show("QTY_OK + QTY_NG ต้องเท่ากับ QTY_SELECT", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (qtySelect > currentEntryMaxQty)
+            {
+                MessageBox.Show($"จำนวนที่เลือกตรวจ ({qtySelect}) เกินจำนวนที่ควรหยิบต่อครั้ง ({currentEntryMaxQty}) สำหรับชุด {batch}", "Exceed Per Pack", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1025,11 +1542,28 @@ namespace RawMat.Views.AppearCheck
                 return;
             }
 
-            // เช็ค projected sum QTY_SELECT ไม่เกิน REMAIN_PACKING_SIZE (currentMaxQty)
-            int projectedSumSelect = currentSumSelect + qtySelect;
-            if (projectedSumSelect > currentMaxQty)
+            currentMaxQty = Math.Max(maxQty - currentSumSelect, 0);
+            currentEntryMaxQty = CalculateEntryLimitForRemaining(currentMaxQty);
+
+            if (currentEntryMaxQty <= 0)
             {
-                MessageBox.Show($"ผลรวม QTY_SELECT ({projectedSumSelect}) เกินจำนวนสุ่มตรวจที่เหลือ ({currentMaxQty}) สำหรับชุด {batch}", "Exceed Limit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"ชุด {batch} ตรวจครบแล้ว กรุณาเลือกชุดอื่น", "Batch Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                PrepareForNextBatchSelection();
+                return;
+            }
+
+            if (qtySelect > currentEntryMaxQty)
+            {
+                MessageBox.Show($"จำนวนที่เลือกตรวจ ({qtySelect}) เกินจำนวนที่ควรหยิบต่อครั้ง ({currentEntryMaxQty}) สำหรับชุด {batch}", "Exceed Per Pack", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RefreshAppearData();
+                return;
+            }
+
+            // เช็ค projected sum QTY_SELECT ไม่เกินยอดตรวจรวมของ batch
+            int projectedSumSelect = currentSumSelect + qtySelect;
+            if (projectedSumSelect > maxQty)
+            {
+                MessageBox.Show($"ผลรวม QTY_SELECT ({projectedSumSelect}) เกินจำนวนที่ต้องตรวจทั้งหมด ({maxQty}) สำหรับชุด {batch}", "Exceed Limit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1069,6 +1603,7 @@ namespace RawMat.Views.AppearCheck
                 // Requery total inspected for this report (across all batches, INUSE=1)
                 int totalInspected = conQA.GetTotalInspected(propQA); // SUM(QTY_SELECT) WHERE REPORT_NO=..., INUSE=1
                 bool isAllComplete = totalInspected >= Convert.ToInt32(propQA.inspQty); // Total inspection qty
+                bool isBatchComplete = IsCurrentBatchComplete(projectedSumSelect);
 
                 if (judge == "0") // NG
                 {
@@ -1096,8 +1631,14 @@ namespace RawMat.Views.AppearCheck
 
                         MessageBox.Show("ทำต่อได้ แต่พบสิ่งผิดปกติ กรุณาตรวจสอบเพิ่มเติม", "ทำต่อได้ แต่พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                        // Update grid for next count if batch not full
-                        RefreshAppearData(); // Refresh to add new input row if needed
+                        if (isBatchComplete)
+                        {
+                            PrepareForNextBatchSelection();
+                        }
+                        else
+                        {
+                            PrepareForNextBatchSelection();
+                        }
                         CloseNgMode();
                                              // Stay in current screen, enable for next input
                     }
@@ -1118,15 +1659,16 @@ namespace RawMat.Views.AppearCheck
                     else
                     {
                         // Not complete: Continue normally
-                        MessageBox.Show("ทำต่อได้ปกติ", "ทำต่อได้ปกติ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(isBatchComplete ? "ชุดนี้ตรวจครบแล้ว กรุณาเลือกชุดอื่น" : "ทำต่อได้ปกติ", "ทำต่อได้ปกติ", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // Clear for next: Refresh packing if switching batch, but since per batch, refresh show grid
-                        RefreshAppearData(); // Add new input row
-                                             // Reset NG mode
-                        isNgModeActive = false;
-                        gb_ngMode.Enabled = false;
-                        InitializeNgModeDataTable();
-                        // Stay in screen
+                        if (isBatchComplete)
+                        {
+                            PrepareForNextBatchSelection();
+                        }
+                        else
+                        {
+                            PrepareForNextBatchSelection();
+                        }
                     }
                 }
 
@@ -1143,12 +1685,9 @@ namespace RawMat.Views.AppearCheck
         // Helper: Refresh packing grid with latest data (assume SearchSampleSize updates REMAIN if needed)
         private void RefreshPackingGrid()
         {
-            DataTable dt = ConvertToSafeDataTable(conQA.SearchSampleSize(propQA));
+            DataTable dt = BuildPackingSelectionTable(ConvertToSafeDataTable(conQA.SearchSampleSize(propQA)));
             dtg_packing_size_appear.DataSource = dt;
-            if (dtg_packing_size_appear.Columns["PACK_COUNT"] != null) dtg_packing_size_appear.Columns["PACK_COUNT"].HeaderText = "จำนวนแพ็ค";
-            if (dtg_packing_size_appear.Columns["VALUE"] != null) dtg_packing_size_appear.Columns["VALUE"].HeaderText = "ตัว/แพ๊ค";
-            if (dtg_packing_size_appear.Columns["PACKING_SIZE"] != null) dtg_packing_size_appear.Columns["PACKING_SIZE"].HeaderText = "ต้องตรวจทั้งหมด";
-            if (dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"] != null) dtg_packing_size_appear.Columns["REMAIN_PACKING_SIZE"].HeaderText = "เหลือตรวจ";
+            dtg_packing_size_appear_DataBindingComplete(dtg_packing_size_appear, new DataGridViewBindingCompleteEventArgs(ListChangedType.Reset));
             dtg_packing_size_appear.Enabled = true;
             bt_select_packing_size_appear.Enabled = true;
         }
@@ -1189,61 +1728,31 @@ namespace RawMat.Views.AppearCheck
         private void RefreshAppearData()
         {
             DataTable refreshedDt = conQA.SearchAppearData(propQA);
-            // สร้าง DataTable ใหม่เหมือนใน bt_Select_Click
-            DataTable dataSource = new DataTable();
+            DataTable dataSource = BuildAppearancePlanDataSource(refreshedDt);
 
-            // 1. กำหนดชนิดข้อมูลที่ถูกต้อง
-            dataSource.Columns.Add("APPEARANCE_DATE", typeof(string));
-            dataSource.Columns.Add("BATCH", typeof(string));
-            dataSource.Columns.Add("COUNT", typeof(int));           // เปลี่ยนเป็น int
-            dataSource.Columns.Add("QTY_SELECT", typeof(int));      // เปลี่ยนเป็น int
-            dataSource.Columns.Add("QTY_OK", typeof(int));          // เปลี่ยนเป็น int
-            dataSource.Columns.Add("QTY_NG", typeof(int));          // เปลี่ยนเป็น int
-            dataSource.Columns.Add("JUDGE", typeof(string));
-            dataSource.Columns.Add("EMP_ID", typeof(string));
-
-            foreach (DataRow row in refreshedDt.Rows)
+            if (currentMaxQty <= 0)
             {
-                DataRow newRow = dataSource.NewRow();
-
-                // 2. ใช้ Convert.ToInt32() และจัดการ DBNull
-                newRow["APPEARANCE_DATE"] = row["APPEARANCE_DATE"]?.ToString() ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                newRow["BATCH"] = row["BATCH"]?.ToString() ?? "";
-                newRow["COUNT"] = row["COUNT"] is DBNull ? 0 : Convert.ToInt32(row["COUNT"]);
-                newRow["QTY_SELECT"] = row["QTY_SELECT"] is DBNull ? 0 : Convert.ToInt32(row["QTY_SELECT"]);
-                newRow["QTY_OK"] = row["QTY_OK"] is DBNull ? 0 : Convert.ToInt32(row["QTY_OK"]);
-                newRow["QTY_NG"] = row["QTY_NG"] is DBNull ? 0 : Convert.ToInt32(row["QTY_NG"]);
-                newRow["JUDGE"] = row["JUDGE"]?.ToString() ?? "1";
-                newRow["EMP_ID"] = row["EMP_ID"]?.ToString() ?? "";
-                dataSource.Rows.Add(newRow);
+                dtg_show_appear.AutoGenerateColumns = true;
+                dtg_show_appear.DataSource = dataSource;
+                ApplyRowReadOnly();
+                UpdateCurrentTaskLabel();
+                tb_record.Enabled = false;
+                gb_input.Enabled = false;
+                return;
             }
 
-            // เพิ่ม row ใหม่สำหรับ input ถ้าต้องการ (COUNT = max +1)
-            DataRow newInputRow = dataSource.NewRow();
-            newInputRow["APPEARANCE_DATE"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            newInputRow["BATCH"] = propQA.BATCH;
-
-            // คำนวณ maxCount จากข้อมูลที่เพิ่งโหลดมา
-            int maxCount = dataSource.Rows.Count > 0 ? dataSource.AsEnumerable().Max(r => r.Field<int>("COUNT")) : 0;
-
-            newInputRow["COUNT"] = (maxCount + 1); // เป็น int
-            newInputRow["QTY_SELECT"] = 0;         // **ใช้ 0 แทน DBNull**
-            newInputRow["QTY_OK"] = 0;             // **ใช้ 0 แทน DBNull**
-            newInputRow["QTY_NG"] = 0;             // **ใช้ 0 แทน DBNull**
-            newInputRow["JUDGE"] = string.Empty;
-            newInputRow["EMP_ID"] = propQA.EMP_ID;
-            dataSource.Rows.Add(newInputRow);
-
+            dtg_show_appear.AutoGenerateColumns = true;
             dtg_show_appear.DataSource = dataSource;
             ApplyRowReadOnly();
             UpdateCurrentTaskLabel();
+            tb_record.Enabled = true;
         }
 
         private void dtg_show_appear_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             // 1. กรอง Event ที่ไม่จำเป็น
             if (_suppressEvents || e.RowIndex < 0 || e.ColumnIndex < 0) return;
-            if (e.RowIndex != dtg_show_appear.Rows.Count - 1) return; // เช็คแค่แถวสุดท้าย (Input Row)
+            if (!IsInputGridRow(e.RowIndex)) return;
 
             // Ignore changes to JUDGE itself to prevent loop
             if (dtg_show_appear.Columns[e.ColumnIndex].Name == "JUDGE") return;
@@ -1269,11 +1778,11 @@ namespace RawMat.Views.AppearCheck
                 string errorMsg = "";
                 string targetColName = ""; // คอลัมน์ที่จะดีดกลับไปถ้าผิด
 
-                // กฏที่ 1: Select ต้องไม่เกิน Max
-                if (qtySelect > currentMaxQty)
+                // กฏที่ 1: Select ต้องไม่เกินจำนวนที่ควรหยิบต่อครั้ง/ต่อ pack
+                if (qtySelect > currentEntryMaxQty)
                 {
                     isValid = false;
-                    errorMsg = $"จำนวนที่เลือก ({qtySelect}) เกินจำนวนที่เหลือ ({currentMaxQty})";
+                    errorMsg = $"จำนวนที่เลือก ({qtySelect}) เกินจำนวนที่ควรหยิบต่อครั้ง ({currentEntryMaxQty})";
                     targetColName = "QTY_SELECT";
                 }
                 // กฏที่ 2: OK + NG ต้องเท่ากับ Select (เฉพาะเมื่อ Select > 0)
@@ -1403,7 +1912,7 @@ namespace RawMat.Views.AppearCheck
         // And add this method if using CellEndEdit
         private void dtg_show_appear_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == dtg_show_appear.Rows.Count - 1 && e.ColumnIndex >= 0)
+            if (IsInputGridRow(e.RowIndex) && e.ColumnIndex >= 0)
             {
                 // Trigger validation after edit ends
                 dtg_show_appear_CellValueChanged(sender, e);
@@ -1458,7 +1967,7 @@ namespace RawMat.Views.AppearCheck
 
         private void dtg_show_appear_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            if (_suppressEvents || e.RowIndex < 0 || e.RowIndex != dtg_show_appear.Rows.Count - 1) return;
+            if (_suppressEvents || e.RowIndex < 0 || !IsInputGridRow(e.RowIndex)) return;
 
             string colName = dtg_show_appear.Columns[e.ColumnIndex].Name;
             string inputValue = e.FormattedValue?.ToString() ?? "";
@@ -1478,7 +1987,7 @@ namespace RawMat.Views.AppearCheck
                 }
 
                 // Existing range check (safe แล้วเพราะ parsedValue assigned)
-                if (colName == "QTY_SELECT" && parsedValue > currentMaxQty)
+                if (colName == "QTY_SELECT" && parsedValue > currentEntryMaxQty)
                 {
                     e.Cancel = true;
                     // Handle as before (e.g., MessageBox or clear cell)
@@ -1502,9 +2011,8 @@ namespace RawMat.Views.AppearCheck
             // ถ้ามีปุ่ม Record Data: bt_Record.Enabled = false; (ปรับชื่อปุ่มจริง)
             // ถ้ามีปุ่มอื่นๆ ที่เกี่ยวข้อง: bt_Other.Enabled = false;
 
-            // Reset สถานะอื่นๆ ถ้าจำเป็น (เช่น currentMaxQty = 0;)
-            currentMaxQty = 0;
-            maxQty = 0;
+            // Reset สถานะอื่นๆ ถ้าจำเป็น
+            ResetBatchSamplingContext();
             propQA.BATCH = string.Empty;
             ResetCurrentTaskLabel();
             CloseNgMode();

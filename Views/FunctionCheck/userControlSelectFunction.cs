@@ -182,8 +182,8 @@ namespace RawMat.Views.FunctionCheck
 
                                 for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                 {
-                                    // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                    // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Function Check
+                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                 }
 
 
@@ -229,17 +229,10 @@ namespace RawMat.Views.FunctionCheck
 
                                 if (Convert.ToInt32(propQA.CAVITY_QTY) != 0)
                                 {
-                                    int sampCavity = Convert.ToInt32(propQA.CAVITY_QTY) * Convert.ToInt32(propQA.dtFuncSamp.Rows[0]["Sampling_Qty"].ToString());
-
-                                    if (Convert.ToInt32(propQA.SAMPLING_QTY) <= sampCavity)
-                                    {
-                                        propQA.SAMPLING_QTY = sampCavity.ToString();
-                                    }
-
                                     for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                     {
-                                        // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                        // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Function Check
+                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                     }
 
                                 }

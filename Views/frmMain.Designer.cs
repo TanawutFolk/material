@@ -67,7 +67,7 @@
             this.panelHeader2.Controls.Add(this.bt_setting);
             this.panelHeader2.Location = new System.Drawing.Point(150, 50);
             this.panelHeader2.Name = "panelHeader2";
-            this.panelHeader2.Size = new System.Drawing.Size(1116, 112);
+            this.panelHeader2.Size = new System.Drawing.Size(1116, 106);
             this.panelHeader2.TabIndex = 7;
             // 
             // bt_refresh
@@ -268,7 +268,7 @@
             this.bt_status_packing_check_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_packing_check_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_packing_check_pending.selected = false;
-            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(165, 100);
+            this.bt_status_packing_check_pending.Size = new System.Drawing.Size(149, 100);
             this.bt_status_packing_check_pending.TabIndex = 37;
             this.bt_status_packing_check_pending.Text = "Packing Check Pending \n0 report";
             this.bt_status_packing_check_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -298,14 +298,14 @@
             this.bt_status_regular_pending.IconVisible = true;
             this.bt_status_regular_pending.IconZoom = 40D;
             this.bt_status_regular_pending.IsTab = false;
-            this.bt_status_regular_pending.Location = new System.Drawing.Point(282, 4);
+            this.bt_status_regular_pending.Location = new System.Drawing.Point(286, 4);
             this.bt_status_regular_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_regular_pending.Name = "bt_status_regular_pending";
             this.bt_status_regular_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_regular_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_regular_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_regular_pending.selected = false;
-            this.bt_status_regular_pending.Size = new System.Drawing.Size(158, 100);
+            this.bt_status_regular_pending.Size = new System.Drawing.Size(154, 100);
             this.bt_status_regular_pending.TabIndex = 36;
             this.bt_status_regular_pending.Text = "Regular Pending \n0 report";
             this.bt_status_regular_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -432,9 +432,9 @@
             // panelMain
             // 
             this.panelMain.BackColor = System.Drawing.Color.Pink;
-            this.panelMain.Location = new System.Drawing.Point(150, 162);
+            this.panelMain.Location = new System.Drawing.Point(150, 157);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Size = new System.Drawing.Size(1115, 736);
+            this.panelMain.Size = new System.Drawing.Size(1115, 741);
             this.panelMain.TabIndex = 18;
             // 
             // panelHome

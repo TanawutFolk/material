@@ -58,20 +58,6 @@ namespace RawMat.Views.DimensionCheck
 
         }
 
-        private int GetCavitySamplingQty(int totalSamplingQty, int cavityQty, int cavityIndex)
-        {
-            if (cavityQty <= 0)
-            {
-                return 0;
-            }
-
-            int baseQty = totalSamplingQty / cavityQty;
-            int remainder = totalSamplingQty % cavityQty;
-
-            return baseQty + (cavityIndex < remainder ? 1 : 0);
-        }
-
-
         private void userControlSelectDimension_Load(object sender, EventArgs e)
         {
             lb_process.Text = propQA.labelProcess.Replace("\n", " ");
@@ -271,8 +257,8 @@ namespace RawMat.Views.DimensionCheck
 
                                 for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                 {
-                                    // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                    // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Dimension Check
+                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                 }
 
 
@@ -316,22 +302,10 @@ namespace RawMat.Views.DimensionCheck
 
                                 if(Convert.ToInt32(propQA.CAVITY_QTY) != 0)
                                 {
-                                    int sampCavity = Convert.ToInt32(propQA.CAVITY_QTY) * Convert.ToInt32(propQA.dtDimSamp.Rows[0]["Sampling_Qty"].ToString());
-
-                                    if (Convert.ToInt32(propQA.SAMPLING_QTY) <= sampCavity)
-                                    {
-                                        propQA.SAMPLING_QTY = sampCavity.ToString();
-                                    }
-
                                     for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                     {
-                                        int cavitySamplingQty = GetCavitySamplingQty(
-                                            Convert.ToInt32(propQA.SAMPLING_QTY),
-                                            Convert.ToInt32(propQA.CAVITY_QTY),
-                                            i);
-
-                                        // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), cavitySamplingQty });
+                                        // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Dimension Check
+                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                     }
 
                                 }

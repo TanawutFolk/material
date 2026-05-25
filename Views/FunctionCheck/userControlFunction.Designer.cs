@@ -50,6 +50,7 @@
             this.dtg_function = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.lb_lotSize = new System.Windows.Forms.Label();
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
+            this.lb_TotalCavity = new System.Windows.Forms.Label();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_cavity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
@@ -320,12 +321,23 @@
             this.tb_record.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_record.Click += new System.EventHandler(this.tb_record_Click);
             // 
+            // lb_TotalCavity
+            // 
+            this.lb_TotalCavity.AutoSize = true;
+            this.lb_TotalCavity.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_TotalCavity.Location = new System.Drawing.Point(595, 100);
+            this.lb_TotalCavity.Name = "lb_TotalCavity";
+            this.lb_TotalCavity.Size = new System.Drawing.Size(245, 19);
+            this.lb_TotalCavity.TabIndex = 73;
+            this.lb_TotalCavity.Text = "Total Cavity : XXXXXXXXXXX";
+            // 
             // userControlFunction
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Wheat;
+            this.Controls.Add(this.lb_TotalCavity);
             this.Controls.Add(this.tb_record);
             this.Controls.Add(this.lb_lotSize);
             this.Controls.Add(this.lb_sampName);
@@ -375,5 +387,7 @@
         private Bunifu.Framework.UI.BunifuCustomDataGrid dtg_function;
         private System.Windows.Forms.Label lb_lotSize;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lb_TotalCavity;
     }
 }

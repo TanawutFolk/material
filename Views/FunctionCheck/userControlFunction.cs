@@ -52,6 +52,8 @@ namespace RawMat.Views.FunctionCheck
         {
 
             InitializeComponent();
+            dtg_cavity.CellValidating += dtg_cavity_CellValidating;
+            dtg_cavity.EditingControlShowing += dtg_cavity_EditingControlShowing;
 
         }
 
@@ -116,6 +118,9 @@ namespace RawMat.Views.FunctionCheck
 
             if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
             {
+                lb_TotalCavity.Visible = true;
+                lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
+
                 // โหลดรูป Cavity (สมมติ refactor แล้ว ใช้ LoadImages แทน LoadCavityImage)
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE); // สมมติมี key "CavityPath" ใน app.config
                 dtg_cavity.DataSource = propQA.dtCavity;
@@ -135,6 +140,7 @@ namespace RawMat.Views.FunctionCheck
             else
             {
                 gb_cavity.Visible = false;
+                lb_TotalCavity.Visible = false;
 
                 GenerateDataTableFunction(null, Convert.ToInt32(propQA.SAMPLING_QTY));
             }
@@ -375,37 +381,39 @@ namespace RawMat.Views.FunctionCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
-            // ตรวจสอบว่าไม่มี Cell ว่าง
-            foreach (DataGridViewRow row in dtg_cavity.Rows)
-            {
-                foreach (DataGridViewCell cell in row.Cells)
-                {
-                    if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
-                    {
-                        CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกข้อมูลให้ครบทุกช่อง!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
-                        return;
-                    }
-                }
+            dtg_cavity.EndEdit();
 
-            }
-
-            // คำนวณผลรวมของ QTY
             int totalQty = 0;
+
+            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขมากกว่า 0 ทุกแถว
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
-
-                if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty))
+                if (row.IsNewRow)
                 {
-                    totalQty = qty;
+                    continue;
                 }
 
+                string cavityName = row.Cells["CAVITY_NAME"].Value?.ToString();
+                string samplingQty = row.Cells["SAMPLING_QTY"].Value?.ToString();
+
+                if (string.IsNullOrWhiteSpace(cavityName))
+                {
+                    CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกชื่อ Cavity ให้ครบทุกแถว!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                    return;
+                }
+
+                if (!int.TryParse(samplingQty, out int qty) || qty <= 0)
+                {
+                    CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกจำนวน Cavity เป็นตัวเลขมากกว่า 0 ทุกแถว!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                    return;
+                }
+
+                totalQty += qty;
             }
 
-
-            //if (totalQty != (Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)))
-            if (totalQty < Convert.ToInt32(propQA.SAMPLING_QTY))
+            if (totalQty != Convert.ToInt32(propQA.SAMPLING_QTY))
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้มากกว่าหรือเท่ากับ {Convert.ToInt32(propQA.SAMPLING_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -414,6 +422,47 @@ namespace RawMat.Views.FunctionCheck
 
 
             GenerateDataTableFunction(dtg_cavity, 0);
+        }
+
+        private void dtg_cavity_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (e.RowIndex < 0 || dtg_cavity.Columns[e.ColumnIndex].Name != "SAMPLING_QTY")
+            {
+                return;
+            }
+
+            string value = e.FormattedValue?.ToString();
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            if (!int.TryParse(value, out int qty) || qty <= 0)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dtg_cavity_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (e.Control is System.Windows.Forms.TextBox textBox)
+            {
+                textBox.KeyPress -= dtg_cavity_TextBox_KeyPress;
+
+                if (dtg_cavity.CurrentCell != null &&
+                    dtg_cavity.Columns[dtg_cavity.CurrentCell.ColumnIndex].Name == "SAMPLING_QTY")
+                {
+                    textBox.KeyPress += dtg_cavity_TextBox_KeyPress;
+                }
+            }
+        }
+
+        private void dtg_cavity_TextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         private void dtg_function_CellEndEdit(object sender, DataGridViewCellEventArgs e)
