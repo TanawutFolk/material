@@ -37,15 +37,24 @@ namespace RawMat.Views.ReceiveWH
             //bgWorker.WorkerReportsProgress = false;
             //bgWorker.WorkerSupportsCancellation = false;
 
-           
+            loadingTimer = new Timer();
+            loadingTimer.Interval = 100;
+            loadingTimer.Tick += LoadingTimer_Tick;
 
         }
 
         // Event Handler ของ Timer
         private void LoadingTimer_Tick(object sender, EventArgs e)
         {
-            picLoading.Visible = true; // เปิด GIF
-            picLoading.Refresh(); // รีเฟรชเพื่อให้ GIF เล่นอย่างราบรื่น
+            if (!pgbOkSearch.Visible)
+            {
+                return;
+            }
+
+            if (pgbOkSearch.Value < 95)
+            {
+                pgbOkSearch.Value = Math.Min(pgbOkSearch.Value + 2, 95);
+            }
         }
 
         private async void bt_okCheckSheet_Click(object sender, EventArgs e)
@@ -53,14 +62,44 @@ namespace RawMat.Views.ReceiveWH
             //picLoading.Visible = true;
             //picLoading.Visible = true;
             //bgWorker.RunWorkerAsync(); // ให้ BackgroundWorker ทำงาน //Test
-            picLoading.Visible = true;
-            bool success = await Task.Run(() => ProcessData()); // เรียกฟังก์ชัน async
-            picLoading.Visible = false;
+            SetSearchProgressVisible(true);
+            bool success = false;
+
+            try
+            {
+                success = await Task.Run(() => ProcessData()); // เรียกฟังก์ชัน async
+            }
+            finally
+            {
+                SetSearchProgressVisible(false);
+            }
 
             if (success)
             {
                 //MessageBox.Show("การประมวลผลเสร็จสิ้นเรียบร้อย", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void SetSearchProgressVisible(bool isVisible)
+        {
+            pgbOkSearch.Style = ProgressBarStyle.Continuous;
+            pgbOkSearch.Minimum = 0;
+            pgbOkSearch.Maximum = 100;
+
+            if (isVisible)
+            {
+                pgbOkSearch.Value = 0;
+                pgbOkSearch.Visible = true;
+                loadingTimer.Start();
+            }
+            else
+            {
+                loadingTimer.Stop();
+                pgbOkSearch.Value = 100;
+                pgbOkSearch.Visible = true;
+            }
+
+            bt_okCheckSheet.Enabled = !isVisible;
         }
 
         private bool ProcessData()
@@ -176,12 +215,12 @@ namespace RawMat.Views.ReceiveWH
             if (e.Error != null)
             {
                 MessageBox.Show("Error: " + e.Error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                picLoading.Visible = false;
+                SetSearchProgressVisible(false);
                 return;
             }
 
             bool success = (bool)e.Result;
-            picLoading.Visible = false;
+            SetSearchProgressVisible(false);
 
             if (!success)
             {

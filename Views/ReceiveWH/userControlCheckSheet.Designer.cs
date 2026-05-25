@@ -43,6 +43,7 @@
             this.lb_top = new System.Windows.Forms.Label();
             this.bt_okCheckSheet = new System.Windows.Forms.Button();
             this.picLoading = new System.Windows.Forms.PictureBox();
+            this.pgbOkSearch = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_receiveMat)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picLoading)).BeginInit();
             this.SuspendLayout();
@@ -193,11 +194,22 @@
             this.picLoading.TabStop = false;
             this.picLoading.Visible = false;
             // 
+            // pgbOkSearch
+            // 
+            this.pgbOkSearch.Location = new System.Drawing.Point(17, 178);
+            this.pgbOkSearch.MarqueeAnimationSpeed = 0;
+            this.pgbOkSearch.Name = "pgbOkSearch";
+            this.pgbOkSearch.Size = new System.Drawing.Size(1081, 12);
+            this.pgbOkSearch.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pgbOkSearch.TabIndex = 25;
+            this.pgbOkSearch.Visible = false;
+            // 
             // userControlCheckSheet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightPink;
+            this.Controls.Add(this.pgbOkSearch);
             this.Controls.Add(this.picLoading);
             this.Controls.Add(this.bt_okCheckSheet);
             this.Controls.Add(this.lb_top);
@@ -228,5 +240,6 @@
         private System.Windows.Forms.DataGridViewImageColumn STATUS;
         private System.Windows.Forms.Button bt_okCheckSheet;
         private System.Windows.Forms.PictureBox picLoading;
+        private System.Windows.Forms.ProgressBar pgbOkSearch;
     }
 }
