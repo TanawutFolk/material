@@ -113,7 +113,7 @@
             this.bt_status_dimension_pending.IconVisible = true;
             this.bt_status_dimension_pending.IconZoom = 40D;
             this.bt_status_dimension_pending.IsTab = false;
-            this.bt_status_dimension_pending.Location = new System.Drawing.Point(730, 4);
+            this.bt_status_dimension_pending.Location = new System.Drawing.Point(742, 4);
             this.bt_status_dimension_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_dimension_pending.Name = "bt_status_dimension_pending";
             this.bt_status_dimension_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -150,14 +150,14 @@
             this.bt_status_function_pending.IconVisible = true;
             this.bt_status_function_pending.IconZoom = 40D;
             this.bt_status_function_pending.IsTab = false;
-            this.bt_status_function_pending.Location = new System.Drawing.Point(593, 4);
+            this.bt_status_function_pending.Location = new System.Drawing.Point(600, 4);
             this.bt_status_function_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_function_pending.Name = "bt_status_function_pending";
             this.bt_status_function_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.bt_status_function_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_function_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_function_pending.selected = false;
-            this.bt_status_function_pending.Size = new System.Drawing.Size(161, 100);
+            this.bt_status_function_pending.Size = new System.Drawing.Size(170, 100);
             this.bt_status_function_pending.TabIndex = 35;
             this.bt_status_function_pending.Text = "Function Pending \n0 Report";
             this.bt_status_function_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -187,7 +187,7 @@
             this.bt_appear_pending.IconVisible = true;
             this.bt_appear_pending.IconZoom = 40D;
             this.bt_appear_pending.IsTab = false;
-            this.bt_appear_pending.Location = new System.Drawing.Point(898, 4);
+            this.bt_appear_pending.Location = new System.Drawing.Point(903, 4);
             this.bt_appear_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_appear_pending.Name = "bt_appear_pending";
             this.bt_appear_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -231,7 +231,7 @@
             this.bt_status_data_pending.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.bt_status_data_pending.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_status_data_pending.selected = false;
-            this.bt_status_data_pending.Size = new System.Drawing.Size(170, 100);
+            this.bt_status_data_pending.Size = new System.Drawing.Size(177, 100);
             this.bt_status_data_pending.TabIndex = 38;
             this.bt_status_data_pending.Text = "Insp. Data \nPending \n0 report";
             this.bt_status_data_pending.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -298,7 +298,7 @@
             this.bt_status_regular_pending.IconVisible = true;
             this.bt_status_regular_pending.IconZoom = 40D;
             this.bt_status_regular_pending.IsTab = false;
-            this.bt_status_regular_pending.Location = new System.Drawing.Point(289, 4);
+            this.bt_status_regular_pending.Location = new System.Drawing.Point(282, 4);
             this.bt_status_regular_pending.Margin = new System.Windows.Forms.Padding(0);
             this.bt_status_regular_pending.Name = "bt_status_regular_pending";
             this.bt_status_regular_pending.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));

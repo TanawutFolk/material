@@ -571,19 +571,19 @@ namespace RawMat
             bt_status_rec_pending.Text = $"Receive WH \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
             qaProp.process = "Packing_Check";
-            bt_status_packing_check_pending.Text = $"Packing Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            bt_status_packing_check_pending.Text = $"Packing Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
             qaProp.process = "Regular_Check";
-            bt_status_regular_pending.Text = $"Regular Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            bt_status_regular_pending.Text = $"Regular Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
             qaProp.process = "Function_Check";
-            bt_status_function_pending.Text = $"Function Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            bt_status_function_pending.Text = $"Function Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
             qaProp.process = "Dimension_Check";
-            bt_status_dimension_pending.Text = $"Dimension Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            bt_status_dimension_pending.Text = $"Dimension Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
             qaProp.process = "Inspection_Data_Check";
-            bt_status_data_pending.Text = $"Insp. Data Check \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            bt_status_data_pending.Text = $"Insp. Data Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
 
         }
 
