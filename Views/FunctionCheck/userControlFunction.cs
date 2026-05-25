@@ -385,7 +385,7 @@ namespace RawMat.Views.FunctionCheck
 
             int totalQty = 0;
 
-            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขมากกว่า 0 ทุกแถว
+            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
                 if (row.IsNewRow)
@@ -402,9 +402,9 @@ namespace RawMat.Views.FunctionCheck
                     return;
                 }
 
-                if (!int.TryParse(samplingQty, out int qty) || qty <= 0)
+                if (!int.TryParse(samplingQty, out int qty) || qty < 0)
                 {
-                    CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกจำนวน Cavity เป็นตัวเลขมากกว่า 0 ทุกแถว!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                    CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกจำนวน Cavity เป็นตัวเลขตั้งแต่ 0 ขึ้นไปทุกแถว!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
                     return;
                 }
 
@@ -432,12 +432,7 @@ namespace RawMat.Views.FunctionCheck
             }
 
             string value = e.FormattedValue?.ToString();
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return;
-            }
-
-            if (!int.TryParse(value, out int qty) || qty <= 0)
+            if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, out int qty) || qty < 0)
             {
                 e.Cancel = true;
             }
