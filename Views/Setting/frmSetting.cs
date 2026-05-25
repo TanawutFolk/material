@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace RawMat.Views.Setting
 {
-    public partial class frmInspectionSetting : Form
+    public partial class frmSetting : Form
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
@@ -62,7 +62,7 @@ namespace RawMat.Views.Setting
         private int _statusColumnIndex = -1;
 
         // ─────────────────────────────────────────────────────────────────────
-        public frmInspectionSetting()
+        public frmSetting()
         {
             InitializeComponent();
         }

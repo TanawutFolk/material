@@ -972,6 +972,9 @@ namespace RawMat.Views.PackingCheck
             usrPackCheckPend.Dock = DockStyle.Fill;
             usrPackCheckPend.propQA = propQA;
 
+            var parentForm = this.FindForm() as frmMain;
+            parentForm?.ControlBackLevel(employee);
+
             Form mainForm = this.FindForm();
 
             if (mainForm != null)

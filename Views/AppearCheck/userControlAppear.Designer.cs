@@ -301,7 +301,7 @@
             this.gb_pack.Size = new System.Drawing.Size(703, 309);
             this.gb_pack.TabIndex = 86;
             this.gb_pack.TabStop = false;
-            this.gb_pack.Text = "เลือกชุดตรวจ";
+            this.gb_pack.Text = "คิวตรวจตามแพ็ค";
             // 
             // bt_Clear
             // 
@@ -331,7 +331,7 @@
             this.bt_select_packing_size_appear.Name = "bt_select_packing_size_appear";
             this.bt_select_packing_size_appear.Size = new System.Drawing.Size(126, 49);
             this.bt_select_packing_size_appear.TabIndex = 1;
-            this.bt_select_packing_size_appear.Text = "เริ่มตรวจ";
+            this.bt_select_packing_size_appear.Text = "ตรวจแพ็คนี้";
             this.bt_select_packing_size_appear.UseVisualStyleBackColor = true;
             this.bt_select_packing_size_appear.Click += new System.EventHandler(this.bt_Select_Click);
             // 
@@ -379,7 +379,7 @@
             this.gb_input.Size = new System.Drawing.Size(709, 224);
             this.gb_input.TabIndex = 87;
             this.gb_input.TabStop = false;
-            this.gb_input.Text = "กรอกผลตรวจ";
+            this.gb_input.Text = "กรอกผลของแพ็คที่เลือก";
             // 
             // lb_currentTask
             // 
@@ -397,7 +397,7 @@
             this.tb_record.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
             this.tb_record.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.tb_record.BorderRadius = 0;
-            this.tb_record.ButtonText = "Record Data";
+            this.tb_record.ButtonText = "บันทึกผล";
             this.tb_record.Cursor = System.Windows.Forms.Cursors.Hand;
             this.tb_record.DisabledColor = System.Drawing.Color.Gray;
             this.tb_record.Enabled = false;
@@ -423,7 +423,7 @@
             this.tb_record.selected = false;
             this.tb_record.Size = new System.Drawing.Size(172, 58);
             this.tb_record.TabIndex = 82;
-            this.tb_record.Text = "Record Data";
+            this.tb_record.Text = "บันทึกผล";
             this.tb_record.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.tb_record.Textcolor = System.Drawing.Color.Lavender;
             this.tb_record.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

@@ -1,6 +1,6 @@
 ﻿namespace RawMat.Views.Setting
 {
-    partial class frmInspectionSetting
+    partial class frmSetting
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmInspectionSetting));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSetting));
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -48,10 +48,10 @@
             this.dtgInspectionSetting = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.bunifuWebClient1 = new Bunifu.Framework.UI.BunifuWebClient(this.components);
             this.panel4 = new System.Windows.Forms.Panel();
+            this.pnFollowMove = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.pnFollowMove = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -359,6 +359,14 @@
             this.panel4.Size = new System.Drawing.Size(193, 715);
             this.panel4.TabIndex = 1;
             // 
+            // pnFollowMove
+            // 
+            this.pnFollowMove.BackColor = System.Drawing.Color.Pink;
+            this.pnFollowMove.Location = new System.Drawing.Point(0, 181);
+            this.pnFollowMove.Name = "pnFollowMove";
+            this.pnFollowMove.Size = new System.Drawing.Size(13, 51);
+            this.pnFollowMove.TabIndex = 1;
+            // 
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft YaHei", 11.25F, System.Drawing.FontStyle.Bold);
@@ -391,15 +399,7 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Setting Menu";
             // 
-            // pnFollowMove
-            // 
-            this.pnFollowMove.BackColor = System.Drawing.Color.Pink;
-            this.pnFollowMove.Location = new System.Drawing.Point(0, 181);
-            this.pnFollowMove.Name = "pnFollowMove";
-            this.pnFollowMove.Size = new System.Drawing.Size(13, 51);
-            this.pnFollowMove.TabIndex = 1;
-            // 
-            // frmInspectionSetting
+            // frmSetting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -412,7 +412,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "frmInspectionSetting";
+            this.Name = "frmSetting";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "M Code Inspection Setting";

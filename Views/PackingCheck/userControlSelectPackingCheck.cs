@@ -260,8 +260,8 @@ namespace RawMat.Views.PackingCheck
 
             usrControlSelectPackingCheck.propQA.dtgRawMat.DataSource = dt;
 
-            //var parentForm = this.FindForm() as frmMain;
-            //parentForm?.ControlBackLevel(employee);
+            var parentForm = this.FindForm() as frmMain;
+            parentForm?.ControlBackLevel(employee);
 
             Form mainForm = this.FindForm();
 
