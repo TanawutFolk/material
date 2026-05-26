@@ -109,6 +109,8 @@ namespace RawMat.Views.AppearCheck
             gb_ngMode.Enabled = false;
             gb_ngMode.Visible = true;  // หรือ false ถ้าต้องการ hide จนกว่าจะ NG
 
+            dtg_show_appear.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
+
             // ใน userControlAppear_Load หรือ constructor หลัง InitializeComponent()
             dtg_ngMode.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;  // Enter edit เฉพาะเมื่อพิมพ์หรือ F2, ไม่ auto-enter
             dtg_ngMode.StandardTab = true;  // Allow tab navigation without edit issues
@@ -669,7 +671,7 @@ namespace RawMat.Views.AppearCheck
         private void PrepareForNextBatchSelection()
         {
             RefreshPackingGrid();
-            ClearShowGridForNextBatch();
+            ShowSavedAppearDataForCurrentBatch();
             ResetCurrentTaskLabel();
             CloseNgMode();
             dtg_packing_size_appear.ClearSelection();
@@ -697,7 +699,7 @@ namespace RawMat.Views.AppearCheck
             return dataSource;
         }
 
-        private DataTable BuildAppearancePlanDataSource(DataTable savedData)
+        private DataTable BuildAppearancePlanDataSource(DataTable savedData, bool includeOpenRows = true)
         {
             DataTable dataSource = CreateAppearancePlanTable();
             DataRow[] savedRows = savedData == null
@@ -728,6 +730,13 @@ namespace RawMat.Views.AppearCheck
                 rowNo++;
             }
 
+            if (!includeOpenRows)
+            {
+                MarkLastPlanRowLotSize(dataSource);
+                UpdateEntryLimitFromInspectedQty(GetSavedQtyFromPlanTable(dataSource));
+                return dataSource;
+            }
+
             int remaining = Math.Max(maxQty - cumulativeQty, 0);
             if (remaining > 0)
             {
@@ -738,7 +747,7 @@ namespace RawMat.Views.AppearCheck
                     rowNo,
                     cumulativeQty,
                     inputQty,
-                    inputQty,
+                    0,
                     0,
                     "",
                     "INPUT",
@@ -764,7 +773,7 @@ namespace RawMat.Views.AppearCheck
                     rowNo,
                     cumulativeQty,
                     planQty,
-                    planQty,
+                    0,
                     0,
                     "",
                     "PLAN",
@@ -793,9 +802,25 @@ namespace RawMat.Views.AppearCheck
             row["APPEARANCE_DATE"] = appearanceDate;
             row["BATCH"] = propQA.BATCH;
             row["COUNT"] = count;
-            row["JUDGE"] = judge;
+            row["JUDGE"] = GetJudgeDisplayText(judge);
             row["EMP_ID"] = propQA.EMP_ID;
             dataSource.Rows.Add(row);
+        }
+
+        private string GetJudgeDisplayText(string judge)
+        {
+            string value = judge?.Trim() ?? "";
+            if (value == "1")
+            {
+                return "OK";
+            }
+
+            if (value == "0")
+            {
+                return "NG";
+            }
+
+            return value;
         }
 
         private void MarkLastPlanRowLotSize(DataTable dataSource)
@@ -1000,7 +1025,7 @@ namespace RawMat.Views.AppearCheck
                 displayNo,
                 cumulativeQty,
                 qtySelect,
-                qtySelect,
+                0,
                 0,
                 "",
                 "INPUT",
@@ -1055,7 +1080,8 @@ namespace RawMat.Views.AppearCheck
 
             SetSelectedBatchSamplingContext(selectedRow);
 
-            DataTable dataSource = BuildSinglePackInputDataSource(selectedRow);
+            DataTable savedData = conQA.SearchAppearData(propQA);
+            DataTable dataSource = BuildAppearancePlanDataSource(savedData);
 
             // ล้าง DataSource ก่อนเพื่อรีเซ็ต grid (ป้องกันคอลัมน์เก่าค้าง)
             dtg_show_appear.DataSource = null;
@@ -1250,19 +1276,26 @@ namespace RawMat.Views.AppearCheck
         {
             if (dtg_show_appear.Columns["DISPLAY_NO"] != null)
             {
-                dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "แพ็คที่";
+                dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับ";
                 dtg_show_appear.Columns["DISPLAY_NO"].ReadOnly = true;
                 dtg_show_appear.Columns["DISPLAY_NO"].Width = 70;
+                dtg_show_appear.Columns["DISPLAY_NO"].DisplayIndex = 0;
             }
 
             if (dtg_show_appear.Columns["PACKING_VALUE"] != null)
             {
-                dtg_show_appear.Columns["PACKING_VALUE"].Visible = false;
+                dtg_show_appear.Columns["PACKING_VALUE"].HeaderText = "Packing Size";
+                dtg_show_appear.Columns["PACKING_VALUE"].ReadOnly = true;
+                dtg_show_appear.Columns["PACKING_VALUE"].Visible = true;
+                dtg_show_appear.Columns["PACKING_VALUE"].DisplayIndex = 1;
             }
 
             if (dtg_show_appear.Columns["CUMULATIVE_QTY"] != null)
             {
-                dtg_show_appear.Columns["CUMULATIVE_QTY"].Visible = false;
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].HeaderText = "จำนวนรวม";
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].ReadOnly = true;
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].Visible = true;
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].DisplayIndex = 2;
             }
 
             if (dtg_show_appear.Columns["APPEARANCE_DATE"] != null)
@@ -1290,18 +1323,21 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["QTY_SELECT"].HeaderText = "ต้องหยิบ";
                 dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = true;
+                dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 3;
             }
 
             if (dtg_show_appear.Columns["QTY_OK"] != null)
             {
                 dtg_show_appear.Columns["QTY_OK"].HeaderText = "OK";
                 dtg_show_appear.Columns["QTY_OK"].ReadOnly = false;
+                dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 4;
             }
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
             {
-                dtg_show_appear.Columns["QTY_NG"].HeaderText = "Pending";
+                dtg_show_appear.Columns["QTY_NG"].HeaderText = "NG";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
+                dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 5;
             }
 
             if (dtg_show_appear.Columns["JUDGE"] != null)
@@ -1312,7 +1348,10 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_show_appear.Columns["JUDGE_LOT_SIZE"] != null)
             {
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = false;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgment (Lot size)";
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = true;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DisplayIndex = 6;
             }
 
             if (dtg_show_appear.Columns["ROW_STATE"] != null)
@@ -1327,6 +1366,7 @@ namespace RawMat.Views.AppearCheck
 
             // Make all rows except last read-only, and hide headers if needed (set RowHeadersVisible = false)
             dtg_show_appear.RowHeadersVisible = false;  // ซ่อน HeaderText ด้านซ้าย
+            dtg_show_appear.AlternatingRowsDefaultCellStyle.BackColor = Color.White;
             dtg_show_appear.AutoGenerateColumns = false;
             dtg_show_appear.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dtg_show_appear.ColumnHeadersHeight = 42;
@@ -1339,14 +1379,41 @@ namespace RawMat.Views.AppearCheck
         {
             for (int i = 0; i < dtg_show_appear.Rows.Count; i++)
             {
-                dtg_show_appear.Rows[i].ReadOnly = true;
+                DataGridViewRow row = dtg_show_appear.Rows[i];
+                row.ReadOnly = true;
+
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    cell.ReadOnly = true;
+                    cell.Style.BackColor = Color.FromArgb(245, 245, 245);
+                    cell.Style.ForeColor = Color.Black;
+                    cell.Style.SelectionBackColor = Color.Gainsboro;
+                    cell.Style.SelectionForeColor = Color.Black;
+                }
             }
 
             int inputRowIndex = GetActiveInputGridRowIndex();
             if (inputRowIndex >= 0)
             {
-                dtg_show_appear.Rows[inputRowIndex].ReadOnly = false;
-                dtg_show_appear.Rows[inputRowIndex].DefaultCellStyle.BackColor = Color.White;
+                DataGridViewRow inputRow = dtg_show_appear.Rows[inputRowIndex];
+                inputRow.ReadOnly = false;
+                inputRow.DefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+
+                string[] editableColumns = { "QTY_OK", "QTY_NG" };
+                foreach (string colName in editableColumns)
+                {
+                    if (dtg_show_appear.Columns[colName] == null)
+                    {
+                        continue;
+                    }
+
+                    DataGridViewCell cell = inputRow.Cells[colName];
+                    cell.ReadOnly = false;
+                    cell.Style.BackColor = Color.White;
+                    cell.Style.ForeColor = Color.Black;
+                    cell.Style.SelectionBackColor = SystemColors.Highlight;
+                    cell.Style.SelectionForeColor = SystemColors.HighlightText;
+                }
             }
         }
 
@@ -1752,7 +1819,20 @@ namespace RawMat.Views.AppearCheck
             gb_input.Enabled = false; // Disable input until select new batch
         }
 
-       
+        private void ShowSavedAppearDataForCurrentBatch()
+        {
+            DataTable savedData = conQA.SearchAppearData(propQA);
+            DataTable dataSource = BuildAppearancePlanDataSource(savedData, false);
+
+            dtg_show_appear.DataSource = null;
+            dtg_show_appear.AutoGenerateColumns = true;
+            dtg_show_appear.DataSource = dataSource;
+            ApplyRowReadOnly();
+
+            tb_record.Enabled = false;
+            gb_input.Enabled = false;
+        }
+
 
         // Helper method สำหรับจัดการ error state (ERR, red row, disable button)
         private void HandleValidationError(DataRow currentRow, int rowIndex)

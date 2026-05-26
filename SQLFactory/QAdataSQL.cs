@@ -1772,7 +1772,7 @@ namespace RawMat.SQLFactory
 
         public string SearchAppearData(QAdataProperty dataItem)
         {
-            sql = @"SELECT APPEARANCE_DATE , `BATCH` , COUNT , QTY_SELECT  , QTY_OK  , QTY_NG ,JUDGE
+            sql = @"SELECT UPDATETIME AS APPEARANCE_DATE , `BATCH` , COUNT , QTY_SELECT  , QTY_OK  , QTY_NG ,JUDGE
                     FROM `db_appearance_data`
                     where REPORT_NO = 'dataItem.Report_No' and BATCH = 'dataItem.Batch' and inuse = 1";
 
@@ -1812,7 +1812,7 @@ namespace RawMat.SQLFactory
         public string InsertAppearData(QAdataProperty dataItem)
         {
 
-            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`,`QTY_OK`,`QTY_NG`, `EMP_ID` , `JUDGE` , `INSPECTION_DATA_DATE`, `INUSE`) " +
+            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`,`QTY_OK`,`QTY_NG`, `EMP_ID` , `JUDGE` , `UPDATETIME`, `INUSE`) " +
             $"VALUES ('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{dataItem.QTY_SELECT}', '{dataItem.QTY_OK}', '{dataItem.QTY_NG}', '{dataItem.EMP_ID}' , '{dataItem.judge}', NOW() , 1 )";
 
             return sql;
