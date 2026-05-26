@@ -144,6 +144,10 @@ namespace RawMat.Views.RegularCheck
 
                     if (conQA.UpdateReportStatusLotNo(propQA) == true)
                     {
+                        if (IsEndAtRegularReport())
+                        {
+                            PrepareEndAtRegularExcel();
+                        }
  
                         ProcStatus status;
 
@@ -200,6 +204,34 @@ namespace RawMat.Views.RegularCheck
                 //RequestReleaseMutex?.Invoke(mutexKey);
             }
             return;
+        }
+
+        private bool IsEndAtRegularReport()
+        {
+            if (propQA.TOTAL_STATUS == "0")
+            {
+                return false;
+            }
+
+            try
+            {
+                return conQA.NeedKeepData(propQA) != 1
+                    && conQA.NeedFunctionCheck(propQA) != 1
+                    && conQA.NeedDimensionCheck(propQA) != 1
+                    && conQA.NeedAppearCheck(propQA) != 1;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void PrepareEndAtRegularExcel()
+        {
+            using (FormRegularReportExcelFlow excelFlowForm = new FormRegularReportExcelFlow(propQA))
+            {
+                excelFlowForm.ShowDialog(this);
+            }
         }
 
         //protected override void OnHandleDestroyed(EventArgs e)

@@ -125,6 +125,7 @@ namespace RawMat.Views.RegularCheck
 
         private void bt_ok_Click(object sender, EventArgs e)
         {
+            //PDF After OK
             // ตรวจสอบว่ามีการเลือกรูป stamp หรือไม่
             if (stamp_pic == null)
             {
