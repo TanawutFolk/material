@@ -56,7 +56,9 @@ namespace RawMat.Views.RegularCheck
 
             //tb_pageMax.Text = ""; //มาจาก info_regular_sampling 
             //tb_pageCount.Text = ""; // 1 record 2 record จนถึง pageMax
-            lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
+            lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
+                ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
+                : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
             // โหลดรูป Function แบบ async (สำหรับ pagination ด้วย list ถ้ามีหลายรูป)
             regularImages = await imgCls.LoadImagesAsync("RegularPath", propQA.M_CODE);

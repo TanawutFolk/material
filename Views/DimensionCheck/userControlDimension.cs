@@ -241,7 +241,9 @@ namespace RawMat.Views.DimensionCheck
                 cb_lotNo.SelectedIndex = -1; // รีเซ็ตถ้าไม่มีข้อมูล
             }
 
-            lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
+            lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
+                ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
+                : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
             // โหลดรูป Function แบบ async (สำหรับ pagination ด้วย list ถ้ามีหลายรูป)
             dimensionImages = await imgCls.LoadImagesAsync("DimensionPath", propQA.M_CODE);

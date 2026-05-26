@@ -48,7 +48,9 @@ namespace RawMat.Views.DimensionCheck
             lb_invoice.Text = "Invoice : " + propQA.Invoice_No;
             lb_mcode.Text = propQA.M_CODE + " : " + propQA.Material_Name;
             lb_recDate.Text = "Receive Date : " + propQA.dtReceiveDate.ToString("dd-MMM-yyyy");
-            lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
+            lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
+                ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
+                : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
             DetachGridEvents();
 

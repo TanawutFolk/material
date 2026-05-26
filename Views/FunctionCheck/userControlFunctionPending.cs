@@ -59,7 +59,9 @@ namespace RawMat.Views.FunctionCheck
 
             dtg_function.CellEndEdit -= dtg_function_CellEndEdit;
 
-            lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
+            lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
+                ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
+                : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
             // โหลดรูป Function แบบ async (สำหรับ pagination ด้วย list ถ้ามีหลายรูป)
             functionImages = await imgCls.LoadImagesAsync("FunctionPath", propQA.M_CODE);
