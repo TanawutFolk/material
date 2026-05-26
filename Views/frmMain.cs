@@ -53,6 +53,7 @@ namespace RawMat
         public frmMain()
         {
             InitializeComponent();
+            ConfigureHeaderStatusButtons();
             _navigationService = new NavigationService(panelMain); // สร้าง NavigationService
             LoadStatus();
             LoadLoginControl();
@@ -88,6 +89,32 @@ namespace RawMat
             //        break;
             //}
 
+        }
+
+        private void ConfigureHeaderStatusButtons()
+        {
+            BunifuFlatButton[] statusButtons =
+            {
+                bt_status_rec_pending,
+                bt_status_packing_check_pending,
+                bt_status_regular_pending,
+                bt_status_data_pending,
+                bt_status_function_pending,
+                bt_status_dimension_pending,
+                bt_appear_pending
+            };
+
+            const int leftMargin = 3;
+            const int topMargin = 4;
+            const int buttonWidth = 150;
+            const int buttonHeight = 100;
+
+            for (int i = 0; i < statusButtons.Length; i++)
+            {
+                statusButtons[i].Location = new Point(leftMargin + (buttonWidth * i), topMargin);
+                statusButtons[i].Size = new Size(buttonWidth, buttonHeight);
+                statusButtons[i].Margin = Padding.Empty;
+            }
         }
 
         private void AddUserControlAdmin()

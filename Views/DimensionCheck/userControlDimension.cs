@@ -666,7 +666,7 @@ namespace RawMat.Views.DimensionCheck
 
             int totalQty = 0;
 
-            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
+            // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
                 if (row.IsNewRow)
@@ -674,14 +674,7 @@ namespace RawMat.Views.DimensionCheck
                     continue;
                 }
 
-                string cavityName = row.Cells["CAVITY_NAME"].Value?.ToString();
                 string samplingQty = row.Cells["SAMPLING_QTY"].Value?.ToString();
-
-                if (string.IsNullOrWhiteSpace(cavityName))
-                {
-                    MessageBox.Show("กรุณากรอกชื่อ Cavity ให้ครบทุกแถว!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
 
                 if (!int.TryParse(samplingQty, out int qty) || qty < 0)
                 {
@@ -764,46 +757,6 @@ namespace RawMat.Views.DimensionCheck
                 if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, out int qty) || qty < 0)
                 {
                     e.Cancel = true; // ยกเลิกการออกจากเซลล์โดยไม่แสดงข้อความ
-                }
-            }
-            else if (e.ColumnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
-            {
-                string value = e.FormattedValue.ToString().Trim().ToUpper(); // แปลงเป็นตัวพิมพ์ใหญ่
-
-                // ตรวจสอบความยาว 1 ตัว และเป็นตัวเลขหรือตัวอักษร
-
-                if (value == "")
-                {
-                    return;
-                }
-
-                // ตรวจสอบความยาว 1 ตัว และต้องเป็นตัวอักษรภาษาอังกฤษหรือตัวเลข
-                if (value.Length != 1 || !Regex.IsMatch(value, "^[A-Z0-9]$"))
-                {
-                    MessageBox.Show("กรุณากรอกตัวอักษรภาษาอังกฤษหรือเลข 0-9 เท่านั้น และต้องมีความยาว 1 ตัว", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true;
-                    return;
-                }
-
-                // ตรวจสอบค่าซ้ำในคอลัมน์ Name
-                for (int i = 0; i < dtg_cavity.Rows.Count; i++)
-                {
-                    if (i != e.RowIndex) // ข้ามแถวที่กำลังแก้ไข
-                    {
-                        var cell = dtg_cavity.Rows[i].Cells["CAVITY_NAME"].Value;
-                        string existingValue = cell != null ? cell.ToString().Trim().ToUpper() : "";
-
-                        // ข้ามแถวที่ไม่มีค่า
-                        if (string.IsNullOrEmpty(existingValue))
-                            continue;
-
-                        if (existingValue == value)
-                        {
-                            MessageBox.Show("ค่าซ้ำ! กรุณากรอกค่าที่ไม่ซ้ำกัน", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            e.Cancel = true;
-                            return;
-                        }
-                    }
                 }
             }
         }
@@ -1078,8 +1031,7 @@ namespace RawMat.Views.DimensionCheck
 
         private void dtg_cavity_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index ||
-                dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
+            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
 
                 if (e.Control is TextBox textBox)
@@ -1098,49 +1050,12 @@ namespace RawMat.Views.DimensionCheck
 
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            var textBox = sender as TextBox;
-            int columnIndex = dtg_cavity.CurrentCell.ColumnIndex;
-
-            if (columnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
+            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
                 // อนุญาตเฉพาะตัวเลขและปุ่มควบคุม (เช่น Backspace, Delete)
                 if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 {
                     e.Handled = true; // ยกเลิกอักขระที่ไม่ใช่ตัวเลข
-                }
-            }
-            // สำหรับคอลัมน์ CAVITY_NAME
-            else if (columnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
-            {
-                // อนุญาตแค่ตัวควบคุม (เช่น Backspace)
-                if (char.IsControl(e.KeyChar)) return;
-
-                // อนุญาตเฉพาะตัวเลข (0-9) และตัวอักษรภาษาอังกฤษ (A-Z, a-z)
-                if (!(char.IsDigit(e.KeyChar) || (char.IsLetter(e.KeyChar) && e.KeyChar <= 127)))
-                {
-                    e.Handled = true;
-                    return;
-                }
-
-                // ตรวจสอบว่าข้อความมีความยาวเกิน 1 ตัวหรือไม่ (ไม่นับส่วนที่เลือกไว้)
-                if (textBox.SelectionLength == 0 && textBox.Text.Length >= 1)
-                {
-                    e.Handled = true;
-                }
-            }
-
-
-        }
-
-        private void dtg_cavity_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
-        {
-            if (dtg_cavity.Columns[e.ColumnIndex].Name == "CAVITY_NAME")
-            {
-                if (e.Value != null)
-                {
-                    e.Value = e.Value.ToString().Trim().ToUpper(); // แปลงเป็นตัวพิมพ์ใหญ่
-                    e.ParsingApplied = true; // แจ้ง DataGridView ว่าเราได้เปลี่ยนค่าแล้ว
                 }
             }
         }

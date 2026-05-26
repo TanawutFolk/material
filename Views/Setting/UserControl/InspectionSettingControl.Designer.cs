@@ -56,9 +56,9 @@
             this.label1.Location = new System.Drawing.Point(421, 1);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(186, 26);
+            this.label1.Size = new System.Drawing.Size(195, 26);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Inspection Setting";
+            this.label1.Text = "Inspection Settings";
             // 
             // panel2
             // 
@@ -257,7 +257,7 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dtgInspectionSetting.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dtgInspectionSetting.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            //this.dtgInspectionSetting.DoubleBuffered = true;
+            this.dtgInspectionSetting.DoubleBuffered = true;
             this.dtgInspectionSetting.EnableHeadersVisualStyles = false;
             this.dtgInspectionSetting.HeaderBgColor = System.Drawing.Color.SeaGreen;
             this.dtgInspectionSetting.HeaderForeColor = System.Drawing.Color.SeaGreen;

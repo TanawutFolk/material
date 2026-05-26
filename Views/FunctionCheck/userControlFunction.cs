@@ -385,7 +385,7 @@ namespace RawMat.Views.FunctionCheck
 
             int totalQty = 0;
 
-            // ตรวจสอบว่า Cavity Name ครบ และจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
+            // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
                 if (row.IsNewRow)
@@ -393,14 +393,7 @@ namespace RawMat.Views.FunctionCheck
                     continue;
                 }
 
-                string cavityName = row.Cells["CAVITY_NAME"].Value?.ToString();
                 string samplingQty = row.Cells["SAMPLING_QTY"].Value?.ToString();
-
-                if (string.IsNullOrWhiteSpace(cavityName))
-                {
-                    CustomMsgBoxBase.ShowCustomMessageBox("กรุณากรอกชื่อ Cavity ให้ครบทุกแถว!", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
-                    return;
-                }
 
                 if (!int.TryParse(samplingQty, out int qty) || qty < 0)
                 {

@@ -19,11 +19,11 @@
         {
             this.pn_SettingMenu = new System.Windows.Forms.Panel();
             this.pn_buttonSwap = new System.Windows.Forms.Panel();
+            this.btnEquipmentSetting = new System.Windows.Forms.Button();
             this.btn_InspectionSetting = new System.Windows.Forms.Button();
             this.btn_EmployeeSetting = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.pn_Content = new System.Windows.Forms.Panel();
-            this.btnEquipmentSetting = new System.Windows.Forms.Button();
             this.pn_SettingMenu.SuspendLayout();
             this.pn_buttonSwap.SuspendLayout();
             this.SuspendLayout();
@@ -49,6 +49,19 @@
             this.pn_buttonSwap.Size = new System.Drawing.Size(136, 163);
             this.pn_buttonSwap.TabIndex = 4;
             // 
+            // btnEquipmentSetting
+            // 
+            this.btnEquipmentSetting.BackColor = System.Drawing.Color.White;
+            this.btnEquipmentSetting.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnEquipmentSetting.Font = new System.Drawing.Font("Microsoft YaHei", 11.25F, System.Drawing.FontStyle.Bold);
+            this.btnEquipmentSetting.Location = new System.Drawing.Point(-6, 108);
+            this.btnEquipmentSetting.Name = "btnEquipmentSetting";
+            this.btnEquipmentSetting.Size = new System.Drawing.Size(130, 51);
+            this.btnEquipmentSetting.TabIndex = 4;
+            this.btnEquipmentSetting.Text = "Equipment Settings";
+            this.btnEquipmentSetting.UseVisualStyleBackColor = false;
+            this.btnEquipmentSetting.Click += new System.EventHandler(this.btnEquipmentSetting_Click);
+            // 
             // btn_InspectionSetting
             // 
             this.btn_InspectionSetting.BackColor = System.Drawing.Color.Pink;
@@ -58,7 +71,7 @@
             this.btn_InspectionSetting.Name = "btn_InspectionSetting";
             this.btn_InspectionSetting.Size = new System.Drawing.Size(130, 51);
             this.btn_InspectionSetting.TabIndex = 1;
-            this.btn_InspectionSetting.Text = "Inspection Setting";
+            this.btn_InspectionSetting.Text = "Inspection Settings";
             this.btn_InspectionSetting.UseVisualStyleBackColor = false;
             this.btn_InspectionSetting.Click += new System.EventHandler(this.btn_InspectionSetting_Click);
             // 
@@ -71,7 +84,7 @@
             this.btn_EmployeeSetting.Name = "btn_EmployeeSetting";
             this.btn_EmployeeSetting.Size = new System.Drawing.Size(130, 51);
             this.btn_EmployeeSetting.TabIndex = 3;
-            this.btn_EmployeeSetting.Text = "Employee Setting";
+            this.btn_EmployeeSetting.Text = "Employee Settings";
             this.btn_EmployeeSetting.UseVisualStyleBackColor = false;
             this.btn_EmployeeSetting.Click += new System.EventHandler(this.btn_EmployeeSetting_Click);
             // 
@@ -93,19 +106,6 @@
             this.pn_Content.Name = "pn_Content";
             this.pn_Content.Size = new System.Drawing.Size(1073, 726);
             this.pn_Content.TabIndex = 3;
-            // 
-            // btnEquipmentSetting
-            // 
-            this.btnEquipmentSetting.BackColor = System.Drawing.Color.White;
-            this.btnEquipmentSetting.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnEquipmentSetting.Font = new System.Drawing.Font("Microsoft YaHei", 11.25F, System.Drawing.FontStyle.Bold);
-            this.btnEquipmentSetting.Location = new System.Drawing.Point(-6, 108);
-            this.btnEquipmentSetting.Name = "btnEquipmentSetting";
-            this.btnEquipmentSetting.Size = new System.Drawing.Size(130, 51);
-            this.btnEquipmentSetting.TabIndex = 4;
-            this.btnEquipmentSetting.Text = "Equipment Setting";
-            this.btnEquipmentSetting.UseVisualStyleBackColor = false;
-            this.btnEquipmentSetting.Click += new System.EventHandler(this.btnEquipmentSetting_Click);
             // 
             // frmSetting
             // 

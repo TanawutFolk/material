@@ -13,6 +13,7 @@ namespace RawMat.Views.Setting
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
+        private const string ColDelete = "Delete";
         private const string ColEquipmentType = "Equipment Type";
         private const string ColEquipmentName = "Equipment Name";
 
@@ -32,6 +33,7 @@ namespace RawMat.Views.Setting
             btnSearch.Click += btnSearch_Click;
             btnClear.Click += btnClear_Click;
             btnAddNewEquipment.Click += btnAddNewEquipment_Click;
+            dtgEmployeeSetting.CellContentClick += dtgEmployeeSetting_CellContentClick;
         }
 
         private void EqupmentSetingControl_Load(object sender, EventArgs e)
@@ -131,6 +133,7 @@ namespace RawMat.Views.Setting
             try
             {
                 grid.DataSource = dt;
+                EnsureDeleteButtonColumn();
                 ApplyColumnFormat();
             }
             finally
@@ -139,10 +142,32 @@ namespace RawMat.Views.Setting
             }
         }
 
+        private void EnsureDeleteButtonColumn()
+        {
+            if (dtgEmployeeSetting.Columns.Contains(ColDelete))
+            {
+                dtgEmployeeSetting.Columns[ColDelete].DisplayIndex = 0;
+                return;
+            }
+
+            var btn = new DataGridViewButtonColumn
+            {
+                Name = ColDelete,
+                HeaderText = "",
+                Text = "Delete",
+                UseColumnTextForButtonValue = true,
+                Width = 80
+            };
+
+            dtgEmployeeSetting.Columns.Insert(0, btn);
+        }
+
         private void ApplyColumnFormat()
         {
+            SetColumnWidth(ColDelete, 80);
             SetColumnFill(ColEquipmentType, 25);
             SetColumnFill(ColEquipmentName, 75);
+            SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEquipmentType, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEquipmentName, DataGridViewContentAlignment.MiddleCenter);
         }
@@ -151,6 +176,16 @@ namespace RawMat.Views.Setting
             dtgEmployeeSetting.Columns.Contains(name)
                 ? dtgEmployeeSetting.Columns[name]
                 : null;
+
+        private void SetColumnWidth(string name, int width)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null)
+            {
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                col.Width = width;
+            }
+        }
 
         private void SetColumnFill(string name, float fillWeight)
         {
@@ -183,6 +218,59 @@ namespace RawMat.Views.Setting
                 if (frm.ShowDialog(this) == DialogResult.OK)
                     LoadData();
             }
+        }
+
+        private void dtgEmployeeSetting_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                return;
+
+            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColDelete)
+                return;
+
+            string equipmentType = GetEquipmentTypeFromRow(e.RowIndex);
+            string equipmentName = GetEquipmentNameFromRow(e.RowIndex);
+
+            if (string.IsNullOrWhiteSpace(equipmentType))
+                return;
+
+            using (var frm = new frmConfirm("Are you sure you want to delete ?"))
+            {
+                if (frm.ShowDialog(this) != DialogResult.Yes)
+                    return;
+            }
+
+            var dataItem = new SettingProperty
+            {
+                Equipment_Type = equipmentType,
+                Equipment_Name = equipmentName
+            };
+
+            if (!_controller.DeleteEquipmentTypeSetting(dataItem))
+            {
+                MessageBox.Show("Delete Equipment Setting Failed", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show("Delete Equipment Setting", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LoadData();
+        }
+
+        private string GetEquipmentTypeFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentType);
+
+        private string GetEquipmentNameFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentName);
+
+        private string GetCellText(int rowIndex, string columnName)
+        {
+            if (!dtgEmployeeSetting.Columns.Contains(columnName))
+                return string.Empty;
+
+            object value = dtgEmployeeSetting.Rows[rowIndex].Cells[columnName].Value;
+            return value == null || value == DBNull.Value
+                ? string.Empty
+                : Convert.ToString(value).Trim();
         }
     }
 }

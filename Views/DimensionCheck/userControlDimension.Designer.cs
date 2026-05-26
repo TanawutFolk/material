@@ -178,7 +178,6 @@
             this.dtg_cavity.Name = "dtg_cavity";
             this.dtg_cavity.Size = new System.Drawing.Size(263, 176);
             this.dtg_cavity.TabIndex = 47;
-            this.dtg_cavity.CellParsing += new System.Windows.Forms.DataGridViewCellParsingEventHandler(this.dtg_cavity_CellParsing);
             this.dtg_cavity.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dtg_cavity_CellValidating);
             this.dtg_cavity.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dtg_cavity_EditingControlShowing);
             // 
