@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -15,6 +16,7 @@ namespace RawMat.Views.RegularCheck
     public class FormRegularReportExcelFlow : Form
     {
         private const string PdfFolderName = "FM-QA-B13-A Material Regular Inspection Record Sheet";
+        private const bool ShowExcelDebugMessage = true;
 
         private readonly QAdataProperty propQA;
         private readonly string generatedExcelPath;
@@ -28,8 +30,13 @@ namespace RawMat.Views.RegularCheck
 
         public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData)
         {
-            string filePath = Path.Combine(GetWaitApprovedPathStatic(), BuildExcelFileName(dataItem));
+            string filePath = Path.Combine(GetWaitApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            if (ShowExcelDebugMessage)
+            {
+                ShowExcelDataDebugMessage(dataItem, regularData, filePath);
+            }
 
             Excel.Application excelApp = null;
             Excel.Workbook workbook = null;
@@ -45,7 +52,7 @@ namespace RawMat.Views.RegularCheck
 
                 workbook = excelApp.Workbooks.Add();
                 sheet = (Excel.Worksheet)workbook.Worksheets[1];
-                sheet.Name = "Regular Report";
+                sheet.Name = "master";
 
                 BuildReportSheet(sheet, dataItem, regularData);
 
@@ -69,18 +76,18 @@ namespace RawMat.Views.RegularCheck
 
         public static string GetWaitApprovedFilePath(QAdataProperty dataItem)
         {
-            return Path.Combine(GetWaitApprovedPathStatic(), BuildExcelFileName(dataItem));
+            return Path.Combine(GetWaitApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
         }
 
         public static string GetApprovedFilePath(QAdataProperty dataItem)
         {
-            return Path.Combine(GetApprovedPathStatic(), BuildExcelFileName(dataItem));
+            return Path.Combine(GetApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
         }
 
         public static string GetPdfFilePath(QAdataProperty dataItem)
         {
             string pdfName = $"{SanitizeFileName(dataItem?.Regular_No ?? dataItem?.Report_No ?? "Regular_Report")}.pdf";
-            return Path.Combine(GetPdfSavePathStatic(), pdfName);
+            return Path.Combine(GetPdfSavePathStatic(dataItem), pdfName);
         }
 
         public static void ApproveExcelReport(QAdataProperty dataItem, string stampImagePath)
@@ -247,39 +254,74 @@ namespace RawMat.Views.RegularCheck
 
         private string GetWaitApprovedPath()
         {
-            return GetWaitApprovedPathStatic();
+            return GetWaitApprovedPathStatic(propQA);
         }
 
         private string GetApprovedPath()
         {
-            return GetApprovedPathStatic();
+            return GetApprovedPathStatic(propQA);
         }
 
         private string GetPdfSavePath()
         {
-            return GetPdfSavePathStatic();
+            return GetPdfSavePathStatic(propQA);
         }
 
-        private static string GetWaitApprovedPathStatic()
+        private static string GetWaitApprovedPathStatic(QAdataProperty dataItem)
         {
-            return ConfigurationManager.AppSettings["RegularReportWaitAppTest"]
-                ?? ConfigurationManager.AppSettings["RegularReportWaitApp"]
+            // return ConfigurationManager.AppSettings["RegularReportWaitAppTest"]  // Test path
+            string configuredPath = ConfigurationManager.AppSettings["RegularReportWaitApp"]
                 ?? @"C:\192.168.2.100\12_qa\01_Material\Z2_Receipt_Inspection\04_Regular check\2026\Wait Approved";
+            return BuildYearFolderPath(configuredPath, GetReportYear(dataItem), "Wait Approved");
         }
 
-        private static string GetApprovedPathStatic()
+        private static string GetApprovedPathStatic(QAdataProperty dataItem)
         {
-            return ConfigurationManager.AppSettings["RegularReportAppTest"]
-                ?? ConfigurationManager.AppSettings["RegularReportApp"]
+            // return ConfigurationManager.AppSettings["RegularReportAppTest"];  // Test path
+            string configuredPath = ConfigurationManager.AppSettings["RegularReportApp"]
                 ?? @"C:\192.168.2.100\12_qa\01_Material\Z2_Receipt_Inspection\04_Regular check\2026\Approved";
+            return BuildYearFolderPath(configuredPath, GetReportYear(dataItem), "Approved");
         }
 
-        private static string GetPdfSavePathStatic()
+        private static string GetPdfSavePathStatic(QAdataProperty dataItem)
         {
-            string scanRoot = ConfigurationManager.AppSettings["RegularReportScanTest"]
-                ?? ConfigurationManager.AppSettings["RegularReportScan"]
+            // string scanRoot = ConfigurationManager.AppSettings["RegularReportScanTest"];  // Test path
+            string scanRoot = ConfigurationManager.AppSettings["RegularReportScan"]
                 ?? @"C:\192.168.2.100\15_Document_Scan\DOCUMENT QA";
-            return Path.Combine(scanRoot, "2026", PdfFolderName);
+            return Path.Combine(scanRoot, GetReportYear(dataItem).ToString(), PdfFolderName);
+        }
+
+        private static int GetReportYear(QAdataProperty dataItem)
+        {
+            if (dataItem != null && dataItem.dtReceiveDate != DateTime.MinValue)
+            {
+                return dataItem.dtReceiveDate.Year;
+            }
+
+            return DateTime.Now.Year;
+        }
+
+        private static string BuildYearFolderPath(string configuredPath, int year, string leafFolderName)
+        {
+            if (string.IsNullOrWhiteSpace(configuredPath))
+            {
+                return Path.Combine(year.ToString(), leafFolderName);
+            }
+
+            DirectoryInfo configuredDirectory = new DirectoryInfo(configuredPath);
+            if (string.Equals(configuredDirectory.Name, leafFolderName, StringComparison.OrdinalIgnoreCase))
+            {
+                DirectoryInfo yearDirectory = configuredDirectory.Parent;
+                if (yearDirectory != null && int.TryParse(yearDirectory.Name, out _))
+                {
+                    string basePath = yearDirectory.Parent?.FullName ?? configuredPath;
+                    return Path.Combine(basePath, year.ToString(), leafFolderName);
+                }
+
+                return Path.Combine(yearDirectory?.FullName ?? configuredPath, year.ToString(), leafFolderName);
+            }
+
+            return Path.Combine(configuredPath, year.ToString(), leafFolderName);
         }
 
         private static string BuildExcelFileName(QAdataProperty dataItem)
@@ -311,6 +353,7 @@ namespace RawMat.Views.RegularCheck
 
             DataTable data = regularData ?? new DataTable();
             string referenceText = GetReferenceText(dataItem);
+            var regularImagePaths = GetReportImagePaths("RegularPath", dataItem?.M_CODE);
             var sampleNos = data.AsEnumerable()
                 .Select(row => GetString(row, "SAMPLING_NO"))
                 .Where(value => !string.IsNullOrWhiteSpace(value))
@@ -329,7 +372,8 @@ namespace RawMat.Views.RegularCheck
                 page++;
                 int topRow = 1 + ((page - 1) * 37);
                 var pageSamples = sampleNos.Skip(start).Take(5).ToList();
-                BuildReportPage(sheet, dataItem, data, pageSamples, topRow, page, referenceText);
+                string imagePath = GetImagePathForPage(regularImagePaths, page);
+                BuildReportPage(sheet, dataItem, data, pageSamples, topRow, page, referenceText, imagePath);
             }
 
             Excel.PageSetup pageSetup = sheet.PageSetup;
@@ -344,7 +388,7 @@ namespace RawMat.Views.RegularCheck
             ReleaseCom(pageSetup);
         }
 
-        private static void BuildReportPage(Excel.Worksheet sheet, QAdataProperty dataItem, DataTable data, System.Collections.Generic.List<string> sampleNos, int topRow, int page, string referenceText)
+        private static void BuildReportPage(Excel.Worksheet sheet, QAdataProperty dataItem, DataTable data, System.Collections.Generic.List<string> sampleNos, int topRow, int page, string referenceText, string imagePath)
         {
             int imageTop = topRow + 8;
             int tableTop = topRow + 28;
@@ -375,13 +419,8 @@ namespace RawMat.Views.RegularCheck
             Merge(sheet, topRow + 7, 11, topRow + 7, 16, dataItem?.EMP_ID);
 
             Merge(sheet, imageTop, 1, imageTop, 16, "Check Point");
-            Merge(sheet, imageTop + 1, 1, imageTop + 19, 16, $"Page {page}");
-            Excel.Range pageRange = sheet.Range[sheet.Cells[imageTop + 1, 1], sheet.Cells[imageTop + 19, 16]];
-            pageRange.Font.Size = 44;
-            pageRange.Font.Color = ColorTranslator.ToOle(Color.Gray);
-            pageRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-            pageRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
-            ReleaseCom(pageRange);
+            Merge(sheet, imageTop + 1, 1, imageTop + 19, 16, string.Empty);
+            AddReportImage(sheet, imagePath, imageTop + 1, 1, imageTop + 19, 16);
 
             BuildTable(sheet, data, sampleNos, tableTop);
 
@@ -392,6 +431,97 @@ namespace RawMat.Views.RegularCheck
             ReleaseCom(pageBorder);
         }
 
+        private static System.Collections.Generic.List<string> GetReportImagePaths(string appSettingKey, string fileName)
+        {
+            var imagePaths = new System.Collections.Generic.List<string>();
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return imagePaths;
+            }
+
+            string folderPath = ConfigurationManager.AppSettings[appSettingKey];
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+            {
+                return imagePaths;
+            }
+
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".bmp", ".gif" };
+            var files = Directory.GetFiles(folderPath, fileName + "*.*")
+                .Where(path => allowedExtensions.Contains(Path.GetExtension(path).ToLower()))
+                .OrderBy(path => GetImageSortKey(path, fileName))
+                .ToList();
+
+            if (files.Count > 0)
+            {
+                return files;
+            }
+
+            foreach (string extension in allowedExtensions)
+            {
+                string fullPath = Path.Combine(folderPath, fileName + extension);
+                if (File.Exists(fullPath))
+                {
+                    imagePaths.Add(fullPath);
+                    break;
+                }
+            }
+
+            return imagePaths;
+        }
+
+        private static string GetImageSortKey(string path, string fileName)
+        {
+            string name = Path.GetFileNameWithoutExtension(path);
+            if (name.StartsWith(fileName))
+            {
+                string suffix = name.Substring(fileName.Length);
+                if (int.TryParse(suffix, out int number))
+                {
+                    return number.ToString("D10");
+                }
+
+                return suffix;
+            }
+
+            return name;
+        }
+
+        private static string GetImagePathForPage(System.Collections.Generic.List<string> imagePaths, int page)
+        {
+            if (imagePaths == null || imagePaths.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            int index = Math.Min(page - 1, imagePaths.Count - 1);
+            return imagePaths[index];
+        }
+
+        private static void AddReportImage(Excel.Worksheet sheet, string imagePath, int row1, int col1, int row2, int col2)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
+            {
+                return;
+            }
+
+            Excel.Range imageRange = sheet.Range[sheet.Cells[row1, col1], sheet.Cells[row2, col2]];
+            float left = Convert.ToSingle(imageRange.Left);
+            float top = Convert.ToSingle(imageRange.Top);
+            float width = Convert.ToSingle(imageRange.Width);
+            float height = Convert.ToSingle(imageRange.Height);
+
+            sheet.Shapes.AddPicture(
+                imagePath,
+                Microsoft.Office.Core.MsoTriState.msoFalse,
+                Microsoft.Office.Core.MsoTriState.msoTrue,
+                left + 6,
+                top + 4,
+                width - 12,
+                height - 8);
+
+            ReleaseCom(imageRange);
+        }
+
         private static string GetReferenceText(QAdataProperty dataItem)
         {
             if (dataItem == null || string.IsNullOrWhiteSpace(dataItem.M_CODE))
@@ -400,6 +530,46 @@ namespace RawMat.Views.RegularCheck
             }
 
             return new QAdataControllers().SearchReferenceByMCode(dataItem);
+        }
+
+        private static void ShowExcelDataDebugMessage(QAdataProperty dataItem, DataTable regularData, string filePath)
+        {
+            string referenceText = GetReferenceText(dataItem);
+            var regularImagePaths = GetReportImagePaths("RegularPath", dataItem?.M_CODE);
+
+            var message = new StringBuilder();
+            message.AppendLine("Regular Report Excel Debug");
+            message.AppendLine();
+            message.AppendLine("Output file:");
+            message.AppendLine(filePath);
+            message.AppendLine();
+            message.AppendLine("Header data:");
+            message.AppendLine($"Report No. <- propQA.Report_No = {dataItem?.Report_No}");
+            message.AppendLine($"Vender <- propQA.Vendor_Name = {dataItem?.Vendor_Name}");
+            message.AppendLine($"Receive Date <- propQA.dtReceiveDate = {FormatDate(dataItem?.dtReceiveDate)}");
+            message.AppendLine($"INV. No. <- propQA.Invoice_No = {dataItem?.Invoice_No}");
+            message.AppendLine($"Lot Size <- propQA.Qty = {dataItem?.Qty}");
+            message.AppendLine($"Lot No. <- propQA.Lot_No = {dataItem?.Lot_No}");
+            message.AppendLine($"Inspection Size <- propQA.SAMPLING_QTY = {dataItem?.SAMPLING_QTY}");
+            message.AppendLine($"Reference <- info_reference.reference where mcode = {dataItem?.M_CODE} = {referenceText}");
+            message.AppendLine($"Inspection Date <- DateTime.Now = {DateTime.Now:dd-MMM-yyyy}");
+            message.AppendLine($"Inspector <- propQA.EMP_ID = {dataItem?.EMP_ID}");
+            message.AppendLine();
+            message.AppendLine("Check Point image:");
+            message.AppendLine($"Source <- App.config RegularPath + M_CODE = {dataItem?.M_CODE}");
+            message.AppendLine($"Found image count = {regularImagePaths.Count}");
+            message.AppendLine($"First image -> Check Point area = {(regularImagePaths.Count > 0 ? regularImagePaths[0] : "not found")}");
+            message.AppendLine();
+            message.AppendLine("Bottom table:");
+            message.AppendLine($"Source <- originalDataTable / regularData rows = {regularData?.Rows.Count ?? 0}");
+            message.AppendLine("Point <- POINT_NAME");
+            message.AppendLine("Min <- CRITERIA_MIN");
+            message.AppendLine("Max <- CRITERIA_MAX");
+            message.AppendLine("Cavity No <- CAVITY_NAME");
+            message.AppendLine("Actual <- VALUE");
+            message.AppendLine("Judg <- POINT_JUDGE summary");
+
+            MessageBox.Show(message.ToString(), "Excel Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop)
@@ -532,7 +702,9 @@ namespace RawMat.Views.RegularCheck
         {
             if (comObject != null && Marshal.IsComObject(comObject))
             {
+#pragma warning disable CA1416
                 Marshal.ReleaseComObject(comObject);
+#pragma warning restore CA1416
             }
         }
     }
