@@ -213,8 +213,9 @@ namespace RawMat.Views.Main
                         }
                     }
 
-                    // ตรวจสอบว่า d.Regular_Check = 1 หรือไม่
-                    if (regularCheck == "1")
+                    // เปิด Regular Report เมื่อรอ approve หรือ approved แล้ว
+                    if (regularCheck == ((int)QAdataProperty.ProcStatus.WaitingApprove).ToString()
+                        || regularCheck == ((int)QAdataProperty.ProcStatus.OK).ToString())
                     {
                         using (FormRegularReportStamp stampForm = new FormRegularReportStamp(propQA))
                         {

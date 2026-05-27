@@ -15,13 +15,15 @@ namespace RawMat.Views.RegularCheck
     public partial class FormRegularReportStamp : Form
     {
         EmployeeProperty employee = EmployeeManager.CurrentEmployee;
+        QAdataControllers conQA = new QAdataControllers();
         QAdataProperty propQA = new QAdataProperty();
         private Image stamp_pic;
 
         public FormRegularReportStamp(QAdataProperty dataItem)
         {
             InitializeComponent();
-            this.lb_reportNo.Text = dataItem.Regular_No;
+            propQA = dataItem ?? new QAdataProperty();
+            this.lb_reportNo.Text = propQA.Regular_No;
             if (employee.EMP_LEVEL != "1")
             {
                 this.Close();
@@ -137,8 +139,27 @@ namespace RawMat.Views.RegularCheck
                 }
             }
 
-            // TODO: เพิ่มโค้ดสำหรับอัปเดตข้อมูลลง Database ที่นี่
-            // เช่น การบันทึก stamp_pic ลงฐานข้อมูล หรืออัปเดตสถานะ
+            try
+            {
+                string stampPath = tb_programStamp.ForeColor == Color.Gray ? null : tb_programStamp.Text;
+                FormRegularReportExcelFlow.ApproveExcelReport(propQA, stampPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ไม่สามารถ Save PDF หรือย้ายไฟล์ Regular Report ได้: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            propQA.process = "Regular_Check";
+            propQA.inProcStatus = ((int)QAdataProperty.ProcStatus.OK).ToString();
+            propQA.reportStatus = ((int)QAdataProperty.ProcStatus.OK).ToString();
+
+            if (!conQA.UpdateStatus(propQA))
+            {
+                MessageBox.Show("ไม่สามารถเปลี่ยนสถานะ Regular Report เป็น OK ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             this.DialogResult = DialogResult.OK;
             this.Close();

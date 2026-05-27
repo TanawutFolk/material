@@ -291,6 +291,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            resultData = services.SearchReferenceByMCode(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty CheckConditionRegularRef(QAdataProperty dataItem)
         {
             resultData = services.CheckConditionRegularRef(dataItem);

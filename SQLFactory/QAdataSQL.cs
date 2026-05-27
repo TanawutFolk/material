@@ -964,6 +964,18 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        public string SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            sql = @"SELECT `reference` AS `REFERENCE`
+                    FROM `info_reference`
+                    WHERE `mcode` = dataItem.M_CODE
+                    LIMIT 1";
+
+            sql = sql.Replace("dataItem.M_CODE", ToSqlTextValue(dataItem.M_CODE));
+
+            return sql;
+        }
+
         public string CheckConditionRegularRef(QAdataProperty dataItem)
         {
             sql = @"SELECT 

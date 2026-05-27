@@ -131,21 +131,33 @@ namespace RawMat.Views.RegularCheck
             {
                 if (conQA.InsertRegularData(propQA) == true)
                 {
+                    bool endAtRegularReport = IsEndAtRegularReport();
+
                     if (propQA.TOTAL_STATUS == "0")
                     {
-                        propQA.inProcStatus = "6";
-                        propQA.reportStatus = "6";
+                        propQA.inProcStatus = ((int)ProcStatus.Pending).ToString();
+                        propQA.reportStatus = ((int)ProcStatus.Pending).ToString();
+                    }
+                    else if (endAtRegularReport)
+                    {
+                        propQA.inProcStatus = ((int)ProcStatus.WaitingApprove).ToString();
+                        propQA.reportStatus = ((int)ProcStatus.WaitingApprove).ToString();
                     }
                     else
                     {
-                        propQA.inProcStatus = "1";
-                        propQA.reportStatus = "1";
+                        propQA.inProcStatus = ((int)ProcStatus.OK).ToString();
+                        propQA.reportStatus = ((int)ProcStatus.OK).ToString();
                     }
 
                     if (conQA.UpdateReportStatusLotNo(propQA) == true)
                     {
-                        if (IsEndAtRegularReport())
+                        if (endAtRegularReport)
                         {
+                            if (!conQA.UpdateReportStatus(propQA))
+                            {
+                                MessageBox.Show("ไม่สามารถ update report status เป็น Waiting Approve ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
                             PrepareEndAtRegularExcel();
                         }
  
@@ -167,6 +179,12 @@ namespace RawMat.Views.RegularCheck
                                     "Record Regular พบงาน ถูก PENDING",
                                     "สำเร็จ",
                                     CustomMsgBoxBase.MessageBoxIconType.Pending);
+                                break;
+                            case ProcStatus.WaitingApprove:
+                                CustomMsgBoxBase.ShowCustomMessageBox(
+                                    "Record Regular งาน OK และรอ Approve",
+                                    "สำเร็จ",
+                                    CustomMsgBoxBase.MessageBoxIconType.OK);
                                 break;
                             default:
                                 CustomMsgBoxBase.ShowCustomMessageBox(
@@ -228,10 +246,7 @@ namespace RawMat.Views.RegularCheck
 
         private void PrepareEndAtRegularExcel()
         {
-            using (FormRegularReportExcelFlow excelFlowForm = new FormRegularReportExcelFlow(propQA))
-            {
-                excelFlowForm.ShowDialog(this);
-            }
+            FormRegularReportExcelFlow.CreateWaitApprovedExcel(propQA, originalDataTable);
         }
 
         //protected override void OnHandleDestroyed(EventArgs e)
@@ -330,8 +345,10 @@ namespace RawMat.Views.RegularCheck
                 picbox_reg.Image = _defaultImage; // หรือ null ถ้าไม่มี default
             }
 
-            if (propQA.SAMPLING_TYPE == "4")
+            if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
             {
+                lb_TotalCavity.Visible = true;
+                lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
 
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE);
                 //picbox_reg.Image = imgCls.LoadRegularImage(propQA.M_CODE);
@@ -359,6 +376,7 @@ namespace RawMat.Views.RegularCheck
             else
             {
                 gb_cavity.Visible = false;
+                lb_TotalCavity.Visible = false;
 
                 picbox_reg.Location = new System.Drawing.Point(17, 113);
                 picbox_reg.Size = new Size(1076, 556);
@@ -496,40 +514,26 @@ namespace RawMat.Views.RegularCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
-            // ตรวจสอบว่าไม่มี Cell ว่าง
-            foreach (DataGridViewRow row in dtg_cavity.Rows)
-            {
-                if (row.IsNewRow) continue;
+            dtg_cavity.EndEdit();
 
-                foreach (DataGridViewCell cell in row.Cells)
-                {
-                    if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
-                    {
-                        MessageBox.Show("กรุณากรอกข้อมูลให้ครบทุกช่อง!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                }
-            }
-
-            // คำนวณผลรวมของ SAMPLING_QTY
+            // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
             int totalQty = 0;
-
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
                 if (row.IsNewRow) continue;
 
-                if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty))
+                if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty) && qty >= 0)
                 {
-                    totalQty += qty; // จุดที่ผิด เดิมใช้ = ทำให้ค่าถูกทับ
+                    totalQty += qty;
                 }
                 else
                 {
-                    MessageBox.Show("SAMPLING_QTY ต้องเป็นตัวเลขเท่านั้น!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("กรุณากรอกจำนวน Cavity เป็นตัวเลขตั้งแต่ 0 ขึ้นไปทุกแถว!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
 
-            int expectedQty = Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY);
+            int expectedQty = Convert.ToInt32(propQA.SAMPLING_QTY);
 
             // ตรวจสอบว่าผลรวมตรงกับที่ต้องการ
             if (totalQty != expectedQty)
@@ -588,58 +592,12 @@ namespace RawMat.Views.RegularCheck
 
             if (e.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
-                // ตรวจสอบว่าเป็นตัวเลขหรือไม่
-                if (!int.TryParse(e.FormattedValue.ToString(), out _))
+                string value = e.FormattedValue?.ToString();
+                if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, out int qty) || qty < 0)
                 {
                     e.Cancel = true; // ยกเลิกการออกจากเซลล์โดยไม่แสดงข้อความ
                 }
             }
-            else if (e.ColumnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
-            {
-                string value = e.FormattedValue.ToString().Trim().ToUpper(); // แปลงเป็นตัวพิมพ์ใหญ่
-
-                // ตรวจสอบความยาว 1 ตัว และเป็นตัวเลขหรือตัวอักษร
-
-                if (value == "")
-                {
-                    return;
-                }
-
-                // ตรวจสอบความยาว 1 ตัว และต้องเป็นตัวอักษรภาษาอังกฤษหรือตัวเลข
-                if (value.Length != 1 || !Regex.IsMatch(value, "^[A-Z0-9]$"))
-                {
-                    MessageBox.Show("กรุณากรอกตัวอักษรภาษาอังกฤษหรือเลข 0-9 เท่านั้น และต้องมีความยาว 1 ตัว", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true;
-                    return;
-                }
-
-                // ตรวจสอบค่าซ้ำในคอลัมน์ Name
-                for (int i = 0; i < dtg_cavity.Rows.Count; i++)
-                {
-                    if (i != e.RowIndex) // ข้ามแถวที่กำลังแก้ไข
-                    {
-                        var cell = dtg_cavity.Rows[i].Cells["CAVITY_NAME"].Value;
-                        string existingValue = cell != null ? cell.ToString().Trim().ToUpper() : "";
-
-                        // ข้ามแถวที่ไม่มีค่า
-                        if (string.IsNullOrEmpty(existingValue))
-                            continue;
-
-                        if (existingValue == value)
-                        {
-                            MessageBox.Show("ค่าซ้ำ! กรุณากรอกค่าที่ไม่ซ้ำกัน", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            e.Cancel = true;
-                            return;
-                        }
-                    }
-                }
-
-                // ตั้งค่าค่าใหม่ให้เป็นตัวพิมพ์ใหญ่
-                //dtg_cavity.Rows[e.RowIndex].Cells["CAVITY_NAME"].Value = value;
-
-            }
-
-
         }
 
         private void GenerateDataTableRegular(DataGridView dtgCavity, int sampQty)
@@ -875,8 +833,7 @@ namespace RawMat.Views.RegularCheck
 
         private void dtg_cavity_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index ||
-                dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
+            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
 
                 if (e.Control is TextBox textBox)
@@ -895,49 +852,12 @@ namespace RawMat.Views.RegularCheck
 
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            var textBox = sender as TextBox;
-            int columnIndex = dtg_cavity.CurrentCell.ColumnIndex;
-
-            if (columnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
+            if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
                 // อนุญาตเฉพาะตัวเลขและปุ่มควบคุม (เช่น Backspace, Delete)
                 if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 {
                     e.Handled = true; // ยกเลิกอักขระที่ไม่ใช่ตัวเลข
-                }
-            }
-            // สำหรับคอลัมน์ CAVITY_NAME
-            else if (columnIndex == dtg_cavity.Columns["CAVITY_NAME"].Index)
-            {
-                // อนุญาตแค่ตัวควบคุม (เช่น Backspace)
-                if (char.IsControl(e.KeyChar)) return;
-
-                // อนุญาตเฉพาะตัวเลข (0-9) และตัวอักษรภาษาอังกฤษ (A-Z, a-z)
-                if (!(char.IsDigit(e.KeyChar) || (char.IsLetter(e.KeyChar) && e.KeyChar <= 127)))
-                {
-                    e.Handled = true;
-                    return;
-                }
-
-                // ตรวจสอบว่าข้อความมีความยาวเกิน 1 ตัวหรือไม่ (ไม่นับส่วนที่เลือกไว้)
-                if (textBox.SelectionLength == 0 && textBox.Text.Length >= 1)
-                {
-                    e.Handled = true;
-                }
-            }
-
-
-        }
-
-        private void dtg_cavity_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
-        {
-            if (dtg_cavity.Columns[e.ColumnIndex].Name == "CAVITY_NAME")
-            {
-                if (e.Value != null)
-                {
-                    e.Value = e.Value.ToString().Trim().ToUpper(); // แปลงเป็นตัวพิมพ์ใหญ่
-                    e.ParsingApplied = true; // แจ้ง DataGridView ว่าเราได้เปลี่ยนค่าแล้ว
                 }
             }
         }

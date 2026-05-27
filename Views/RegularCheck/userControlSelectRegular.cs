@@ -268,11 +268,48 @@ namespace RawMat.Views.RegularCheck
 
                                 for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                 {
-                                    // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                    // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Regular Check
+                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                 }
 
 
+                            }
+                            else if (propQA.SAMPLING_TYPE == "3")
+                            {
+                                propQA.Cavity_Name_List = propQA.CAVITY_NAME.Split(',').ToList();
+
+                                propQA.dtCavity = new DataTable();
+                                if (!propQA.dtCavity.Columns.Contains("CAVITY_NAME"))
+                                {
+                                    propQA.dtCavity.Columns.Add("CAVITY_NAME", typeof(string));
+                                }
+
+                                if (!propQA.dtCavity.Columns.Contains("SAMPLING_QTY"))
+                                {
+                                    propQA.dtCavity.Columns.Add("SAMPLING_QTY", typeof(int));
+                                }
+
+                                DataTable dtSampLot = new DataTable();
+                                dtSampLot = conQA.FunctionSampQtyLotSize(propQA);
+
+                                if (dtSampLot.Rows.Count == 0)
+                                {
+                                    MessageBox.Show("ไม่พบข้อมูลการ Sampling Qty จาก " + propQA.SAMPLING_NAME + " ของ m-code :" + propQA.M_CODE);
+                                    return;
+                                }
+                                else
+                                {
+                                    propQA.SAMPLING_QTY = dtSampLot.Rows[0]["Sampling_Qty"].ToString();
+                                }
+
+                                if (Convert.ToInt32(propQA.CAVITY_QTY) != 0)
+                                {
+                                    for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
+                                    {
+                                        // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Regular Check
+                                        propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
+                                    }
+                                }
                             }
                             else if (propQA.SAMPLING_TYPE == "2")
                             {

@@ -119,8 +119,7 @@ namespace RawMat.Views.FunctionCheck
 
                                 for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
                                 {
-                                    // เพิ่มข้อมูลทั้ง 2 คอลัมน์ในแถวเดียวกัน
-                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), propQA.SAMPLING_QTY });
+                                    propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
                                 }
 
 

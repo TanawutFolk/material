@@ -1179,6 +1179,34 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public string SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchReferenceByMCode(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (result == null || result.Rows.Count == 0 || !result.Columns.Contains("REFERENCE"))
+            {
+                return string.Empty;
+            }
+
+            return result.Rows[0]["REFERENCE"]?.ToString() ?? string.Empty;
+        }
+
         public DataTable CheckConditionRegularRef(QAdataProperty dataItem)
         {
 
