@@ -51,8 +51,13 @@
             // 
             this.dtg_reportSelect.AllowUserToAddRows = false;
             this.dtg_reportSelect.AllowUserToDeleteRows = false;
+            this.dtg_reportSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dtg_reportSelect.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dtg_reportSelect.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dtg_reportSelect.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.None;
             this.dtg_reportSelect.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtg_reportSelect.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_reportSelect.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -69,12 +74,14 @@
             this.dtg_reportSelect.EnableHeadersVisualStyles = false;
             this.dtg_reportSelect.HeaderBgColor = System.Drawing.Color.DarkGreen;
             this.dtg_reportSelect.HeaderForeColor = System.Drawing.Color.Cyan;
-            this.dtg_reportSelect.Location = new System.Drawing.Point(51, 138);
+            this.dtg_reportSelect.Location = new System.Drawing.Point(24, 92);
             this.dtg_reportSelect.Name = "dtg_reportSelect";
             this.dtg_reportSelect.ReadOnly = true;
             this.dtg_reportSelect.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dtg_reportSelect.RowHeadersVisible = false;
             this.dtg_reportSelect.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dtg_reportSelect.Size = new System.Drawing.Size(1012, 455);
+            this.dtg_reportSelect.Size = new System.Drawing.Size(1067, 614);
+            this.dtg_reportSelect.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dtg_reportSelect_DataBindingComplete);
             this.dtg_reportSelect.TabIndex = 27;
             this.dtg_reportSelect.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_reportSelect_CellClick);
             // 

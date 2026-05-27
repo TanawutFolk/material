@@ -47,6 +47,7 @@ namespace RawMat.SQLFactory
                     LEFT JOIN info_status funcStatus ON (d.Function_Check = funcStatus.ID)
                     LEFT JOIN info_status dimStatus ON (d.Dimension_Check = dimStatus.ID)
                     LEFT JOIN info_status appStatus ON (d.Appearance_Check = appStatus.ID)
+                    ORDER BY a.Report_No DESC
                     ";
 
             return sql; 
@@ -100,6 +101,7 @@ namespace RawMat.SQLFactory
                          funcStatus.STATUS_NAME IN ('Pending', 'Working') OR
                          dimStatus.STATUS_NAME IN ('Pending', 'Working') OR
                          appStatus.STATUS_NAME IN ('Pending', 'Working'))
+                    ORDER BY a.Report_No DESC
                     ";
 
             return sql;

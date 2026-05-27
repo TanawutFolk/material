@@ -46,7 +46,7 @@
             this.pn_buttonSwap.Controls.Add(this.btn_EmployeeSetting);
             this.pn_buttonSwap.Location = new System.Drawing.Point(3, 136);
             this.pn_buttonSwap.Name = "pn_buttonSwap";
-            this.pn_buttonSwap.Size = new System.Drawing.Size(136, 163);
+            this.pn_buttonSwap.Size = new System.Drawing.Size(136, 229);
             this.pn_buttonSwap.TabIndex = 4;
             // 
             // btnEquipmentSetting
@@ -58,7 +58,7 @@
             this.btnEquipmentSetting.Name = "btnEquipmentSetting";
             this.btnEquipmentSetting.Size = new System.Drawing.Size(130, 51);
             this.btnEquipmentSetting.TabIndex = 4;
-            this.btnEquipmentSetting.Text = "Equipment Settings";
+            this.btnEquipmentSetting.Text = "Equipments";
             this.btnEquipmentSetting.UseVisualStyleBackColor = false;
             this.btnEquipmentSetting.Click += new System.EventHandler(this.btnEquipmentSetting_Click);
             // 
@@ -71,7 +71,7 @@
             this.btn_InspectionSetting.Name = "btn_InspectionSetting";
             this.btn_InspectionSetting.Size = new System.Drawing.Size(130, 51);
             this.btn_InspectionSetting.TabIndex = 1;
-            this.btn_InspectionSetting.Text = "Inspection Settings";
+            this.btn_InspectionSetting.Text = "M-Code Inspection ";
             this.btn_InspectionSetting.UseVisualStyleBackColor = false;
             this.btn_InspectionSetting.Click += new System.EventHandler(this.btn_InspectionSetting_Click);
             // 
@@ -84,7 +84,7 @@
             this.btn_EmployeeSetting.Name = "btn_EmployeeSetting";
             this.btn_EmployeeSetting.Size = new System.Drawing.Size(130, 51);
             this.btn_EmployeeSetting.TabIndex = 3;
-            this.btn_EmployeeSetting.Text = "Employee Settings";
+            this.btn_EmployeeSetting.Text = "Employees";
             this.btn_EmployeeSetting.UseVisualStyleBackColor = false;
             this.btn_EmployeeSetting.Click += new System.EventHandler(this.btn_EmployeeSetting_Click);
             // 

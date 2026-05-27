@@ -55,6 +55,7 @@ namespace RawMat.Views.DimensionCheck
         {
 
             InitializeComponent();
+            ConfigureReportGrid();
 
         }
 
@@ -62,13 +63,25 @@ namespace RawMat.Views.DimensionCheck
         {
             lb_process.Text = propQA.labelProcess.Replace("\n", " ");
             dtg_reportSelect.DataSource = propQA.dtgRawMat.DataSource;
-            dtg_reportSelect.DataBindingComplete += dtg_reportSelect_DataBindingComplete;
 
             //dtg_reportSelect.Columns["process_id"].Visible = false;
             //dtg_reportSelect.Columns["Issue_Date"].Visible = false;
 
 
 
+        }
+
+        private void ConfigureReportGrid()
+        {
+            dtg_reportSelect.AutoGenerateColumns = true;
+            dtg_reportSelect.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dtg_reportSelect.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            dtg_reportSelect.RowHeadersVisible = false;
+            dtg_reportSelect.AllowUserToResizeRows = false;
+            dtg_reportSelect.MultiSelect = false;
+            dtg_reportSelect.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            dtg_reportSelect.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtg_reportSelect.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
         }
 
         private void dtg_reportSelect_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -578,10 +591,53 @@ namespace RawMat.Views.DimensionCheck
             //    }
             //}
 
-            dtg_reportSelect.Columns["process_status_id"].Visible = false;
-            dtg_reportSelect.Columns["Issue_Date"].Visible = false;
+            if (dtg_reportSelect.Columns.Contains("process_status_id"))
+            {
+                dtg_reportSelect.Columns["process_status_id"].Visible = false;
+            }
+
+            if (dtg_reportSelect.Columns.Contains("Issue_Date"))
+            {
+                dtg_reportSelect.Columns["Issue_Date"].Visible = false;
+            }
             //dtg_reportSelect.Columns["LOT_NO"].Visible = false;
             //dtg_reportSelect.Columns["Dimension_Check_Ref"].Visible = false;
+            ApplyReportGridColumnLayout();
+        }
+
+        private void ApplyReportGridColumnLayout()
+        {
+            dtg_reportSelect.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            foreach (DataGridViewColumn column in dtg_reportSelect.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                column.MinimumWidth = 70;
+                column.FillWeight = 100;
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+            }
+
+            SetColumnLayout("Receive Date", 95, 90, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnLayout("Report No.", 115, 100, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnLayout("M-CODE", 110, 95, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnLayout("Invoice No.", 120, 105, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnLayout("Lot Size", 80, 75, DataGridViewContentAlignment.MiddleRight);
+            SetColumnLayout("Vendor", 150, 135, DataGridViewContentAlignment.MiddleLeft);
+            SetColumnLayout("Material Name", 230, 210, DataGridViewContentAlignment.MiddleLeft);
+            SetColumnLayout("Status", 90, 80, DataGridViewContentAlignment.MiddleCenter);
+        }
+
+        private void SetColumnLayout(string columnName, float fillWeight, int minimumWidth, DataGridViewContentAlignment alignment)
+        {
+            if (!dtg_reportSelect.Columns.Contains(columnName))
+            {
+                return;
+            }
+
+            DataGridViewColumn column = dtg_reportSelect.Columns[columnName];
+            column.FillWeight = fillWeight;
+            column.MinimumWidth = minimumWidth;
+            column.DefaultCellStyle.Alignment = alignment;
         }
 
         public void bt_dim_Click()
