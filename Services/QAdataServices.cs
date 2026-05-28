@@ -63,6 +63,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchActiveInspectionList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchActiveInspectionList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchInspListxSmartFFT(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -93,6 +101,14 @@ namespace RawMat.Services
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.CheckStatus(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchReceiveMatStatusByReceiveDate(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }

@@ -119,10 +119,24 @@ namespace RawMat.SQLFactory
         public string SearchInspectionList(QAdataProperty dataItem)
         {
             //I_model ??? mathName
-            sql = @"select COUNT(*) AS CNT from info_mat_inspection_list where M_CODE = 'dataItem.M_CODE' and INUSE = 1 
+            sql = @"select COUNT(*) AS CNT from info_mat_inspection_list where TRIM(M_CODE) = 'dataItem.M_CODE' and INUSE = 1 
                     ";
 
-            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
+            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE.Trim());
+
+            return sql;
+        }
+
+        public string SearchActiveInspectionList()
+        {
+            sql = @"SELECT DISTINCT
+                        TRIM(a.M_CODE) AS M_CODE,
+                        c.VENDOR_NAME,
+                        b.ITEM_EXTERNAL_SHORT_NAME AS material_name
+                    FROM info_mat_inspection_list a
+                    JOIN mes.item_manufacturing b ON TRIM(a.M_CODE) = TRIM(b.ITEM_CODE_FOR_SUPPORT_MES)
+                    JOIN mes.vendor c ON b.VENDOR_ID = c.VENDOR_ID
+                    WHERE a.INUSE = 1";
 
             return sql;
         }
@@ -150,7 +164,7 @@ namespace RawMat.SQLFactory
             sql = "SELECT b.`VENDOR_ID` , c.`VENDOR_NAME` , b.ITEM_EXTERNAL_SHORT_NAME as `material_name` from `info_mat_inspection_list` a " +
                 "JOIN `mes`.`item_manufacturing` b on (a.`M_Code` = b.`Item_code_for_support_mes`) " +
                 "JOIN `mes`.`vendor` c on (b.`VENDOR_ID` = c.`VENDOR_ID`) " +
-                "WHERE a.`M_CODE` = '" + dataItem.M_CODE + "' ;";
+                "WHERE TRIM(a.`M_CODE`) = '" + dataItem.M_CODE.Trim() + "' ;";
 
 
            //sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
@@ -289,6 +303,22 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
             sql = sql.Replace("dataItem.Invoice_No", dataItem.Invoice_No);
             sql = sql.Replace("dataItem.process", dataItem.process);
+
+            return sql;
+        }
+
+        public string SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+            sql = @"SELECT
+                        a.Report_No,
+                        TRIM(a.M_Code) AS M_CODE,
+                        a.Invoice_No,
+                        b.Receive_WH
+                    FROM db_receive_mat a
+                    JOIN db_report_status b ON a.Report_No = b.Report_No
+                    WHERE a.Receive_Date = 'dataItem.Receive_Date'";
+
+            sql = sql.Replace("dataItem.Receive_Date", dataItem.Receive_Date);
 
             return sql;
         }

@@ -92,6 +92,30 @@ namespace RawMat.Controllers
             return Convert.ToInt32(result.Rows[0]["CNT"]);
         }
 
+        public DataTable SearchActiveInspectionList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchActiveInspectionList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
         public DataTable SearchInspListxSmartFFT(QAdataProperty dataItem)
         {
 
@@ -412,6 +436,31 @@ namespace RawMat.Controllers
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchReceiveMatStatusByReceiveDate(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
             }
             return result;
         }

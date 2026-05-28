@@ -62,6 +62,9 @@ namespace RawMat.Property
 
         // --- Employee Setting ---
         public string Employee_ID { get; set; }
+        public string Employee_FirstName { get; set; }
+        public string Employee_LastName { get; set; }
+        public string Employee_Name { get; set; }
         public string Employee_Level_ID { get; set; }
         public string Employee_Level_Name { get; set; }
         public string Phone_Ext { get; set; }
@@ -71,6 +74,8 @@ namespace RawMat.Property
         // --- Equipment Type Setting ---
         public string Equipment_Type { get; set; }
         public string Equipment_Name { get; set; }
+        public string Equipment_Serial_ID { get; set; }
+        public string Equipment_Serial { get; set; }
         public string Search_Equipment_Type { get; set; }
         public string Search_Equipment_Name { get; set; }
     }

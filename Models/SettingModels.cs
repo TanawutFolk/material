@@ -107,6 +107,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchEmployeeNameFromPerson(SettingProperty dataItem)
+        {
+            resultData = services.SearchEmployeeNameFromPerson(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty CountEmployeeSettingByEmployeeID(SettingProperty dataItem)
         {
             resultData = services.CountEmployeeSettingByEmployeeID(dataItem);

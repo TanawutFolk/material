@@ -515,9 +515,10 @@ namespace RawMat.SQLFactory
             sql = @"
                 SELECT
                     a.Employee_ID AS `Employee ID`,
+                    a.Employee_FirstName AS `Employee FirstName`,
+                    a.Employee_LastName AS `Employee LastName`,
                     a.Employee_Level_ID AS `Employee Level ID`,
-                    b.Employee_Level_Name AS `Employee Level Name`,
-                    a.Phone_Ext AS `Phone Ext`
+                    b.Employee_Level_Name AS `Employee Level Name`
                 FROM info_employee a
                 LEFT JOIN info_employee_level b
                     ON a.Employee_Level_ID = b.Employee_Level_ID
@@ -542,13 +543,28 @@ namespace RawMat.SQLFactory
             sql = @"
                 SELECT
                     a.Employee_ID,
+                    a.Employee_FirstName,
+                    a.Employee_LastName,
                     a.Employee_Level_ID,
-                    b.Employee_Level_Name,
-                    a.Phone_Ext
+                    b.Employee_Level_Name
                 FROM info_employee a
                 LEFT JOIN info_employee_level b
                     ON a.Employee_Level_ID = b.Employee_Level_ID
                 WHERE a.Employee_ID = 'dataItem.Employee_ID';";
+
+            sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            return sql;
+        }
+
+        public string SearchEmployeeNameFromPerson(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT
+                    empCode,
+                    empName,
+                    empSurname
+                FROM person.member_fed
+                WHERE empCode = 'dataItem.Employee_ID';";
 
             sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
             return sql;
@@ -571,19 +587,22 @@ namespace RawMat.SQLFactory
                 INSERT INTO info_employee
                 (
                     Employee_ID,
-                    Employee_Level_ID,
-                    Phone_Ext
+                    Employee_FirstName,
+                    Employee_LastName,
+                    Employee_Level_ID
                 )
                 VALUES
                 (
                     'dataItem.Employee_ID',
-                    dataItem.Employee_Level_ID,
-                    dataItem.Phone_Ext
+                    dataItem.Employee_FirstName,
+                    dataItem.Employee_LastName,
+                    dataItem.Employee_Level_ID
                 );";
 
             sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            sql = sql.Replace("dataItem.Employee_FirstName", ToSqlTextOrNull(dataItem.Employee_FirstName));
+            sql = sql.Replace("dataItem.Employee_LastName", ToSqlTextOrNull(dataItem.Employee_LastName));
             sql = sql.Replace("dataItem.Employee_Level_ID", ToSqlSmallIntOrNull(dataItem.Employee_Level_ID));
-            sql = sql.Replace("dataItem.Phone_Ext", ToSqlTextOrNull(dataItem.Phone_Ext));
             return sql;
         }
 
@@ -591,13 +610,15 @@ namespace RawMat.SQLFactory
         {
             sql = @"
                 UPDATE info_employee
-                SET Employee_Level_ID = dataItem.Employee_Level_ID,
-                    Phone_Ext = dataItem.Phone_Ext
+                SET Employee_FirstName = dataItem.Employee_FirstName,
+                    Employee_LastName = dataItem.Employee_LastName,
+                    Employee_Level_ID = dataItem.Employee_Level_ID
                 WHERE Employee_ID = 'dataItem.Employee_ID';";
 
             sql = sql.Replace("dataItem.Employee_ID", CleanSqlText(dataItem.Employee_ID));
+            sql = sql.Replace("dataItem.Employee_FirstName", ToSqlTextOrNull(dataItem.Employee_FirstName));
+            sql = sql.Replace("dataItem.Employee_LastName", ToSqlTextOrNull(dataItem.Employee_LastName));
             sql = sql.Replace("dataItem.Employee_Level_ID", ToSqlSmallIntOrNull(dataItem.Employee_Level_ID));
-            sql = sql.Replace("dataItem.Phone_Ext", ToSqlTextOrNull(dataItem.Phone_Ext));
             return sql;
         }
 
@@ -641,22 +662,26 @@ namespace RawMat.SQLFactory
 
             sql = @"
                 SELECT
-                    Equipment_Type AS `Equipment Type`,
-                    Equipment_Name AS `Equipment Name`
-                FROM info_equipment_type
+                    s.ID AS `Serial ID`,
+                    t.Equipment_Type AS `Equipment Type`,
+                    t.Equipment_Name AS `Equipment Name`,
+                    s.EQUIPMENT_SERIAL AS `Equipment Serial`
+                FROM info_equipment_type t
+                LEFT JOIN info_equipment_serial s
+                    ON t.Equipment_Type = s.EQUIPMENT_TYPE_ID
                 WHERE 1=1 ";
 
             if (short.TryParse(equipmentTypeSearch, out short equipmentType))
             {
-                sql += $" AND Equipment_Type = {equipmentType} ";
+                sql += $" AND t.Equipment_Type = {equipmentType} ";
             }
 
             if (!string.IsNullOrWhiteSpace(equipmentNameSearch))
             {
-                sql += $" AND Equipment_Name LIKE '%{equipmentNameSearch}%' ";
+                sql += $" AND (t.Equipment_Name LIKE '%{equipmentNameSearch}%' OR s.EQUIPMENT_SERIAL LIKE '%{equipmentNameSearch}%') ";
             }
 
-            sql += " ORDER BY Equipment_Type ASC;";
+            sql += " ORDER BY t.Equipment_Type ASC, s.ID ASC;";
             return sql;
         }
 
@@ -664,10 +689,14 @@ namespace RawMat.SQLFactory
         {
             sql = @"
                 SELECT
-                    Equipment_Type,
-                    Equipment_Name
-                FROM info_equipment_type
-                WHERE Equipment_Type = dataItem.Equipment_Type;";
+                    t.Equipment_Type,
+                    t.Equipment_Name,
+                    s.ID AS Equipment_Serial_ID,
+                    s.EQUIPMENT_SERIAL AS Equipment_Serial
+                FROM info_equipment_type t
+                LEFT JOIN info_equipment_serial s
+                    ON t.Equipment_Type = s.EQUIPMENT_TYPE_ID
+                WHERE t.Equipment_Type = dataItem.Equipment_Type;";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
             return sql;
@@ -692,14 +721,36 @@ namespace RawMat.SQLFactory
                     Equipment_Type,
                     Equipment_Name
                 )
-                VALUES
-                (
+                SELECT
                     dataItem.Equipment_Type,
                     dataItem.Equipment_Name
+                WHERE NOT EXISTS
+                (
+                    SELECT 1
+                    FROM info_equipment_type x
+                    WHERE x.Equipment_Name = dataItem.Equipment_Name
+                );
+
+                INSERT INTO info_equipment_serial
+                (
+                    EQUIPMENT_TYPE_ID,
+                    EQUIPMENT_SERIAL
+                )
+                VALUES
+                (
+                    (
+                        SELECT x.Equipment_Type
+                        FROM info_equipment_type x
+                        WHERE x.Equipment_Name = dataItem.Equipment_Name
+                        ORDER BY x.Equipment_Type DESC
+                        LIMIT 1
+                    ),
+                    dataItem.Equipment_Serial
                 );";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNextEquipmentType(dataItem.Equipment_Type));
             sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
+            sql = sql.Replace("dataItem.Equipment_Serial", ToSqlTextOrNull(dataItem.Equipment_Serial));
             return sql;
         }
 
@@ -708,20 +759,37 @@ namespace RawMat.SQLFactory
             sql = @"
                 UPDATE info_equipment_type
                 SET Equipment_Name = dataItem.Equipment_Name
-                WHERE Equipment_Type = dataItem.Equipment_Type;";
+                WHERE Equipment_Type = dataItem.Equipment_Type;
+
+                INSERT INTO info_equipment_serial
+                (
+                    EQUIPMENT_TYPE_ID,
+                    EQUIPMENT_SERIAL
+                )
+                VALUES
+                (
+                    dataItem.Equipment_Type,
+                    dataItem.Equipment_Serial
+                );";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
             sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
+            sql = sql.Replace("dataItem.Equipment_Serial", ToSqlTextOrNull(dataItem.Equipment_Serial));
             return sql;
         }
 
         public string DeleteEquipmentTypeSetting(SettingProperty dataItem)
         {
             sql = @"
+                DELETE FROM info_equipment_serial
+                WHERE ID = dataItem.Equipment_Serial_ID;
+
                 DELETE FROM info_equipment_type
-                WHERE Equipment_Type = dataItem.Equipment_Type;";
+                WHERE Equipment_Type = dataItem.Equipment_Type
+                  AND dataItem.Equipment_Serial_ID IS NULL;";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
+            sql = sql.Replace("dataItem.Equipment_Serial_ID", ToSqlSmallIntOrNull(dataItem.Equipment_Serial_ID));
             return sql;
         }
 

@@ -14,8 +14,10 @@ namespace RawMat.Views.Setting
         private readonly SettingControllers _controller = new SettingControllers();
 
         private const string ColDelete = "Delete";
+        private const string ColSerialId = "Serial ID";
         private const string ColEquipmentType = "Equipment Type";
         private const string ColEquipmentName = "Equipment Name";
+        private const string ColEquipmentSerial = "Equipment Serial";
 
         private static readonly Color HeaderBackColor = Color.ForestGreen;
         private static readonly Color HeaderForeColor = Color.White;
@@ -165,11 +167,13 @@ namespace RawMat.Views.Setting
         private void ApplyColumnFormat()
         {
             SetColumnWidth(ColDelete, 80);
-            SetColumnFill(ColEquipmentType, 25);
-            SetColumnFill(ColEquipmentName, 75);
+            SetColumnVisible(ColSerialId, false);
+            SetColumnVisible(ColEquipmentType, false);
+            SetColumnFill(ColEquipmentName, 55);
+            SetColumnFill(ColEquipmentSerial, 45);
             SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
-            SetColumnAlignment(ColEquipmentType, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEquipmentName, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColEquipmentSerial, DataGridViewContentAlignment.MiddleCenter);
         }
 
         private DataGridViewColumn FindColumn(string name) =>
@@ -195,6 +199,12 @@ namespace RawMat.Views.Setting
                 col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
                 col.FillWeight = fillWeight;
             }
+        }
+
+        private void SetColumnVisible(string name, bool visible)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null) col.Visible = visible;
         }
 
         private void SetColumnAlignment(string name, DataGridViewContentAlignment alignment)
@@ -230,6 +240,7 @@ namespace RawMat.Views.Setting
 
             string equipmentType = GetEquipmentTypeFromRow(e.RowIndex);
             string equipmentName = GetEquipmentNameFromRow(e.RowIndex);
+            string equipmentSerialId = GetEquipmentSerialIdFromRow(e.RowIndex);
 
             if (string.IsNullOrWhiteSpace(equipmentType))
                 return;
@@ -243,7 +254,8 @@ namespace RawMat.Views.Setting
             var dataItem = new SettingProperty
             {
                 Equipment_Type = equipmentType,
-                Equipment_Name = equipmentName
+                Equipment_Name = equipmentName,
+                Equipment_Serial_ID = equipmentSerialId
             };
 
             if (!_controller.DeleteEquipmentTypeSetting(dataItem))
@@ -261,6 +273,8 @@ namespace RawMat.Views.Setting
         private string GetEquipmentTypeFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentType);
 
         private string GetEquipmentNameFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentName);
+
+        private string GetEquipmentSerialIdFromRow(int rowIndex) => GetCellText(rowIndex, ColSerialId);
 
         private string GetCellText(int rowIndex, string columnName)
         {

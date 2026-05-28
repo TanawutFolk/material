@@ -15,9 +15,10 @@ namespace RawMat.Views.Setting
 
         private const string ColEdit = "Edit";
         private const string ColEmployeeId = "Employee ID";
+        private const string ColEmployeeFirstName = "Employee FirstName";
+        private const string ColEmployeeLastName = "Employee LastName";
         private const string ColEmployeeLevelId = "Employee Level ID";
         private const string ColEmployeeLevelName = "Employee Level Name";
-        private const string ColPhoneExt = "Phone Ext";
 
         private static readonly Color HeaderBackColor = Color.ForestGreen;
         private static readonly Color HeaderForeColor = Color.White;
@@ -169,13 +170,14 @@ namespace RawMat.Views.Setting
             SetColumnWidth(ColEdit, 80);
             SetColumnVisible(ColEmployeeLevelId, false);
 
-            SetColumnFill(ColEmployeeId, 30);
-            SetColumnFill(ColEmployeeLevelName, 50);
-            SetColumnFill(ColPhoneExt, 20);
+            SetColumnFill(ColEmployeeId, 20);
+            SetColumnFill(ColEmployeeFirstName, 30);
+            SetColumnFill(ColEmployeeLastName, 30);
+            SetColumnFill(ColEmployeeLevelName, 20);
 
             SetColumnAlignment(ColEdit, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColEmployeeId, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEmployeeLevelName, DataGridViewContentAlignment.MiddleCenter);
-            SetColumnAlignment(ColPhoneExt, DataGridViewContentAlignment.MiddleCenter);
         }
 
         private DataGridViewColumn FindColumn(string name) =>

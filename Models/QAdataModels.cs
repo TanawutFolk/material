@@ -32,6 +32,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchActiveInspectionList()
+        {
+            resultData = services.SearchActiveInspectionList();
+            return resultData;
+        }
+
         public OutputOnDbProperty SearchInspListxSmartFFT(QAdataProperty dataItem)
         {
             resultData = services.SearchInspListxSmartFFT(dataItem);
@@ -113,6 +119,12 @@ namespace RawMat.Models
         public OutputOnDbProperty CheckStatus(QAdataProperty dataItem)
         {
             resultData = services.CheckStatus(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+            resultData = services.SearchReceiveMatStatusByReceiveDate(dataItem);
             return resultData;
         }
 

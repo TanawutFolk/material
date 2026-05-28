@@ -599,11 +599,33 @@ namespace RawMat
      
         public void LoadStatus()
         {
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(LoadStatus));
+                return;
+            }
+
             LoadStatusAsync();
         }
 
         public async void LoadStatusAsync()
         {
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(LoadStatusAsync));
+                return;
+            }
+
             SetStatusButtonText(null, null, null, null, null, null, null);
 
             int receiveWhPending = 0;
@@ -658,6 +680,17 @@ namespace RawMat
 
         private void SetStatusButtonText(int? receiveWhPending, int? packingPending, int? regularPending, int? functionPending, int? dimensionPending, int? inspDataPending, int? appearancePending)
         {
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => SetStatusButtonText(receiveWhPending, packingPending, regularPending, functionPending, dimensionPending, inspDataPending, appearancePending)));
+                return;
+            }
+
             string receiveWhText = receiveWhPending.HasValue ? receiveWhPending.Value.ToString() : "...";
             string packingText = packingPending.HasValue ? packingPending.Value.ToString() : "...";
             string regularText = regularPending.HasValue ? regularPending.Value.ToString() : "...";
@@ -678,6 +711,17 @@ namespace RawMat
 
         private void SetStatusButtonText(BunifuFlatButton button, string processName, string pendingCount)
         {
+            if (button == null || button.IsDisposed)
+            {
+                return;
+            }
+
+            if (button.InvokeRequired)
+            {
+                button.BeginInvoke(new Action(() => SetStatusButtonText(button, processName, pendingCount)));
+                return;
+            }
+
             string buttonText = $"{processName}\nPending\n{pendingCount} Report";
 
             button.Text = buttonText;

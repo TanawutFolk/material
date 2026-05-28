@@ -459,6 +459,33 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable SearchEmployeeNameFromPerson(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.SearchEmployeeNameFromPerson(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
         public int CountEmployeeSettingByEmployeeID(SettingProperty dataItem)
         {
             DataTable result = new DataTable();

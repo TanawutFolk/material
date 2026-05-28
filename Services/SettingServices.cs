@@ -169,6 +169,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchEmployeeNameFromPerson(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchEmployeeNameFromPerson(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty CountEmployeeSettingByEmployeeID(SettingProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

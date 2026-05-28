@@ -1,6 +1,7 @@
 using RawMat.Controllers;
 using RawMat.Property;
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 namespace RawMat.Views.Setting.form
@@ -22,24 +23,69 @@ namespace RawMat.Views.Setting.form
         {
             Text = "Add New Equipment";
             StartPosition = FormStartPosition.CenterParent;
-            txtEquipmentName.Focus();
+            BindEquipmentList();
+            cboEquipment.Focus();
+        }
+
+        private void BindEquipmentList()
+        {
+            DataTable source = _controller.GetEquipmentTypeList();
+
+            var dt = new DataTable();
+            dt.Columns.Add("TEXT");
+            dt.Columns.Add("VALUE");
+
+            if (source != null)
+            {
+                foreach (DataRow row in source.Rows)
+                {
+                    dt.Rows.Add(
+                        Convert.ToString(row["Equipment_Name"]),
+                        Convert.ToString(row["Equipment_Type"]));
+                }
+            }
+
+            cboEquipment.DropDownStyle = ComboBoxStyle.DropDown;
+            cboEquipment.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            cboEquipment.AutoCompleteSource = AutoCompleteSource.ListItems;
+            cboEquipment.DataSource = dt;
+            cboEquipment.DisplayMember = "TEXT";
+            cboEquipment.ValueMember = "VALUE";
+            cboEquipment.SelectedIndex = -1;
+            cboEquipment.Text = "";
         }
 
         private bool ValidateBeforeSave()
         {
-            if (string.IsNullOrWhiteSpace(txtEquipmentName.Text))
+            if (string.IsNullOrWhiteSpace(cboEquipment.Text))
             {
                 MessageBox.Show("กรุณาระบุ Equipment Name", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtEquipmentName.Focus();
+                cboEquipment.Focus();
                 return false;
             }
 
-            if (txtEquipmentName.Text.Trim().Length > 30)
+            if (cboEquipment.Text.Trim().Length > 30)
             {
                 MessageBox.Show("Equipment Name ต้องไม่เกิน 30 ตัวอักษร", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtEquipmentName.Focus();
+                cboEquipment.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtSerial.Text))
+            {
+                MessageBox.Show("กรุณาระบุ Equipment Serial", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSerial.Focus();
+                return false;
+            }
+
+            if (txtSerial.Text.Trim().Length > 255)
+            {
+                MessageBox.Show("Equipment Serial ต้องไม่เกิน 255 ตัวอักษร", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtSerial.Focus();
                 return false;
             }
 
@@ -50,8 +96,22 @@ namespace RawMat.Views.Setting.form
         {
             return new SettingProperty
             {
-                Equipment_Name = txtEquipmentName.Text.Trim()
+                Equipment_Type = GetSelectedEquipmentType(),
+                Equipment_Name = cboEquipment.Text.Trim(),
+                Equipment_Serial = txtSerial.Text.Trim()
             };
+        }
+
+        private string GetSelectedEquipmentType()
+        {
+            if (cboEquipment.SelectedIndex < 0 || cboEquipment.SelectedValue == null)
+                return "";
+
+            string selectedText = Convert.ToString(cboEquipment.GetItemText(cboEquipment.SelectedItem)).Trim();
+            if (!selectedText.Equals(cboEquipment.Text.Trim(), StringComparison.OrdinalIgnoreCase))
+                return "";
+
+            return cboEquipment.SelectedValue.ToString().Trim();
         }
 
         private void SaveEquipment()

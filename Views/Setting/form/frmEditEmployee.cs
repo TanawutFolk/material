@@ -11,6 +11,8 @@ namespace RawMat.Views.Setting.form
         private readonly SettingControllers _controller = new SettingControllers();
         private readonly string _employeeId;
         private readonly bool _isEditMode;
+        private readonly Timer _employeeCodeLookupTimer = new Timer();
+        private string _lastLookupEmployeeCode = "";
 
         public frmEditEmployee()
             : this("")
@@ -25,6 +27,9 @@ namespace RawMat.Views.Setting.form
             _isEditMode = !string.IsNullOrWhiteSpace(_employeeId);
 
             Load += frmEditEmployee_Load;
+            txtEmpCode.TextChanged += txtEmpCode_TextChanged;
+            _employeeCodeLookupTimer.Interval = 500;
+            _employeeCodeLookupTimer.Tick += employeeCodeLookupTimer_Tick;
             btnSave.Click += btnSave_Click;
             btnCancel.Click += btnCancel_Click;
         }
@@ -96,7 +101,8 @@ namespace RawMat.Views.Setting.form
 
             DataRow row = dt.Rows[0];
             txtEmpCode.Text = Convert.ToString(row["Employee_ID"]).Trim();
-            txtPhoneExt.Text = Convert.ToString(row["Phone_Ext"]).Trim();
+            txtEmpFirstName.Text = Convert.ToString(row["Employee_FirstName"]).Trim();
+            txtEmpLastName.Text = Convert.ToString(row["Employee_LastName"]).Trim();
             SetComboValue(cboEmployeeLevel, Convert.ToString(row["Employee_Level_ID"]).Trim());
         }
 
@@ -105,9 +111,36 @@ namespace RawMat.Views.Setting.form
             return new SettingProperty
             {
                 Employee_ID = txtEmpCode.Text.Trim(),
-                Employee_Level_ID = GetComboValue(cboEmployeeLevel),
-                Phone_Ext = txtPhoneExt.Text.Trim()
+                Employee_FirstName = txtEmpFirstName.Text.Trim(),
+                Employee_LastName = txtEmpLastName.Text.Trim(),
+                Employee_Level_ID = GetComboValue(cboEmployeeLevel)
             };
+        }
+
+        private void LoadEmployeeNameFromPerson()
+        {
+            string employeeCode = txtEmpCode.Text.Trim();
+            if (_isEditMode || string.IsNullOrWhiteSpace(employeeCode) || employeeCode == _lastLookupEmployeeCode)
+                return;
+
+            _lastLookupEmployeeCode = employeeCode;
+
+            var dataItem = new SettingProperty
+            {
+                Employee_ID = employeeCode
+            };
+
+            DataTable dt = _controller.SearchEmployeeNameFromPerson(dataItem);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                txtEmpFirstName.Text = "";
+                txtEmpLastName.Text = "";
+                return;
+            }
+
+            DataRow row = dt.Rows[0];
+            txtEmpFirstName.Text = Convert.ToString(row["empName"]).Trim();
+            txtEmpLastName.Text = Convert.ToString(row["empSurname"]).Trim();
         }
 
         private bool ValidateBeforeSave()
@@ -136,11 +169,35 @@ namespace RawMat.Views.Setting.form
                 return false;
             }
 
-            if (txtPhoneExt.Text.Trim().Length > 10)
+            if (string.IsNullOrWhiteSpace(txtEmpFirstName.Text))
             {
-                MessageBox.Show("Phone Ext ต้องไม่เกิน 10 ตัวอักษร", "Warning",
+                MessageBox.Show("กรุณาระบุ Employee FirstName", "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtPhoneExt.Focus();
+                txtEmpFirstName.Focus();
+                return false;
+            }
+
+            if (txtEmpFirstName.Text.Trim().Length > 100)
+            {
+                MessageBox.Show("Employee FirstName ต้องไม่เกิน 100 ตัวอักษร", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmpFirstName.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtEmpLastName.Text))
+            {
+                MessageBox.Show("กรุณาระบุ Employee LastName", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmpLastName.Focus();
+                return false;
+            }
+
+            if (txtEmpLastName.Text.Trim().Length > 100)
+            {
+                MessageBox.Show("Employee LastName ต้องไม่เกิน 100 ตัวอักษร", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmpLastName.Focus();
                 return false;
             }
 
@@ -195,6 +252,20 @@ namespace RawMat.Views.Setting.form
         }
 
         private void btnSave_Click(object sender, EventArgs e) => SaveEmployee();
+
+        private void txtEmpCode_TextChanged(object sender, EventArgs e)
+        {
+            if (_isEditMode) return;
+
+            _employeeCodeLookupTimer.Stop();
+            _employeeCodeLookupTimer.Start();
+        }
+
+        private void employeeCodeLookupTimer_Tick(object sender, EventArgs e)
+        {
+            _employeeCodeLookupTimer.Stop();
+            LoadEmployeeNameFromPerson();
+        }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {

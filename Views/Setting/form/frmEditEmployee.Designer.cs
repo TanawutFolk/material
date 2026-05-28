@@ -32,17 +32,19 @@
             this.label12 = new System.Windows.Forms.Label();
             this.txtEmpCode = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.txtPhoneExt = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.btnCancel = new Bunifu.Framework.UI.BunifuFlatButton();
             this.btnSave = new Bunifu.Framework.UI.BunifuFlatButton();
+            this.label1 = new System.Windows.Forms.Label();
+            this.txtEmpFirstName = new System.Windows.Forms.TextBox();
+            this.txtEmpLastName = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // cboEmployeeLevel
             // 
             this.cboEmployeeLevel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Bold);
             this.cboEmployeeLevel.FormattingEnabled = true;
-            this.cboEmployeeLevel.Location = new System.Drawing.Point(187, 45);
+            this.cboEmployeeLevel.Location = new System.Drawing.Point(560, 46);
             this.cboEmployeeLevel.Margin = new System.Windows.Forms.Padding(2);
             this.cboEmployeeLevel.Name = "cboEmployeeLevel";
             this.cboEmployeeLevel.Size = new System.Drawing.Size(162, 25);
@@ -53,7 +55,7 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.ForeColor = System.Drawing.Color.Red;
-            this.label12.Location = new System.Drawing.Point(189, 24);
+            this.label12.Location = new System.Drawing.Point(561, 25);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(117, 19);
@@ -63,8 +65,9 @@
             // txtEmpCode
             // 
             this.txtEmpCode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtEmpCode.Location = new System.Drawing.Point(46, 45);
+            this.txtEmpCode.Location = new System.Drawing.Point(18, 45);
             this.txtEmpCode.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEmpCode.MaxLength = 20;
             this.txtEmpCode.Name = "txtEmpCode";
             this.txtEmpCode.Size = new System.Drawing.Size(125, 26);
             this.txtEmpCode.TabIndex = 53;
@@ -74,33 +77,12 @@
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.ForeColor = System.Drawing.Color.Red;
-            this.label11.Location = new System.Drawing.Point(46, 23);
+            this.label11.Location = new System.Drawing.Point(18, 23);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(116, 19);
             this.label11.TabIndex = 54;
             this.label11.Text = "Employee Code";
-            // 
-            // txtPhoneExt
-            // 
-            this.txtPhoneExt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPhoneExt.Location = new System.Drawing.Point(366, 45);
-            this.txtPhoneExt.Margin = new System.Windows.Forms.Padding(2);
-            this.txtPhoneExt.Name = "txtPhoneExt";
-            this.txtPhoneExt.Size = new System.Drawing.Size(125, 26);
-            this.txtPhoneExt.TabIndex = 55;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(366, 23);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(79, 19);
-            this.label1.TabIndex = 56;
-            this.label1.Text = "Phone Ext";
             // 
             // btnCancel
             // 
@@ -122,7 +104,7 @@
             this.btnCancel.IconVisible = true;
             this.btnCancel.IconZoom = 90D;
             this.btnCancel.IsTab = false;
-            this.btnCancel.Location = new System.Drawing.Point(289, 96);
+            this.btnCancel.Location = new System.Drawing.Point(396, 96);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Normalcolor = System.Drawing.Color.DarkGray;
             this.btnCancel.OnHovercolor = System.Drawing.Color.Pink;
@@ -155,7 +137,7 @@
             this.btnSave.IconVisible = true;
             this.btnSave.IconZoom = 90D;
             this.btnSave.IsTab = false;
-            this.btnSave.Location = new System.Drawing.Point(129, 96);
+            this.btnSave.Location = new System.Drawing.Point(236, 96);
             this.btnSave.Name = "btnSave";
             this.btnSave.Normalcolor = System.Drawing.Color.Red;
             this.btnSave.OnHovercolor = System.Drawing.Color.Pink;
@@ -168,15 +150,61 @@
             this.btnSave.Textcolor = System.Drawing.Color.White;
             this.btnSave.TextFont = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.Red;
+            this.label1.Location = new System.Drawing.Point(150, 23);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(154, 19);
+            this.label1.TabIndex = 56;
+            this.label1.Text = "Employee FirstName";
+            // 
+            // txtEmpFirstName
+            // 
+            this.txtEmpFirstName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtEmpFirstName.Location = new System.Drawing.Point(147, 45);
+            this.txtEmpFirstName.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEmpFirstName.MaxLength = 100;
+            this.txtEmpFirstName.Name = "txtEmpFirstName";
+            this.txtEmpFirstName.Size = new System.Drawing.Size(201, 26);
+            this.txtEmpFirstName.TabIndex = 55;
+            // 
+            // txtEmpLastName
+            // 
+            this.txtEmpLastName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtEmpLastName.Location = new System.Drawing.Point(352, 44);
+            this.txtEmpLastName.Margin = new System.Windows.Forms.Padding(2);
+            this.txtEmpLastName.MaxLength = 100;
+            this.txtEmpLastName.Name = "txtEmpLastName";
+            this.txtEmpLastName.Size = new System.Drawing.Size(201, 26);
+            this.txtEmpLastName.TabIndex = 59;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft YaHei", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.Red;
+            this.label2.Location = new System.Drawing.Point(355, 22);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(152, 19);
+            this.label2.TabIndex = 60;
+            this.label2.Text = "Employee LastName";
+            // 
             // frmEditEmployee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(527, 132);
+            this.ClientSize = new System.Drawing.Size(737, 132);
+            this.Controls.Add(this.txtEmpLastName);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.txtPhoneExt);
+            this.Controls.Add(this.txtEmpFirstName);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtEmpCode);
             this.Controls.Add(this.label11);
@@ -200,9 +228,11 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox txtEmpCode;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox txtPhoneExt;
-        private System.Windows.Forms.Label label1;
         private Bunifu.Framework.UI.BunifuFlatButton btnCancel;
         private Bunifu.Framework.UI.BunifuFlatButton btnSave;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtEmpFirstName;
+        private System.Windows.Forms.TextBox txtEmpLastName;
+        private System.Windows.Forms.Label label2;
     }
 }

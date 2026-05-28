@@ -123,6 +123,20 @@ namespace RawMat.Views.ReceiveWH
                     return false;
                 }
 
+                DataTable inspectionMaster = conQA.SearchActiveInspectionList();
+                if (inspectionMaster == null || inspectionMaster.Rows.Count == 0)
+                {
+                    Invoke(new Action(() => MessageBox.Show("ไม่พบข้อมูล Inspection List ที่เปิดใช้งานอยู่")));
+                    return false;
+                }
+
+                DataTable inspectionDataSource = FilterInspectionReceiveRows(dataSource, inspectionMaster);
+                if (inspectionDataSource.Rows.Count == 0)
+                {
+                    Invoke(new Action(() => MessageBox.Show("ไม่พบ M-CODE ที่อยู่ใน Inspection List ในวัน " + dtp_recDate.Value.ToString("yyyy-MM-dd"))));
+                    return false;
+                }
+
                 bool updateSuccess = false;
 
                 Invoke(new Action(() =>
@@ -133,9 +147,9 @@ namespace RawMat.Views.ReceiveWH
                     dtg_receiveMat.Columns["PART_NAME"].DataPropertyName = "ITEM_DESC";
                     dtg_receiveMat.Columns["VENDOR"].DataPropertyName = "DL_DESC";
                     dtg_receiveMat.Columns["GR_QTY"].DataPropertyName = "GR_QTY";
-                    dtg_receiveMat.DataSource = dataSource;
+                    dtg_receiveMat.DataSource = inspectionDataSource;
                     // เรียก UpdateDataGridViewWithImage และเก็บผลลัพธ์
-                    updateSuccess = UpdateDataGridViewWithImage(dtg_receiveMat, "M_CODE", "STATUS");
+                    updateSuccess = UpdateDataGridViewWithImage(dtg_receiveMat, "M_CODE", "STATUS", inspectionMaster);
 
                     // ดำเนินการต่อเฉพาะเมื่อ updateSuccess เป็น true
                     if (updateSuccess)
@@ -157,6 +171,51 @@ namespace RawMat.Views.ReceiveWH
                 Invoke(new Action(() => MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)));
                 return false;
             }
+        }
+
+        private DataTable FilterInspectionReceiveRows(DataTable receiveData, DataTable inspectionMaster)
+        {
+            DataTable filteredData = receiveData.Clone();
+            Dictionary<string, DataRow> inspectionMap = BuildInspectionMap(inspectionMaster);
+
+            foreach (DataRow row in receiveData.Rows)
+            {
+                string mCode = row["ITEM_CD"]?.ToString()?.Trim();
+                if (string.IsNullOrWhiteSpace(mCode))
+                {
+                    continue;
+                }
+
+                if (inspectionMap.ContainsKey(mCode))
+                {
+                    filteredData.ImportRow(row);
+                }
+            }
+
+            return filteredData;
+        }
+
+        private Dictionary<string, DataRow> BuildInspectionMap(DataTable inspectionMaster)
+        {
+            Dictionary<string, DataRow> inspectionMap = new Dictionary<string, DataRow>(StringComparer.OrdinalIgnoreCase);
+
+            if (inspectionMaster == null || !inspectionMaster.Columns.Contains("M_CODE"))
+            {
+                return inspectionMap;
+            }
+
+            foreach (DataRow row in inspectionMaster.Rows)
+            {
+                string mCode = row["M_CODE"]?.ToString()?.Trim();
+                if (string.IsNullOrWhiteSpace(mCode) || inspectionMap.ContainsKey(mCode))
+                {
+                    continue;
+                }
+
+                inspectionMap.Add(mCode, row);
+            }
+
+            return inspectionMap;
         }
 
         private void BgWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -250,24 +309,24 @@ namespace RawMat.Views.ReceiveWH
 
             // สร้างรายการแถวที่จะลบ
             List<DataGridViewRow> rowsToDelete = new List<DataGridViewRow>();
+            Dictionary<string, DataRow> receiveStatusMap = BuildReceiveStatusMap(conQA.SearchReceiveMatStatusByReceiveDate(dataItem));
 
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
-                dataItem.M_CODE = row.Cells["M_CODE"].Value.ToString();
-                dataItem.Invoice_No = row.Cells["INVOICE_NO"].Value.ToString();
-                int check = conQA.checkReceiveMat(dataItem);
+                string mCode = row.Cells["M_CODE"].Value?.ToString();
+                string invoiceNo = row.Cells["INVOICE_NO"].Value?.ToString();
+                string receiveKey = BuildReceiveKey(mCode, invoiceNo);
 
-                if(check >= 1)
+                if(receiveStatusMap.TryGetValue(receiveKey, out DataRow receiveRow))
                 {
-                    DataTable dt = conQA.CheckStatus(dataItem);
-                    if (dt.Rows[0][dataItem.process].ToString() == "1")
+                    if (receiveRow["Receive_WH"].ToString() == "1")
                     {
                         // ถ้าไม่เจอข้อมูลในฐานข้อมูล ให้เตรียมลบแถวนี้ออก
                         rowsToDelete.Add(row);
                     }
                     else
                     {
-                        row.Cells["REPORT_NO"].Value = dt.Rows[0]["REPORT_NO"].ToString();
+                        row.Cells["REPORT_NO"].Value = receiveRow["REPORT_NO"].ToString();
                     }
                 }
                 else
@@ -282,6 +341,44 @@ namespace RawMat.Views.ReceiveWH
             {
                 dataGridView.Rows.Remove(row);
             }
+        }
+
+        private Dictionary<string, DataRow> BuildReceiveStatusMap(DataTable receiveStatus)
+        {
+            Dictionary<string, DataRow> receiveStatusMap = new Dictionary<string, DataRow>(StringComparer.OrdinalIgnoreCase);
+
+            if (receiveStatus == null ||
+                !receiveStatus.Columns.Contains("M_CODE") ||
+                !receiveStatus.Columns.Contains("Invoice_No"))
+            {
+                return receiveStatusMap;
+            }
+
+            foreach (DataRow row in receiveStatus.Rows)
+            {
+                string receiveKey = BuildReceiveKey(row["M_CODE"]?.ToString(), row["Invoice_No"]?.ToString());
+                if (string.IsNullOrWhiteSpace(receiveKey) || receiveStatusMap.ContainsKey(receiveKey))
+                {
+                    continue;
+                }
+
+                receiveStatusMap.Add(receiveKey, row);
+            }
+
+            return receiveStatusMap;
+        }
+
+        private string BuildReceiveKey(string mCode, string invoiceNo)
+        {
+            mCode = mCode?.Trim();
+            invoiceNo = invoiceNo?.Trim();
+
+            if (string.IsNullOrWhiteSpace(mCode) || string.IsNullOrWhiteSpace(invoiceNo))
+            {
+                return string.Empty;
+            }
+
+            return $"{mCode}|{invoiceNo}";
         }
 
 
@@ -704,10 +801,11 @@ namespace RawMat.Views.ReceiveWH
             return true;
         }
 
-        public bool UpdateDataGridViewWithImage(DataGridView dataGridView, string columnToSearch, string targetColumn)
+        public bool UpdateDataGridViewWithImage(DataGridView dataGridView, string columnToSearch, string targetColumn, DataTable inspectionMaster = null)
         {
 
             QAdataProperty qaProp = new QAdataProperty();
+            Dictionary<string, DataRow> inspectionMap = BuildInspectionMap(inspectionMaster ?? conQA.SearchActiveInspectionList());
 
             // สร้างรายการแถวที่จะลบ
             List<DataGridViewRow> rowsToDelete = new List<DataGridViewRow>();
@@ -718,30 +816,16 @@ namespace RawMat.Views.ReceiveWH
                 if (row.IsNewRow) continue; // ข้ามแถวใหม่ที่กำลังสร้าง
 
                 // รับค่าจากคอลัมน์ที่ต้องการใช้ค้นหา
-                qaProp.M_CODE = row.Cells[columnToSearch].Value.ToString();
+                qaProp.M_CODE = row.Cells[columnToSearch].Value.ToString().Trim();
 
-                // เรียกฟังก์ชันเพื่อค้นหาในฐานข้อมูล
-                int isFound = conQA.SearchInspectionList(qaProp);
-
-                if (isFound == 1)
+                if (inspectionMap.TryGetValue(qaProp.M_CODE, out DataRow inspectionRow))
                 {
-                    DataTable dt = new DataTable();
-                    dt = conQA.SearchInspListxSmartFFT(qaProp);
+                    if (inspectionRow.Table.Columns.Contains("VENDOR_NAME"))
+                    {
+                        row.Cells["VENDOR"].Value = inspectionRow["VENDOR_NAME"].ToString();
+                    }
 
-                    //// ถ้าพบข้อมูลตรงกัน ให้เพิ่มรูปในคอลัมน์ที่กำหนด
-                    //if (dt != null)
-                    //{
-                        //if (dt.Rows[0]["CNT"].ToString() == "1")
-                        //{
-                            row.Cells["VENDOR"].Value = dt.Rows[0]["VENDOR_NAME"].ToString();
-                            row.Cells[targetColumn].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
-                        //}
-                        //else
-                        //{
-                        //    // ถ้าไม่เจอข้อมูลในฐานข้อมูล ให้เตรียมลบแถวนี้ออก
-                        //    rowsToDelete.Add(row);
-                        //}
-                    //}
+                    row.Cells[targetColumn].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                 }
                 else
                 {
@@ -757,6 +841,7 @@ namespace RawMat.Views.ReceiveWH
             }
 
             // ตรวจสอบ Qty ของทุกแถวก่อนเริ่มการประมวลผล
+            rowsToDelete.Clear();
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
                 if (row.IsNewRow) continue;
@@ -773,9 +858,14 @@ namespace RawMat.Views.ReceiveWH
                 {
                     if (qtyValue <= 0)
                     {
-                        dataGridView.Rows.Remove(row);
+                        rowsToDelete.Add(row);
                     }
                 }
+            }
+
+            foreach (DataGridViewRow row in rowsToDelete)
+            {
+                dataGridView.Rows.Remove(row);
             }
 
             return true;
