@@ -193,7 +193,7 @@ namespace RawMat.Views.ReceiveWH
             
             Invoke(new Action(() =>
             {
-                
+
                 dtg_receiveMat.DataSource = dataSource;
 
                 UpdateDataGridViewWithImage(dtg_receiveMat, "M_CODE", "STATUS");

@@ -22,6 +22,7 @@ namespace RawMat.Views.Main
         private DataTable receiveMatData; // เพิ่มตัวแปรนี้เพื่อเก็บข้อมูล
         EmployeeProperty employee = EmployeeManager.CurrentEmployee;
         private DateTime today;
+        private bool isLoadingData;
 
         // ตัวแปรนับจำนวนการคลิก
         private int clickCount = 0;
@@ -29,7 +30,8 @@ namespace RawMat.Views.Main
         public userControlSearch()
         {
             InitializeComponent();
-          
+            dtg_receiveMatSearch.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            dtg_receiveMatSearch.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
         }
 
 
@@ -38,88 +40,155 @@ namespace RawMat.Views.Main
 
         }
 
-        private void userControlSearch_Load(object sender, EventArgs e)
+        private async void userControlSearch_Load(object sender, EventArgs e)
         {
 
             bt_export.Visible = employee?.EMP_LEVEL == "1";
+            WireGridEvents();
+            await LoadReceiveMatDataAsync(false);
+        }
 
-            today = conQA.SearchToday();
-            dtp_recDateSearch.Value = today;
+        private async Task LoadReceiveMatDataAsync(bool statusProcessOnly)
+        {
+            if (isLoadingData)
+            {
+                return;
+            }
 
+            isLoadingData = true;
+            SetFilterControlsEnabled(false);
+            dtg_receiveMatSearch.DataSource = null;
 
+            try
+            {
+                DataTable data = null;
+                DateTime dbToday = DateTime.Now;
 
-            receiveMatData = conQA.SearchReceiveMatAll();
-            //null
+                await Task.Run(() =>
+                {
+                    QAdataControllers controller = new QAdataControllers();
+                    dbToday = controller.SearchToday();
+                    data = statusProcessOnly
+                        ? controller.SearchReceiveMatStatusProcess()
+                        : controller.SearchReceiveMatAll();
+                });
+
+                if (IsDisposed)
+                {
+                    return;
+                }
+
+                today = dbToday;
+                dtp_recDateSearch.Value = today;
+                receiveMatData = data;
+
+                BindReceiveMatData();
+            }
+            finally
+            {
+                isLoadingData = false;
+                SetFilterControlsEnabled(true);
+            }
+        }
+
+        private void BindReceiveMatData()
+        {
             if (receiveMatData == null)
             {
                 return;
-            }    
+            }
+
+            dtg_receiveMatSearch.SuspendLayout();
             dtg_receiveMatSearch.DataSource = receiveMatData;
+            dtg_receiveMatSearch.ResumeLayout();
 
-            dtg_receiveMatSearch.Sort(dtg_receiveMatSearch.Columns["Report No"], ListSortDirection.Descending);
-
-
-            // Assuming cb_vendorSearch is a ComboBox control
-            cb_vendorSearch.Items.Clear();
-            var uniqueVendors = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueVendors.Add(row["Vendor Name"].ToString());
-            }
-            cb_vendorSearch.Items.AddRange(uniqueVendors.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_vendorSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_vendorSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_vendorSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_repSearch.Items.Clear();
-            var uniqueRep = new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueRep.Add(row["Report No"].ToString());
-            }
-            cb_repSearch.Items.AddRange(uniqueRep.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_repSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_repSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_repSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_mCode.Items.Clear();
-            var uniqueMcode= new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueMcode.Add(row["M-CODE"].ToString());
-            }
-            cb_mCode.Items.AddRange(uniqueMcode.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_mCode.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_mCode.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_mCode.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-            // ซ่อนคอลัมน์ Regular_Check
             if (dtg_receiveMatSearch.Columns.Contains("Regular_Check"))
             {
                 dtg_receiveMatSearch.Columns["Regular_Check"].Visible = false;
             }
 
-            // เพิ่มการตั้งค่า CellFormatting และ CellMouseEnter/Leave
+            UpdateComboBoxItems();
+        }
+
+        private void WireGridEvents()
+        {
+            dtg_receiveMatSearch.CellFormatting -= dtg_receiveMatSearch_CellFormatting;
+            dtg_receiveMatSearch.CellMouseEnter -= dtg_receiveMatSearch_CellMouseEnter;
+            dtg_receiveMatSearch.CellMouseLeave -= dtg_receiveMatSearch_CellMouseLeave;
+            dtg_receiveMatSearch.CellClick -= dtg_receiveMatSearch_CellClick;
+
             dtg_receiveMatSearch.CellFormatting += dtg_receiveMatSearch_CellFormatting;
             dtg_receiveMatSearch.CellMouseEnter += dtg_receiveMatSearch_CellMouseEnter;
             dtg_receiveMatSearch.CellMouseLeave += dtg_receiveMatSearch_CellMouseLeave;
             dtg_receiveMatSearch.CellClick += dtg_receiveMatSearch_CellClick;
-
         }
+
+        private void SetFilterControlsEnabled(bool enabled)
+        {
+            cb_vendorSearch.Enabled = enabled;
+            cb_repSearch.Enabled = enabled;
+            cb_mCode.Enabled = enabled;
+            dtp_recDateSearch.Enabled = enabled;
+            rb_all.Enabled = enabled;
+            rb_statusProcess.Enabled = enabled;
+            rbSpecificDate.Enabled = enabled;
+            rbMonthYear.Enabled = enabled;
+        }
+
+        private void SetComboBoxAutoComplete(ComboBox comboBox)
+        {
+            comboBox.DropDownStyle = ComboBoxStyle.DropDown;
+            comboBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+        }
+
+        private void SetComboBoxItems(ComboBox comboBox, IEnumerable<string> values)
+        {
+            comboBox.BeginUpdate();
+            comboBox.Items.Clear();
+            comboBox.Items.AddRange(values.Where(value => !string.IsNullOrWhiteSpace(value))
+                                          .Distinct()
+                                          .OrderBy(value => value)
+                                          .ToArray());
+            comboBox.EndUpdate();
+            SetComboBoxAutoComplete(comboBox);
+        }
+
+        private void ApplyFilteredRows(IEnumerable<DataRow> filteredRows)
+        {
+            DataRow[] rows = filteredRows.ToArray();
+            dtg_receiveMatSearch.DataSource = rows.Length > 0 ? rows.CopyToDataTable() : null;
+        }
+
+        private string GetRowText(DataRow row, string columnName)
+        {
+            return row.Table.Columns.Contains(columnName) ? row[columnName]?.ToString() ?? string.Empty : string.Empty;
+        }
+
+        private DateTime? GetRowDate(DataRow row, string columnName)
+        {
+            if (!row.Table.Columns.Contains(columnName) || row[columnName] == DBNull.Value)
+            {
+                return null;
+            }
+
+            return Convert.ToDateTime(row[columnName]);
+        }
+
+        private bool HasReceiveMatData()
+        {
+            return receiveMatData != null && receiveMatData.Rows.Count > 0;
+        }
+
 
         // ทำให้คอลัมน์ "Regular No" ดูเหมือนลิงก์
         private void dtg_receiveMatSearch_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            if (e.ColumnIndex < 0)
+            {
+                return;
+            }
+
             if (dtg_receiveMatSearch.Columns[e.ColumnIndex].Name == "Regular No" ||
                 dtg_receiveMatSearch.Columns[e.ColumnIndex].HeaderText == "Regular No")
             {
@@ -239,61 +308,25 @@ namespace RawMat.Views.Main
             }
         }
 
-        private void RefreshData()
+        private async void RefreshData()
         {
-            // รีเฟรชข้อมูลตามสถานะปัจจุบัน
-            if (rb_all.Checked)
-            {
-                receiveMatData = conQA.SearchReceiveMatAll();
-            }
-            else if (rb_statusProcess.Checked)
-            {
-                receiveMatData = conQA.SearchReceiveMatStatusProcess();
-            }
-            else
-            {
-                receiveMatData = conQA.SearchReceiveMatAll();
-            }
-
-            if (receiveMatData != null)
-            {
-                dtg_receiveMatSearch.DataSource = receiveMatData;
-                dtg_receiveMatSearch.Sort(dtg_receiveMatSearch.Columns["Report No"], ListSortDirection.Descending);
-
-                // อัปเดต ComboBox items
-                UpdateComboBoxItems();
-            }
+            await LoadReceiveMatDataAsync(rb_statusProcess.Checked);
         }
 
         // เมธอดสำหรับอัปเดต ComboBox
         private void UpdateComboBoxItems()
         {
-            // อัปเดต Vendor
-            cb_vendorSearch.Items.Clear();
-            var uniqueVendors = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
+            if (!HasReceiveMatData())
             {
-                uniqueVendors.Add(row["Vendor Name"].ToString());
+                cb_vendorSearch.Items.Clear();
+                cb_repSearch.Items.Clear();
+                cb_mCode.Items.Clear();
+                return;
             }
-            cb_vendorSearch.Items.AddRange(uniqueVendors.ToArray());
 
-            // อัปเดต Report No
-            cb_repSearch.Items.Clear();
-            var uniqueRep = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueRep.Add(row["Report No"].ToString());
-            }
-            cb_repSearch.Items.AddRange(uniqueRep.ToArray());
-
-            // อัปเดต M-Code
-            cb_mCode.Items.Clear();
-            var uniqueMcode = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueMcode.Add(row["M-CODE"].ToString());
-            }
-            cb_mCode.Items.AddRange(uniqueMcode.ToArray());
+            SetComboBoxItems(cb_vendorSearch, receiveMatData.AsEnumerable().Select(row => GetRowText(row, "Vendor Name")));
+            SetComboBoxItems(cb_repSearch, receiveMatData.AsEnumerable().Select(row => GetRowText(row, "Report No")));
+            SetComboBoxItems(cb_mCode, receiveMatData.AsEnumerable().Select(row => GetRowText(row, "M-CODE")));
         }
 
         private void SetDatepickerForSpecificDate()
@@ -324,43 +357,36 @@ namespace RawMat.Views.Main
 
         private void tb_vendorSearch_TextChanged(object sender, EventArgs e)
         {
+            if (isLoadingData || !HasReceiveMatData())
+            {
+                return;
+            }
+
             string filterText = cb_vendorSearch.Text;
             var filteredRows = receiveMatData.AsEnumerable()
-                .Where(row => row.Field<string>("Vendor Name").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
+                .Where(row => GetRowText(row, "Vendor Name").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (filteredRows.Any())
-            {
-                DataTable filteredTable = filteredRows.CopyToDataTable();
-                dtg_receiveMatSearch.DataSource = filteredTable;
-            }
-            else
-            {
-                dtg_receiveMatSearch.DataSource = null; // or handle the empty case as needed
-            }
+            ApplyFilteredRows(filteredRows);
         }
 
         private void cb_repSearch_TextChanged(object sender, EventArgs e)
         {
+            if (isLoadingData || !HasReceiveMatData())
+            {
+                return;
+            }
+
             string filterText = cb_repSearch.Text;
             var filteredRows = receiveMatData.AsEnumerable()
-                .Where(row => row.Field<string>("Report No").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
+                .Where(row => GetRowText(row, "Report No").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (filteredRows.Any())
-            {
-                DataTable filteredTable = filteredRows.CopyToDataTable();
-                dtg_receiveMatSearch.DataSource = filteredTable;
-            }
-            else
-            {
-                dtg_receiveMatSearch.DataSource = null; // or handle the empty case as needed
-            }
+            ApplyFilteredRows(filteredRows);
         }
 
         private void dtp_recDateSearch_onValueChanged(object sender, EventArgs e)
         {
-            if (receiveMatData == null)
+            if (isLoadingData || !HasReceiveMatData())
             {
-                // Handle the null case, perhaps by logging an error or showing a message to the user
                 return;
             }
 
@@ -370,159 +396,64 @@ namespace RawMat.Views.Main
 
             if (rbSpecificDate.Checked)
             {
-                // กรองตามวันที่เต็ม (วัน-เดือน-ปี)
-                filteredRows = filteredRows.Where(row => row.Field<DateTime>("Receive Date").Date == selectedDate.Date);
+                filteredRows = filteredRows.Where(row => GetRowDate(row, "Receive Date")?.Date == selectedDate.Date);
             }
             else if (rbMonthYear.Checked)
             {
-                // กรองตามเดือนและปี
                 int selectedMonth = selectedDate.Month;
                 int selectedYear = selectedDate.Year;
-                filteredRows = filteredRows.Where(row => row.Field<DateTime>("Receive Date").Month == selectedMonth &&
-                                                       row.Field<DateTime>("Receive Date").Year == selectedYear);
+                filteredRows = filteredRows.Where(row =>
+                {
+                    DateTime? receiveDate = GetRowDate(row, "Receive Date");
+                    return receiveDate.HasValue
+                        && receiveDate.Value.Month == selectedMonth
+                        && receiveDate.Value.Year == selectedYear;
+                });
             }
             else
             {
-                // Handle case where no radio button is selected (optional)
                 dtg_receiveMatSearch.DataSource = null;
                 return;
             }
 
-            if (filteredRows.Any())
-            {
-                DataTable filteredTable = filteredRows.CopyToDataTable();
-                dtg_receiveMatSearch.DataSource = filteredTable;
-            }
-            else
-            {
-                dtg_receiveMatSearch.DataSource = null; // or handle the empty case as needed
-            }
+            ApplyFilteredRows(filteredRows);
         }
 
         //Mcode_onValueChanged
 
 
-        private void rb_all_CheckedChanged(object sender, EventArgs e)
+        private async void rb_all_CheckedChanged(object sender, EventArgs e)
         {
-            DateTime today = conQA.SearchToday();
-            dtp_recDateSearch.Value = today;
-
-            receiveMatData = conQA.SearchReceiveMatAll();
-            dtg_receiveMatSearch.DataSource = receiveMatData;
-
-            // Assuming cb_vendorSearch is a ComboBox control
-            cb_vendorSearch.Items.Clear();
-            var uniqueVendors = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
+            if (isLoadingData || !rb_all.Checked)
             {
-                uniqueVendors.Add(row["Vendor Name"].ToString());
+                return;
             }
-            cb_vendorSearch.Items.AddRange(uniqueVendors.ToArray());
 
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_vendorSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_vendorSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_vendorSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_repSearch.Items.Clear();
-            var uniqueRep = new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueRep.Add(row["Report No"].ToString());
-            }
-            cb_repSearch.Items.AddRange(uniqueRep.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_repSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_repSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_repSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_mCode.Items.Clear();
-            var uniqueMcode = new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueMcode.Add(row["M-CODE"].ToString());
-            }
-            cb_mCode.Items.AddRange(uniqueMcode.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_mCode.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_mCode.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_mCode.AutoCompleteSource = AutoCompleteSource.ListItems;
+            await LoadReceiveMatDataAsync(false);
         }
 
-        private void rb_statusProcess_CheckedChanged(object sender, EventArgs e)
+        private async void rb_statusProcess_CheckedChanged(object sender, EventArgs e)
         {
-            DateTime today = conQA.SearchToday();
-            dtp_recDateSearch.Value = today;
-
-            receiveMatData = conQA.SearchReceiveMatStatusProcess();
-            dtg_receiveMatSearch.DataSource = receiveMatData;
-
-            // Assuming cb_vendorSearch is a ComboBox control
-            cb_vendorSearch.Items.Clear();
-            var uniqueVendors = new HashSet<string>();
-            foreach (DataRow row in receiveMatData.Rows)
+            if (isLoadingData || !rb_statusProcess.Checked)
             {
-                uniqueVendors.Add(row["Vendor Name"].ToString());
+                return;
             }
-            cb_vendorSearch.Items.AddRange(uniqueVendors.ToArray());
 
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_vendorSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_vendorSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_vendorSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_repSearch.Items.Clear();
-            var uniqueRep = new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueRep.Add(row["Report No"].ToString());
-            }
-            cb_repSearch.Items.AddRange(uniqueRep.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_repSearch.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_repSearch.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_repSearch.AutoCompleteSource = AutoCompleteSource.ListItems;
-
-
-            cb_mCode.Items.Clear();
-            var uniqueMcode = new HashSet<string>();
-
-            foreach (DataRow row in receiveMatData.Rows)
-            {
-                uniqueMcode.Add(row["M-CODE"].ToString());
-            }
-            cb_mCode.Items.AddRange(uniqueMcode.ToArray());
-
-            // Set ComboBox to DropDownList style and enable auto-complete
-            cb_mCode.DropDownStyle = ComboBoxStyle.DropDown;
-            cb_mCode.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            cb_mCode.AutoCompleteSource = AutoCompleteSource.ListItems;
+            await LoadReceiveMatDataAsync(true);
         }
 
         private void cb_mCode_TextChanged(object sender, EventArgs e)
         {
+            if (isLoadingData || !HasReceiveMatData())
+            {
+                return;
+            }
+
             string filterText = cb_mCode.Text;
             var filteredRows = receiveMatData.AsEnumerable()
-                .Where(row => row.Field<string>("M-CODE").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
+                .Where(row => GetRowText(row, "M-CODE").IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (filteredRows.Any())
-            {
-                DataTable filteredTable = filteredRows.CopyToDataTable();
-                dtg_receiveMatSearch.DataSource = filteredTable;
-            }
-            else
-            {
-                dtg_receiveMatSearch.DataSource = null; // or handle the empty case as needed
-            }
+            ApplyFilteredRows(filteredRows);
         }
 
         private void bt_export_Click(object sender, EventArgs e)

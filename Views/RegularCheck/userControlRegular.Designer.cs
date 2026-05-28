@@ -348,7 +348,7 @@
             // 
             this.lb_TotalCavity.AutoSize = true;
             this.lb_TotalCavity.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_TotalCavity.Location = new System.Drawing.Point(584, 81);
+            this.lb_TotalCavity.Location = new System.Drawing.Point(817, 81);
             this.lb_TotalCavity.Name = "lb_TotalCavity";
             this.lb_TotalCavity.Size = new System.Drawing.Size(245, 19);
             this.lb_TotalCavity.TabIndex = 74;

@@ -55,7 +55,6 @@ namespace RawMat
             InitializeComponent();
             ConfigureHeaderStatusButtons();
             _navigationService = new NavigationService(panelMain); // สร้าง NavigationService
-            LoadStatus();
             LoadLoginControl();
 
             //for test
@@ -114,6 +113,11 @@ namespace RawMat
                 statusButtons[i].Location = new Point(leftMargin + (buttonWidth * i), topMargin);
                 statusButtons[i].Size = new Size(buttonWidth, buttonHeight);
                 statusButtons[i].Margin = Padding.Empty;
+                statusButtons[i].TextAlign = ContentAlignment.MiddleCenter;
+                statusButtons[i].IconVisible = false;
+                statusButtons[i].IconRightVisible = false;
+                statusButtons[i].IconMarginLeft = 0;
+                statusButtons[i].IconMarginRight = 0;
             }
         }
 
@@ -464,6 +468,7 @@ namespace RawMat
             this.FormClosing += frmMain_NotClosing;
 
             ControlLevel(empProp);
+            LoadStatusAsync();
 
             
 
@@ -594,29 +599,100 @@ namespace RawMat
      
         public void LoadStatus()
         {
-            qaProp.process = "Keep_Data";
-            bt_status_rec_pending.Text = $"Receive WH \n Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            LoadStatusAsync();
+        }
 
-            qaProp.process = "Packing_Check";
-            bt_status_packing_check_pending.Text = $"Packing Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+        public async void LoadStatusAsync()
+        {
+            SetStatusButtonText(null, null, null, null, null, null, null);
 
-            qaProp.process = "Regular_Check";
-            bt_status_regular_pending.Text = $"Regular Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            int receiveWhPending = 0;
+            int packingPending = 0;
+            int regularPending = 0;
+            int functionPending = 0;
+            int dimensionPending = 0;
+            int inspDataPending = 0;
+            int appearancePending = 0;
 
-            qaProp.process = "Function_Check";
-            bt_status_function_pending.Text = $"Function Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            try
+            {
+                await Task.Run(() =>
+                {
+                    receiveWhPending = CountPending("Keep_Data");
+                    packingPending = CountPending("Packing_Check");
+                    regularPending = CountPending("Regular_Check");
+                    functionPending = CountPending("Function_Check");
+                    dimensionPending = CountPending("Dimension_Check");
+                    inspDataPending = CountPending("Inspection_Data_Check");
+                    appearancePending = CountPending("Appearance_Check");
+                });
+            }
+            catch
+            {
+                receiveWhPending = 0;
+                packingPending = 0;
+                regularPending = 0;
+                functionPending = 0;
+                dimensionPending = 0;
+                inspDataPending = 0;
+                appearancePending = 0;
+            }
 
-            qaProp.process = "Dimension_Check";
-            bt_status_dimension_pending.Text = $"Dimension Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            if (IsDisposed)
+            {
+                return;
+            }
 
-            qaProp.process = "Inspection_Data_Check";
-            bt_status_data_pending.Text = $"Insp. Data Check  Pending \n{qaCon.CountProcessStatusPending(qaProp)} Report";
+            SetStatusButtonText(receiveWhPending, packingPending, regularPending, functionPending, dimensionPending, inspDataPending, appearancePending);
+        }
 
+        private int CountPending(string process)
+        {
+            QAdataProperty countProp = new QAdataProperty
+            {
+                process = process
+            };
+
+            return new QAdataControllers().CountProcessStatusPending(countProp);
+        }
+
+        private void SetStatusButtonText(int? receiveWhPending, int? packingPending, int? regularPending, int? functionPending, int? dimensionPending, int? inspDataPending, int? appearancePending)
+        {
+            string receiveWhText = receiveWhPending.HasValue ? receiveWhPending.Value.ToString() : "...";
+            string packingText = packingPending.HasValue ? packingPending.Value.ToString() : "...";
+            string regularText = regularPending.HasValue ? regularPending.Value.ToString() : "...";
+            string functionText = functionPending.HasValue ? functionPending.Value.ToString() : "...";
+            string dimensionText = dimensionPending.HasValue ? dimensionPending.Value.ToString() : "...";
+            string inspDataText = inspDataPending.HasValue ? inspDataPending.Value.ToString() : "...";
+            string appearanceText = appearancePending.HasValue ? appearancePending.Value.ToString() : "...";
+
+            ConfigureHeaderStatusButtons();
+            SetStatusButtonText(bt_status_rec_pending, "Receive WH", receiveWhText);
+            SetStatusButtonText(bt_status_packing_check_pending, "Packing Check", packingText);
+            SetStatusButtonText(bt_status_regular_pending, "Regular Check", regularText);
+            SetStatusButtonText(bt_status_function_pending, "Function Check", functionText);
+            SetStatusButtonText(bt_status_dimension_pending, "Dimension Check", dimensionText);
+            SetStatusButtonText(bt_status_data_pending, "Insp. Data Check", inspDataText);
+            SetStatusButtonText(bt_appear_pending, "Appearance", appearanceText);
+        }
+
+        private void SetStatusButtonText(BunifuFlatButton button, string processName, string pendingCount)
+        {
+            string buttonText = $"{processName}\nPending\n{pendingCount} Report";
+
+            button.Text = buttonText;
+            button.ButtonText = buttonText;
+            button.TextAlign = ContentAlignment.MiddleCenter;
+            button.TextFont = new Font("Tahoma", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            button.IconVisible = false;
+            button.IconRightVisible = false;
+            button.IconMarginLeft = 0;
+            button.IconMarginRight = 0;
         }
 
         private void bt_refresh_Click(object sender, EventArgs e)
         {
-            LoadStatus();
+            LoadStatusAsync();
         }
 
         private void bt_status_rec_pending_Click(object sender, EventArgs e)
