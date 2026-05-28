@@ -54,6 +54,7 @@ namespace RawMat.Property
         public string packing_check_mode { get; set; }
 
         public string FORMAT_REPORT_ID { get; set; }
+        public string FORMAT_REPORT_NAME { get; set; }
 
         // Regular Check
         public string CAVITY_QTY { get; set; }

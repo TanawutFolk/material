@@ -15,8 +15,8 @@ namespace RawMat.Views.RegularCheck
 {
     public class FormRegularReportExcelFlow : Form
     {
-        private const string PdfFolderName = "FM-QA-B13-A Material Regular Inspection Record Sheet";
-        private const bool ShowExcelDebugMessage = true;
+        private const string DefaultReportTitle = "Regular Inspection Record Sheet";
+        private const bool ShowExcelDebugMessage = false;
 
         private readonly QAdataProperty propQA;
         private readonly string generatedExcelPath;
@@ -30,10 +30,25 @@ namespace RawMat.Views.RegularCheck
 
         public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData)
         {
+            return CreateWaitApprovedExcel(dataItem, regularData, dataItem?.FORMAT_REPORT_NAME, null);
+        }
+
+        public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData, string reportTitle)
+        {
+            return CreateWaitApprovedExcel(dataItem, regularData, reportTitle, null);
+        }
+
+        public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData, string reportTitle, DataTable formatMap)
+        {
+            if (!string.IsNullOrWhiteSpace(reportTitle) && dataItem != null)
+            {
+                dataItem.FORMAT_REPORT_NAME = reportTitle.Trim();
+            }
+
             string filePath = Path.Combine(GetWaitApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
-            if (ShowExcelDebugMessage)
+            if (IsExcelDebugMessageEnabled())
             {
                 ShowExcelDataDebugMessage(dataItem, regularData, filePath);
             }
@@ -50,11 +65,21 @@ namespace RawMat.Views.RegularCheck
                     Visible = false
                 };
 
-                workbook = excelApp.Workbooks.Add();
+                string templatePath = GetRegularTemplatePath(dataItem);
+                workbook = string.IsNullOrWhiteSpace(templatePath)
+                    ? excelApp.Workbooks.Add()
+                    : excelApp.Workbooks.Open(templatePath);
                 sheet = (Excel.Worksheet)workbook.Worksheets[1];
-                sheet.Name = "master";
 
-                BuildReportSheet(sheet, dataItem, regularData);
+                if (HasFormatMap(formatMap))
+                {
+                    ApplyFormatReportMapping(sheet, dataItem, regularData, formatMap);
+                }
+                else
+                {
+                    sheet.Name = "master";
+                    BuildReportSheet(sheet, dataItem, regularData);
+                }
 
                 if (File.Exists(filePath))
                 {
@@ -288,7 +313,7 @@ namespace RawMat.Views.RegularCheck
             // string scanRoot = ConfigurationManager.AppSettings["RegularReportScanTest"];  // Test path
             string scanRoot = ConfigurationManager.AppSettings["RegularReportScan"]
                 ?? @"C:\192.168.2.100\15_Document_Scan\DOCUMENT QA";
-            return Path.Combine(scanRoot, GetReportYear(dataItem).ToString(), PdfFolderName);
+            return BuildYearFolderPath(scanRoot, GetReportYear(dataItem), GetReportTitle(dataItem));
         }
 
         private static int GetReportYear(QAdataProperty dataItem)
@@ -309,6 +334,23 @@ namespace RawMat.Views.RegularCheck
             }
 
             DirectoryInfo configuredDirectory = new DirectoryInfo(configuredPath);
+            if (IsYearLeafPath(configuredDirectory, year, leafFolderName))
+            {
+                return configuredPath;
+            }
+
+            if (IsTestPathUnderYearLeaf(configuredDirectory))
+            {
+                DirectoryInfo configuredYearDirectory = configuredDirectory.Parent.Parent;
+                if (string.Equals(configuredYearDirectory.Name, year.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return configuredPath;
+                }
+
+                string basePath = configuredYearDirectory.Parent?.FullName ?? configuredPath;
+                return Path.Combine(basePath, year.ToString(), leafFolderName, configuredDirectory.Name);
+            }
+
             if (string.Equals(configuredDirectory.Name, leafFolderName, StringComparison.OrdinalIgnoreCase))
             {
                 DirectoryInfo yearDirectory = configuredDirectory.Parent;
@@ -322,6 +364,23 @@ namespace RawMat.Views.RegularCheck
             }
 
             return Path.Combine(configuredPath, year.ToString(), leafFolderName);
+        }
+
+        private static bool IsYearLeafPath(DirectoryInfo directory, int year, string leafFolderName)
+        {
+            return directory != null
+                && directory.Parent != null
+                && string.Equals(directory.Name, leafFolderName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(directory.Parent.Name, year.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsTestPathUnderYearLeaf(DirectoryInfo directory)
+        {
+            return directory != null
+                && directory.Parent != null
+                && directory.Parent.Parent != null
+                && string.Equals(directory.Name, "Test", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(directory.Parent.Parent.Name, out _);
         }
 
         private static string BuildExcelFileName(QAdataProperty dataItem)
@@ -376,6 +435,11 @@ namespace RawMat.Views.RegularCheck
                 BuildReportPage(sheet, dataItem, data, pageSamples, topRow, page, referenceText, imagePath);
             }
 
+            ApplyPageSetup(sheet);
+        }
+
+        private static void ApplyPageSetup(Excel.Worksheet sheet)
+        {
             Excel.PageSetup pageSetup = sheet.PageSetup;
             pageSetup.Orientation = Excel.XlPageOrientation.xlPortrait;
             pageSetup.Zoom = false;
@@ -393,7 +457,8 @@ namespace RawMat.Views.RegularCheck
             int imageTop = topRow + 8;
             int tableTop = topRow + 28;
 
-            Merge(sheet, topRow, 1, topRow + 2, 10, "FM-QA-B13-A Material Regular Inspection Record Sheet");
+            Merge(sheet, topRow, 1, topRow, 10, GetReportTitle(dataItem));
+            Merge(sheet, topRow + 1, 1, topRow + 2, 10, BuildMaterialHeaderText(dataItem));
             Merge(sheet, topRow, 11, topRow, 13, "Report No.");
             Merge(sheet, topRow, 14, topRow, 16, "Approve");
             Merge(sheet, topRow + 1, 11, topRow + 2, 13, dataItem?.Report_No);
@@ -532,6 +597,284 @@ namespace RawMat.Views.RegularCheck
             return new QAdataControllers().SearchReferenceByMCode(dataItem);
         }
 
+        private static string BuildMaterialHeaderText(QAdataProperty dataItem)
+        {
+            if (dataItem == null)
+            {
+                return string.Empty;
+            }
+
+            string mCode = dataItem.M_CODE?.Trim() ?? string.Empty;
+            string materialName = dataItem.Material_Name?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(mCode))
+            {
+                return materialName;
+            }
+
+            if (string.IsNullOrWhiteSpace(materialName))
+            {
+                return mCode;
+            }
+
+            return $"{mCode} : {materialName}";
+        }
+
+        private static string GetReportTitle(QAdataProperty dataItem)
+        {
+            if (!string.IsNullOrWhiteSpace(dataItem?.FORMAT_REPORT_NAME))
+            {
+                return dataItem.FORMAT_REPORT_NAME.Trim();
+            }
+
+            string configuredTitle = ConfigurationManager.AppSettings["RegularReportDefaultTitle"];
+            return string.IsNullOrWhiteSpace(configuredTitle)
+                ? DefaultReportTitle
+                : configuredTitle.Trim();
+        }
+
+        private static bool IsExcelDebugMessageEnabled()
+        {
+            string configuredValue = ConfigurationManager.AppSettings["RegularReportExcelDebug"];
+            return bool.TryParse(configuredValue, out bool isEnabled)
+                ? isEnabled
+                : ShowExcelDebugMessage;
+        }
+
+        private static bool HasFormatMap(DataTable formatMap)
+        {
+            return formatMap != null
+                && formatMap.Rows.Count > 0
+                && FindColumn(formatMap, "CELL") != null
+                && FindColumn(formatMap, "CELL_NAME") != null;
+        }
+
+        private static string GetRegularTemplatePath(QAdataProperty dataItem)
+        {
+            string configuredTemplate = ConfigurationManager.AppSettings["RegularReportTemplateFile"];
+            if (!string.IsNullOrWhiteSpace(configuredTemplate) && File.Exists(configuredTemplate))
+            {
+                return configuredTemplate;
+            }
+
+            string templateRoot = ConfigurationManager.AppSettings["ReportFormatFile"];
+            if (string.IsNullOrWhiteSpace(templateRoot))
+            {
+                return string.Empty;
+            }
+
+            string configuredTitle = GetReportTitle(dataItem);
+            string byTitle = FindExcelFile(Path.Combine(templateRoot, configuredTitle));
+            if (!string.IsNullOrWhiteSpace(byTitle))
+            {
+                return byTitle;
+            }
+
+            string byMCode = FindExcelFile(Path.Combine(templateRoot, dataItem?.M_CODE ?? string.Empty));
+            return byMCode ?? string.Empty;
+        }
+
+        private static string FindExcelFile(string basePath)
+        {
+            if (string.IsNullOrWhiteSpace(basePath))
+            {
+                return null;
+            }
+
+            if (File.Exists(basePath))
+            {
+                return basePath;
+            }
+
+            if (File.Exists(basePath + ".xlsx")) return basePath + ".xlsx";
+            if (File.Exists(basePath + ".xls")) return basePath + ".xls";
+            return null;
+        }
+
+        private static void ApplyFormatReportMapping(Excel.Worksheet sheet, QAdataProperty dataItem, DataTable regularData, DataTable formatMap)
+        {
+            DataTable data = regularData ?? new DataTable();
+            foreach (DataRow row in formatMap.Rows)
+            {
+                string cell = GetMapValue(row, "CELL");
+                string cellName = GetMapValue(row, "CELL_NAME");
+                if (string.IsNullOrWhiteSpace(cell) || string.IsNullOrWhiteSpace(cellName))
+                {
+                    continue;
+                }
+
+                string normalizedCellName = NormalizeCellName(cellName);
+                if (normalizedCellName == "REGULARTABLESTART")
+                {
+                    if (TryGetCellPosition(sheet, cell, out int tableRow, out int tableColumn))
+                    {
+                        BuildTable(sheet, data, GetSampleNos(data), tableRow, tableColumn);
+                    }
+                    continue;
+                }
+
+                if (normalizedCellName == "CHECKPOINTIMAGE")
+                {
+                    if (TryGetCellPosition(sheet, cell, out int imageRow, out int imageColumn))
+                    {
+                        string imagePath = GetImagePathForPage(GetReportImagePaths("RegularPath", dataItem?.M_CODE), 1);
+                        AddReportImage(sheet, imagePath, imageRow, imageColumn, imageRow + 18, imageColumn + 15);
+                    }
+                    continue;
+                }
+
+                Excel.Range range = null;
+                try
+                {
+                    range = sheet.Range[cell];
+                    range.Value2 = GetValueForCellName(cellName, dataItem);
+                }
+                finally
+                {
+                    ReleaseCom(range);
+                }
+            }
+
+            ApplyPageSetup(sheet);
+        }
+
+        private static string GetValueForCellName(string cellName, QAdataProperty dataItem)
+        {
+            if (string.IsNullOrWhiteSpace(cellName))
+            {
+                return string.Empty;
+            }
+
+            if (cellName.StartsWith("Text:", StringComparison.OrdinalIgnoreCase))
+            {
+                return cellName.Substring("Text:".Length);
+            }
+
+            switch (NormalizeCellName(cellName))
+            {
+                case "REPORTTITLE":
+                case "FORMATREPORTNAME":
+                    return GetReportTitle(dataItem);
+                case "MATERIALHEADER":
+                case "MCODEMATERIALNAME":
+                    return BuildMaterialHeaderText(dataItem);
+                case "REPORTNO":
+                    return dataItem?.Report_No ?? string.Empty;
+                case "REGULARNO":
+                    return dataItem?.Regular_No ?? string.Empty;
+                case "MCODE":
+                    return dataItem?.M_CODE ?? string.Empty;
+                case "MATERIALNAME":
+                    return dataItem?.Material_Name ?? string.Empty;
+                case "VENDOR":
+                case "VENDER":
+                case "VENDORNAME":
+                    return dataItem?.Vendor_Name ?? string.Empty;
+                case "RECEIVEDATE":
+                    return FormatDate(dataItem?.dtReceiveDate);
+                case "INVNO":
+                case "INVOICENO":
+                    return dataItem?.Invoice_No ?? string.Empty;
+                case "LOTSIZE":
+                case "QTY":
+                    return dataItem?.Qty ?? string.Empty;
+                case "LOTNO":
+                    return dataItem?.Lot_No ?? string.Empty;
+                case "INSPECTIONSIZE":
+                case "SAMPLINGQTY":
+                    return dataItem?.SAMPLING_QTY ?? string.Empty;
+                case "REFERENCE":
+                    return GetReferenceText(dataItem);
+                case "INSPECTIONDATE":
+                case "TODAY":
+                    return DateTime.Now.ToString("dd-MMM-yyyy");
+                case "INSPECTOR":
+                case "EMPID":
+                case "ISSUEEMPID":
+                    return dataItem?.EMP_ID ?? string.Empty;
+                case "ISSUEEMPNAME":
+                    return dataItem?.EMP_NAME ?? string.Empty;
+                case "CHECKPOINT":
+                    return "Check Point";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static System.Collections.Generic.List<string> GetSampleNos(DataTable data)
+        {
+            var sampleNos = data.AsEnumerable()
+                .Select(row => GetString(row, "SAMPLING_NO"))
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct()
+                .OrderBy(value => int.TryParse(value, out int n) ? n : int.MaxValue)
+                .Take(5)
+                .ToList();
+
+            if (sampleNos.Count == 0)
+            {
+                sampleNos.Add("1");
+            }
+
+            return sampleNos;
+        }
+
+        private static bool TryGetCellPosition(Excel.Worksheet sheet, string cell, out int row, out int column)
+        {
+            row = 0;
+            column = 0;
+            Excel.Range range = null;
+            try
+            {
+                range = sheet.Range[cell];
+                row = range.Row;
+                column = range.Column;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                ReleaseCom(range);
+            }
+        }
+
+        private static string GetMapValue(DataRow row, string columnName)
+        {
+            DataColumn column = FindColumn(row.Table, columnName);
+            return column != null && row[column] != DBNull.Value
+                ? row[column]?.ToString()
+                : string.Empty;
+        }
+
+        private static DataColumn FindColumn(DataTable table, string columnName)
+        {
+            if (table == null || string.IsNullOrWhiteSpace(columnName))
+            {
+                return null;
+            }
+
+            foreach (DataColumn column in table.Columns)
+            {
+                if (string.Equals(column.ColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return column;
+                }
+            }
+
+            return null;
+        }
+
+        private static string NormalizeCellName(string cellName)
+        {
+            return new string((cellName ?? string.Empty)
+                .Where(char.IsLetterOrDigit)
+                .Select(char.ToUpperInvariant)
+                .ToArray());
+        }
+
         private static void ShowExcelDataDebugMessage(QAdataProperty dataItem, DataTable regularData, string filePath)
         {
             string referenceText = GetReferenceText(dataItem);
@@ -572,20 +915,20 @@ namespace RawMat.Views.RegularCheck
             MessageBox.Show(message.ToString(), "Excel Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop)
+        private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop, int startCol = 1)
         {
-            SetHeader(sheet, tableTop, 1, "Point");
-            SetHeader(sheet, tableTop, 2, "Min");
-            SetHeader(sheet, tableTop, 3, "Max");
+            SetHeader(sheet, tableTop, startCol, "Point");
+            SetHeader(sheet, tableTop, startCol + 1, "Min");
+            SetHeader(sheet, tableTop, startCol + 2, "Max");
 
             for (int i = 0; i < 5; i++)
             {
-                int col = 4 + (i * 2);
+                int col = startCol + 3 + (i * 2);
                 SetHeader(sheet, tableTop, col, "Cavity\nNo");
                 SetHeader(sheet, tableTop, col + 1, "Actual");
             }
 
-            SetHeader(sheet, tableTop, 16, "Judg");
+            SetHeader(sheet, tableTop, startCol + 15, "Judg");
 
             var points = data.AsEnumerable()
                 .GroupBy(row => GetString(row, "POINT_ORDER"))
@@ -597,9 +940,9 @@ namespace RawMat.Views.RegularCheck
             foreach (var pointGroup in points)
             {
                 DataRow point = pointGroup.First();
-                sheet.Cells[rowIndex, 1] = GetString(point, "POINT_NAME");
-                sheet.Cells[rowIndex, 2] = GetString(point, "CRITERIA_MIN");
-                sheet.Cells[rowIndex, 3] = GetString(point, "CRITERIA_MAX");
+                sheet.Cells[rowIndex, startCol] = GetString(point, "POINT_NAME");
+                sheet.Cells[rowIndex, startCol + 1] = GetString(point, "CRITERIA_MIN");
+                sheet.Cells[rowIndex, startCol + 2] = GetString(point, "CRITERIA_MAX");
 
                 string totalJudge = "1";
                 for (int i = 0; i < sampleNos.Count; i++)
@@ -610,7 +953,7 @@ namespace RawMat.Views.RegularCheck
                         continue;
                     }
 
-                    int col = 4 + (i * 2);
+                    int col = startCol + 3 + (i * 2);
                     sheet.Cells[rowIndex, col] = GetString(sampleRow, "CAVITY_NAME");
                     sheet.Cells[rowIndex, col + 1] = GetString(sampleRow, "VALUE");
                     string judge = GetString(sampleRow, "POINT_JUDGE");
@@ -620,18 +963,18 @@ namespace RawMat.Views.RegularCheck
                     }
                 }
 
-                sheet.Cells[rowIndex, 16] = totalJudge == "0" ? "NG" : "OK";
+                sheet.Cells[rowIndex, startCol + 15] = totalJudge == "0" ? "NG" : "OK";
                 rowIndex++;
             }
 
-            Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + 13, 16]];
+            Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, startCol], sheet.Cells[tableTop + 13, startCol + 15]];
             tableRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             tableRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
             tableRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
             tableRange.WrapText = true;
             ReleaseCom(tableRange);
 
-            Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + 13, 3]];
+            Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, startCol], sheet.Cells[tableTop + 13, startCol + 2]];
             firstColumns.Interior.Color = ColorTranslator.ToOle(Color.LightBlue);
             ReleaseCom(firstColumns);
         }

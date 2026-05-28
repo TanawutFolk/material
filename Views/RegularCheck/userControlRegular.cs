@@ -9,6 +9,7 @@ using RawMat.Views.RegularCheck;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -246,7 +247,15 @@ namespace RawMat.Views.RegularCheck
 
         private void PrepareEndAtRegularExcel()
         {
-            FormRegularReportExcelFlow.CreateWaitApprovedExcel(propQA, originalDataTable);
+            DataTable formatMap = null;
+            string regularFormatId = ConfigurationManager.AppSettings["RegularReportFormatId"];
+            if (!string.IsNullOrWhiteSpace(regularFormatId))
+            {
+                propQA.FORMAT_REPORT_ID = regularFormatId.Trim();
+                formatMap = conQA.SearchFormatReport(propQA);
+            }
+
+            FormRegularReportExcelFlow.CreateWaitApprovedExcel(propQA, originalDataTable, propQA.FORMAT_REPORT_NAME, formatMap);
         }
 
         //protected override void OnHandleDestroyed(EventArgs e)
