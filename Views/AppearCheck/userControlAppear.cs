@@ -44,6 +44,7 @@ namespace RawMat.Views.AppearCheck
         private int selectedBatchSampleTotal = 0;
         private int selectedPackingValue = 0;
         private int selectedLotSize = 0;
+        private int selectedPackSavedQtyAtSelection = 0;
         private int samplePerPackQty = 0;
         private int currentEntryMaxQty = 0;
 
@@ -73,6 +74,7 @@ namespace RawMat.Views.AppearCheck
         {
 
             InitializeComponent();
+            ResetCurrentTaskLabel();
 
             // เปิด Double Buffered ลดการกระพริบ/ภาพซ้อน
             EnableDoubleBuffered(dtg_packing_size_appear);
@@ -323,13 +325,13 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_packing_size_appear.Columns["DISPLAY_NO"] != null)
             {
-                dtg_packing_size_appear.Columns["DISPLAY_NO"].HeaderText = "แพ็คที่";
+                dtg_packing_size_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับที่";
                 dtg_packing_size_appear.Columns["DISPLAY_NO"].ReadOnly = true;
             }
 
             if (dtg_packing_size_appear.Columns["PACKING_VALUE"] != null)
             {
-                dtg_packing_size_appear.Columns["PACKING_VALUE"].HeaderText = "จำนวน/แพ็ค";
+                dtg_packing_size_appear.Columns["PACKING_VALUE"].HeaderText = "Packing Size";
                 dtg_packing_size_appear.Columns["PACKING_VALUE"].ReadOnly = true;
             }
 
@@ -584,6 +586,7 @@ namespace RawMat.Views.AppearCheck
             selectedBatchSampleTotal = 0;
             selectedPackingValue = 0;
             selectedLotSize = 0;
+            selectedPackSavedQtyAtSelection = 0;
             samplePerPackQty = 0;
             currentEntryMaxQty = 0;
         }
@@ -663,19 +666,42 @@ namespace RawMat.Views.AppearCheck
             return remainingQty;
         }
 
+        private int GetLatestRemainingInspectionQty()
+        {
+            DataTable latestPackingData = conQA.SearchSampleSize(propQA);
+            if (latestPackingData == null || !latestPackingData.Columns.Contains("REMAIN_PACKING_SIZE"))
+            {
+                return GetRemainingQtyFromPackingGrid();
+            }
+
+            int remainingQty = 0;
+            foreach (DataRow row in latestPackingData.Rows)
+            {
+                remainingQty += ParseInt(row["REMAIN_PACKING_SIZE"]);
+            }
+
+            return remainingQty;
+        }
+
         private bool IsCurrentBatchComplete(int inspectedQty)
         {
             return maxQty > 0 && inspectedQty >= maxQty;
         }
 
-        private void PrepareForNextBatchSelection()
+        private void PrepareForNextBatchSelection(bool showCompletedPackCount = false)
         {
             RefreshPackingGrid();
             ShowSavedAppearDataForCurrentBatch();
-            ResetCurrentTaskLabel();
+            if (showCompletedPackCount)
+            {
+                ShowCompletedPackCountLabel();
+            }
+            else
+            {
+                ResetCurrentTaskLabel();
+            }
             CloseNgMode();
             dtg_packing_size_appear.ClearSelection();
-            label3.Text = "เลือกชุดที่มีจำนวนเหลือตรวจมากกว่า 0";
             dtg_packing_size_appear.Focus();
         }
 
@@ -979,16 +1005,17 @@ namespace RawMat.Views.AppearCheck
                     int remainQty = Math.Max(planQty - savedQty, 0);
                     bool isSelectable = remainQty > 0;
                     cumulativeQty += savedQty;
+                    string statusText = remainQty <= 0 ? "ตรวจแล้ว" : (savedQty > 0 ? "กำลังทำ" : "รอตรวจ");
 
                     DataRow expandedRow = expandedDt.NewRow();
                     expandedRow["DISPLAY_NO"] = packSeq;
                     expandedRow["PACKING_VALUE"] = packingValue;
-                    expandedRow["CUMULATIVE_QTY"] = cumulativeQty > 0 ? (object)cumulativeQty : DBNull.Value;
+                    expandedRow["CUMULATIVE_QTY"] = statusText == "รอตรวจ" ? DBNull.Value : (object)cumulativeQty;
                     expandedRow["QTY_SELECT"] = planQty;
                     expandedRow["QTY_OK"] = savedOk > 0 ? savedOk.ToString() : "";
                     expandedRow["QTY_NG"] = savedNg > 0 ? savedNg.ToString() : "";
                     expandedRow["JUDGE_LOT_SIZE"] = packSeq == packCount ? lotSize.ToString() : "";
-                    expandedRow["STATUS_TEXT"] = remainQty <= 0 ? "ตรวจแล้ว" : (savedQty > 0 ? "กำลังทำ" : "รอตรวจ");
+                    expandedRow["STATUS_TEXT"] = statusText;
                     expandedRow["BATCH"] = batch;
                     expandedRow["COUNT"] = packSeq;
                     expandedRow["VALUE"] = packingValue;
@@ -1069,6 +1096,8 @@ namespace RawMat.Views.AppearCheck
                     count);
             }
 
+            selectedPackSavedQtyAtSelection = cumulativeQty;
+
             if (inputQty > 0)
             {
                 AddAppearancePlanRow(
@@ -1099,18 +1128,43 @@ namespace RawMat.Views.AppearCheck
         {
             if (lb_currentTask == null) return;
 
-            int remaining = Math.Max(currentMaxQty, 0);
-            int inspectedInBatch = Math.Max(samplePerPackQty - remaining, 0);
-            int packTotal = samplePerPackQty > 0 ? samplePerPackQty : maxQty;
+            lb_currentTask.Visible = false;
+            lb_currentTask.Text = string.Empty;
+        }
 
-            lb_currentTask.Text = $"แพ็คที่ {selectedPackSequence} | ต้องหยิบ {currentEntryMaxQty} ชิ้น | ตรวจแพ็คนี้แล้ว {inspectedInBatch}/{packTotal} | เหลือ {remaining} ชิ้น";
+        private void ShowCompletedPackCountLabel()
+        {
+            if (lb_currentTask == null) return;
+
+            lb_currentTask.Visible = true;
+            lb_currentTask.Text = $"ตรวจไปแล้วทั้งหมด {GetCompletedPackCountFromPackingGrid()} แพ็ค";
+        }
+
+        private int GetCompletedPackCountFromPackingGrid()
+        {
+            if (!(dtg_packing_size_appear?.DataSource is DataTable dt) || !dt.Columns.Contains("REMAIN_PACKING_SIZE"))
+            {
+                return 0;
+            }
+
+            int completedPackCount = 0;
+            foreach (DataRow row in dt.Rows)
+            {
+                if (ParseInt(row["REMAIN_PACKING_SIZE"]) <= 0)
+                {
+                    completedPackCount++;
+                }
+            }
+
+            return completedPackCount;
         }
 
         private void ResetCurrentTaskLabel()
         {
             if (lb_currentTask != null)
             {
-                lb_currentTask.Text = "เลือกชุดตรวจเพื่อเริ่มกรอกผล";
+                lb_currentTask.Visible = false;
+                lb_currentTask.Text = string.Empty;
             }
 
             if (label2 != null)
@@ -1224,7 +1278,6 @@ namespace RawMat.Views.AppearCheck
             if (dtg_packing_size_appear.SelectedRows.Count == 0)
             {
                 bt_select_packing_size_appear.Enabled = false;
-                label3.Text = "เลือกชุดที่มีจำนวนเหลือตรวจมากกว่า 0";
                 return;
             }
 
@@ -1248,17 +1301,11 @@ namespace RawMat.Views.AppearCheck
                 if (remainQty > 0)
                 {
                     bt_select_packing_size_appear.Enabled = true;
-                    string displayNo = selectedRow.Cells["DISPLAY_NO"].Value?.ToString() ?? "";
-                    int roundQty = ParseIntSafe(selectedRow.Cells["PACKING_SIZE"].Value);
-                    int totalQty = ParseIntSafe(selectedRow.Cells["TOTAL_PACKING_SIZE"].Value);
-                    label3.Text = $"เลือกชุดที่ {displayNo}: เหลือตรวจ {remainQty} / {roundQty} ชิ้น จากทั้งหมด {totalQty} ชิ้น";
                 }
                 else
                 {
                     // ถ้าเป็น 0 (ตรวจหมดแล้ว) -> ปิดปุ่ม ห้ามเลือกทำซ้ำ
                     bt_select_packing_size_appear.Enabled = false;
-                    string displayNo = selectedRow.Cells["DISPLAY_NO"].Value?.ToString() ?? "";
-                    label3.Text = $"ชุดที่ {displayNo} ตรวจครบแล้ว กรุณาเลือกชุดอื่น";
 
                     // (Optional) ถ้าอยากให้มันเด้งออกจากการเลือกด้วย ให้ใช้ ClearSelection
                     // แต่ระวัง Loop นรก ถ้าใช้บรรทัดล่างนี้ ต้องมั่นใจว่าจัดการ Flag ดีๆ
@@ -1271,7 +1318,6 @@ namespace RawMat.Views.AppearCheck
             {
                 System.Diagnostics.Debug.WriteLine("Selection Error: " + ex.Message);
                 bt_select_packing_size_appear.Enabled = false;
-                label3.Text = "ไม่สามารถอ่านจำนวนเหลือตรวจได้";
             }
         }
 
@@ -1340,16 +1386,14 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["PACKING_VALUE"].HeaderText = "Packing Size";
                 dtg_show_appear.Columns["PACKING_VALUE"].ReadOnly = true;
-                dtg_show_appear.Columns["PACKING_VALUE"].Visible = true;
-                dtg_show_appear.Columns["PACKING_VALUE"].DisplayIndex = 1;
+                dtg_show_appear.Columns["PACKING_VALUE"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["CUMULATIVE_QTY"] != null)
             {
                 dtg_show_appear.Columns["CUMULATIVE_QTY"].HeaderText = "จำนวนรวม";
                 dtg_show_appear.Columns["CUMULATIVE_QTY"].ReadOnly = true;
-                dtg_show_appear.Columns["CUMULATIVE_QTY"].Visible = true;
-                dtg_show_appear.Columns["CUMULATIVE_QTY"].DisplayIndex = 2;
+                dtg_show_appear.Columns["CUMULATIVE_QTY"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["APPEARANCE_DATE"] != null)
@@ -1377,35 +1421,35 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["QTY_SELECT"].HeaderText = "ต้องหยิบ";
                 dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = true;
-                dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 3;
+                dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 1;
             }
 
             if (dtg_show_appear.Columns["QTY_OK"] != null)
             {
                 dtg_show_appear.Columns["QTY_OK"].HeaderText = "OK";
                 dtg_show_appear.Columns["QTY_OK"].ReadOnly = false;
-                dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 4;
+                dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 2;
             }
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
             {
                 dtg_show_appear.Columns["QTY_NG"].HeaderText = "NG";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
-                dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 5;
+                dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 3;
             }
 
             if (dtg_show_appear.Columns["JUDGE"] != null)
             {
                 dtg_show_appear.Columns["JUDGE"].HeaderText = "ผล";
                 dtg_show_appear.Columns["JUDGE"].ReadOnly = true;  // Editable only in last row
+                dtg_show_appear.Columns["JUDGE"].DisplayIndex = 4;
             }
 
             if (dtg_show_appear.Columns["JUDGE_LOT_SIZE"] != null)
             {
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgment (Lot size)";
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = true;
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DisplayIndex = 6;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = false;
             }
 
             if (dtg_show_appear.Columns["ROW_STATE"] != null)
@@ -1679,25 +1723,40 @@ namespace RawMat.Views.AppearCheck
             int newCount = Convert.ToInt32(inputRow["COUNT"]);
 
             // Step 1: Requery ข้อมูลล่าสุดจาก DB เพื่อจัดการ Multi-Task (เช็ค concurrent update)
-            DataTable latestData = conQA.SearchAppearData(propQA); // Assume method นี้ filter โดย REPORT_NO และ BATCH, INUSE=1
+            propQA.BATCH = batch;
+            DataTable latestData = conQA.SearchAppearData(propQA); // filter โดย REPORT_NO และ BATCH, INUSE=1
             int currentSumSelect = 0;
             int selectedPackSavedQty = 0;
             bool hasExistingNG = false;
 
-            foreach (DataRow row in latestData.Rows)
+            if (latestData != null)
             {
-                int savedCount = Convert.ToInt32(row["COUNT"]);
-                int savedQty = Convert.ToInt32(row["QTY_SELECT"]);
-                currentSumSelect += savedQty;
-                if (savedCount == newCount)
+                foreach (DataRow row in latestData.Rows)
                 {
-                    selectedPackSavedQty += savedQty;
-                }
+                    int savedCount = Convert.ToInt32(row["COUNT"]);
+                    int savedQty = Convert.ToInt32(row["QTY_SELECT"]);
+                    currentSumSelect += savedQty;
+                    if (savedCount == newCount)
+                    {
+                        selectedPackSavedQty += savedQty;
+                    }
 
-                if (row["JUDGE"].ToString() == "0") // ถ้ามี NG จากก่อนหน้า
-                {
-                    hasExistingNG = true;
+                    if (row["JUDGE"].ToString() == "0") // ถ้ามี NG จากก่อนหน้า
+                    {
+                        hasExistingNG = true;
+                    }
                 }
+            }
+
+            if (selectedPackSavedQty > selectedPackSavedQtyAtSelection)
+            {
+                MessageBox.Show(
+                    $"แพ็คที่ {newCount} มีผู้ใช้อื่นบันทึกข้อมูลไปแล้ว กรุณาเลือกแพ็คใหม่",
+                    "ข้อมูลถูกอัปเดตแล้ว",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                PrepareForNextBatchSelection();
+                return;
             }
 
             int selectedPackRemainingQty = Math.Max(samplePerPackQty - selectedPackSavedQty, 0);
@@ -1783,7 +1842,9 @@ namespace RawMat.Views.AppearCheck
             {
                 // Requery total inspected for this report (across all batches, INUSE=1)
                 int totalInspected = conQA.GetTotalInspected(propQA); // SUM(QTY_SELECT) WHERE REPORT_NO=..., INUSE=1
-                bool isAllComplete = totalInspected >= Convert.ToInt32(propQA.inspQty); // Total inspection qty
+                int targetInspectionQty = ParseInt(propQA.inspQty);
+                int latestRemainingQty = GetLatestRemainingInspectionQty();
+                bool isAllComplete = latestRemainingQty <= 0 || (targetInspectionQty > 0 && totalInspected >= targetInspectionQty);
                 bool isBatchComplete = projectedSelectedPackQty >= samplePerPackQty;
 
                 if (judge == "0") // NG
@@ -1814,11 +1875,11 @@ namespace RawMat.Views.AppearCheck
 
                         if (isBatchComplete)
                         {
-                            PrepareForNextBatchSelection();
+                            PrepareForNextBatchSelection(true);
                         }
                         else
                         {
-                            PrepareForNextBatchSelection();
+                            PrepareForNextBatchSelection(true);
                         }
                         CloseNgMode();
                                              // Stay in current screen, enable for next input
@@ -1840,15 +1901,15 @@ namespace RawMat.Views.AppearCheck
                     else
                     {
                         // Not complete: Continue normally
-                        MessageBox.Show(isBatchComplete ? "ชุดนี้ตรวจครบแล้ว กรุณาเลือกชุดอื่น" : "ทำต่อได้ปกติ", "ทำต่อได้ปกติ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(isBatchComplete ? "ชุดนี้ตรวจครบแล้ว กรุณาเลือกทำชุดอื่นต่อ" : "ทำต่อได้ปกติ", "ทำต่อได้ปกติ", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         if (isBatchComplete)
                         {
-                            PrepareForNextBatchSelection();
+                            PrepareForNextBatchSelection(true);
                         }
                         else
                         {
-                            PrepareForNextBatchSelection();
+                            PrepareForNextBatchSelection(true);
                         }
                     }
                 }
@@ -2213,7 +2274,6 @@ namespace RawMat.Views.AppearCheck
 
             // Clear selection ใน grid ด้านบนถ้าต้องการ (optional)
             dtg_packing_size_appear.ClearSelection();
-            label3.Text = "เลือกชุดที่มีจำนวนเหลือตรวจมากกว่า 0";
 
             // โฟกัสกลับไปที่ grid ด้านบนเพื่อเลือกใหม่
             dtg_packing_size_appear.Focus();
