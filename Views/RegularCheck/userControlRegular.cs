@@ -40,6 +40,7 @@ namespace RawMat.Views.RegularCheck
         //public event EventHandler SaveRequested;
         public QAdataProperty propQA = new QAdataProperty();
         public QAdataControllers conQA = new QAdataControllers();
+        private readonly SettingControllers settingController = new SettingControllers();
         EmployeeProperty employee = EmployeeManager.CurrentEmployee;
         imgCls imgCls = new imgCls();
         //LowLevelKeyboardHook keyHook = new LowLevelKeyboardHook();
@@ -59,6 +60,7 @@ namespace RawMat.Views.RegularCheck
         private List<Image> regularImages;
         private int currentRegularImageIndex = 0;
         private Image _defaultImage = null; // ถ้าไม่ต้องการ placeholder จริง
+        private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
 
         public userControlRegular()
         {
@@ -482,6 +484,7 @@ namespace RawMat.Views.RegularCheck
                     // รีเฟรช DataGridView เพื่อให้ข้อมูลอัปเดต
                     bs?.ResetBindings(false);
                     dtg_regular.Refresh();
+                    ApplyEquipmentSerialComboBoxes();
                 }
             }
 
@@ -566,6 +569,7 @@ namespace RawMat.Views.RegularCheck
         private void ShowPage(int page)
         {
             bindingSource.Filter = $"POINT_ORDER = '{page}'"; // กรองเฉพาะแถวที่มี POINT_ORDER ตรงกับหน้า
+            ApplyEquipmentSerialComboBoxes();
             lb_page.Text = $"{page}/{totalPages}"; // แสดงหน้า (1/8)
         }
 
@@ -1106,6 +1110,8 @@ namespace RawMat.Views.RegularCheck
 
         private void dtg_regular_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
+            ApplyEquipmentSerialComboBoxes();
+
             foreach (DataGridViewRow row in dtg_regular.Rows)
             {
                 // ตรวจสอบว่ามีค่าใน VALUE และ POINT_JUDGE หรือไม่
@@ -1120,6 +1126,103 @@ namespace RawMat.Views.RegularCheck
                 {
                     row.DefaultCellStyle.BackColor = Color.White; // คืนสีพื้นหลังเป็นสีขาว (หรือสีปกติ)
                 }
+            }
+        }
+
+        private void ApplyEquipmentSerialComboBoxes()
+        {
+            if (!dtg_regular.Columns.Contains("EQUIPMENT_SERIAL") ||
+                !dtg_regular.Columns.Contains("EQUIPMENT_TYPE"))
+            {
+                return;
+            }
+
+            foreach (DataGridViewRow row in dtg_regular.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                string equipmentType = row.Cells["EQUIPMENT_TYPE"].Value?.ToString();
+                DataTable serialSource = GetEquipmentSerialSource(equipmentType);
+                object currentValue = row.Cells["EQUIPMENT_SERIAL"].Value;
+
+                EnsureCurrentSerialExists(serialSource, currentValue);
+
+                DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell
+                {
+                    DataSource = serialSource,
+                    DisplayMember = "TEXT",
+                    ValueMember = "VALUE",
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
+                    FlatStyle = FlatStyle.Flat
+                };
+
+                comboBoxCell.Value = currentValue == null || currentValue == DBNull.Value
+                    ? ""
+                    : currentValue.ToString();
+
+                row.Cells["EQUIPMENT_SERIAL"] = comboBoxCell;
+            }
+        }
+
+        private DataTable GetEquipmentSerialSource(string equipmentType)
+        {
+            string key = equipmentType?.Trim() ?? "";
+            if (equipmentSerialSourceByType.ContainsKey(key))
+            {
+                return equipmentSerialSourceByType[key].Copy();
+            }
+
+            DataTable source = settingController.SearchEquipmentTypeSettingByEquipmentType(new SettingProperty
+            {
+                Equipment_Type = key
+            });
+
+            DataTable serialSource = CreateEquipmentSerialSourceTable();
+            serialSource.Rows.Add("", "");
+
+            if (source != null)
+            {
+                foreach (DataRow row in source.Rows)
+                {
+                    string serial = row["Equipment_Serial"]?.ToString()?.Trim();
+                    if (string.IsNullOrWhiteSpace(serial)) continue;
+
+                    bool exists = serialSource.AsEnumerable()
+                        .Any(r => string.Equals(r["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
+
+                    if (!exists)
+                    {
+                        serialSource.Rows.Add(serial, serial);
+                    }
+                }
+            }
+
+            equipmentSerialSourceByType[key] = serialSource;
+            return serialSource.Copy();
+        }
+
+        private static DataTable CreateEquipmentSerialSourceTable()
+        {
+            DataTable table = new DataTable();
+            table.Columns.Add("TEXT", typeof(string));
+            table.Columns.Add("VALUE", typeof(string));
+            return table;
+        }
+
+        private static void EnsureCurrentSerialExists(DataTable serialSource, object currentValue)
+        {
+            string serial = currentValue == null || currentValue == DBNull.Value
+                ? ""
+                : currentValue.ToString().Trim();
+
+            if (string.IsNullOrWhiteSpace(serial)) return;
+
+            bool exists = serialSource.AsEnumerable()
+                .Any(row => string.Equals(row["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
+
+            if (!exists)
+            {
+                serialSource.Rows.Add(serial, serial);
             }
         }
 

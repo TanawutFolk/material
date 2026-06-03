@@ -553,11 +553,11 @@ namespace RawMat.Views.RegularCheck
             {
                 if (row.Cells["Regular_Check_Ref"].Value.ToString() == "1")
                 {
-                    row.Cells["REF"].Value = imgCls.ResizeImage(Image.FromFile("img/ref.png"), 24, 24);
+                    row.Cells["REF"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("ref.png"), 24, 24);
                 }
                 else
                 {
-                    row.Cells["REF"].Value = imgCls.ResizeImage(Image.FromFile("img/gray.png"), row.Cells["REF"].Size.Width, row.Cells["REF"].Size.Height);
+                    row.Cells["REF"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("gray.png"), row.Cells["REF"].Size.Width, row.Cells["REF"].Size.Height);
                 }
             }
 
