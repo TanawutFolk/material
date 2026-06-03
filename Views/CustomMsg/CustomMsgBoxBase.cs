@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,38 +78,67 @@ namespace RawMat.Views.CustomMsg
             {
                 if (picAlarm != null)
                 {
-                    try
-                    {
-                        switch (value)
-                        {
-                            case MessageBoxIconType.Question:
-                                picAlarm.Image = Image.FromFile("img/QUESTION.png");
-                                break;
-                            case MessageBoxIconType.OK:
-                                picAlarm.Image = Image.FromFile("img/OK.png");
-                                break;
-                            case MessageBoxIconType.NG:
-                                picAlarm.Image = Image.FromFile("img/NG.png");
-                                break;
-                            case MessageBoxIconType.Pending:
-                                picAlarm.Image = Image.FromFile("img/PENDING.png");
-                                break;
-                            case MessageBoxIconType.Warning:
-                                picAlarm.Image = Image.FromFile("img/WARNING.png");
-                                break;
-                            default:
-                                picAlarm.Image = null;
-                                break;
-                        }
-                        picAlarm.SizeMode = PictureBoxSizeMode.Zoom;
-                    }
-                    catch (Exception ex)
-                    {
-                        // จัดการกรณีที่โหลดรูปภาพไม่สำเร็จ
-                        MessageBox.Show($"Error loading icon: {ex.Message}");
-                    }
+                    Image iconImage = LoadIconImage(value);
+                    if (iconImage != null)
+                        picAlarm.Image = iconImage;
+
+                    picAlarm.SizeMode = PictureBoxSizeMode.Zoom;
                 }
             }
+        }
+
+        private Image LoadIconImage(MessageBoxIconType iconType)
+        {
+            string fileName;
+            switch (iconType)
+            {
+                case MessageBoxIconType.Question:
+                    fileName = "QUESTION.png";
+                    break;
+                case MessageBoxIconType.OK:
+                    fileName = "OK.png";
+                    break;
+                case MessageBoxIconType.NG:
+                    fileName = "NG.png";
+                    break;
+                case MessageBoxIconType.Pending:
+                    fileName = "PENDING.png";
+                    break;
+                case MessageBoxIconType.Warning:
+                    fileName = "WARNING.png";
+                    break;
+                default:
+                    return null;
+            }
+
+            foreach (string path in GetIconSearchPaths(fileName))
+            {
+                try
+                {
+                    if (!File.Exists(path))
+                        continue;
+
+                    using (Image image = Image.FromFile(path))
+                    {
+                        return new Bitmap(image);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error loading icon '{path}': {ex.Message}");
+                }
+            }
+
+            Debug.WriteLine($"Icon file not found: {fileName}");
+            return null;
+        }
+
+        private IEnumerable<string> GetIconSearchPaths(string fileName)
+        {
+            yield return Path.Combine(Application.StartupPath, "img", fileName);
+            yield return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "img", fileName);
+            yield return Path.Combine(Environment.CurrentDirectory, "img", fileName);
+            yield return Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "img", fileName));
         }
 
         // Enum สำหรับเลือกประเภทของ Message Box

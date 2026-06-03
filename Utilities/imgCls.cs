@@ -94,6 +94,29 @@ namespace RawMat.Utilities
             return resizedImage;
         }
 
+        public Image LoadAppImage(string fileName)
+        {
+            try
+            {
+                string fullPath = Path.Combine(Application.StartupPath, "img", fileName);
+                if (File.Exists(fullPath))
+                {
+                    using (FileStream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+                    {
+                        return Image.FromStream(stream);
+                    }
+                }
+
+                Console.WriteLine($"ไม่พบไฟล์ภาพโปรแกรม: {fullPath}");
+                return _defaultImage;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ข้อผิดพลาดในการโหลดภาพโปรแกรม {fileName}: {ex.Message}");
+                return _defaultImage;
+            }
+        }
+
         public Image LoadPackingImage(string fileName)
         {
             try

@@ -463,11 +463,11 @@ namespace RawMat.Views.ReceiveWH
                                 dataItem.reportStatus = "1";
                                 if (conQA.UpdateStatus(dataItem) == true)
                                 {
-                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                                 }
                                 else
                                 {
-                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                                 }
                                 //if found == 1
                                 //
@@ -482,11 +482,11 @@ namespace RawMat.Views.ReceiveWH
                                 dataItem.reportStatus = "6";
                                 if (conQA.UpdateStatus(dataItem) == true)
                                 {
-                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                                 }
                                 else
                                 {
-                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                    row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                                 }
                                     
                             }
@@ -499,7 +499,7 @@ namespace RawMat.Views.ReceiveWH
                             //ยังขาด total status
                             if (conQA.UpdateStatus(dataItem) == true)
                             {
-                                row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                             }
 
                             dataItem.process = "Inspection_Data_Check";
@@ -575,11 +575,11 @@ namespace RawMat.Views.ReceiveWH
                             dataItem.reportStatus = "1";
                             if (conQA.UpdateStatus(dataItem) == true)
                             {
-                                row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                             }
                             else
                             {
-                                row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                             }
                         }
                         else
@@ -589,11 +589,11 @@ namespace RawMat.Views.ReceiveWH
                             dataItem.reportStatus = "6";
                             if (conQA.UpdateStatus(dataItem) == true)
                             {
-                                row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                             }
                             else
                             {
-                                row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                                row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("stop.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                             }
                         }
 
@@ -604,7 +604,7 @@ namespace RawMat.Views.ReceiveWH
                         dataItem.reportStatus = "1";
                         if (conQA.UpdateStatus(dataItem) == true)
                         {
-                            row.Cells["STATUS"].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                            row.Cells["STATUS"].Value = imgCls.ResizeImage(imgCls.LoadAppImage("cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                         }
 
                         dataItem.process = "Inspection_Data_Check";
@@ -825,7 +825,7 @@ namespace RawMat.Views.ReceiveWH
                         row.Cells["VENDOR"].Value = inspectionRow["VENDOR_NAME"].ToString();
                     }
 
-                    row.Cells[targetColumn].Value = imgCls.ResizeImage(Image.FromFile("img/cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
+                    row.Cells[targetColumn].Value = imgCls.ResizeImage(imgCls.LoadAppImage("cart1.png"), 24, 24); // กำหนดที่อยู่ของไฟล์รูปภาพที่ต้องการใช้
                 }
                 else
                 {

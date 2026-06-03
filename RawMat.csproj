@@ -773,6 +773,15 @@
     <None Include="bin\Debug\img\image %282%29.png" />
     <None Include="bin\Debug\img\QUESTION.png" />
     <Content Include="cart1.ico" />
+    <Content Include="img\cart1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\cart2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\stop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="img\no-photo.jpg" />
     <Content Include="supply-chain.ico" />
     <None Include="img\setting.png" />
