@@ -15,7 +15,7 @@ namespace RawMat.Views.RegularCheck
 {
     public class FormRegularReportExcelFlow : Form
     {
-        private const string DefaultReportTitle = "Regular Inspection Record Sheet";
+        private const string DefaultReportTitle = "FM-QA-B13-A Material Regular Inspection Record Sheet";
         private const bool ShowExcelDebugMessage = false;
 
         private readonly QAdataProperty propQA;
@@ -111,7 +111,7 @@ namespace RawMat.Views.RegularCheck
 
         public static string GetPdfFilePath(QAdataProperty dataItem)
         {
-            string pdfName = $"{SanitizeFileName(dataItem?.Regular_No ?? dataItem?.Report_No ?? "Regular_Report")}.pdf";
+            string pdfName = $"{BuildReportFileBaseName(dataItem)}.pdf";
             return Path.Combine(GetPdfSavePathStatic(dataItem), pdfName);
         }
 
@@ -385,8 +385,19 @@ namespace RawMat.Views.RegularCheck
 
         private static string BuildExcelFileName(QAdataProperty dataItem)
         {
+            return $"{BuildReportFileBaseName(dataItem)}.xlsx";
+        }
+
+        private static string BuildReportFileBaseName(QAdataProperty dataItem)
+        {
             string reportName = dataItem?.Regular_No ?? dataItem?.Report_No ?? "Regular_Report";
-            return $"{SanitizeFileName(reportName)}.xlsx";
+            string mCode = dataItem?.M_CODE;
+            if (!string.IsNullOrWhiteSpace(mCode))
+            {
+                reportName = $"{reportName}_{mCode.Trim()}";
+            }
+
+            return SanitizeFileName(reportName);
         }
 
         private static string SanitizeFileName(string value)
@@ -625,15 +636,7 @@ namespace RawMat.Views.RegularCheck
 
         private static string GetReportTitle(QAdataProperty dataItem)
         {
-            if (!string.IsNullOrWhiteSpace(dataItem?.FORMAT_REPORT_NAME))
-            {
-                return dataItem.FORMAT_REPORT_NAME.Trim();
-            }
-
-            string configuredTitle = ConfigurationManager.AppSettings["RegularReportDefaultTitle"];
-            return string.IsNullOrWhiteSpace(configuredTitle)
-                ? DefaultReportTitle
-                : configuredTitle.Trim();
+            return DefaultReportTitle;
         }
 
         private static bool IsExcelDebugMessageEnabled()
