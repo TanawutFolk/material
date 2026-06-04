@@ -998,9 +998,9 @@ namespace RawMat.SQLFactory
 
         public string SearchReferenceByMCode(QAdataProperty dataItem)
         {
-            sql = @"SELECT `reference` AS `REFERENCE`
+            sql = @"SELECT `Reference` AS `REFERENCE`
                     FROM `info_reference`
-                    WHERE `mcode` = dataItem.M_CODE
+                    WHERE `M_Code` = dataItem.M_CODE
                     LIMIT 1";
 
             sql = sql.Replace("dataItem.M_CODE", ToSqlTextValue(dataItem.M_CODE));

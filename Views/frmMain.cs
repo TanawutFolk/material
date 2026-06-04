@@ -706,7 +706,7 @@ namespace RawMat
             SetStatusButtonText(bt_status_function_pending, "Function Check", functionText);
             SetStatusButtonText(bt_status_dimension_pending, "Dimension Check", dimensionText);
             SetStatusButtonText(bt_status_data_pending, "Insp. Data Check", inspDataText);
-            SetStatusButtonText(bt_appear_pending, "Appearance", appearanceText);
+            SetStatusButtonText(bt_appear_pending, "Appearance Check", appearanceText);
         }
 
         private void SetStatusButtonText(BunifuFlatButton button, string processName, string pendingCount)
@@ -727,7 +727,7 @@ namespace RawMat
             button.Text = buttonText;
             button.ButtonText = buttonText;
             button.TextAlign = ContentAlignment.MiddleCenter;
-            button.TextFont = new Font("Tahoma", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            button.TextFont = new Font("Tahoma", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             button.IconVisible = false;
             button.IconRightVisible = false;
             button.IconMarginLeft = 0;

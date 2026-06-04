@@ -110,6 +110,7 @@ namespace RawMat.Views.RegularCheck
 
             propQA.TOTAL_STATUS = "1";
             propQA.EMP_ID = employee.EMP_CODE;
+            propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? string.Empty;
 
             // ✅ วนลูปผ่าน originalDataTable เพื่อให้แน่ใจว่าใช้ข้อมูลจากทุกหน้า
             foreach (DataRow row in originalDataTable.Rows)

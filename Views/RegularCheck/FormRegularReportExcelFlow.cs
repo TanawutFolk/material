@@ -458,7 +458,10 @@ namespace RawMat.Views.RegularCheck
             int tableTop = topRow + 28;
 
             Merge(sheet, topRow, 1, topRow, 10, GetReportTitle(dataItem));
-            Merge(sheet, topRow + 1, 1, topRow + 2, 10, BuildMaterialHeaderText(dataItem));
+            SetLabel(sheet, topRow + 1, 1, topRow + 1, 3, "M-Code");
+            Merge(sheet, topRow + 1, 4, topRow + 1, 10, dataItem?.M_CODE);
+            SetLabel(sheet, topRow + 2, 1, topRow + 2, 3, "Material Name");
+            Merge(sheet, topRow + 2, 4, topRow + 2, 10, dataItem?.Material_Name);
             Merge(sheet, topRow, 11, topRow, 13, "Report No.");
             Merge(sheet, topRow, 14, topRow, 16, "Approve");
             Merge(sheet, topRow + 1, 11, topRow + 2, 13, dataItem?.Report_No);
