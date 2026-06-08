@@ -17,6 +17,9 @@ namespace RawMat.Views.RegularCheck
     {
         private const string DefaultReportTitle = "FM-QA-B13-A Material Regular Inspection Record Sheet";
         private const bool ShowExcelDebugMessage = false;
+        private const int AutoReportColumns = 31;
+        private const int AutoReportPageRows = 43;
+        private const int AutoReportTableBodyRows = 15;
 
         private readonly QAdataProperty propQA;
         private readonly string generatedExcelPath;
@@ -415,11 +418,7 @@ namespace RawMat.Views.RegularCheck
         {
             sheet.Cells.Font.Name = "Arial";
             sheet.Cells.Font.Size = 8;
-            sheet.Columns.ColumnWidth = 8;
-            sheet.Columns[1].ColumnWidth = 18;
-            sheet.Columns[2].ColumnWidth = 8;
-            sheet.Columns[3].ColumnWidth = 8;
-            sheet.Columns[16].ColumnWidth = 7;
+            ApplyAutoReportColumnLayout(sheet);
 
             DataTable data = regularData ?? new DataTable();
             string referenceText = GetReferenceText(dataItem);
@@ -440,19 +439,27 @@ namespace RawMat.Views.RegularCheck
             for (int start = 0; start < sampleNos.Count; start += 5)
             {
                 page++;
-                int topRow = 1 + ((page - 1) * 37);
+                int topRow = 1 + ((page - 1) * AutoReportPageRows);
                 var pageSamples = sampleNos.Skip(start).Take(5).ToList();
                 string imagePath = GetImagePathForPage(regularImagePaths, page);
+                if (page > 1)
+                {
+                    AddHorizontalPageBreak(sheet, topRow);
+                }
+
                 BuildReportPage(sheet, dataItem, data, pageSamples, topRow, page, referenceText, imagePath);
             }
 
-            ApplyPageSetup(sheet);
+            ApplyPageSetup(sheet, AutoReportColumns);
         }
 
-        private static void ApplyPageSetup(Excel.Worksheet sheet)
+        private static void ApplyPageSetup(Excel.Worksheet sheet, int printColumns = 0)
         {
             Excel.PageSetup pageSetup = sheet.PageSetup;
+            Excel.Range lastCell = null;
+            Excel.Range printRange = null;
             pageSetup.Orientation = Excel.XlPageOrientation.xlPortrait;
+            pageSetup.PaperSize = Excel.XlPaperSize.xlPaperA4;
             pageSetup.Zoom = false;
             pageSetup.FitToPagesWide = 1;
             pageSetup.FitToPagesTall = false;
@@ -460,50 +467,167 @@ namespace RawMat.Views.RegularCheck
             pageSetup.RightMargin = 18;
             pageSetup.TopMargin = 18;
             pageSetup.BottomMargin = 18;
+            pageSetup.CenterHorizontally = true;
+            try
+            {
+                lastCell = sheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);
+                int lastRow = Math.Max(1, Convert.ToInt32(lastCell.Row));
+                int lastColumn = printColumns > 0
+                    ? printColumns
+                    : Math.Max(1, Convert.ToInt32(lastCell.Column));
+                printRange = sheet.Range[sheet.Cells[1, 1], sheet.Cells[lastRow, lastColumn]];
+                pageSetup.PrintArea = printRange.Address;
+            }
+            finally
+            {
+                ReleaseCom(printRange);
+                ReleaseCom(lastCell);
+            }
+
             ReleaseCom(pageSetup);
+        }
+
+        private static void ApplyAutoReportColumnLayout(Excel.Worksheet sheet)
+        {
+            for (int col = 1; col <= AutoReportColumns; col++)
+            {
+                Excel.Range column = null;
+                try
+                {
+                    column = (Excel.Range)sheet.Columns[col];
+                    column.ColumnWidth = 3.2;
+                }
+                finally
+                {
+                    ReleaseCom(column);
+                }
+            }
+
+            SetColumnWidth(sheet, 1, 5.5);
+            SetColumnWidth(sheet, 2, 5.5);
+            SetColumnWidth(sheet, 3, 5.5);
+            SetColumnWidth(sheet, 4, 5.5);
+            SetColumnWidth(sheet, 5, 4.5);
+            SetColumnWidth(sheet, 29, 4.2);
+            SetColumnWidth(sheet, 30, 4.2);
+            SetColumnWidth(sheet, 31, 4.2);
+        }
+
+        private static void SetColumnWidth(Excel.Worksheet sheet, int columnIndex, double width)
+        {
+            Excel.Range column = null;
+            try
+            {
+                column = (Excel.Range)sheet.Columns[columnIndex];
+                column.ColumnWidth = width;
+            }
+            finally
+            {
+                ReleaseCom(column);
+            }
+        }
+
+        private static void ApplyAutoReportRowLayout(Excel.Worksheet sheet, int topRow)
+        {
+            for (int row = topRow; row < topRow + AutoReportPageRows; row++)
+            {
+                SetRowHeight(sheet, row, 15);
+            }
+
+            SetRowHeight(sheet, topRow, 18);
+            for (int row = topRow + 1; row <= topRow + 7; row++)
+            {
+                SetRowHeight(sheet, row, 17);
+            }
+
+            SetRowHeight(sheet, topRow + 8, 14);
+            for (int row = topRow + 9; row <= topRow + 26; row++)
+            {
+                SetRowHeight(sheet, row, 23);
+            }
+
+            for (int row = topRow + 27; row < topRow + AutoReportPageRows; row++)
+            {
+                SetRowHeight(sheet, row, 16);
+            }
+        }
+
+        private static void SetRowHeight(Excel.Worksheet sheet, int rowIndex, double height)
+        {
+            Excel.Range row = null;
+            try
+            {
+                row = (Excel.Range)sheet.Rows[rowIndex];
+                row.RowHeight = height;
+            }
+            finally
+            {
+                ReleaseCom(row);
+            }
+        }
+
+        private static void AddHorizontalPageBreak(Excel.Worksheet sheet, int topRow)
+        {
+            Excel.Range breakCell = null;
+            try
+            {
+                breakCell = (Excel.Range)sheet.Cells[topRow, 1];
+                sheet.HPageBreaks.Add(breakCell);
+            }
+            catch
+            {
+                // Excel can still paginate from the A4 page setup if a manual break cannot be added.
+            }
+            finally
+            {
+                ReleaseCom(breakCell);
+            }
         }
 
         private static void BuildReportPage(Excel.Worksheet sheet, QAdataProperty dataItem, DataTable data, System.Collections.Generic.List<string> sampleNos, int topRow, int page, string referenceText, string imagePath)
         {
             int imageTop = topRow + 8;
-            int tableTop = topRow + 28;
+            int tableTop = topRow + 27;
 
-            Merge(sheet, topRow, 1, topRow, 10, GetReportTitle(dataItem));
-            SetLabel(sheet, topRow + 1, 1, topRow + 1, 3, "M-Code");
-            Merge(sheet, topRow + 1, 4, topRow + 1, 10, dataItem?.M_CODE);
-            SetLabel(sheet, topRow + 2, 1, topRow + 2, 3, "Material Name");
-            Merge(sheet, topRow + 2, 4, topRow + 2, 10, dataItem?.Material_Name);
-            Merge(sheet, topRow, 11, topRow, 13, "Report No.");
-            Merge(sheet, topRow, 14, topRow, 16, "Approve");
-            Merge(sheet, topRow + 1, 11, topRow + 2, 13, dataItem?.Report_No);
-            Merge(sheet, topRow + 1, 14, topRow + 2, 16, string.Empty);
+            ApplyAutoReportRowLayout(sheet, topRow);
 
-            SetLabel(sheet, topRow + 3, 1, topRow + 3, 3, "Vender");
-            Merge(sheet, topRow + 3, 4, topRow + 3, 10, dataItem?.Vendor_Name);
-            SetLabel(sheet, topRow + 4, 1, topRow + 4, 3, "Receive Date");
-            Merge(sheet, topRow + 4, 4, topRow + 4, 8, FormatDate(dataItem?.dtReceiveDate));
-            SetLabel(sheet, topRow + 4, 9, topRow + 4, 10, "INV. No.");
-            Merge(sheet, topRow + 4, 11, topRow + 4, 16, dataItem?.Invoice_No);
-            SetLabel(sheet, topRow + 5, 1, topRow + 5, 3, "Lot Size");
-            Merge(sheet, topRow + 5, 4, topRow + 5, 8, dataItem?.Qty);
-            SetLabel(sheet, topRow + 5, 9, topRow + 5, 10, "Lot No.");
-            Merge(sheet, topRow + 5, 11, topRow + 5, 16, dataItem?.Lot_No);
-            SetLabel(sheet, topRow + 6, 1, topRow + 6, 3, "Inspection Size");
-            Merge(sheet, topRow + 6, 4, topRow + 6, 8, dataItem?.SAMPLING_QTY);
-            SetLabel(sheet, topRow + 6, 9, topRow + 6, 10, "Reference");
-            Merge(sheet, topRow + 6, 11, topRow + 6, 16, referenceText);
-            SetLabel(sheet, topRow + 7, 1, topRow + 7, 3, "Inspection Date");
-            Merge(sheet, topRow + 7, 4, topRow + 7, 8, DateTime.Now.ToString("dd-MMM-yyyy"));
-            SetLabel(sheet, topRow + 7, 9, topRow + 7, 10, "Inspector");
-            Merge(sheet, topRow + 7, 11, topRow + 7, 16, dataItem?.EMP_ID);
+            MergeLeft(sheet, topRow, 1, topRow, 21, GetReportTitle(dataItem));
+            SetLabel(sheet, topRow, 22, topRow, 26, "Report No.");
+            SetLabel(sheet, topRow, 27, topRow, 31, "Approve");
+            SetLabel(sheet, topRow + 1, 1, topRow + 1, 5, "M-Code");
+            Merge(sheet, topRow + 1, 6, topRow + 1, 21, dataItem?.M_CODE);
+            Merge(sheet, topRow + 1, 22, topRow + 2, 26, dataItem?.Report_No);
+            Merge(sheet, topRow + 1, 27, topRow + 2, 31, string.Empty);
+            SetLabel(sheet, topRow + 2, 1, topRow + 2, 5, "Material Name");
+            Merge(sheet, topRow + 2, 6, topRow + 2, 21, dataItem?.Material_Name);
 
-            Merge(sheet, imageTop, 1, imageTop, 16, "Check Point");
-            Merge(sheet, imageTop + 1, 1, imageTop + 19, 16, string.Empty);
-            AddReportImage(sheet, imagePath, imageTop + 1, 1, imageTop + 19, 16);
+            SetLabel(sheet, topRow + 3, 1, topRow + 3, 5, "Vender");
+            Merge(sheet, topRow + 3, 6, topRow + 3, 31, dataItem?.Vendor_Name);
+            SetLabel(sheet, topRow + 4, 1, topRow + 4, 5, "Receive Date");
+            Merge(sheet, topRow + 4, 6, topRow + 4, 17, FormatDate(dataItem?.dtReceiveDate));
+            SetLabel(sheet, topRow + 4, 18, topRow + 4, 21, "INV. No.");
+            Merge(sheet, topRow + 4, 22, topRow + 4, 31, dataItem?.Invoice_No);
+            SetLabel(sheet, topRow + 5, 1, topRow + 5, 5, "Lot Size");
+            Merge(sheet, topRow + 5, 6, topRow + 5, 17, dataItem?.Qty);
+            SetLabel(sheet, topRow + 5, 18, topRow + 5, 21, "Lot No.");
+            Merge(sheet, topRow + 5, 22, topRow + 5, 31, dataItem?.Lot_No);
+            SetLabel(sheet, topRow + 6, 1, topRow + 6, 5, "Inspection Size");
+            Merge(sheet, topRow + 6, 6, topRow + 6, 17, dataItem?.SAMPLING_QTY);
+            SetLabel(sheet, topRow + 6, 18, topRow + 6, 21, "Reference");
+            Merge(sheet, topRow + 6, 22, topRow + 6, 31, referenceText);
+            SetLabel(sheet, topRow + 7, 1, topRow + 7, 5, "Inspection Date");
+            MergeLeft(sheet, topRow + 7, 6, topRow + 7, 17, DateTime.Now.ToString("dd-MMM-yyyy"));
+            SetLabel(sheet, topRow + 7, 18, topRow + 7, 21, "Inspector");
+            Merge(sheet, topRow + 7, 22, topRow + 7, 31, dataItem?.EMP_ID);
 
-            BuildTable(sheet, data, sampleNos, tableTop);
+            MergeLeft(sheet, imageTop, 1, imageTop, 31, "Check Point");
+            StyleCheckPointHeader(sheet, imageTop, 1, 31);
+            Merge(sheet, imageTop + 1, 1, imageTop + 18, 31, string.Empty);
+            AddReportImage(sheet, imagePath, imageTop + 1, 1, imageTop + 18, 31);
 
-            Excel.Range pageBorder = sheet.Range[sheet.Cells[topRow, 1], sheet.Cells[topRow + 35, 16]];
+            BuildAutoReportTable(sheet, data, sampleNos, tableTop);
+
+            Excel.Range pageBorder = sheet.Range[sheet.Cells[topRow, 1], sheet.Cells[topRow + AutoReportPageRows - 1, AutoReportColumns]];
             pageBorder.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             pageBorder.Borders.Weight = Excel.XlBorderWeight.xlThin;
             pageBorder.BorderAround(Excel.XlLineStyle.xlContinuous, Excel.XlBorderWeight.xlMedium);
@@ -921,6 +1045,77 @@ namespace RawMat.Views.RegularCheck
             MessageBox.Show(message.ToString(), "Excel Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private static void BuildAutoReportTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop)
+        {
+            SetMergedHeader(sheet, tableTop, 1, 4, "Point", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 5, 6, "Min", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 7, 8, "Max", Color.LightBlue, Color.Black);
+
+            for (int i = 0; i < 5; i++)
+            {
+                int col = 9 + (i * 4);
+                SetMergedHeader(sheet, tableTop, col, col + 1, "Cavity\nNo", Color.White, Color.Green);
+                SetMergedHeader(sheet, tableTop, col + 2, col + 3, "Actual", Color.White, Color.Black);
+            }
+
+            SetMergedHeader(sheet, tableTop, 29, 31, "Judg", Color.White, Color.Blue);
+
+            var points = data.AsEnumerable()
+                .GroupBy(row => GetString(row, "POINT_ORDER"))
+                .OrderBy(group => int.TryParse(group.Key, out int n) ? n : int.MaxValue)
+                .Take(AutoReportTableBodyRows)
+                .ToList();
+
+            for (int rowOffset = 0; rowOffset < AutoReportTableBodyRows; rowOffset++)
+            {
+                int rowIndex = tableTop + 1 + rowOffset;
+                var pointGroup = rowOffset < points.Count ? points[rowOffset] : null;
+                DataRow point = pointGroup?.First();
+
+                Merge(sheet, rowIndex, 1, rowIndex, 4, GetString(point, "POINT_NAME"));
+                Merge(sheet, rowIndex, 5, rowIndex, 6, GetString(point, "CRITERIA_MIN"));
+                Merge(sheet, rowIndex, 7, rowIndex, 8, GetString(point, "CRITERIA_MAX"));
+
+                string totalJudge = string.Empty;
+                for (int i = 0; i < 5; i++)
+                {
+                    int col = 9 + (i * 4);
+                    DataRow sampleRow = null;
+                    if (pointGroup != null && i < sampleNos.Count)
+                    {
+                        sampleRow = pointGroup.FirstOrDefault(row => GetString(row, "SAMPLING_NO") == sampleNos[i]);
+                    }
+
+                    Merge(sheet, rowIndex, col, rowIndex, col + 1, GetString(sampleRow, "CAVITY_NAME"));
+                    Merge(sheet, rowIndex, col + 2, rowIndex, col + 3, GetString(sampleRow, "VALUE"));
+
+                    string judge = GetString(sampleRow, "POINT_JUDGE");
+                    if (judge == "0")
+                    {
+                        totalJudge = "NG";
+                    }
+                    else if (judge == "1" && string.IsNullOrWhiteSpace(totalJudge))
+                    {
+                        totalJudge = "OK";
+                    }
+                }
+
+                Merge(sheet, rowIndex, 29, rowIndex, 31, totalJudge);
+            }
+
+            Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + AutoReportTableBodyRows, AutoReportColumns]];
+            tableRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            tableRange.Borders.Weight = Excel.XlBorderWeight.xlThin;
+            tableRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            tableRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+            tableRange.WrapText = true;
+            ReleaseCom(tableRange);
+
+            Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + AutoReportTableBodyRows, 8]];
+            firstColumns.Interior.Color = ColorTranslator.ToOle(Color.LightBlue);
+            ReleaseCom(firstColumns);
+        }
+
         private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop, int startCol = 1)
         {
             SetHeader(sheet, tableTop, startCol, "Point");
@@ -992,7 +1187,9 @@ namespace RawMat.Views.RegularCheck
                 return;
             }
 
-            Excel.Range approveCell = sheet.Range["N2", "P3"];
+            string approveStartCell = IsCellText(sheet, "AA1", "Approve") ? "AA2" : "N2";
+            string approveEndCell = approveStartCell == "AA2" ? "AE3" : "P3";
+            Excel.Range approveCell = sheet.Range[approveStartCell, approveEndCell];
             float left = Convert.ToSingle(approveCell.Left);
             float top = Convert.ToSingle(approveCell.Top);
             float width = Convert.ToSingle(approveCell.Width);
@@ -1001,12 +1198,48 @@ namespace RawMat.Views.RegularCheck
             ReleaseCom(approveCell);
         }
 
+        private static bool IsCellText(Excel.Worksheet sheet, string cellAddress, string expectedText)
+        {
+            Excel.Range cell = null;
+            try
+            {
+                cell = sheet.Range[cellAddress];
+                string value = cell.Value2?.ToString() ?? string.Empty;
+                return string.Equals(value.Trim(), expectedText, StringComparison.OrdinalIgnoreCase);
+            }
+            finally
+            {
+                ReleaseCom(cell);
+            }
+        }
+
         private static void SetLabel(Excel.Worksheet sheet, int row1, int col1, int row2, int col2, string text)
         {
             Merge(sheet, row1, col1, row2, col2, text);
             Excel.Range range = sheet.Range[sheet.Cells[row1, col1], sheet.Cells[row2, col2]];
             range.Interior.Color = ColorTranslator.ToOle(Color.LightGreen);
             range.Font.Bold = true;
+            ReleaseCom(range);
+        }
+
+        private static void SetMergedHeader(Excel.Worksheet sheet, int row, int col1, int col2, string text, Color backgroundColor, Color fontColor)
+        {
+            Merge(sheet, row, col1, row, col2, text);
+            Excel.Range range = sheet.Range[sheet.Cells[row, col1], sheet.Cells[row, col2]];
+            range.Font.Bold = true;
+            range.Interior.Color = ColorTranslator.ToOle(backgroundColor);
+            range.Font.Color = ColorTranslator.ToOle(fontColor);
+            range.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            range.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+            range.WrapText = true;
+            ReleaseCom(range);
+        }
+
+        private static void StyleCheckPointHeader(Excel.Worksheet sheet, int row, int col1, int col2)
+        {
+            Excel.Range range = sheet.Range[sheet.Cells[row, col1], sheet.Cells[row, col2]];
+            range.Font.Color = ColorTranslator.ToOle(Color.Blue);
+            range.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
             ReleaseCom(range);
         }
 
@@ -1028,6 +1261,17 @@ namespace RawMat.Views.RegularCheck
             range.Merge();
             range.Value2 = text ?? string.Empty;
             range.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            range.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+            range.WrapText = true;
+            ReleaseCom(range);
+        }
+
+        private static void MergeLeft(Excel.Worksheet sheet, int row1, int col1, int row2, int col2, string text)
+        {
+            Excel.Range range = sheet.Range[sheet.Cells[row1, col1], sheet.Cells[row2, col2]];
+            range.Merge();
+            range.Value2 = text ?? string.Empty;
+            range.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
             range.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
             range.WrapText = true;
             ReleaseCom(range);

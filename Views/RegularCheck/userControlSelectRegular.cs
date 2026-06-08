@@ -93,6 +93,8 @@ namespace RawMat.Views.RegularCheck
                 propQA.Invoice_No = dtg_reportSelect.Rows[e.RowIndex].Cells["Invoice No."].Value.ToString();
                 propQA.M_CODE = dtg_reportSelect.Rows[e.RowIndex].Cells["M-CODE"].Value.ToString();
                 propQA.Material_Name = dtg_reportSelect.Rows[e.RowIndex].Cells["Material Name"].Value.ToString();
+                propQA.Qty = GetCellValue(e.RowIndex, "Lot Size");
+                propQA.Vendor_Name = GetCellValue(e.RowIndex, "Vendor");
                 propQA.dtReceiveDate = DateTime.Parse(dtg_reportSelect.Rows[e.RowIndex].Cells["Receive Date"].Value.ToString());
 
 
@@ -506,6 +508,17 @@ namespace RawMat.Views.RegularCheck
             this.Controls.Clear();
             newControl.Dock = DockStyle.Fill;
             this.Controls.Add(newControl);
+        }
+
+        private string GetCellValue(int rowIndex, string columnName)
+        {
+            if (!dtg_reportSelect.Columns.Contains(columnName))
+            {
+                return string.Empty;
+            }
+
+            object value = dtg_reportSelect.Rows[rowIndex].Cells[columnName].Value;
+            return value == null || value == DBNull.Value ? string.Empty : value.ToString();
         }
 
         //private void ReleaseReportMutex(string mutexKey)

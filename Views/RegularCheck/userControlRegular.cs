@@ -67,12 +67,19 @@ namespace RawMat.Views.RegularCheck
             InitializeComponent();
             // ปิดการโฟกัสอัตโนมัติของ DataGridView
             dtg_regular.TabStop = false;
+            dtg_regular.DataError += dtg_regular_DataError;
 
             // ตั้งค่าให้ UserControl ไม่โฟกัสอัตโนมัติ
             this.SetStyle(ControlStyles.Selectable, false);
 
             // ปิดการรับโฟกัส
             this.TabStop = false;
+        }
+
+        private void dtg_regular_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         // เมธอดสำหรับรับ mutexKey จาก userControlSelectRegular
@@ -112,8 +119,11 @@ namespace RawMat.Views.RegularCheck
             propQA.EMP_ID = employee.EMP_CODE;
             propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? string.Empty;
 
-            // ✅ วนลูปผ่าน originalDataTable เพื่อให้แน่ใจว่าใช้ข้อมูลจากทุกหน้า
-            foreach (DataRow row in originalDataTable.Rows)
+            DataTable regularDataToSave = originalDataTable.Copy();
+
+            // ใช้ DataTable สำเนาสำหรับบันทึก เพราะคอลัมน์ EQUIPMENT_SERIAL บนหน้าจอใช้ serial text
+            // แต่ db_regular_data ต้องเก็บ EQUIPMENT_SERIAL_ID
+            foreach (DataRow row in regularDataToSave.Rows)
             {
                 propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
                 propQA.EQUIPMENT_TYPE_ID = row["EQUIPMENT_TYPE"]?.ToString();
@@ -121,14 +131,14 @@ namespace RawMat.Views.RegularCheck
                 if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
                 {
                     int id = conQA.InsertEquipmentSerial(propQA);
-                    row["EQUIPMENT_SERIAL"] = id; // ✅ อัปเดตค่า ID กลับไปที่ DataTable
+                    row["EQUIPMENT_SERIAL"] = id;
                 }
 
                 propQA.TOTAL_STATUS = (Convert.ToInt32(row["TOTAL_JUDGE"]?.ToString()) * Convert.ToInt32(propQA.TOTAL_STATUS)).ToString();
             }
 
             propQA.dtgRegData = new DataGridView();
-            propQA.dtgRegData.DataSource = originalDataTable;
+            propQA.dtgRegData.DataSource = regularDataToSave;
 
             //string mutexKey = $"Global\\ReportLock_{propQA.Report_No}_{propQA.process}";
             try 

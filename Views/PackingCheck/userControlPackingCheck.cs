@@ -200,6 +200,66 @@ namespace RawMat.Views.PackingCheck
             }
         }
 
+        private List<DataGridViewRow> GetEnteredPackingSizeRows()
+        {
+            return dtg_packing_size.Rows
+                .Cast<DataGridViewRow>()
+                .Where(row => !row.IsNewRow)
+                .ToList();
+        }
+
+        private bool HasCompletePackingSizeRows()
+        {
+            List<DataGridViewRow> rows = GetEnteredPackingSizeRows();
+            return rows.Any() && rows.All(row =>
+                HasPackingSizeCellValue(row, "VALUE") &&
+                HasPackingSizeCellValue(row, "PACK_COUNT"));
+        }
+
+        private int GetPackingSizeTotal()
+        {
+            int totalValue = 0;
+            foreach (DataGridViewRow row in GetEnteredPackingSizeRows())
+            {
+                int.TryParse(row.Cells["VALUE"].Value?.ToString(), out int value);
+                int.TryParse(row.Cells["PACK_COUNT"].Value?.ToString(), out int pack);
+                totalValue += value * pack;
+            }
+
+            return totalValue;
+        }
+
+        private bool ValidatePackingSizeInput()
+        {
+            if (!HasCompletePackingSizeRows())
+            {
+                dtg_packing_size.AllowUserToAddRows = true;
+                MessageBox.Show("กรุณากรอกข้อมูลในช่องรายละเอียด เนื่องจากเลือก OK กรุณากรอก Packing Size", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            int totalValue = GetPackingSizeTotal();
+            if (!int.TryParse(propQA.Qty, out int lotSize))
+            {
+                MessageBox.Show($"Lot Size ไม่ถูกต้อง ({propQA.Qty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (totalValue != lotSize)
+            {
+                MessageBox.Show($"ผลรวม {totalValue} ไม่เท่ากับ LotSize ({lotSize})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool HasPackingSizeCellValue(DataGridViewRow row, string columnName)
+        {
+            object value = row.Cells[columnName].Value;
+            return value != null && !string.IsNullOrWhiteSpace(value.ToString());
+        }
+
         private void bt_save_Click(object sender, EventArgs e)
         {
             var parentForm = this.FindForm() as frmMain;
@@ -339,15 +399,8 @@ namespace RawMat.Views.PackingCheck
             // Validation สำหรับ Method 3 เมื่อเลือก OK
             if (rb_ok_method3.Checked == true)
             {
-                if (employee.EMP_LEVEL == "1")
+                if (!ValidatePackingSizeInput())
                 {
-                    dtg_packing_size.AllowUserToAddRows = false;
-                }
-
-                if (dtg_packing_size.Rows.Count == 0 ||
-                    dtg_packing_size.Rows.Cast<DataGridViewRow>().Any(r => r.Cells.Cast<DataGridViewCell>().Any(c => c.Value == null || string.IsNullOrWhiteSpace(c.Value.ToString()))))
-                {
-                    MessageBox.Show("กรุณากรอกข้อมูลในช่องรายละเอียด เนื่องจากเลือก OK กรุณากรอก Packing Size", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
             }
@@ -485,10 +538,8 @@ namespace RawMat.Views.PackingCheck
             if (allOk)
             {
                 // Validation Packing Size
-                if (dtg_packing_size.Rows.Count == 0 ||
-                    dtg_packing_size.Rows.Cast<DataGridViewRow>().Any(r => r.Cells.Cast<DataGridViewCell>().Any(c => c.Value == null || string.IsNullOrWhiteSpace(c.Value.ToString()))))
+                if (!ValidatePackingSizeInput())
                 {
-                    MessageBox.Show("กรุณากรอกข้อมูล Packing Size ให้ครบถ้วน", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
@@ -646,9 +697,8 @@ namespace RawMat.Views.PackingCheck
 
                     propQA.dtLotNo = dtLotNo;
 
-                    if (dtg_packing_size.Rows.Count == 0 || dtg_packing_size.Rows.Cast<DataGridViewRow>().Any(r => r.Cells.Cast<DataGridViewCell>().Any(c => c.Value == null || string.IsNullOrWhiteSpace(c.Value.ToString()))))
+                    if (!ValidatePackingSizeInput())
                     {
-                        MessageBox.Show("กรุณากรอกข้อมูลในช่องรายละเอียด เนื่องจากเลือก OK กรุณากรอก Packing Size", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return false;
                     }
 
@@ -681,7 +731,8 @@ namespace RawMat.Views.PackingCheck
                             int intPackingSize = 0;
                             int intPackingSizeAll = 0;
 
-                            int rowCount = propQA.dtgPackingSize.Rows.Count;
+                            List<DataGridViewRow> packingSizeRows = GetEnteredPackingSizeRows();
+                            int rowCount = packingSizeRows.Count;
 
                             if (rowCount == 0)
                             {
@@ -693,7 +744,7 @@ namespace RawMat.Views.PackingCheck
                             {
 
                                 // Copy VALUE จากแต่ละ row ใน grid (user input ไว้ล่วงหน้า)
-                                foreach (DataGridViewRow row in propQA.dtgPackingSize.Rows)
+                                foreach (DataGridViewRow row in packingSizeRows)
                                 {
                                     intPackingSize = Convert.ToInt32(row.Cells["VALUE"].Value?.ToString() ?? "0");
                                     propQA.Packing_Size_Cal_List.Add(intPackingSize.ToString());
@@ -705,7 +756,7 @@ namespace RawMat.Views.PackingCheck
                             {
 
                                 //dtg_packing_size.Rows.Count
-                                foreach (DataGridViewRow row in propQA.dtgPackingSize.Rows)
+                                foreach (DataGridViewRow row in packingSizeRows)
                                 {
                                     propQA.VALUE = row.Cells["VALUE"].Value.ToString();
 
@@ -764,7 +815,7 @@ namespace RawMat.Views.PackingCheck
                                     int remainder = totalInspQty % rowCount;
 
                                     int current = 0;
-                                    foreach (DataGridViewRow row in propQA.dtgPackingSize.Rows)
+                                    foreach (DataGridViewRow row in packingSizeRows)
                                     {
                                         // ไม่ต้อง set VALUE ถ้าไม่ใช้
                                         intPackingSize = mean + (current < remainder ? 1 : 0);  // row แรก ๆ ได้ +1 ถ้ามีเศษ (ปัดขึ้นให้ครบ)

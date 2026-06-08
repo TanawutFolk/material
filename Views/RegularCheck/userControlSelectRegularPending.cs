@@ -47,6 +47,8 @@ namespace RawMat.Views.RegularCheck
                 propQA.Invoice_No = dtg_regularPending.Rows[e.RowIndex].Cells["Invoice No."].Value.ToString();
                 propQA.M_CODE = dtg_regularPending.Rows[e.RowIndex].Cells["M-CODE"].Value.ToString();
                 propQA.Material_Name = dtg_regularPending.Rows[e.RowIndex].Cells["Material Name"].Value.ToString();
+                propQA.Qty = GetCellValue(e.RowIndex, "Lot Size");
+                propQA.Vendor_Name = GetCellValue(e.RowIndex, "Vendor");
                 propQA.dtReceiveDate = DateTime.Parse(dtg_regularPending.Rows[e.RowIndex].Cells["Receive Date"].Value.ToString());
 
                 //if (dtg_regularPending.Columns[e.ColumnIndex].Name == "REF")
@@ -235,6 +237,17 @@ namespace RawMat.Views.RegularCheck
                 this.Controls.Add(usrRegPending);
 
             }
+        }
+
+        private string GetCellValue(int rowIndex, string columnName)
+        {
+            if (!dtg_regularPending.Columns.Contains(columnName))
+            {
+                return string.Empty;
+            }
+
+            object value = dtg_regularPending.Rows[rowIndex].Cells[columnName].Value;
+            return value == null || value == DBNull.Value ? string.Empty : value.ToString();
         }
     }
 }
