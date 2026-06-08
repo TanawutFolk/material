@@ -273,6 +273,30 @@ namespace RawMat.Controllers
             }
             return result;
         }
+
+        public DataTable GetNgModeList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.GetNgModeList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
         //------------------- Equipment
 
         public DataTable SearchRegularEquipmentSetting(SettingProperty dataItem)

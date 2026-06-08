@@ -112,6 +112,7 @@ namespace RawMat.Property
         public string QTY_NG { get; set; }
         public string COUNT { get; set; }
         public string NG_DETAIL { get; set; }
+        public string NG_MODE_ID { get; set; }
         public string PACKING_SIZE { get; set; }
         public string REMAIN_PACKING_SIZE { get; set; }
         public DataGridView dtg_ngMode {get;set;}

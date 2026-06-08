@@ -435,6 +435,20 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        public string GetNgModeList()
+        {
+            sql = @"
+                SELECT
+                    ID AS VALUE,
+                    NG_Mode AS TEXT
+                FROM info_ngmode
+                WHERE IFNULL(IsActive, 1) = 1
+                ORDER BY NG_Mode ASC;
+            ";
+
+            return sql;
+        }
+
         //-------------------------------------- Equipment
         public string SearchRegularEquipmentSetting(SettingProperty dataItem)
         {

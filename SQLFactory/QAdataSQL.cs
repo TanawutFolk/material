@@ -1537,6 +1537,16 @@ namespace RawMat.SQLFactory
             return $"'{text.Replace("'", "''")}'";
         }
 
+        private string ToSqlIntOrNull(object value)
+        {
+            if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return "NULL";
+            }
+
+            return int.TryParse(value.ToString(), out int number) ? number.ToString() : "NULL";
+        }
+
         public List<string> InsertDimensionData(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
@@ -1872,8 +1882,10 @@ namespace RawMat.SQLFactory
             foreach (DataRow row in dt.Rows)
             {
 
-                sql = $"INSERT INTO `db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{row["NG_DETAIL"].ToString()}', NOW(), NOW())";
+                string ngDetail = row.Table.Columns.Contains("NG_DETAIL") ? row["NG_DETAIL"].ToString().Replace("'", "''") : "";
+                string ngModeId = ToSqlIntOrNull(row.Table.Columns.Contains("NG_MODE_ID") ? row["NG_MODE_ID"] : null);
+                sql = $"INSERT INTO `db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
+                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{ngDetail}', {ngModeId}, NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;

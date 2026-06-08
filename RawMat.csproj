@@ -222,6 +222,7 @@
     <Compile Include="Utilities\MutexManager.cs" />
     <Compile Include="Utilities\NavigationService.cs" />
     <Compile Include="Utilities\NetworkInfoCls.cs" />
+    <Compile Include="Utilities\NgModeHelper.cs" />
     <Compile Include="Utilities\printerCls.cs" />
     <Compile Include="Views\AppearCheck\userControlAppear.cs">
       <SubType>UserControl</SubType>

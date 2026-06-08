@@ -111,6 +111,15 @@ namespace RawMat.Services
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
+
+        public OutputOnDbProperty GetNgModeList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetNgModeList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

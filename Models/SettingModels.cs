@@ -63,6 +63,13 @@ namespace RawMat.Models
             resultData = services.GetStrictnessLevelList();
             return resultData;
         }
+
+        public OutputOnDbProperty GetNgModeList()
+        {
+            resultData = services.GetNgModeList();
+            return resultData;
+        }
+
         //------------------- Equipment
 
         public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)

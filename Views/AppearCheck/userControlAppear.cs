@@ -69,11 +69,13 @@ namespace RawMat.Views.AppearCheck
 
         private int totalNgRequired = 0;  // เก็บ QTY_NG จากด้านซ้าย
         private bool isNgModeActive = false;
+        private DataTable ngModeList;
 
         public userControlAppear()
         {
 
             InitializeComponent();
+            ngModeList = NgModeHelper.LoadNgModeList();
             ResetCurrentTaskLabel();
 
             // เปิด Double Buffered ลดการกระพริบ/ภาพซ้อน
@@ -1520,6 +1522,7 @@ namespace RawMat.Views.AppearCheck
         {
             DataTable ngDt = new DataTable();
             ngDt.Columns.Add("QTY_NG", typeof(int));
+            ngDt.Columns.Add(NgModeHelper.ColumnName, typeof(string));
             ngDt.Columns.Add("NG_DETAIL", typeof(string));
             dtg_ngMode.DataSource = ngDt;
             ConfigureNgModeGridColumns();
@@ -1534,10 +1537,14 @@ namespace RawMat.Views.AppearCheck
                 dtg_ngMode.Columns["QTY_NG"].Width = 110;
             }
 
+            if (dtg_ngMode.Columns[NgModeHelper.ColumnName] != null)
+            {
+                NgModeHelper.ApplyComboBoxColumn(dtg_ngMode, ngModeList);
+            }
+
             if (dtg_ngMode.Columns["NG_DETAIL"] != null)
             {
-                dtg_ngMode.Columns["NG_DETAIL"].HeaderText = "อาการเสีย";
-                dtg_ngMode.Columns["NG_DETAIL"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dtg_ngMode.Columns["NG_DETAIL"].Visible = false;
             }
 
             dtg_ngMode.AllowUserToAddRows = false;
@@ -1595,7 +1602,9 @@ namespace RawMat.Views.AppearCheck
                 int qty = rowData["QTY_NG"] is DBNull ? 0 : Convert.ToInt32(rowData["QTY_NG"]);
                 sumNg += qty;
 
-                string mode = rowData["NG_DETAIL"] is DBNull ? "" : rowData["NG_DETAIL"].ToString().Trim();
+                string mode = rowData.Table.Columns.Contains(NgModeHelper.ColumnName) && rowData[NgModeHelper.ColumnName] != DBNull.Value
+                    ? rowData[NgModeHelper.ColumnName].ToString().Trim()
+                    : "";
                 if (qty > 0 && string.IsNullOrEmpty(mode))
                 {
                     hasEmptyMode = true;
@@ -1619,8 +1628,8 @@ namespace RawMat.Views.AppearCheck
                 // Highlight first empty MODE cell red
                 if (firstEmptyRowIndex >= 0)
                 {
-                    dtg_ngMode.Rows[firstEmptyRowIndex].Cells["NG_DETAIL"].Style.BackColor = Color.Red;
-                    dtg_ngMode.CurrentCell = dtg_ngMode.Rows[firstEmptyRowIndex].Cells["NG_DETAIL"];
+                    dtg_ngMode.Rows[firstEmptyRowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.Red;
+                    dtg_ngMode.CurrentCell = dtg_ngMode.Rows[firstEmptyRowIndex].Cells[NgModeHelper.ColumnName];
                     dtg_ngMode.BeginEdit(true);  // Enter edit mode
                 }
                 return;
@@ -1829,6 +1838,7 @@ namespace RawMat.Views.AppearCheck
             bool ngDetailsSuccess = true;
             if (qtyNG > 0)
             {
+                SyncAllNgDetailText();
                 propQA.dtg_ngMode = dtg_ngMode; // Set for controller
                 ngDetailsSuccess = conQA.InsertAppearPendingDetail(propQA);
                 if (!ngDetailsSuccess)
@@ -2348,6 +2358,7 @@ namespace RawMat.Views.AppearCheck
             // สร้าง DataTable ใหม่
             DataTable ngDt = new DataTable();
             ngDt.Columns.Add("QTY_NG", typeof(int));
+            ngDt.Columns.Add(NgModeHelper.ColumnName, typeof(string));
             ngDt.Columns.Add("NG_DETAIL", typeof(string));
 
             // เพิ่ม row ว่าง
@@ -2355,6 +2366,7 @@ namespace RawMat.Views.AppearCheck
             {
                 DataRow newRow = ngDt.NewRow();
                 newRow["QTY_NG"] = 0;
+                newRow[NgModeHelper.ColumnName] = string.Empty;
                 newRow["NG_DETAIL"] = string.Empty;
                 ngDt.Rows.Add(newRow);
             }
@@ -2409,6 +2421,7 @@ namespace RawMat.Views.AppearCheck
                     {
                         DataRow newRow = currentNgDt.NewRow();
                         newRow["QTY_NG"] = DBNull.Value;
+                        newRow[NgModeHelper.ColumnName] = string.Empty;
                         newRow["NG_DETAIL"] = string.Empty;
                         currentNgDt.Rows.Add(newRow);
                     }
@@ -2436,7 +2449,9 @@ namespace RawMat.Views.AppearCheck
             {
                 DataRow row = ngDt.Rows[i];
                 int qty = ParseInt(row["QTY_NG"]);
-                string detail = row["NG_DETAIL"] is DBNull ? "" : row["NG_DETAIL"].ToString().Trim();
+                string detail = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
+                    ? row[NgModeHelper.ColumnName].ToString().Trim()
+                    : "";
 
                 if (qty <= 0 && string.IsNullOrEmpty(detail))
                 {
@@ -2453,7 +2468,7 @@ namespace RawMat.Views.AppearCheck
                 if (string.IsNullOrEmpty(detail))
                 {
                     firstInvalidRowIndex = i;
-                    invalidColumnName = "NG_DETAIL";
+                    invalidColumnName = NgModeHelper.ColumnName;
                     break;
                 }
 
@@ -2491,6 +2506,37 @@ namespace RawMat.Views.AppearCheck
             dtg_ngMode.ClearSelection();
             dtg_ngMode.CurrentCell = cell;
             dtg_ngMode.BeginEdit(true);
+        }
+
+        private void SyncNgDetailText(DataRow row)
+        {
+            if (row == null || !row.Table.Columns.Contains(NgModeHelper.ColumnName) || !row.Table.Columns.Contains("NG_DETAIL"))
+            {
+                return;
+            }
+
+            string modeId = row[NgModeHelper.ColumnName] == DBNull.Value ? "" : row[NgModeHelper.ColumnName].ToString();
+            if (string.IsNullOrWhiteSpace(modeId))
+            {
+                row["NG_DETAIL"] = string.Empty;
+                return;
+            }
+
+            DataRow match = ngModeList?.AsEnumerable().FirstOrDefault(item => item["VALUE"].ToString() == modeId);
+            row["NG_DETAIL"] = match == null ? modeId : match["TEXT"].ToString();
+        }
+
+        private void SyncAllNgDetailText()
+        {
+            if (!(dtg_ngMode.DataSource is DataTable ngDt))
+            {
+                return;
+            }
+
+            foreach (DataRow row in ngDt.Rows)
+            {
+                SyncNgDetailText(row);
+            }
         }
 
         // Events สำหรับ dtg_ngMode
@@ -2542,6 +2588,7 @@ namespace RawMat.Views.AppearCheck
             DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
             DataRow newRow = ngDt.NewRow();
             newRow["QTY_NG"] = 0;
+            newRow[NgModeHelper.ColumnName] = string.Empty;
             newRow["NG_DETAIL"] = string.Empty;
             ngDt.Rows.Add(newRow);
         }
@@ -2586,7 +2633,7 @@ namespace RawMat.Views.AppearCheck
                 if (e.ColumnIndex == dtg_ngMode.Columns["QTY_NG"].Index && row["QTY_NG"] != DBNull.Value)
                 {
                     // Clear red for NG detail
-                    dtg_ngMode.Rows[e.RowIndex].Cells["NG_DETAIL"].Style.BackColor = Color.White;
+                    dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
 
                     // Defer focus to NG detail with timer to avoid reentrancy
                     System.Windows.Forms.Timer focusTimer = new System.Windows.Forms.Timer();
@@ -2596,12 +2643,12 @@ namespace RawMat.Views.AppearCheck
                         focusTimer.Stop();
                         focusTimer.Dispose();
 
-                        if (dtg_ngMode.Rows.Count > e.RowIndex && dtg_ngMode.Rows[e.RowIndex].Cells["NG_DETAIL"] != null)
+                        if (dtg_ngMode.Rows.Count > e.RowIndex && dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName] != null)
                         {
                             try
                             {
                                 dtg_ngMode.ClearSelection();
-                                dtg_ngMode.CurrentCell = dtg_ngMode.Rows[e.RowIndex].Cells["NG_DETAIL"];
+                                dtg_ngMode.CurrentCell = dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName];
                             }
                             catch
                             {
@@ -2612,15 +2659,16 @@ namespace RawMat.Views.AppearCheck
                     focusTimer.Start();
                 }
                 // If NG detail edited, check if complete and add row if needed
-                else if (e.ColumnIndex == dtg_ngMode.Columns["NG_DETAIL"].Index)
+                else if (e.ColumnIndex == dtg_ngMode.Columns[NgModeHelper.ColumnName].Index)
                 {
-                    string mode = row["NG_DETAIL"]?.ToString()?.Trim() ?? "";
+                    SyncNgDetailText(row);
+                    string mode = row[NgModeHelper.ColumnName]?.ToString()?.Trim() ?? "";
                     object qtyObj = row["QTY_NG"];
 
                     // Clear red if complete
                     if (qtyObj != DBNull.Value && Convert.ToInt32(qtyObj) > 0 && !string.IsNullOrEmpty(mode))
                     {
-                        dtg_ngMode.Rows[e.RowIndex].Cells["NG_DETAIL"].Style.BackColor = Color.White;
+                        dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
                         ClearAllRedHighlights();
                     }
 
@@ -2631,6 +2679,7 @@ namespace RawMat.Views.AppearCheck
                     {
                         DataRow newRow = ngDt.NewRow();
                         newRow["QTY_NG"] = DBNull.Value;
+                        newRow[NgModeHelper.ColumnName] = string.Empty;
                         newRow["NG_DETAIL"] = string.Empty;
                         ngDt.Rows.Add(newRow);
 
@@ -2661,7 +2710,9 @@ namespace RawMat.Views.AppearCheck
             {
                 DataRow row = ngDt.Rows[i];
                 int qty = row["QTY_NG"] is DBNull ? 0 : Convert.ToInt32(row["QTY_NG"]);
-                string mode = row["NG_DETAIL"] is DBNull ? "" : row["NG_DETAIL"].ToString().Trim();
+                string mode = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
+                    ? row[NgModeHelper.ColumnName].ToString().Trim()
+                    : "";
                 if (qty > 0 && string.IsNullOrEmpty(mode))
                 {
                     allModesFilled = false;
@@ -2741,7 +2792,7 @@ namespace RawMat.Views.AppearCheck
 
             var row = dtg_ngMode.Rows[e.RowIndex];
             var qtyCell = row.Cells["QTY_NG"].Value;
-            var modeCell = row.Cells["NG_DETAIL"].Value;
+            var modeCell = row.Cells[NgModeHelper.ColumnName].Value;
 
             if (qtyCell != null && int.TryParse(qtyCell.ToString(), out int qty) && qty > 0 &&
                 string.IsNullOrWhiteSpace(modeCell?.ToString()))
@@ -2756,7 +2807,7 @@ namespace RawMat.Views.AppearCheck
         {
             foreach (DataGridViewRow row in dtg_ngMode.Rows)
             {
-                row.Cells["NG_DETAIL"].Style.BackColor = Color.White;
+                row.Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
             }
         }
 
