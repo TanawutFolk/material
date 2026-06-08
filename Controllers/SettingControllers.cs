@@ -297,6 +297,165 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable SearchNgModeSettingList(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.SearchNgModeSettingList(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
+        public int CountNgModeSettingByName(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.CountNgModeSettingByName(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0;
+            }
+
+            if (result == null || result.Rows.Count == 0)
+            {
+                return 0;
+            }
+
+            return Convert.ToInt32(result.Rows[0]["CNT"]);
+        }
+
+        public Boolean InsertNgModeSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.InsertNgModeSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
+        public Boolean UpdateNgModeSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.UpdateNgModeSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
+        public Boolean DeleteNgModeSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.DeleteNgModeSetting(dataItem);
+
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
+        public Boolean SaveNgModeSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                int cnt = CountNgModeSettingByName(dataItem);
+
+                if (cnt > 0)
+                {
+                    bl = UpdateNgModeSetting(dataItem);
+                }
+                else
+                {
+                    bl = InsertNgModeSetting(dataItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
         //------------------- Equipment
 
         public DataTable SearchRegularEquipmentSetting(SettingProperty dataItem)

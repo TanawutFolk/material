@@ -1531,21 +1531,40 @@ namespace RawMat.Views.AppearCheck
 
         private void ConfigureNgModeGridColumns()
         {
-            if (dtg_ngMode.Columns["QTY_NG"] != null)
-            {
-                dtg_ngMode.Columns["QTY_NG"].HeaderText = "จำนวนเสีย";
-                dtg_ngMode.Columns["QTY_NG"].Width = 110;
-            }
+            dtg_ngMode.AutoGenerateColumns = false;
+            dtg_ngMode.Columns.Clear();
 
-            if (dtg_ngMode.Columns[NgModeHelper.ColumnName] != null)
+            DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn
             {
-                NgModeHelper.ApplyComboBoxColumn(dtg_ngMode, ngModeList);
-            }
+                Name = "QTY_NG",
+                HeaderText = "จำนวนเสีย",
+                DataPropertyName = "QTY_NG",
+                Width = 110
+            };
+            dtg_ngMode.Columns.Add(qtyColumn);
 
-            if (dtg_ngMode.Columns["NG_DETAIL"] != null)
+            DataGridViewComboBoxColumn ngModeColumn = new DataGridViewComboBoxColumn
             {
-                dtg_ngMode.Columns["NG_DETAIL"].Visible = false;
-            }
+                Name = NgModeHelper.ColumnName,
+                HeaderText = "อาการเสีย",
+                DataPropertyName = NgModeHelper.ColumnName,
+                DataSource = ngModeList,
+                DisplayMember = "TEXT",
+                ValueMember = "VALUE",
+                DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
+                FlatStyle = FlatStyle.Flat,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            };
+            dtg_ngMode.Columns.Add(ngModeColumn);
+
+            DataGridViewTextBoxColumn detailColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "NG_DETAIL",
+                HeaderText = "NG_DETAIL",
+                DataPropertyName = "NG_DETAIL",
+                Visible = false
+            };
+            dtg_ngMode.Columns.Add(detailColumn);
 
             dtg_ngMode.AllowUserToAddRows = false;
             dtg_ngMode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -2371,11 +2390,8 @@ namespace RawMat.Views.AppearCheck
                 ngDt.Rows.Add(newRow);
             }
 
-            // Set DataSource หลัง reset เสร็จ
+            dtg_ngMode.AutoGenerateColumns = false;
             dtg_ngMode.DataSource = ngDt;
-
-            // Auto-generate columns จาก DataTable
-            dtg_ngMode.AutoGenerateColumns = true;
             ConfigureNgModeGridColumns();
 
             // Make editable

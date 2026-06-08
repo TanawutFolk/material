@@ -78,5 +78,11 @@ namespace RawMat.Property
         public string Equipment_Serial { get; set; }
         public string Search_Equipment_Type { get; set; }
         public string Search_Equipment_Name { get; set; }
+
+        // --- NG Mode Setting ---
+        public string NG_Mode_ID { get; set; }
+        public string NG_Mode { get; set; }
+        public string Search_NG_Mode { get; set; }
+        public string IsActive { get; set; }
     }
 }

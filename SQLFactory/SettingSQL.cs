@@ -449,6 +449,82 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        public string SearchNgModeSettingList(SettingProperty dataItem)
+        {
+            string ngModeSearch = dataItem == null ? "" : CleanSqlText(dataItem.Search_NG_Mode);
+
+            sql = @"
+                SELECT
+                    ID AS `ID`,
+                    NG_Mode AS `NG Mode`,
+                    CASE WHEN IFNULL(IsActive, 1) = 1 THEN 'Active' ELSE 'InActive' END AS `Status`,
+                    Create_Date AS `Create Date`
+                FROM info_ngmode
+                WHERE 1=1 
+                AND IsActive = 1";
+
+            if (!string.IsNullOrWhiteSpace(ngModeSearch))
+            {
+                sql += $" AND NG_Mode LIKE '%{ngModeSearch}%' ";
+            }
+
+            sql += " ORDER BY IFNULL(IsActive, 1) DESC, NG_Mode ASC;";
+            return sql;
+        }
+
+        public string CountNgModeSettingByName(SettingProperty dataItem)
+        {
+            sql = @"
+                SELECT COUNT(*) AS CNT
+                FROM info_ngmode
+                WHERE NG_Mode = dataItem.NG_Mode;";
+
+            sql = sql.Replace("dataItem.NG_Mode", ToSqlTextOrNull(dataItem.NG_Mode));
+            return sql;
+        }
+
+        public string InsertNgModeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                INSERT INTO info_ngmode
+                (
+                    NG_Mode,
+                    IsActive,
+                    Create_Date
+                )
+                VALUES
+                (
+                    dataItem.NG_Mode,
+                    1,
+                    NOW()
+                );";
+
+            sql = sql.Replace("dataItem.NG_Mode", ToSqlTextOrNull(dataItem.NG_Mode));
+            return sql;
+        }
+
+        public string UpdateNgModeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                UPDATE info_ngmode
+                SET IsActive = 1
+                WHERE NG_Mode = dataItem.NG_Mode;";
+
+            sql = sql.Replace("dataItem.NG_Mode", ToSqlTextOrNull(dataItem.NG_Mode));
+            return sql;
+        }
+
+        public string DeleteNgModeSetting(SettingProperty dataItem)
+        {
+            sql = @"
+                UPDATE info_ngmode
+                SET IsActive = 0
+                WHERE ID = dataItem.NG_Mode_ID;";
+
+            sql = sql.Replace("dataItem.NG_Mode_ID", ToSqlSmallIntOrNull(dataItem.NG_Mode_ID));
+            return sql;
+        }
+
         //-------------------------------------- Equipment
         public string SearchRegularEquipmentSetting(SettingProperty dataItem)
         {

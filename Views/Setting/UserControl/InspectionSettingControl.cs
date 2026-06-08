@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace RawMat.Views.Setting
 {
-    public partial class InspectionSettingControl : UserControl
+    public partial class InspectionSettingControl : System.Windows.Forms.UserControl
     {
         private readonly SettingControllers _controller = new SettingControllers();
 

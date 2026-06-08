@@ -1,4 +1,4 @@
-using RawMat.Controllers;
+﻿using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Views.Setting.form;
 using System;
@@ -7,17 +7,17 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace RawMat.Views.Setting
+namespace RawMat.Views.Setting.UserControl
 {
-    public partial class EqupmentSetingControl : System.Windows.Forms.UserControl
+    public partial class NgModeSettingControl : System.Windows.Forms.UserControl
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
         private const string ColDelete = "Delete";
-        private const string ColSerialId = "Serial ID";
-        private const string ColEquipmentType = "Equipment Type";
-        private const string ColEquipmentName = "Equipment Name";
-        private const string ColEquipmentSerial = "Equipment Serial";
+        private const string ColId = "ID";
+        private const string ColNgMode = "NG Mode";
+        private const string ColStatus = "Status";
+        private const string ColCreateDate = "Create Date";
 
         private static readonly Color HeaderBackColor = Color.ForestGreen;
         private static readonly Color HeaderForeColor = Color.White;
@@ -27,18 +27,19 @@ namespace RawMat.Views.Setting
         private bool _gridConfigured;
         private bool _isLoadingData;
 
-        public EqupmentSetingControl()
+        public NgModeSettingControl()
         {
             InitializeComponent();
 
-            Load += EqupmentSetingControl_Load;
+            Load += NgModeSettingControl_Load;
             btnSearch.Click += btnSearch_Click;
             btnClear.Click += btnClear_Click;
-            btnAddNewEquipment.Click += btnAddNewEquipment_Click;
+            btnAddNewNgMode.Click += btnAddNewNgMode_Click;
             dtgEmployeeSetting.CellContentClick += dtgEmployeeSetting_CellContentClick;
+            txtNgModeSearch.Text = "";
         }
 
-        private void EqupmentSetingControl_Load(object sender, EventArgs e)
+        private void NgModeSettingControl_Load(object sender, EventArgs e)
         {
             ConfigureGrid();
             LoadData();
@@ -90,9 +91,9 @@ namespace RawMat.Views.Setting
             btnSearch.Enabled = false;
             Cursor = Cursors.WaitCursor;
 
-            string searchEquipmentName = txtMCodeSearch.Text.Trim();
+            string searchNgMode = txtNgModeSearch.Text.Trim();
 
-            Task.Run(() => FetchData(searchEquipmentName))
+            Task.Run(() => FetchData(searchNgMode))
                 .ContinueWith(task =>
                 {
                     if (IsDisposed || Disposing) return;
@@ -102,7 +103,7 @@ namespace RawMat.Views.Setting
                         if (task.IsFaulted)
                         {
                             MessageBox.Show(
-                                task.Exception?.GetBaseException().Message ?? "Load equipment setting failed.",
+                                task.Exception?.GetBaseException().Message ?? "Load NG Mode setting failed.",
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
@@ -118,14 +119,14 @@ namespace RawMat.Views.Setting
                 }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private DataTable FetchData(string searchEquipmentName)
+        private DataTable FetchData(string searchNgMode)
         {
             var filter = new SettingProperty
             {
-                Search_Equipment_Name = searchEquipmentName
+                Search_NG_Mode = searchNgMode
             };
 
-            return _controller.SearchEquipmentTypeSettingList(filter);
+            return _controller.SearchNgModeSettingList(filter);
         }
 
         private void BindGrid(DataTable dt)
@@ -164,16 +165,29 @@ namespace RawMat.Views.Setting
             dtgEmployeeSetting.Columns.Insert(0, btn);
         }
 
+        private void SetColumnVisible(string name, bool visible)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null)
+                col.Visible = visible;
+        }
+
         private void ApplyColumnFormat()
         {
+            // โชว์ Delete + NG Mode
+            SetColumnVisible(ColDelete, true);
+            SetColumnVisible(ColNgMode, true);
+
+            // ซ่อนอันอื่น
+            SetColumnVisible(ColId, false);
+            SetColumnVisible(ColStatus, false);
+            SetColumnVisible(ColCreateDate, false);
+
             SetColumnWidth(ColDelete, 80);
-            SetColumnVisible(ColSerialId, false);
-            SetColumnVisible(ColEquipmentType, false);
-            SetColumnFill(ColEquipmentName, 55);
-            SetColumnFill(ColEquipmentSerial, 45);
+            SetColumnFill(ColNgMode, 100);
+
             SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
-            SetColumnAlignment(ColEquipmentName, DataGridViewContentAlignment.MiddleCenter);
-            SetColumnAlignment(ColEquipmentSerial, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColNgMode, DataGridViewContentAlignment.MiddleCenter);
         }
 
         private DataGridViewColumn FindColumn(string name) =>
@@ -201,12 +215,6 @@ namespace RawMat.Views.Setting
             }
         }
 
-        private void SetColumnVisible(string name, bool visible)
-        {
-            DataGridViewColumn col = FindColumn(name);
-            if (col != null) col.Visible = visible;
-        }
-
         private void SetColumnAlignment(string name, DataGridViewContentAlignment alignment)
         {
             DataGridViewColumn col = FindColumn(name);
@@ -217,13 +225,13 @@ namespace RawMat.Views.Setting
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            txtMCodeSearch.Text = "";
+            txtNgModeSearch.Text = "";
             LoadData();
         }
 
-        private void btnAddNewEquipment_Click(object sender, EventArgs e)
+        private void btnAddNewNgMode_Click(object sender, EventArgs e)
         {
-            using (var frm = new frmAddEquipment())
+            using (var frm = new frmAddNewNgMode())
             {
                 if (frm.ShowDialog(this) == DialogResult.OK)
                     LoadData();
@@ -238,14 +246,14 @@ namespace RawMat.Views.Setting
             if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColDelete)
                 return;
 
-            string equipmentType = GetEquipmentTypeFromRow(e.RowIndex);
-            string equipmentName = GetEquipmentNameFromRow(e.RowIndex);
-            string equipmentSerialId = GetEquipmentSerialIdFromRow(e.RowIndex);
+            string id = GetCellText(e.RowIndex, ColId);
+            string ngMode = GetCellText(e.RowIndex, ColNgMode);
+            string status = GetCellText(e.RowIndex, ColStatus);
 
-            if (string.IsNullOrWhiteSpace(equipmentType))
+            if (string.IsNullOrWhiteSpace(id) || status.Equals("InActive", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            using (var frm = new frmConfirm("Are you sure you want to delete ?"))
+            using (var frm = new frmConfirm($"Delete NG Mode '{ngMode}' ?"))
             {
                 if (frm.ShowDialog(this) != DialogResult.Yes)
                     return;
@@ -253,28 +261,20 @@ namespace RawMat.Views.Setting
 
             var dataItem = new SettingProperty
             {
-                Equipment_Type = equipmentType,
-                Equipment_Name = equipmentName,
-                Equipment_Serial_ID = equipmentSerialId
+                NG_Mode_ID = id
             };
 
-            if (!_controller.DeleteEquipmentTypeSetting(dataItem))
+            if (!_controller.DeleteNgModeSetting(dataItem))
             {
-                MessageBox.Show("Delete Equipment Setting Failed", "Error",
+                MessageBox.Show("Delete NG Mode Setting Failed", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            MessageBox.Show("Delete Equipment Setting", "Success",
+            MessageBox.Show("Delete NG Mode Setting", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             LoadData();
         }
-
-        private string GetEquipmentTypeFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentType);
-
-        private string GetEquipmentNameFromRow(int rowIndex) => GetCellText(rowIndex, ColEquipmentName);
-
-        private string GetEquipmentSerialIdFromRow(int rowIndex) => GetCellText(rowIndex, ColSerialId);
 
         private string GetCellText(int rowIndex, string columnName)
         {

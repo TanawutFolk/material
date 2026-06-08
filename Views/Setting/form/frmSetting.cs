@@ -39,7 +39,13 @@ namespace RawMat.Views.Setting
             SetActiveButton(btnEquipmentSetting);
         }
 
-        private void ShowContent(UserControl control)
+        private void ShowNgModeSetting()
+        {
+            ShowContent(new RawMat.Views.Setting.UserControl.NgModeSettingControl());
+            SetActiveButton(btnNgModeSetting);
+        }
+
+        private void ShowContent(System.Windows.Forms.UserControl control)
         {
             pn_Content.SuspendLayout();
             try
@@ -78,5 +84,6 @@ namespace RawMat.Views.Setting
         private void btn_InspectionSetting_Click(object sender, EventArgs e) => ShowInspectionSetting();
         private void btn_EmployeeSetting_Click(object sender, EventArgs e) => ShowEmployeeSetting();
         private void btnEquipmentSetting_Click(object sender, EventArgs e) => ShowEquipmentSetting();
+        private void btnNgModeSetting_Click(object sender, EventArgs e) => ShowNgModeSetting();
     }
 }

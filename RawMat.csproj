@@ -493,6 +493,12 @@
     <Compile Include="Views\Setting\form\frmAddEquipment.Designer.cs">
       <DependentUpon>frmAddEquipment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Setting\form\frmAddNewNgMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\form\frmAddNewNgMode.Designer.cs">
+      <DependentUpon>frmAddNewNgMode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Setting\UserControl\InspectionSettingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -510,6 +516,12 @@
     </Compile>
     <Compile Include="Views\Setting\UserControl\EqupmentSetingControl.Designer.cs">
       <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\NgModeSettingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Setting\UserControl\NgModeSettingControl.Designer.cs">
+      <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
       <DependentUpon>userControlAppear.cs</DependentUpon>
@@ -651,6 +663,9 @@
     <EmbeddedResource Include="Views\Setting\form\frmAddEquipment.resx">
       <DependentUpon>frmAddEquipment.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\form\frmAddNewNgMode.resx">
+      <DependentUpon>frmAddNewNgMode.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Setting\UserControl\EqupmentSetingControl.resx">
       <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -659,6 +674,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Setting\UserControl\EmployeeSettingControl.resx">
       <DependentUpon>EmployeeSettingControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Setting\UserControl\NgModeSettingControl.resx">
+      <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

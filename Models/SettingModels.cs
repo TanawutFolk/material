@@ -70,6 +70,36 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchNgModeSettingList(SettingProperty dataItem)
+        {
+            resultData = services.SearchNgModeSettingList(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty CountNgModeSettingByName(SettingProperty dataItem)
+        {
+            resultData = services.CountNgModeSettingByName(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty InsertNgModeSetting(SettingProperty dataItem)
+        {
+            resultData = services.InsertNgModeSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty UpdateNgModeSetting(SettingProperty dataItem)
+        {
+            resultData = services.UpdateNgModeSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty DeleteNgModeSetting(SettingProperty dataItem)
+        {
+            resultData = services.DeleteNgModeSetting(dataItem);
+            return resultData;
+        }
+
         //------------------- Equipment
 
         public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)

@@ -19,6 +19,7 @@
         {
             this.pn_SettingMenu = new System.Windows.Forms.Panel();
             this.pn_buttonSwap = new System.Windows.Forms.Panel();
+            this.btnNgModeSetting = new System.Windows.Forms.Button();
             this.btnEquipmentSetting = new System.Windows.Forms.Button();
             this.btn_InspectionSetting = new System.Windows.Forms.Button();
             this.btn_EmployeeSetting = new System.Windows.Forms.Button();
@@ -41,6 +42,7 @@
             // 
             // pn_buttonSwap
             // 
+            this.pn_buttonSwap.Controls.Add(this.btnNgModeSetting);
             this.pn_buttonSwap.Controls.Add(this.btnEquipmentSetting);
             this.pn_buttonSwap.Controls.Add(this.btn_InspectionSetting);
             this.pn_buttonSwap.Controls.Add(this.btn_EmployeeSetting);
@@ -48,6 +50,19 @@
             this.pn_buttonSwap.Name = "pn_buttonSwap";
             this.pn_buttonSwap.Size = new System.Drawing.Size(136, 229);
             this.pn_buttonSwap.TabIndex = 4;
+            // 
+            // btnNgModeSetting
+            // 
+            this.btnNgModeSetting.BackColor = System.Drawing.Color.White;
+            this.btnNgModeSetting.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnNgModeSetting.Font = new System.Drawing.Font("Microsoft YaHei", 11.25F, System.Drawing.FontStyle.Bold);
+            this.btnNgModeSetting.Location = new System.Drawing.Point(-6, 158);
+            this.btnNgModeSetting.Name = "btnNgModeSetting";
+            this.btnNgModeSetting.Size = new System.Drawing.Size(130, 51);
+            this.btnNgModeSetting.TabIndex = 5;
+            this.btnNgModeSetting.Text = "NG Mode";
+            this.btnNgModeSetting.UseVisualStyleBackColor = false;
+            this.btnNgModeSetting.Click += new System.EventHandler(this.btnNgModeSetting_Click);
             // 
             // btnEquipmentSetting
             // 
@@ -139,5 +154,6 @@
         private System.Windows.Forms.Button btn_EmployeeSetting;
         private System.Windows.Forms.Panel pn_buttonSwap;
         private System.Windows.Forms.Button btnEquipmentSetting;
+        private System.Windows.Forms.Button btnNgModeSetting;
     }
 }

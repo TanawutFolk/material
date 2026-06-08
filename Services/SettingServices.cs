@@ -120,6 +120,46 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchNgModeSettingList(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchNgModeSettingList(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty CountNgModeSettingByName(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.CountNgModeSettingByName(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty InsertNgModeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.InsertNgModeSetting(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty UpdateNgModeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateNgModeSetting(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty DeleteNgModeSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.DeleteNgModeSetting(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchRegularEquipmentSetting(SettingProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
