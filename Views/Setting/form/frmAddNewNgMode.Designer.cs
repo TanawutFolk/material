@@ -131,7 +131,12 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.label11);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmAddNewNgMode";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "frmAddNewNgMode";
             this.ResumeLayout(false);
             this.PerformLayout();

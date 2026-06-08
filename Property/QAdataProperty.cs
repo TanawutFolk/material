@@ -111,6 +111,7 @@ namespace RawMat.Property
         public string QTY_OK { get; set; }
         public string QTY_NG { get; set; }
         public string COUNT { get; set; }
+        public string APPEARANCE_ID { get; set; }
         public string NG_DETAIL { get; set; }
         public string NG_MODE_ID { get; set; }
         public string PACKING_SIZE { get; set; }

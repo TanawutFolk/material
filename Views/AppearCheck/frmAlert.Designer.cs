@@ -95,7 +95,7 @@
             this.Name = "frmAlert";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "frmAlert";
+            this.Text = "แจ้งเตือนอย่าลืมการทำงาน";
             ((System.ComponentModel.ISupportInitialize)(this.pcMovePrones)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pcPrintLabel)).EndInit();
             this.ResumeLayout(false);

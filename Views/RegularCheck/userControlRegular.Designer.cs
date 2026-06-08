@@ -32,6 +32,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlRegular));
             this.lb_regularNo = new System.Windows.Forms.Label();
             this.dtg_regular = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.lb_top = new System.Windows.Forms.Label();
@@ -50,9 +51,9 @@
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
             this.picbox_reg = new System.Windows.Forms.PictureBox();
             this.lb_lotNo = new System.Windows.Forms.Label();
-            this.bt_back = new System.Windows.Forms.Button();
             this.cb_lotNo = new System.Windows.Forms.ComboBox();
             this.lb_TotalCavity = new System.Windows.Forms.Label();
+            this.bt_back = new Bunifu.Framework.UI.BunifuFlatButton();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_regular)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_cavity)).BeginInit();
             this.gb_cavity.SuspendLayout();
@@ -324,16 +325,6 @@
             this.lb_lotNo.TabIndex = 53;
             this.lb_lotNo.Text = "Lot No. : ";
             // 
-            // bt_back
-            // 
-            this.bt_back.Location = new System.Drawing.Point(6, 3);
-            this.bt_back.Name = "bt_back";
-            this.bt_back.Size = new System.Drawing.Size(169, 34);
-            this.bt_back.TabIndex = 54;
-            this.bt_back.Text = "Back";
-            this.bt_back.UseVisualStyleBackColor = true;
-            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
-            // 
             // cb_lotNo
             // 
             this.cb_lotNo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -354,15 +345,50 @@
             this.lb_TotalCavity.TabIndex = 74;
             this.lb_TotalCavity.Text = "Total Cavity : XXXXXXXXXXX";
             // 
+            // bt_back
+            // 
+            this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bt_back.BorderRadius = 0;
+            this.bt_back.ButtonText = "ย้อนกลับ";
+            this.bt_back.DisabledColor = System.Drawing.Color.Gray;
+            this.bt_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Iconcolor = System.Drawing.Color.Transparent;
+            this.bt_back.Iconimage = null;
+            this.bt_back.Iconimage_right = ((System.Drawing.Image)(resources.GetObject("bt_back.Iconimage_right")));
+            this.bt_back.Iconimage_right_Selected = null;
+            this.bt_back.Iconimage_Selected = null;
+            this.bt_back.IconMarginLeft = 0;
+            this.bt_back.IconMarginRight = 0;
+            this.bt_back.IconRightVisible = true;
+            this.bt_back.IconRightZoom = 0D;
+            this.bt_back.IconVisible = true;
+            this.bt_back.IconZoom = 56D;
+            this.bt_back.IsTab = false;
+            this.bt_back.Location = new System.Drawing.Point(12, 6);
+            this.bt_back.Name = "bt_back";
+            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
+            this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
+            this.bt_back.selected = false;
+            this.bt_back.Size = new System.Drawing.Size(143, 31);
+            this.bt_back.TabIndex = 91;
+            this.bt_back.Text = "ย้อนกลับ";
+            this.bt_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.bt_back.Textcolor = System.Drawing.Color.White;
+            this.bt_back.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
+            // 
             // userControlRegular
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.lb_TotalCavity);
             this.Controls.Add(this.cb_lotNo);
-            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.lb_lotNo);
             this.Controls.Add(this.bt_next);
             this.Controls.Add(this.lb_sampName);
@@ -411,8 +437,8 @@
         private System.Windows.Forms.Button bt_prev;
         private System.Windows.Forms.Button bt_next;
         private System.Windows.Forms.Label lb_lotNo;
-        private System.Windows.Forms.Button bt_back;
         private System.Windows.Forms.ComboBox cb_lotNo;
         private System.Windows.Forms.Label lb_TotalCavity;
+        private Bunifu.Framework.UI.BunifuFlatButton bt_back;
     }
 }

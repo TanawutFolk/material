@@ -318,8 +318,6 @@ namespace RawMat.Views.AppearCheck
 
         private void dtg_packing_size_appear_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-
-            
             dtg_packing_size_appear.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dtg_packing_size_appear.AllowUserToAddRows = false;
             dtg_packing_size_appear.ReadOnly = true;
@@ -338,13 +336,12 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_packing_size_appear.Columns["CUMULATIVE_QTY"] != null)
             {
-                dtg_packing_size_appear.Columns["CUMULATIVE_QTY"].HeaderText = "ตรวจสะสม";
-                dtg_packing_size_appear.Columns["CUMULATIVE_QTY"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["CUMULATIVE_QTY"].Visible = false;
             }
 
             if (dtg_packing_size_appear.Columns["QTY_SELECT"] != null)
             {
-                dtg_packing_size_appear.Columns["QTY_SELECT"].HeaderText = "ต้องหยิบ";
+                dtg_packing_size_appear.Columns["QTY_SELECT"].HeaderText = "จำนวนตรวจสอบ / Packing";
                 dtg_packing_size_appear.Columns["QTY_SELECT"].ReadOnly = true;
             }
 
@@ -429,13 +426,52 @@ namespace RawMat.Views.AppearCheck
 
             dtg_packing_size_appear.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dtg_packing_size_appear.ColumnHeadersHeight = 42;
+            SetPackingColumnDisplay("DISPLAY_NO", 0, 55);
+            SetPackingColumnDisplay("PACKING_VALUE", 1, 90);
+            SetPackingColumnDisplay("QTY_SELECT", 2, 150);
+            SetPackingColumnDisplay("STATUS_TEXT", 3, 90);
+
             foreach (DataGridViewColumn column in dtg_packing_size_appear.Columns)
             {
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
+            UpdatePackingCountLabel();
             dtg_packing_size_appear.Refresh(); // Force update UI
             //dtg_packing_size_appear.Columns["NUMBER"].Visible = false;
+        }
+
+        private void SetPackingColumnDisplay(string columnName, int displayIndex, float fillWeight)
+        {
+            if (!dtg_packing_size_appear.Columns.Contains(columnName))
+            {
+                return;
+            }
+
+            DataGridViewColumn column = dtg_packing_size_appear.Columns[columnName];
+            column.Visible = true;
+            column.DisplayIndex = displayIndex;
+            column.FillWeight = fillWeight;
+        }
+
+        private void UpdatePackingCountLabel()
+        {
+            int inspectedQty = 0;
+            int totalQty = 0;
+
+            if (dtg_packing_size_appear.DataSource is DataTable dt)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    int plannedQty = ParseInt(row["QTY_SELECT"]);
+                    int remainingQty = ParseInt(row["REMAIN_PACKING_SIZE"]);
+                    totalQty += plannedQty;
+                    inspectedQty += Math.Max(plannedQty - remainingQty, 0);
+                }
+            }
+
+            lbCount.Text = $"{inspectedQty} / {totalQty}";
         }
 
         // Event Handler สำหรับ Timer
@@ -753,6 +789,11 @@ namespace RawMat.Views.AppearCheck
                     savedRow["APPEARANCE_DATE"]?.ToString() ?? "",
                     ParseInt(savedRow["COUNT"]));
 
+                if (savedData.Columns.Contains("EMP_ID"))
+                {
+                    dataSource.Rows[dataSource.Rows.Count - 1]["EMP_ID"] = savedRow["EMP_ID"]?.ToString() ?? "";
+                }
+
                 rowNo++;
             }
 
@@ -826,22 +867,22 @@ namespace RawMat.Views.AppearCheck
             row["APPEARANCE_DATE"] = appearanceDate;
             row["BATCH"] = propQA.BATCH;
             row["COUNT"] = count;
-            row["JUDGE"] = GetJudgeDisplayText(judge);
+            row["JUDGE"] = GetJudgeDisplayText(judge, qtyOk, qtyNg);
             row["EMP_ID"] = propQA.EMP_ID;
             dataSource.Rows.Add(row);
         }
 
-        private string GetJudgeDisplayText(string judge)
+        private string GetJudgeDisplayText(string judge, int qtyOk = 0, int qtyNg = 0)
         {
             string value = judge?.Trim() ?? "";
             if (value == "1")
             {
-                return "OK";
+                return qtyOk > 0 ? $"Accept{Environment.NewLine}{qtyOk} pcs." : "Accept";
             }
 
             if (value == "0")
             {
-                return "NG";
+                return "Pending";
             }
 
             return value;
@@ -1005,12 +1046,12 @@ namespace RawMat.Views.AppearCheck
                     int remainQty = Math.Max(planQty - savedQty, 0);
                     bool isSelectable = remainQty > 0;
                     cumulativeQty += savedQty;
-                    string statusText = remainQty <= 0 ? "ตรวจแล้ว" : (savedQty > 0 ? "กำลังทำ" : "รอตรวจ");
+                    string statusText = remainQty <= 0 ? "เสร็จแล้ว" : "รอตรวจ";
 
                     DataRow expandedRow = expandedDt.NewRow();
                     expandedRow["DISPLAY_NO"] = packSeq;
                     expandedRow["PACKING_VALUE"] = packingValue;
-                    expandedRow["CUMULATIVE_QTY"] = statusText == "รอตรวจ" ? DBNull.Value : (object)cumulativeQty;
+                    expandedRow["CUMULATIVE_QTY"] = savedQty > 0 ? (object)cumulativeQty : DBNull.Value;
                     expandedRow["QTY_SELECT"] = planQty;
                     expandedRow["QTY_OK"] = savedOk > 0 ? savedOk.ToString() : "";
                     expandedRow["QTY_NG"] = savedNg > 0 ? savedNg.ToString() : "";
@@ -1041,18 +1082,25 @@ namespace RawMat.Views.AppearCheck
             int cumulativeQty = ParseIntSafe(selectedRow.Cells["CUMULATIVE_QTY"].Value);
             int qtySelect = ParseIntSafe(selectedRow.Cells["QTY_SELECT"].Value);
             int count = ParseIntSafe(selectedRow.Cells["COUNT"].Value);
+            bool isAllAppearance = IsAllAppearanceMode();
 
             AddAppearancePlanRow(
                 dataSource,
                 displayNo,
                 cumulativeQty,
-                qtySelect,
+                isAllAppearance ? 0 : qtySelect,
                 0,
                 0,
                 "",
                 "INPUT",
                 DateTime.Now.ToString("dd-MMM-yyyy"),
                 count);
+
+            if (isAllAppearance && dataSource.Rows.Count > 0)
+            {
+                dataSource.Rows[0]["QTY_SELECT"] = "";
+                currentEntryMaxQty = qtySelect;
+            }
 
             if (selectedRow.Cells["JUDGE_LOT_SIZE"].Value != null)
             {
@@ -1068,7 +1116,8 @@ namespace RawMat.Views.AppearCheck
             int displayNo = ParseIntSafe(selectedRow.Cells["DISPLAY_NO"].Value);
             int count = ParseIntSafe(selectedRow.Cells["COUNT"].Value);
             int remainingQty = ParseIntSafe(selectedRow.Cells["REMAIN_PACKING_SIZE"].Value);
-            int inputQty = CalculateEntryLimitForRemaining(remainingQty);
+            bool isAllAppearance = IsAllAppearanceMode();
+            int inputQty = isAllAppearance ? remainingQty : CalculateEntryLimitForRemaining(remainingQty);
             int cumulativeQty = 0;
 
             IEnumerable<DataRow> savedRows = Enumerable.Empty<DataRow>();
@@ -1094,6 +1143,11 @@ namespace RawMat.Views.AppearCheck
                     "SAVED",
                     savedRow["APPEARANCE_DATE"]?.ToString() ?? "",
                     count);
+
+                if (savedData.Columns.Contains("EMP_ID"))
+                {
+                    dataSource.Rows[dataSource.Rows.Count - 1]["EMP_ID"] = savedRow["EMP_ID"]?.ToString() ?? "";
+                }
             }
 
             selectedPackSavedQtyAtSelection = cumulativeQty;
@@ -1104,13 +1158,18 @@ namespace RawMat.Views.AppearCheck
                     dataSource,
                     displayNo,
                     cumulativeQty,
-                    inputQty,
+                    isAllAppearance ? 0 : inputQty,
                     0,
                     0,
                     "",
                     "INPUT",
                     DateTime.Now.ToString("dd-MMM-yyyy"),
                     count);
+
+                if (isAllAppearance)
+                {
+                    dataSource.Rows[dataSource.Rows.Count - 1]["QTY_SELECT"] = "";
+                }
             }
 
             if (selectedRow.Cells["JUDGE_LOT_SIZE"].Value != null && dataSource.Rows.Count > 0)
@@ -1163,7 +1222,7 @@ namespace RawMat.Views.AppearCheck
 
             DataTable savedData = conQA.SearchAppearData(propQA);
             DataTable dataSource = BuildSelectedPackInputDataSource(selectedRow, savedData);
-            selectedRow.Cells["STATUS_TEXT"].Value = "กำลังทำ";
+            selectedRow.Cells["STATUS_TEXT"].Value = "รอตรวจ";
 
             // ล้าง DataSource ก่อนเพื่อรีเซ็ต grid (ป้องกันคอลัมน์เก่าค้าง)
             dtg_show_appear.DataSource = null;
@@ -1197,20 +1256,10 @@ namespace RawMat.Views.AppearCheck
             if (dtg_packing_size_appear.Columns[e.ColumnIndex].Name == "STATUS_TEXT")
             {
                 string status = e.Value?.ToString() ?? "";
-                if (status == "ตรวจแล้ว")
+                if (status == "เสร็จแล้ว")
                 {
                     e.CellStyle.BackColor = Color.LightGray;
                     e.CellStyle.ForeColor = Color.Black;
-                }
-                else if (status == "ถึงคิวตรวจ")
-                {
-                    e.CellStyle.BackColor = Color.Honeydew;
-                    e.CellStyle.ForeColor = Color.DarkGreen;
-                }
-                else if (status == "กำลังทำ")
-                {
-                    e.CellStyle.BackColor = Color.LemonChiffon;
-                    e.CellStyle.ForeColor = Color.DarkGoldenrod;
                 }
                 else
                 {
@@ -1344,12 +1393,15 @@ namespace RawMat.Views.AppearCheck
 
         private void dtg_show_appear_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
+            bool isAllAppearance = IsAllAppearanceMode();
+
             if (dtg_show_appear.Columns["DISPLAY_NO"] != null)
             {
                 dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับ";
                 dtg_show_appear.Columns["DISPLAY_NO"].ReadOnly = true;
                 dtg_show_appear.Columns["DISPLAY_NO"].Width = 70;
                 dtg_show_appear.Columns["DISPLAY_NO"].DisplayIndex = 0;
+                dtg_show_appear.Columns["DISPLAY_NO"].Visible = !isAllAppearance;
             }
 
             if (dtg_show_appear.Columns["PACKING_VALUE"] != null)
@@ -1370,7 +1422,11 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["APPEARANCE_DATE"].HeaderText = "วันที่";
                 dtg_show_appear.Columns["APPEARANCE_DATE"].ReadOnly = true;
-                dtg_show_appear.Columns["APPEARANCE_DATE"].Visible = false;
+                dtg_show_appear.Columns["APPEARANCE_DATE"].Visible = isAllAppearance;
+                if (isAllAppearance)
+                {
+                    dtg_show_appear.Columns["APPEARANCE_DATE"].DisplayIndex = 0;
+                }
             }
 
             if (dtg_show_appear.Columns["BATCH"] != null)
@@ -1389,8 +1445,8 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_show_appear.Columns["QTY_SELECT"] != null)
             {
-                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = "ต้องหยิบ";
-                dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = true;
+                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = isAllAppearance ? "จำนวนตรวจสอบ" : "ต้องหยิบ";
+                dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = !isAllAppearance;
                 dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 1;
             }
 
@@ -1403,7 +1459,7 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
             {
-                dtg_show_appear.Columns["QTY_NG"].HeaderText = "NG";
+                dtg_show_appear.Columns["QTY_NG"].HeaderText = isAllAppearance ? "Pending" : "NG";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
                 dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 3;
             }
@@ -1442,6 +1498,12 @@ namespace RawMat.Views.AppearCheck
             ApplyRowReadOnly();
         }
 
+        private bool IsAllAppearanceMode()
+        {
+            return propQA.SAMPLING_TYPE == "1"
+                || string.Equals(propQA.SAMPLING_NAME?.Trim(), "All", StringComparison.OrdinalIgnoreCase);
+        }
+
         // Apply ReadOnly to all rows except the last one
         private void ApplyRowReadOnly()
         {
@@ -1467,7 +1529,9 @@ namespace RawMat.Views.AppearCheck
                 inputRow.ReadOnly = false;
                 inputRow.DefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
 
-                string[] editableColumns = { "QTY_OK", "QTY_NG" };
+                string[] editableColumns = IsAllAppearanceMode()
+                    ? new[] { "QTY_SELECT", "QTY_OK", "QTY_NG" }
+                    : new[] { "QTY_OK", "QTY_NG" };
                 foreach (string colName in editableColumns)
                 {
                     if (dtg_show_appear.Columns[colName] == null)
@@ -2097,7 +2161,9 @@ namespace RawMat.Views.AppearCheck
                     if (qtySelect > 0 && (qtyOK + qtyNG) == qtySelect)
                     {
                         string judge = (qtyNG > 0) ? "NG" : "OK";
-                        row.Cells["JUDGE"].Value = judge;
+                        row.Cells["JUDGE"].Value = judge == "NG"
+                            ? "Pending"
+                            : $"Accept{Environment.NewLine}{qtyOK} pcs.";
                         tb_record.Enabled = true;
 
                         // Logic เปิด/ปิด NG Mode

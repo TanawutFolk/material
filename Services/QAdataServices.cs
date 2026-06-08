@@ -803,6 +803,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetLatestAppearDataId(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchForAppearPending()
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

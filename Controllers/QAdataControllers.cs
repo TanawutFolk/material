@@ -2286,6 +2286,14 @@ namespace RawMat.Controllers
                 if (_resultData.StatusOnDb == true)
                 {
                     bl = _resultData.StatusOnDb;
+                    _resultData = _model.GetLatestAppearDataId(dataItem);
+                    if (_resultData.StatusOnDb == true
+                        && _resultData.ResultOnDb != null
+                        && _resultData.ResultOnDb.Rows.Count > 0
+                        && _resultData.ResultOnDb.Columns.Contains("APPEARANCE_ID"))
+                    {
+                        dataItem.APPEARANCE_ID = _resultData.ResultOnDb.Rows[0]["APPEARANCE_ID"].ToString();
+                    }
                 }
                 else
                 {

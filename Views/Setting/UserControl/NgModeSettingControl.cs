@@ -184,9 +184,15 @@ namespace RawMat.Views.Setting.UserControl
             SetColumnVisible(ColCreateDate, false);
 
             SetColumnWidth(ColDelete, 80);
+            SetColumnWidth(ColId, 70);
             SetColumnFill(ColNgMode, 100);
 
+            DataGridViewColumn idColumn = FindColumn(ColId);
+            if (idColumn != null)
+                idColumn.HeaderText = "No.";
+
             SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColId, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColNgMode, DataGridViewContentAlignment.MiddleCenter);
         }
 

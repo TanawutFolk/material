@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlInspData));
             this.lb_top = new System.Windows.Forms.Label();
-            this.bt_back = new System.Windows.Forms.Button();
             this.lb_lotSize = new System.Windows.Forms.Label();
             this.lb_recDate = new System.Windows.Forms.Label();
             this.lb_invoice = new System.Windows.Forms.Label();
@@ -43,6 +43,7 @@
             this.lb_data_judge = new System.Windows.Forms.Label();
             this.bt_confirm = new System.Windows.Forms.Button();
             this.panel_pdf = new System.Windows.Forms.Panel();
+            this.bt_back = new Bunifu.Framework.UI.BunifuFlatButton();
             this.gb_data_judge.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,16 +58,6 @@
             this.lb_top.TabIndex = 32;
             this.lb_top.Text = "Inspection Data Check";
             this.lb_top.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // bt_back
-            // 
-            this.bt_back.Location = new System.Drawing.Point(6, 5);
-            this.bt_back.Name = "bt_back";
-            this.bt_back.Size = new System.Drawing.Size(169, 34);
-            this.bt_back.TabIndex = 55;
-            this.bt_back.Text = "Back";
-            this.bt_back.UseVisualStyleBackColor = true;
-            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
             // 
             // lb_lotSize
             // 
@@ -202,12 +193,48 @@
             this.panel_pdf.Size = new System.Drawing.Size(975, 631);
             this.panel_pdf.TabIndex = 81;
             // 
+            // bt_back
+            // 
+            this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bt_back.BorderRadius = 0;
+            this.bt_back.ButtonText = "ย้อนกลับ";
+            this.bt_back.DisabledColor = System.Drawing.Color.Gray;
+            this.bt_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Iconcolor = System.Drawing.Color.Transparent;
+            this.bt_back.Iconimage = null;
+            this.bt_back.Iconimage_right = ((System.Drawing.Image)(resources.GetObject("bt_back.Iconimage_right")));
+            this.bt_back.Iconimage_right_Selected = null;
+            this.bt_back.Iconimage_Selected = null;
+            this.bt_back.IconMarginLeft = 0;
+            this.bt_back.IconMarginRight = 0;
+            this.bt_back.IconRightVisible = true;
+            this.bt_back.IconRightZoom = 0D;
+            this.bt_back.IconVisible = true;
+            this.bt_back.IconZoom = 56D;
+            this.bt_back.IsTab = false;
+            this.bt_back.Location = new System.Drawing.Point(12, 6);
+            this.bt_back.Name = "bt_back";
+            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
+            this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
+            this.bt_back.selected = false;
+            this.bt_back.Size = new System.Drawing.Size(143, 31);
+            this.bt_back.TabIndex = 91;
+            this.bt_back.Text = "ย้อนกลับ";
+            this.bt_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.bt_back.Textcolor = System.Drawing.Color.White;
+            this.bt_back.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
+            // 
             // userControlInspData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Thistle;
+            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.panel_pdf);
             this.Controls.Add(this.bt_confirm);
             this.Controls.Add(this.gb_data_judge);
@@ -216,7 +243,6 @@
             this.Controls.Add(this.lb_invoice);
             this.Controls.Add(this.lb_mcode);
             this.Controls.Add(this.lb_reportNo);
-            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.lb_top);
             this.Name = "userControlInspData";
             this.Size = new System.Drawing.Size(1115, 1007);
@@ -231,7 +257,6 @@
         #endregion
 
         private System.Windows.Forms.Label lb_top;
-        private System.Windows.Forms.Button bt_back;
         private System.Windows.Forms.Label lb_lotSize;
         private System.Windows.Forms.Label lb_recDate;
         private System.Windows.Forms.Label lb_invoice;
@@ -245,5 +270,6 @@
         private System.Windows.Forms.Button bt_confirm;
         private System.Windows.Forms.Panel panel_pdf;
         private System.Windows.Forms.Label lb_length_detail;
+        private Bunifu.Framework.UI.BunifuFlatButton bt_back;
     }
 }

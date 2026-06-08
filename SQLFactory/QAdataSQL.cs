@@ -1397,11 +1397,33 @@ namespace RawMat.SQLFactory
 
         public string UpdateReportStatus(QAdataProperty dataItem)
         {
-            sql = @"UPDATE `db_report_status` 
-      SET `report_status` = 'dataItem.reportStatus' WHERE `Report_No` = 'dataItem.Report_No'";
+            string reportStatus = string.IsNullOrWhiteSpace(dataItem.reportStatus)
+                ? dataItem.TOTAL_STATUS
+                : dataItem.reportStatus;
+
+            string processStatus = string.IsNullOrWhiteSpace(dataItem.inProcStatus)
+                ? reportStatus
+                : dataItem.inProcStatus;
+
+            if (string.IsNullOrWhiteSpace(dataItem.process))
+            {
+                sql = @"UPDATE `db_report_status` 
+      SET `report_status` = dataItem.reportStatus
+      WHERE `Report_No` = 'dataItem.Report_No'";
+            }
+            else
+            {
+                sql = @"UPDATE `db_report_status` 
+      SET `report_status` = dataItem.reportStatus,
+          `dataItem.process` = dataItem.inProcStatus
+      WHERE `Report_No` = 'dataItem.Report_No'";
+
+                sql = sql.Replace("dataItem.process", dataItem.process);
+                sql = sql.Replace("dataItem.inProcStatus", ToSqlIntOrNull(processStatus));
+            }
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
-            sql = sql.Replace("dataItem.reportStatus", dataItem.reportStatus);
+            sql = sql.Replace("dataItem.reportStatus", ToSqlIntOrNull(reportStatus));
 
             return sql;
 
@@ -1545,6 +1567,16 @@ namespace RawMat.SQLFactory
             }
 
             return int.TryParse(value.ToString(), out int number) ? number.ToString() : "NULL";
+        }
+
+        private string ToSqlLongOrNull(object value)
+        {
+            if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return "NULL";
+            }
+
+            return long.TryParse(value.ToString(), out long number) ? number.ToString() : "NULL";
         }
 
         public List<string> InsertDimensionData(QAdataProperty dataItem)
@@ -1826,7 +1858,15 @@ namespace RawMat.SQLFactory
 
         public string SearchAppearData(QAdataProperty dataItem)
         {
-            sql = @"SELECT UPDATETIME AS APPEARANCE_DATE , `BATCH` , COUNT , QTY_SELECT  , QTY_OK  , QTY_NG ,JUDGE
+            sql = @"SELECT `APPEARANCE_ID`,
+                           COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
+                           `BATCH`,
+                           `COUNT`,
+                           QTY_SELECT,
+                           QTY_OK,
+                           QTY_NG,
+                           EMP_ID,
+                           JUDGE
                     FROM `db_appearance_data`
                     where REPORT_NO = 'dataItem.Report_No' and BATCH = 'dataItem.Batch' and inuse = 1";
 
@@ -1866,11 +1906,27 @@ namespace RawMat.SQLFactory
         public string InsertAppearData(QAdataProperty dataItem)
         {
 
-            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`,`QTY_OK`,`QTY_NG`, `EMP_ID` , `JUDGE` , `UPDATETIME`, `INUSE`) " +
-            $"VALUES ('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{dataItem.QTY_SELECT}', '{dataItem.QTY_OK}', '{dataItem.QTY_NG}', '{dataItem.EMP_ID}' , '{dataItem.judge}', NOW() , 1 )";
+            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`, `QTY_OK`, `QTY_NG`, `EMP_ID`, `JUDGE`, `APPEARANCE_DATE`, `UPDATETIME`, `INUSE`) " +
+            $"VALUES ({ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlIntOrNull(dataItem.QTY_SELECT)}, {ToSqlIntOrNull(dataItem.QTY_OK)}, {ToSqlIntOrNull(dataItem.QTY_NG)}, {ToSqlTextValue(dataItem.EMP_ID)}, {ToSqlIntOrNull(dataItem.judge)}, CURDATE(), NOW(), 1)";
 
             return sql;
 
+        }
+
+        public string GetLatestAppearDataId(QAdataProperty dataItem)
+        {
+            sql = $@"SELECT `APPEARANCE_ID`
+                    FROM `db_appearance_data`
+                    WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                      AND `BATCH` = {ToSqlIntOrNull(dataItem.BATCH)}
+                      AND `COUNT` = {ToSqlIntOrNull(dataItem.COUNT)}
+                      AND `EMP_ID` = {ToSqlTextValue(dataItem.EMP_ID)}
+                      AND `APPEARANCE_DATE` = CURDATE()
+                      AND `INUSE` = 1
+                    ORDER BY `APPEARANCE_ID` DESC
+                    LIMIT 1";
+
+            return sql;
         }
 
         public List<string> InsertAppearPendingDetail(QAdataProperty dataItem)
@@ -1884,8 +1940,9 @@ namespace RawMat.SQLFactory
 
                 string ngDetail = row.Table.Columns.Contains("NG_DETAIL") ? row["NG_DETAIL"].ToString().Replace("'", "''") : "";
                 string ngModeId = ToSqlIntOrNull(row.Table.Columns.Contains("NG_MODE_ID") ? row["NG_MODE_ID"] : null);
-                sql = $"INSERT INTO `db_appearance_pending`(`REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES('{dataItem.Report_No}', '{dataItem.BATCH}', '{dataItem.COUNT}', '{ngCount}', '{row["QTY_NG"].ToString()}', '{ngDetail}', {ngModeId}, NOW(), NOW())";
+                string appearanceId = ToSqlLongOrNull(dataItem.APPEARANCE_ID);
+                sql = $"INSERT INTO `db_appearance_pending`(`APPEARANCE_ID`, `REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
+                      $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ngCount}, {ToSqlIntOrNull(row["QTY_NG"])}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;

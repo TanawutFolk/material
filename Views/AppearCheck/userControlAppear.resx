@@ -123,4 +123,15 @@
   <metadata name="NG_MODE.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="bt_back.Iconimage_right" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
+        dgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADDSURBVDhPtZNN
+        CsJQDIQ/0J0ewzv4c0RBRTyD3fUIihcSFd0pKPNMpITaVywOZNHJzDTvNYU3psABuAHPTEkjrTwJM+BR
+        I8yVPClEaSIWwMBTGyDNyjx7ET52G7NjaJ6rHnykOmjEo70x4uP7FjAGLtabx2YuYAScjC+AXugLjQEb
+        40qgH3qO/wboCGfjt78cQeh0iQ5tqT7jMjaqvs6L5KusZVEjB2nW5tmJ0LbdKyO1LXl0TwkT+zE0UhTG
+        kkbaZH4B+Wh4Vl4cjakAAAAASUVORK5CYII=
+</value>
+  </data>
 </root>

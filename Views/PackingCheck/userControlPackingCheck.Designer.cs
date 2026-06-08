@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlPackingCheck));
             this.lb_top = new System.Windows.Forms.Label();
             this.lb_method1 = new System.Windows.Forms.Label();
             this.tlp_methods = new System.Windows.Forms.TableLayoutPanel();
@@ -48,6 +49,9 @@
             this.rb_ok_method2 = new System.Windows.Forms.RadioButton();
             this.gb_method3 = new System.Windows.Forms.GroupBox();
             this.dtg_packing_size = new System.Windows.Forms.DataGridView();
+            this.VALUE = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PACK_COUNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CALVALUE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lb_length_detail_method3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tb_detail_method3 = new System.Windows.Forms.TextBox();
@@ -62,10 +66,7 @@
             this.lb_recDate = new System.Windows.Forms.Label();
             this.dtg_lot_no = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.bt_back = new System.Windows.Forms.Button();
-            this.VALUE = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PACK_COUNT = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CALVALUE = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.bt_back = new Bunifu.Framework.UI.BunifuFlatButton();
             this.tlp_methods.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_packing3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_packing2)).BeginInit();
@@ -316,13 +317,29 @@
             this.VALUE,
             this.PACK_COUNT,
             this.CALVALUE});
-            this.dtg_packing_size.Cursor = System.Windows.Forms.Cursors.Default;
             this.dtg_packing_size.Location = new System.Drawing.Point(6, 53);
             this.dtg_packing_size.Name = "dtg_packing_size";
             this.dtg_packing_size.Size = new System.Drawing.Size(313, 175);
             this.dtg_packing_size.TabIndex = 12;
             this.dtg_packing_size.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_packing_size_CellEndEdit);
             this.dtg_packing_size.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dtg_packing_size_RowValidating);
+            // 
+            // VALUE
+            // 
+            this.VALUE.HeaderText = "จำนวนงาน";
+            this.VALUE.Name = "VALUE";
+            // 
+            // PACK_COUNT
+            // 
+            this.PACK_COUNT.HeaderText = "จำนวน Pack";
+            this.PACK_COUNT.Name = "PACK_COUNT";
+            this.PACK_COUNT.Width = 80;
+            // 
+            // CALVALUE
+            // 
+            this.CALVALUE.HeaderText = "คำนวณจำนวนงาน";
+            this.CALVALUE.Name = "CALVALUE";
+            this.CALVALUE.ReadOnly = true;
             // 
             // lb_length_detail_method3
             // 
@@ -477,30 +494,38 @@
             // 
             // bt_back
             // 
-            this.bt_back.Location = new System.Drawing.Point(26, 4);
+            this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bt_back.BorderRadius = 0;
+            this.bt_back.ButtonText = "ย้อนกลับ";
+            this.bt_back.DisabledColor = System.Drawing.Color.Gray;
+            this.bt_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Iconcolor = System.Drawing.Color.Transparent;
+            this.bt_back.Iconimage = null;
+            this.bt_back.Iconimage_right = ((System.Drawing.Image)(resources.GetObject("bt_back.Iconimage_right")));
+            this.bt_back.Iconimage_right_Selected = null;
+            this.bt_back.Iconimage_Selected = null;
+            this.bt_back.IconMarginLeft = 0;
+            this.bt_back.IconMarginRight = 0;
+            this.bt_back.IconRightVisible = true;
+            this.bt_back.IconRightZoom = 0D;
+            this.bt_back.IconVisible = true;
+            this.bt_back.IconZoom = 56D;
+            this.bt_back.IsTab = false;
+            this.bt_back.Location = new System.Drawing.Point(12, 6);
             this.bt_back.Name = "bt_back";
-            this.bt_back.Size = new System.Drawing.Size(169, 34);
-            this.bt_back.TabIndex = 56;
-            this.bt_back.Text = "Back";
-            this.bt_back.UseVisualStyleBackColor = true;
+            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
+            this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
+            this.bt_back.selected = false;
+            this.bt_back.Size = new System.Drawing.Size(143, 31);
+            this.bt_back.TabIndex = 91;
+            this.bt_back.Text = "ย้อนกลับ";
+            this.bt_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.bt_back.Textcolor = System.Drawing.Color.White;
+            this.bt_back.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
-            // 
-            // VALUE
-            // 
-            this.VALUE.HeaderText = "จำนวนงาน";
-            this.VALUE.Name = "VALUE";
-            // 
-            // PACK_COUNT
-            // 
-            this.PACK_COUNT.HeaderText = "จำนวน Pack";
-            this.PACK_COUNT.Name = "PACK_COUNT";
-            this.PACK_COUNT.Width = 80;
-            // 
-            // CALVALUE
-            // 
-            this.CALVALUE.HeaderText = "คำนวณจำนวนงาน";
-            this.CALVALUE.Name = "CALVALUE";
-            this.CALVALUE.ReadOnly = true;
             // 
             // userControlPackingCheck
             // 
@@ -579,9 +604,9 @@
         private System.Windows.Forms.DataGridView dtg_packing_size;
         private System.Windows.Forms.DataGridView dtg_lot_no;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.Button bt_back;
         private System.Windows.Forms.DataGridViewTextBoxColumn VALUE;
         private System.Windows.Forms.DataGridViewTextBoxColumn PACK_COUNT;
         private System.Windows.Forms.DataGridViewTextBoxColumn CALVALUE;
+        private Bunifu.Framework.UI.BunifuFlatButton bt_back;
     }
 }

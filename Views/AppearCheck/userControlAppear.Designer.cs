@@ -30,11 +30,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlAppear));
             this.lb_top = new System.Windows.Forms.Label();
-            this.bt_back = new System.Windows.Forms.Button();
             this.lb_lotSize = new System.Windows.Forms.Label();
             this.lb_recDate = new System.Windows.Forms.Label();
             this.lb_invoice = new System.Windows.Forms.Label();
@@ -50,21 +50,24 @@
             this.dtg_ngMode = new System.Windows.Forms.DataGridView();
             this.QTY_NG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NG_MODE = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gb_pack = new System.Windows.Forms.GroupBox();
-            this.bt_Clear = new System.Windows.Forms.Button();
-            this.bt_select_packing_size_appear = new System.Windows.Forms.Button();
-            this.dtg_packing_size_appear = new System.Windows.Forms.DataGridView();
             this.gb_input = new System.Windows.Forms.GroupBox();
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
+            this.dtg_packing_size_appear = new System.Windows.Forms.DataGridView();
+            this.bt_select_packing_size_appear = new System.Windows.Forms.Button();
+            this.bt_Clear = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lbCount = new System.Windows.Forms.Label();
+            this.gb_pack = new System.Windows.Forms.GroupBox();
+            this.bt_back = new Bunifu.Framework.UI.BunifuFlatButton();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Appear)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_show_appear)).BeginInit();
             this.gb_ngMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_ngMode)).BeginInit();
-            this.gb_pack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).BeginInit();
             this.gb_input.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).BeginInit();
+            this.gb_pack.SuspendLayout();
             this.SuspendLayout();
             // 
             // lb_top
@@ -78,16 +81,6 @@
             this.lb_top.TabIndex = 32;
             this.lb_top.Text = "Appearance Check";
             this.lb_top.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // bt_back
-            // 
-            this.bt_back.Location = new System.Drawing.Point(6, 3);
-            this.bt_back.Name = "bt_back";
-            this.bt_back.Size = new System.Drawing.Size(169, 34);
-            this.bt_back.TabIndex = 55;
-            this.bt_back.Text = "Back";
-            this.bt_back.UseVisualStyleBackColor = true;
-            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
             // 
             // lb_lotSize
             // 
@@ -184,21 +177,21 @@
             // 
             this.dtg_show_appear.AllowUserToAddRows = false;
             this.dtg_show_appear.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dtg_show_appear.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dtg_show_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dtg_show_appear.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtg_show_appear.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_show_appear.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Cyan;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Cyan;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dtg_show_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_show_appear.DoubleBuffered = true;
             this.dtg_show_appear.EnableHeadersVisualStyles = false;
@@ -239,14 +232,14 @@
             // 
             // dtg_ngMode
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_ngMode.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_ngMode.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dtg_ngMode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_ngMode.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.QTY_NG,
@@ -267,58 +260,6 @@
             this.NG_MODE.HeaderText = "NG MODE";
             this.NG_MODE.Name = "NG_MODE";
             this.NG_MODE.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
-            // gb_pack
-            // 
-            this.gb_pack.Controls.Add(this.bt_Clear);
-            this.gb_pack.Controls.Add(this.bt_select_packing_size_appear);
-            this.gb_pack.Controls.Add(this.dtg_packing_size_appear);
-            this.gb_pack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_pack.Location = new System.Drawing.Point(12, 731);
-            this.gb_pack.Name = "gb_pack";
-            this.gb_pack.Size = new System.Drawing.Size(703, 309);
-            this.gb_pack.TabIndex = 86;
-            this.gb_pack.TabStop = false;
-            this.gb_pack.Text = "Appearance Inspection Q\'ty";
-            // 
-            // bt_Clear
-            // 
-            this.bt_Clear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_Clear.Location = new System.Drawing.Point(362, 254);
-            this.bt_Clear.Name = "bt_Clear";
-            this.bt_Clear.Size = new System.Drawing.Size(126, 49);
-            this.bt_Clear.TabIndex = 89;
-            this.bt_Clear.Text = "เลือกชุดอื่น";
-            this.bt_Clear.UseVisualStyleBackColor = true;
-            this.bt_Clear.Click += new System.EventHandler(this.bt_Clear_Click);
-            // 
-            // bt_select_packing_size_appear
-            // 
-            this.bt_select_packing_size_appear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_select_packing_size_appear.Location = new System.Drawing.Point(230, 254);
-            this.bt_select_packing_size_appear.Name = "bt_select_packing_size_appear";
-            this.bt_select_packing_size_appear.Size = new System.Drawing.Size(126, 49);
-            this.bt_select_packing_size_appear.TabIndex = 1;
-            this.bt_select_packing_size_appear.Text = "ตรวจแพ็คนี้";
-            this.bt_select_packing_size_appear.UseVisualStyleBackColor = true;
-            this.bt_select_packing_size_appear.Click += new System.EventHandler(this.bt_Select_Click);
-            // 
-            // dtg_packing_size_appear
-            // 
-            this.dtg_packing_size_appear.AllowUserToAddRows = false;
-            this.dtg_packing_size_appear.AllowUserToDeleteRows = false;
-            this.dtg_packing_size_appear.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dtg_packing_size_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dtg_packing_size_appear.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dtg_packing_size_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtg_packing_size_appear.Location = new System.Drawing.Point(9, 41);
-            this.dtg_packing_size_appear.Name = "dtg_packing_size_appear";
-            this.dtg_packing_size_appear.ReadOnly = true;
-            this.dtg_packing_size_appear.Size = new System.Drawing.Size(688, 207);
-            this.dtg_packing_size_appear.TabIndex = 0;
-            this.dtg_packing_size_appear.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dtg_packing_size_appear_CellFormatting);
-            this.dtg_packing_size_appear.SelectionChanged += new System.EventHandler(this.dtg_packing_size_appear_SelectionChanged);
-            this.dtg_packing_size_appear.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dtg_packing_size_appear_MouseDown);
             // 
             // gb_input
             // 
@@ -371,12 +312,124 @@
             this.tb_record.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_record.Click += new System.EventHandler(this.tb_record_Click);
             // 
+            // dtg_packing_size_appear
+            // 
+            this.dtg_packing_size_appear.AllowUserToAddRows = false;
+            this.dtg_packing_size_appear.AllowUserToDeleteRows = false;
+            this.dtg_packing_size_appear.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dtg_packing_size_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dtg_packing_size_appear.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dtg_packing_size_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dtg_packing_size_appear.Location = new System.Drawing.Point(6, 41);
+            this.dtg_packing_size_appear.Name = "dtg_packing_size_appear";
+            this.dtg_packing_size_appear.ReadOnly = true;
+            this.dtg_packing_size_appear.Size = new System.Drawing.Size(688, 207);
+            this.dtg_packing_size_appear.TabIndex = 0;
+            this.dtg_packing_size_appear.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dtg_packing_size_appear_CellFormatting);
+            this.dtg_packing_size_appear.SelectionChanged += new System.EventHandler(this.dtg_packing_size_appear_SelectionChanged);
+            this.dtg_packing_size_appear.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dtg_packing_size_appear_MouseDown);
+            // 
+            // bt_select_packing_size_appear
+            // 
+            this.bt_select_packing_size_appear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_select_packing_size_appear.ForeColor = System.Drawing.Color.Blue;
+            this.bt_select_packing_size_appear.Location = new System.Drawing.Point(230, 254);
+            this.bt_select_packing_size_appear.Name = "bt_select_packing_size_appear";
+            this.bt_select_packing_size_appear.Size = new System.Drawing.Size(126, 49);
+            this.bt_select_packing_size_appear.TabIndex = 1;
+            this.bt_select_packing_size_appear.Text = "เริ่มตรวจสอบ";
+            this.bt_select_packing_size_appear.UseVisualStyleBackColor = true;
+            this.bt_select_packing_size_appear.Click += new System.EventHandler(this.bt_Select_Click);
+            // 
+            // bt_Clear
+            // 
+            this.bt_Clear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_Clear.ForeColor = System.Drawing.Color.Blue;
+            this.bt_Clear.Location = new System.Drawing.Point(362, 254);
+            this.bt_Clear.Name = "bt_Clear";
+            this.bt_Clear.Size = new System.Drawing.Size(126, 49);
+            this.bt_Clear.TabIndex = 89;
+            this.bt_Clear.Text = "เลือกลำดับ";
+            this.bt_Clear.UseVisualStyleBackColor = true;
+            this.bt_Clear.Click += new System.EventHandler(this.bt_Clear_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.Blue;
+            this.label1.Location = new System.Drawing.Point(219, 2);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 20);
+            this.label1.TabIndex = 90;
+            this.label1.Text = "จำนวนรวม ";
+            // 
+            // lbCount
+            // 
+            this.lbCount.AutoSize = true;
+            this.lbCount.ForeColor = System.Drawing.Color.Blue;
+            this.lbCount.Location = new System.Drawing.Point(291, 2);
+            this.lbCount.Name = "lbCount";
+            this.lbCount.Size = new System.Drawing.Size(57, 20);
+            this.lbCount.TabIndex = 91;
+            this.lbCount.Text = "50 / 50";
+            // 
+            // gb_pack
+            // 
+            this.gb_pack.Controls.Add(this.lbCount);
+            this.gb_pack.Controls.Add(this.label1);
+            this.gb_pack.Controls.Add(this.bt_Clear);
+            this.gb_pack.Controls.Add(this.bt_select_packing_size_appear);
+            this.gb_pack.Controls.Add(this.dtg_packing_size_appear);
+            this.gb_pack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gb_pack.Location = new System.Drawing.Point(12, 731);
+            this.gb_pack.Name = "gb_pack";
+            this.gb_pack.Size = new System.Drawing.Size(703, 309);
+            this.gb_pack.TabIndex = 86;
+            this.gb_pack.TabStop = false;
+            this.gb_pack.Text = "Appearance Inspection Q\'ty";
+            // 
+            // bt_back
+            // 
+            this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bt_back.BorderRadius = 0;
+            this.bt_back.ButtonText = "ย้อนกลับ";
+            this.bt_back.DisabledColor = System.Drawing.Color.Gray;
+            this.bt_back.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Iconcolor = System.Drawing.Color.Transparent;
+            this.bt_back.Iconimage = null;
+            this.bt_back.Iconimage_right = ((System.Drawing.Image)(resources.GetObject("bt_back.Iconimage_right")));
+            this.bt_back.Iconimage_right_Selected = null;
+            this.bt_back.Iconimage_Selected = null;
+            this.bt_back.IconMarginLeft = 0;
+            this.bt_back.IconMarginRight = 0;
+            this.bt_back.IconRightVisible = true;
+            this.bt_back.IconRightZoom = 0D;
+            this.bt_back.IconVisible = true;
+            this.bt_back.IconZoom = 56D;
+            this.bt_back.IsTab = false;
+            this.bt_back.Location = new System.Drawing.Point(18, 7);
+            this.bt_back.Name = "bt_back";
+            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
+            this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
+            this.bt_back.selected = false;
+            this.bt_back.Size = new System.Drawing.Size(143, 31);
+            this.bt_back.TabIndex = 88;
+            this.bt_back.Text = "ย้อนกลับ";
+            this.bt_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.bt_back.Textcolor = System.Drawing.Color.White;
+            this.bt_back.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_back.Click += new System.EventHandler(this.bt_back_Click);
+            // 
             // userControlAppear
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Bisque;
+            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.gb_pack);
             this.Controls.Add(this.gb_ngMode);
             this.Controls.Add(this.picbox_Appear);
@@ -387,7 +440,6 @@
             this.Controls.Add(this.lb_invoice);
             this.Controls.Add(this.lb_mcode);
             this.Controls.Add(this.lb_reportNo);
-            this.Controls.Add(this.bt_back);
             this.Controls.Add(this.lb_top);
             this.Controls.Add(this.gb_input);
             this.Name = "userControlAppear";
@@ -402,9 +454,10 @@
             this.gb_ngMode.ResumeLayout(false);
             this.gb_ngMode.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_ngMode)).EndInit();
-            this.gb_pack.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).EndInit();
             this.gb_input.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).EndInit();
+            this.gb_pack.ResumeLayout(false);
+            this.gb_pack.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -413,7 +466,6 @@
         #endregion
 
         private System.Windows.Forms.Label lb_top;
-        private System.Windows.Forms.Button bt_back;
         private System.Windows.Forms.Label lb_lotSize;
         private System.Windows.Forms.Label lb_recDate;
         private System.Windows.Forms.Label lb_invoice;
@@ -427,13 +479,16 @@
         private System.Windows.Forms.GroupBox gb_ngMode;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridView dtg_ngMode;
-        private System.Windows.Forms.GroupBox gb_pack;
-        private System.Windows.Forms.DataGridView dtg_packing_size_appear;
-        private System.Windows.Forms.Button bt_select_packing_size_appear;
         private System.Windows.Forms.GroupBox gb_input;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;
-        private System.Windows.Forms.Button bt_Clear;
         private System.Windows.Forms.DataGridViewTextBoxColumn QTY_NG;
         private System.Windows.Forms.DataGridViewTextBoxColumn NG_MODE;
+        private System.Windows.Forms.DataGridView dtg_packing_size_appear;
+        private System.Windows.Forms.Button bt_select_packing_size_appear;
+        private System.Windows.Forms.Button bt_Clear;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbCount;
+        private System.Windows.Forms.GroupBox gb_pack;
+        private Bunifu.Framework.UI.BunifuFlatButton bt_back;
     }
 }

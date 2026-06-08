@@ -557,5 +557,11 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
+        {
+            resultData = services.GetLatestAppearDataId(dataItem);
+            return resultData;
+        }
+
     }
 }

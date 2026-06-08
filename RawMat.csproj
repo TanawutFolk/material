@@ -801,6 +801,11 @@
     <None Include="bin\Debug\img\image %282%29.png" />
     <None Include="bin\Debug\img\QUESTION.png" />
     <Content Include="cart1.ico" />
+    <Content Include="img\angle-square-left %281%29.png" />
+    <Content Include="img\angle-square-left %282%29.png" />
+    <Content Include="img\angle-square-left.png" />
+    <Content Include="img\arrow-left %281%29.png" />
+    <Content Include="img\Back-Button-PNG-Transparent-Image.png" />
     <Content Include="img\cart1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
