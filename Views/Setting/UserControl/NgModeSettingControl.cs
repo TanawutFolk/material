@@ -179,7 +179,7 @@ namespace RawMat.Views.Setting.UserControl
             SetColumnVisible(ColNgMode, true);
 
             // ซ่อนอันอื่น
-            SetColumnVisible(ColId, false);
+            SetColumnVisible(ColId, true); // โชว์เพิ่ม
             SetColumnVisible(ColStatus, false);
             SetColumnVisible(ColCreateDate, false);
 

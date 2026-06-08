@@ -30,11 +30,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lb_top = new System.Windows.Forms.Label();
             this.bt_back = new System.Windows.Forms.Button();
             this.lb_lotSize = new System.Windows.Forms.Label();
@@ -57,7 +55,6 @@
             this.bt_select_packing_size_appear = new System.Windows.Forms.Button();
             this.dtg_packing_size_appear = new System.Windows.Forms.DataGridView();
             this.gb_input = new System.Windows.Forms.GroupBox();
-            this.lb_currentTask = new System.Windows.Forms.Label();
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
@@ -187,30 +184,22 @@
             // 
             this.dtg_show_appear.AllowUserToAddRows = false;
             this.dtg_show_appear.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.dtg_show_appear.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dtg_show_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dtg_show_appear.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtg_show_appear.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_show_appear.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.SeaGreen;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.Cyan;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.Cyan;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.dtg_show_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dtg_show_appear.DefaultCellStyle = dataGridViewCellStyle10;
             this.dtg_show_appear.DoubleBuffered = true;
             this.dtg_show_appear.EnableHeadersVisualStyles = false;
             this.dtg_show_appear.HeaderBgColor = System.Drawing.Color.SeaGreen;
@@ -218,14 +207,6 @@
             this.dtg_show_appear.Location = new System.Drawing.Point(6, 48);
             this.dtg_show_appear.Name = "dtg_show_appear";
             this.dtg_show_appear.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_show_appear.RowHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.dtg_show_appear.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dtg_show_appear.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtg_show_appear.RowTemplate.Height = 41;
@@ -258,14 +239,14 @@
             // 
             // dtg_ngMode
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_ngMode.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_ngMode.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.dtg_ngMode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_ngMode.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.QTY_NG,
@@ -298,7 +279,7 @@
             this.gb_pack.Size = new System.Drawing.Size(703, 309);
             this.gb_pack.TabIndex = 86;
             this.gb_pack.TabStop = false;
-            this.gb_pack.Text = "เลือกแพ็คตรวจ";
+            this.gb_pack.Text = "Appearance Inspection Q\'ty";
             // 
             // bt_Clear
             // 
@@ -341,26 +322,16 @@
             // 
             // gb_input
             // 
-            this.gb_input.Controls.Add(this.lb_currentTask);
             this.gb_input.Controls.Add(this.tb_record);
             this.gb_input.Controls.Add(this.dtg_show_appear);
             this.gb_input.Enabled = false;
+            this.gb_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gb_input.Location = new System.Drawing.Point(6, 1046);
             this.gb_input.Name = "gb_input";
             this.gb_input.Size = new System.Drawing.Size(709, 375);
             this.gb_input.TabIndex = 87;
             this.gb_input.TabStop = false;
-            this.gb_input.Text = "กรอกผลของแพ็คที่เลือก";
-            // 
-            // lb_currentTask
-            // 
-            this.lb_currentTask.AutoSize = true;
-            this.lb_currentTask.Font = new System.Drawing.Font("Tahoma", 10.25F, System.Drawing.FontStyle.Bold);
-            this.lb_currentTask.Location = new System.Drawing.Point(6, 19);
-            this.lb_currentTask.Name = "lb_currentTask";
-            this.lb_currentTask.Size = new System.Drawing.Size(195, 17);
-            this.lb_currentTask.TabIndex = 83;
-            this.lb_currentTask.Text = "เลือกชุดตรวจเพื่อเริ่มกรอกผล";
+            this.gb_input.Text = "Result Appearance Inspection";
             // 
             // tb_record
             // 
@@ -434,7 +405,6 @@
             this.gb_pack.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).EndInit();
             this.gb_input.ResumeLayout(false);
-            this.gb_input.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -461,7 +431,6 @@
         private System.Windows.Forms.DataGridView dtg_packing_size_appear;
         private System.Windows.Forms.Button bt_select_packing_size_appear;
         private System.Windows.Forms.GroupBox gb_input;
-        private System.Windows.Forms.Label lb_currentTask;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;
         private System.Windows.Forms.Button bt_Clear;
         private System.Windows.Forms.DataGridViewTextBoxColumn QTY_NG;

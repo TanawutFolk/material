@@ -76,7 +76,6 @@ namespace RawMat.Views.AppearCheck
 
             InitializeComponent();
             ngModeList = NgModeHelper.LoadNgModeList();
-            ResetCurrentTaskLabel();
 
             // เปิด Double Buffered ลดการกระพริบ/ภาพซ้อน
             EnableDoubleBuffered(dtg_packing_size_appear);
@@ -696,11 +695,10 @@ namespace RawMat.Views.AppearCheck
             ShowSavedAppearDataForCurrentBatch();
             if (showCompletedPackCount)
             {
-                ShowCompletedPackCountLabel();
+
             }
             else
             {
-                ResetCurrentTaskLabel();
             }
             CloseNgMode();
             dtg_packing_size_appear.ClearSelection();
@@ -1126,21 +1124,6 @@ namespace RawMat.Views.AppearCheck
             return dataSource;
         }
 
-        private void UpdateCurrentTaskLabel()
-        {
-            if (lb_currentTask == null) return;
-
-            lb_currentTask.Visible = false;
-            lb_currentTask.Text = string.Empty;
-        }
-
-        private void ShowCompletedPackCountLabel()
-        {
-            if (lb_currentTask == null) return;
-
-            lb_currentTask.Visible = true;
-            lb_currentTask.Text = $"ตรวจไปแล้วทั้งหมด {GetCompletedPackCountFromPackingGrid()} แพ็ค";
-        }
 
         private int GetCompletedPackCountFromPackingGrid()
         {
@@ -1159,20 +1142,6 @@ namespace RawMat.Views.AppearCheck
             }
 
             return completedPackCount;
-        }
-
-        private void ResetCurrentTaskLabel()
-        {
-            if (lb_currentTask != null)
-            {
-                lb_currentTask.Visible = false;
-                lb_currentTask.Text = string.Empty;
-            }
-
-            if (label2 != null)
-            {
-                label2.Text = "ระบุอาการเสียแล้ว: 0 / 0 ชิ้น";
-            }
         }
 
         private void bt_Select_Click(object sender, EventArgs e)
@@ -1203,7 +1172,6 @@ namespace RawMat.Views.AppearCheck
 
             gb_input.Enabled = currentMaxQty > 0;
             ApplyRowReadOnly();  // ให้เฉพาะแถวสุดท้ายแก้ไขได้
-            UpdateCurrentTaskLabel();
             dtg_show_appear.Refresh();
 
             int inputRowIndex = GetActiveInputGridRowIndex();
@@ -2019,7 +1987,6 @@ namespace RawMat.Views.AppearCheck
                 dtg_show_appear.AutoGenerateColumns = true;
                 dtg_show_appear.DataSource = dataSource;
                 ApplyRowReadOnly();
-                UpdateCurrentTaskLabel();
                 tb_record.Enabled = false;
                 gb_input.Enabled = false;
                 return;
@@ -2028,7 +1995,6 @@ namespace RawMat.Views.AppearCheck
             dtg_show_appear.AutoGenerateColumns = true;
             dtg_show_appear.DataSource = dataSource;
             ApplyRowReadOnly();
-            UpdateCurrentTaskLabel();
             tb_record.Enabled = true;
         }
 
@@ -2132,7 +2098,6 @@ namespace RawMat.Views.AppearCheck
                     {
                         string judge = (qtyNG > 0) ? "NG" : "OK";
                         row.Cells["JUDGE"].Value = judge;
-                        UpdateCurrentTaskLabel();
                         tb_record.Enabled = true;
 
                         // Logic เปิด/ปิด NG Mode
@@ -2152,7 +2117,6 @@ namespace RawMat.Views.AppearCheck
                     {
                         // ข้อมูลยังไม่ครบ (เช่น พิมพ์ Select 10 แต่ OK 0 NG 0)
                         row.Cells["JUDGE"].Value = "";
-                        UpdateCurrentTaskLabel();
                         tb_record.Enabled = false;
                     }
                 }
@@ -2298,7 +2262,6 @@ namespace RawMat.Views.AppearCheck
             // Reset สถานะอื่นๆ ถ้าจำเป็น
             ResetBatchSamplingContext();
             propQA.BATCH = string.Empty;
-            ResetCurrentTaskLabel();
             CloseNgMode();
 
             // Clear selection ใน grid ด้านบนถ้าต้องการ (optional)
