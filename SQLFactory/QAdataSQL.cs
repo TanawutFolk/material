@@ -107,6 +107,26 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        public string InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            return $@"INSERT INTO `db_receive_refresh_log`
+                        (`REFRESH_TYPE`, `EMP_ID`, `RECEIVE_DATE`, `COMPUTER_NAME`, `REFRESH_AT`)
+                      VALUES
+                        ({ToSqlTextValue(dataItem.REFRESH_TYPE)},
+                         {ToSqlTextValue(dataItem.EMP_ID)},
+                         {ToSqlTextValue(dataItem.dtReceiveDate.ToString("yyyy-MM-dd"))},
+                         {ToSqlValue(dataItem.MY_COMPUTER_NAME)},
+                         NOW())";
+        }
+
+        public string SearchLatestReceiveRefreshLog()
+        {
+            return @"SELECT `REFRESH_TYPE`, `EMP_ID`, `RECEIVE_DATE`, `COMPUTER_NAME`, `REFRESH_AT`
+                     FROM `db_receive_refresh_log`
+                     ORDER BY `ID` DESC
+                     LIMIT 1";
+        }
+
 
         public string SearchVendorSmartFFT()
         {
@@ -1858,17 +1878,51 @@ namespace RawMat.SQLFactory
 
         public string SearchAppearData(QAdataProperty dataItem)
         {
-            sql = @"SELECT `APPEARANCE_ID`,
-                           COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
-                           `BATCH`,
-                           `COUNT`,
-                           QTY_SELECT,
-                           QTY_OK,
-                           QTY_NG,
-                           EMP_ID,
-                           JUDGE
-                    FROM `db_appearance_data`
-                    where REPORT_NO = 'dataItem.Report_No' and BATCH = 'dataItem.Batch' and inuse = 1";
+            bool isAllAppearance = dataItem.SAMPLING_TYPE == "1"
+                || string.Equals(dataItem.SAMPLING_NAME?.Trim(), "All", StringComparison.OrdinalIgnoreCase);
+
+            if (isAllAppearance)
+            {
+                sql = @"SELECT MIN(`APPEARANCE_ID`) AS APPEARANCE_ID,
+                               COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
+                               `BATCH`,
+                               MIN(`COUNT`) AS `COUNT`,
+                               SUM(COALESCE(`QTY_SELECT`, 0)) AS QTY_SELECT,
+                               SUM(COALESCE(`QTY_OK`, 0)) AS QTY_OK,
+                               SUM(COALESCE(`QTY_NG`, 0)) AS QTY_NG,
+                               EMP_ID,
+                               CASE
+                                   WHEN SUM(COALESCE(`QTY_NG`, 0)) > 0 THEN 0
+                                   ELSE 1
+                               END AS JUDGE
+                        FROM `db_appearance_data`
+                        WHERE REPORT_NO = 'dataItem.Report_No'
+                          AND BATCH = 'dataItem.Batch'
+                          AND INUSE = 1
+                        GROUP BY
+                            COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)),
+                            `BATCH`,
+                            `EMP_ID`
+                        ORDER BY
+                            COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)),
+                            `EMP_ID`";
+            }
+            else
+            {
+                sql = @"SELECT `APPEARANCE_ID`,
+                               COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
+                               `BATCH`,
+                               `COUNT`,
+                               QTY_SELECT,
+                               QTY_OK,
+                               QTY_NG,
+                               EMP_ID,
+                               JUDGE
+                        FROM `db_appearance_data`
+                        WHERE REPORT_NO = 'dataItem.Report_No'
+                          AND BATCH = 'dataItem.Batch'
+                          AND INUSE = 1";
+            }
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
             sql = sql.Replace("dataItem.Batch", dataItem.BATCH);

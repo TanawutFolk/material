@@ -15,11 +15,14 @@ namespace RawMat.Views.AppearCheck
         public frmAlert()
         {
             InitializeComponent();
+            AcceptButton = btnOk;
+            StartPosition = FormStartPosition.CenterParent;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

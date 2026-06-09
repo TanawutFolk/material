@@ -172,7 +172,7 @@
             // bt_back
             // 
             this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
-            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.Goldenrod;
             this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.bt_back.BorderRadius = 0;
             this.bt_back.ButtonText = "ย้อนกลับ";
@@ -191,8 +191,9 @@
             this.bt_back.IconZoom = 56D;
             this.bt_back.IsTab = false;
             this.bt_back.Location = new System.Drawing.Point(12, 6);
+            this.bt_back.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.bt_back.Name = "bt_back";
-            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.Normalcolor = System.Drawing.Color.Goldenrod;
             this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
             this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_back.selected = false;

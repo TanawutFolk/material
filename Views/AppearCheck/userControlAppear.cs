@@ -91,6 +91,8 @@ namespace RawMat.Views.AppearCheck
             dtg_packing_size_appear.CellValidating += dtg_packing_size_appear_CellValidating;
 
             dtg_show_appear.CellValueChanged += dtg_show_appear_CellValueChanged;
+            dtg_show_appear.CellFormatting += dtg_show_appear_CellFormatting;
+            dtg_show_appear.Paint += dtg_show_appear_Paint;
             dtg_show_appear.CellValidating += dtg_show_appear_CellValidating;
             dtg_show_appear.CurrentCellChanged += dtg_show_appear_CurrentCellChanged;
             dtg_show_appear.CellEndEdit += dtg_show_appear_CellEndEdit;
@@ -133,6 +135,7 @@ namespace RawMat.Views.AppearCheck
             lb_recDate.Text = "Receive Date : " + propQA.dtReceiveDate.ToString("dd-MMM-yyyy");
             lb_inspQty.Text = "Inspection Qty : " + propQA.inspQty;
             lb_lotSize.Text = "Lot Size : " + propQA.Qty;
+            ConfigureAllInspectionCount();
             //lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
             propQA.EMP_ID = employee.EMP_CODE;
             DataTable dt = new DataTable();
@@ -472,6 +475,33 @@ namespace RawMat.Views.AppearCheck
             }
 
             lbCount.Text = $"{inspectedQty} / {totalQty}";
+
+            if (IsAllAppearanceMode())
+            {
+                int targetQty = GetAppearanceAcceptanceTargetQty();
+                if (targetQty <= 0)
+                {
+                    targetQty = totalQty;
+                }
+
+                lb_CountAll.Text = $"{inspectedQty} / {targetQty}";
+            }
+        }
+
+        private void ConfigureAllInspectionCount()
+        {
+            bool visible = IsAllAppearanceMode();
+            lb_CountAll.Visible = visible;
+            label3.Visible = visible;
+
+            if (!visible)
+            {
+                return;
+            }
+
+            lb_CountAll.ForeColor = Color.Blue;
+            int targetQty = GetAppearanceAcceptanceTargetQty();
+            lb_CountAll.Text = $"0 / {targetQty}";
         }
 
         // Event Handler สำหรับ Timer
@@ -551,6 +581,8 @@ namespace RawMat.Views.AppearCheck
             if (dtg_show_appear != null)
             {
                 dtg_show_appear.CellValueChanged -= dtg_show_appear_CellValueChanged;
+                dtg_show_appear.CellFormatting -= dtg_show_appear_CellFormatting;
+                dtg_show_appear.Paint -= dtg_show_appear_Paint;
                 dtg_show_appear.CellValidating -= dtg_show_appear_CellValidating;
                 dtg_show_appear.CurrentCellChanged -= dtg_show_appear_CurrentCellChanged;
                 dtg_show_appear.CellEndEdit -= dtg_show_appear_CellEndEdit;
@@ -1397,9 +1429,10 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_show_appear.Columns["DISPLAY_NO"] != null)
             {
-                dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับ";
+                dtg_show_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับที่";
                 dtg_show_appear.Columns["DISPLAY_NO"].ReadOnly = true;
                 dtg_show_appear.Columns["DISPLAY_NO"].Width = 70;
+                dtg_show_appear.Columns["DISPLAY_NO"].FillWeight = 85;
                 dtg_show_appear.Columns["DISPLAY_NO"].DisplayIndex = 0;
                 dtg_show_appear.Columns["DISPLAY_NO"].Visible = !isAllAppearance;
             }
@@ -1425,6 +1458,7 @@ namespace RawMat.Views.AppearCheck
                 dtg_show_appear.Columns["APPEARANCE_DATE"].Visible = isAllAppearance;
                 if (isAllAppearance)
                 {
+                    dtg_show_appear.Columns["APPEARANCE_DATE"].FillWeight = 95;
                     dtg_show_appear.Columns["APPEARANCE_DATE"].DisplayIndex = 0;
                 }
             }
@@ -1445,8 +1479,11 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_show_appear.Columns["QTY_SELECT"] != null)
             {
-                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = isAllAppearance ? "จำนวนตรวจสอบ" : "ต้องหยิบ";
+                dtg_show_appear.Columns["QTY_SELECT"].HeaderText = isAllAppearance
+                    ? "จำนวนตรวจสอบ"
+                    : "จำนวนตรวจสอบ/Packing";
                 dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = !isAllAppearance;
+                dtg_show_appear.Columns["QTY_SELECT"].FillWeight = 105;
                 dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 1;
             }
 
@@ -1454,13 +1491,15 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_show_appear.Columns["QTY_OK"].HeaderText = "OK";
                 dtg_show_appear.Columns["QTY_OK"].ReadOnly = false;
+                dtg_show_appear.Columns["QTY_OK"].FillWeight = isAllAppearance ? 80 : 85;
                 dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 2;
             }
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
             {
-                dtg_show_appear.Columns["QTY_NG"].HeaderText = isAllAppearance ? "Pending" : "NG";
+                dtg_show_appear.Columns["QTY_NG"].HeaderText = "Pending";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
+                dtg_show_appear.Columns["QTY_NG"].FillWeight = isAllAppearance ? 80 : 85;
                 dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 3;
             }
 
@@ -1469,13 +1508,25 @@ namespace RawMat.Views.AppearCheck
                 dtg_show_appear.Columns["JUDGE"].HeaderText = "ผล";
                 dtg_show_appear.Columns["JUDGE"].ReadOnly = true;  // Editable only in last row
                 dtg_show_appear.Columns["JUDGE"].DisplayIndex = 4;
+                dtg_show_appear.Columns["JUDGE"].Visible = isAllAppearance;
+                dtg_show_appear.Columns["JUDGE"].FillWeight = 90;
+                dtg_show_appear.Columns["JUDGE"].DefaultCellStyle.Alignment =
+                    DataGridViewContentAlignment.MiddleCenter;
+                dtg_show_appear.Columns["JUDGE"].DefaultCellStyle.WrapMode =
+                    DataGridViewTriState.True;
             }
 
             if (dtg_show_appear.Columns["JUDGE_LOT_SIZE"] != null)
             {
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgment (Lot size)";
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].HeaderText = "Appearance Judgement";
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = false;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = !isAllAppearance;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].FillWeight = 95;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DisplayIndex = 4;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DefaultCellStyle.Alignment =
+                    DataGridViewContentAlignment.MiddleCenter;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DefaultCellStyle.WrapMode =
+                    DataGridViewTriState.True;
             }
 
             if (dtg_show_appear.Columns["ROW_STATE"] != null)
@@ -1496,12 +1547,166 @@ namespace RawMat.Views.AppearCheck
             dtg_show_appear.ColumnHeadersHeight = 42;
 
             ApplyRowReadOnly();
+            dtg_show_appear.Invalidate();
+        }
+
+        private void dtg_show_appear_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+            {
+                return;
+            }
+
+            string columnName = dtg_show_appear.Columns[e.ColumnIndex].Name;
+            if ((IsAllAppearanceMode() && columnName == "JUDGE")
+                || (!IsAllAppearanceMode() && columnName == "JUDGE_LOT_SIZE"))
+            {
+                e.Value = "";
+                e.FormattingApplied = true;
+            }
+        }
+
+        private void dtg_show_appear_Paint(object sender, PaintEventArgs e)
+        {
+            string resultColumnName = IsAllAppearanceMode() ? "JUDGE" : "JUDGE_LOT_SIZE";
+            if (dtg_show_appear.Columns[resultColumnName] == null
+                || !dtg_show_appear.Columns[resultColumnName].Visible)
+            {
+                return;
+            }
+
+            DataGridViewColumn resultColumn = dtg_show_appear.Columns[resultColumnName];
+            Rectangle columnRectangle = dtg_show_appear.GetColumnDisplayRectangle(resultColumn.Index, true);
+            if (columnRectangle.Width <= 0)
+            {
+                return;
+            }
+
+            int top = dtg_show_appear.ColumnHeadersHeight;
+            int bottom = dtg_show_appear.ClientSize.Height;
+            if (dtg_show_appear.Controls.OfType<HScrollBar>().Any(scrollBar => scrollBar.Visible))
+            {
+                bottom -= SystemInformation.HorizontalScrollBarHeight;
+            }
+
+            Rectangle mergedRectangle = new Rectangle(
+                columnRectangle.X,
+                top,
+                columnRectangle.Width,
+                Math.Max(bottom - top, 0));
+
+            if (mergedRectangle.Height <= 0)
+            {
+                return;
+            }
+
+            string summaryText = GetAppearanceSummaryText();
+            using (SolidBrush backgroundBrush = new SolidBrush(dtg_show_appear.BackgroundColor))
+            using (Pen borderPen = new Pen(Color.Black))
+            using (Font resultFont = new Font(dtg_show_appear.Font.FontFamily, 14F, FontStyle.Regular))
+            {
+                e.Graphics.FillRectangle(backgroundBrush, mergedRectangle);
+                e.Graphics.DrawRectangle(
+                    borderPen,
+                    mergedRectangle.X,
+                    mergedRectangle.Y,
+                    Math.Max(mergedRectangle.Width - 1, 0),
+                    Math.Max(mergedRectangle.Height - 1, 0));
+
+                TextRenderer.DrawText(
+                    e.Graphics,
+                    summaryText,
+                    resultFont,
+                    mergedRectangle,
+                    Color.Blue,
+                    TextFormatFlags.HorizontalCenter
+                    | TextFormatFlags.VerticalCenter
+                    | TextFormatFlags.WordBreak
+                    | TextFormatFlags.NoPadding);
+            }
+        }
+
+        private string GetAppearanceSummaryText()
+        {
+            if (!(dtg_show_appear.DataSource is DataTable dataSource))
+            {
+                return "";
+            }
+
+            int inspectedQty = 0;
+            int totalPending = 0;
+            int targetQty = GetAppearanceAcceptanceTargetQty();
+            int plannedTotalQty = 0;
+
+            if (dtg_packing_size_appear.DataSource is DataTable packingData)
+            {
+                foreach (DataRow row in packingData.Rows)
+                {
+                    int plannedQty = ParseInt(row["QTY_SELECT"]);
+                    int remainingQty = ParseInt(row["REMAIN_PACKING_SIZE"]);
+                    plannedTotalQty += plannedQty;
+                    inspectedQty += Math.Max(plannedQty - remainingQty, 0);
+                    totalPending += ParseInt(row["QTY_NG"]);
+                }
+            }
+
+            if (targetQty <= 0)
+            {
+                targetQty = plannedTotalQty;
+            }
+
+            if (dataSource.Columns.Contains("ROW_STATE"))
+            {
+                foreach (DataRow row in dataSource.Rows)
+                {
+                    if (!string.Equals(row["ROW_STATE"]?.ToString(), "INPUT", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    int qtySelect = ParseInt(row["QTY_SELECT"]);
+                    int qtyOk = ParseInt(row["QTY_OK"]);
+                    int qtyPending = ParseInt(row["QTY_NG"]);
+                    if (qtySelect > 0 && qtyOk + qtyPending == qtySelect)
+                    {
+                        inspectedQty += qtySelect;
+                        totalPending += qtyPending;
+                    }
+                }
+            }
+
+            if (totalPending > 0)
+            {
+                return $"Pending{Environment.NewLine}{totalPending} pcs.";
+            }
+
+            if (targetQty <= 0 || inspectedQty < targetQty)
+            {
+                return "";
+            }
+
+            int lotSize = ParseInt(propQA.Qty);
+            if (lotSize <= 0)
+            {
+                lotSize = selectedLotSize;
+            }
+
+            return lotSize > 0
+                ? $"Accept{Environment.NewLine}{lotSize} pcs."
+                : "";
         }
 
         private bool IsAllAppearanceMode()
         {
             return propQA.SAMPLING_TYPE == "1"
                 || string.Equals(propQA.SAMPLING_NAME?.Trim(), "All", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private int GetAppearanceAcceptanceTargetQty()
+        {
+            return IsAllAppearanceMode()
+                ? ParseInt(propQA.Qty)
+                : ParseInt(propQA.inspQty);
         }
 
         // Apply ReadOnly to all rows except the last one
@@ -1903,7 +2108,7 @@ namespace RawMat.Views.AppearCheck
             {
                 // Requery total inspected for this report (across all batches, INUSE=1)
                 int totalInspected = conQA.GetTotalInspected(propQA); // SUM(QTY_SELECT) WHERE REPORT_NO=..., INUSE=1
-                int targetInspectionQty = ParseInt(propQA.inspQty);
+                int targetInspectionQty = GetAppearanceAcceptanceTargetQty();
                 int latestRemainingQty = GetLatestRemainingInspectionQty();
                 bool isAllComplete = latestRemainingQty <= 0 || (targetInspectionQty > 0 && totalInspected >= targetInspectionQty);
                 bool isBatchComplete = projectedSelectedPackQty >= samplePerPackQty;
@@ -1956,7 +2161,12 @@ namespace RawMat.Views.AppearCheck
                         // Complete: Set final status if needed (assume "9" for complete, but use existing logic)
                         propQA.TOTAL_STATUS = "9"; // Complete - adjust if needed
                         conQA.UpdateReportStatus(propQA);
-                        MessageBox.Show("ทำครบแล้ว", "ทำครบแล้ว", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        using (frmAlert alert = new frmAlert())
+                        {
+                            alert.ShowDialog(FindForm());
+                        }
+
                         bt_Appear_Click(); // Back to select
                     }
                     else
@@ -2194,6 +2404,10 @@ namespace RawMat.Views.AppearCheck
             finally
             {
                 _suppressEvents = false; // ปลดล็อคเสมอ
+                if (IsAllAppearanceMode())
+                {
+                    dtg_show_appear.Invalidate();
+                }
             }
         }
 
@@ -2355,7 +2569,7 @@ namespace RawMat.Views.AppearCheck
             totalNgRequired = requiredNgQty;
             isNgModeActive = true;
             gb_ngMode.Enabled = true;
-            label2.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
+            lb_Qty.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
 
             // Suspend layout และ binding ก่อน reset
             dtg_ngMode.SuspendLayout();
@@ -2448,7 +2662,7 @@ namespace RawMat.Views.AppearCheck
             gb_ngMode.Enabled = false;
             dtg_ngMode.DataSource = null;  // Clear data
             totalNgRequired = 0;
-            label2.Text = "ระบุอาการเสียแล้ว: 0 / 0 ชิ้น";
+            lb_Qty.Text = "ระบุอาการเสียแล้ว: 0 / 0 ชิ้น";
         }
 
         // Handle การเปลี่ยน QTY_NG ใน dtg_show_appear (เฉพาะเมื่อ JUDGE == "NG")
@@ -2472,7 +2686,7 @@ namespace RawMat.Views.AppearCheck
                     }
                 }
                 totalNgRequired = newQtyNg;
-                label2.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
+                lb_Qty.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
             }
         }
 
@@ -2643,7 +2857,7 @@ namespace RawMat.Views.AppearCheck
         {
             int sumNg = GetNgSum();  // คำนวณ sum ครั้งเดียวจาก GetNgSum
 
-            label2.Text = $"ระบุอาการเสียแล้ว: {sumNg} / {totalNgRequired} ชิ้น";
+            lb_Qty.Text = $"ระบุอาการเสียแล้ว: {sumNg} / {totalNgRequired} ชิ้น";
 
             // Button logic ย้ายมาที่นี่เพื่อ consistency (enable ถ้า sum == total, disable ถ้า > หรือ < )
         }

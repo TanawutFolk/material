@@ -8,10 +8,22 @@ namespace RawMat.Views.Setting.form
     public partial class frmAddNewNgMode : Form
     {
         private readonly SettingControllers _controller = new SettingControllers();
+        private readonly string _ngModeId;
+        private readonly string _ngMode;
+        private readonly bool _isEditMode;
 
         public frmAddNewNgMode()
+            : this("", "")
+        {
+        }
+
+        public frmAddNewNgMode(string ngModeId, string ngMode)
         {
             InitializeComponent();
+
+            _ngModeId = ngModeId?.Trim() ?? "";
+            _ngMode = ngMode?.Trim() ?? "";
+            _isEditMode = !string.IsNullOrWhiteSpace(_ngModeId);
 
             Load += frmAddNewNgMode_Load;
             btnSave.Click += btnSave_Click;
@@ -20,8 +32,10 @@ namespace RawMat.Views.Setting.form
 
         private void frmAddNewNgMode_Load(object sender, EventArgs e)
         {
-            Text = "Add New NG Mode";
+            Text = _isEditMode ? "Edit NG Mode" : "Add New NG Mode";
             StartPosition = FormStartPosition.CenterParent;
+            if (_isEditMode)
+                txtSerial.Text = _ngMode;
             txtSerial.Focus();
         }
 
@@ -50,6 +64,7 @@ namespace RawMat.Views.Setting.form
         {
             return new SettingProperty
             {
+                NG_Mode_ID = _ngModeId,
                 NG_Mode = txtSerial.Text.Trim()
             };
         }
@@ -63,7 +78,9 @@ namespace RawMat.Views.Setting.form
                 if (frm.ShowDialog(this) != DialogResult.Yes) return;
             }
 
-            bool result = _controller.SaveNgModeSetting(GetDataFromScreen());
+            bool result = _isEditMode
+                ? _controller.UpdateNgModeSetting(GetDataFromScreen())
+                : _controller.SaveNgModeSetting(GetDataFromScreen());
 
             if (!result)
             {

@@ -58,6 +58,7 @@ namespace RawMat.Views.DimensionCheck
         private int currentDimensionImageIndex = 0;
         private Image _defaultImage = null; // ถ้าไม่ต้องการ placeholder จริง
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
+        private bool _isNavigatingAway;
 
         // Dictionary เพื่อเก็บ VALUE ของแต่ละ POINT_ORDER และ SAMPLING_NO
         private Dictionary<string, Dictionary<string, decimal>> pointValues = new Dictionary<string, Dictionary<string, decimal>>();
@@ -205,6 +206,21 @@ namespace RawMat.Views.DimensionCheck
 
         private async void userControlDimension_Load(object sender, EventArgs e)
         {
+            bool hasCavity = int.TryParse(propQA.CAVITY_QTY, out int cavityQty) &&
+                             cavityQty > 0 &&
+                             propQA.dtCavity != null &&
+                             propQA.dtCavity.Rows.Count > 0;
+
+            // Set the final layout before loading images so the picture does not jump.
+            gb_cavity.Visible = hasCavity;
+            lb_TotalCavity.Visible = hasCavity;
+            bt_confirmCavity.Enabled = hasCavity;
+            picbox_dim.Location = hasCavity
+                ? new System.Drawing.Point(17, 330)
+                : new System.Drawing.Point(17, 113);
+            picbox_dim.Size = hasCavity
+                ? new Size(1076, 339)
+                : new Size(1076, 556);
 
             lb_reportNo.Text = "Report No. : " + propQA.Report_No;
             lb_invoice.Text = "Invoice : " + propQA.Invoice_No;
@@ -262,9 +278,8 @@ namespace RawMat.Views.DimensionCheck
             }
 
 
-            if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
+            if (hasCavity)
             {
-                lb_TotalCavity.Visible = true;
                 lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
 
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE);
@@ -292,13 +307,19 @@ namespace RawMat.Views.DimensionCheck
             }
             else
             {
-                gb_cavity.Visible = false;
-                lb_TotalCavity.Visible = false;
-                
-                picbox_dim.Location = new System.Drawing.Point(17, 113);
-                picbox_dim.Size = new Size(1076, 556);
+                if (!int.TryParse(propQA.SAMPLING_QTY, out int samplingQty) || samplingQty <= 0)
+                {
+                    MessageBox.Show("ไม่พบจำนวน Sampling สำหรับ Dimension ของ M-CODE : " + propQA.M_CODE);
+                    return;
+                }
 
-                GenerateDataTableDimension(null, Convert.ToInt32(propQA.SAMPLING_QTY));
+                if (propQA.dtDimEq == null || propQA.dtDimEq.Rows.Count == 0)
+                {
+                    MessageBox.Show("ไม่พบ Dimension Equipment/Checkpoint ของ M-CODE : " + propQA.M_CODE);
+                    return;
+                }
+
+                GenerateDataTableDimension(null, samplingQty);
 
             }
 
@@ -334,6 +355,11 @@ namespace RawMat.Views.DimensionCheck
 
         private void dtg_dimension_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
+            if (_isNavigatingAway)
+            {
+                return;
+            }
+
             // เช็คว่ากำลังแก้ไขคอลัมน์ "Value"
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE")
             {
@@ -667,6 +693,16 @@ namespace RawMat.Views.DimensionCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
+            bool hasCavity = int.TryParse(propQA.CAVITY_QTY, out int cavityQty) &&
+                             cavityQty > 0 &&
+                             propQA.dtCavity != null &&
+                             propQA.dtCavity.Rows.Count > 0;
+
+            if (!hasCavity)
+            {
+                return;
+            }
+
             dtg_cavity.EndEdit();
 
             int totalQty = 0;
@@ -755,6 +791,10 @@ namespace RawMat.Views.DimensionCheck
 
         private void dtg_cavity_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
+            if (_isNavigatingAway)
+            {
+                return;
+            }
 
             if (e.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
@@ -1086,6 +1126,7 @@ namespace RawMat.Views.DimensionCheck
 
         public void bt_dim_Click()
         {
+            PrepareForNavigation();
 
             userControlSelectDimension usrConSelectDim = new userControlSelectDimension()
             {
@@ -1160,6 +1201,42 @@ namespace RawMat.Views.DimensionCheck
 
 
 
+        }
+
+        private void PrepareForNavigation()
+        {
+            _isNavigatingAway = true;
+
+            if (checkTimer != null)
+            {
+                checkTimer.Stop();
+            }
+
+            CancelGridEdit(dtg_dimension);
+            CancelGridEdit(dtg_cavity);
+            bindingSource?.CancelEdit();
+        }
+
+        private void CancelGridEdit(DataGridView grid)
+        {
+            if (grid == null || grid.IsDisposed)
+            {
+                return;
+            }
+
+            try
+            {
+                grid.CancelEdit();
+
+                if (grid.DataSource != null)
+                {
+                    BindingContext[grid.DataSource]?.CancelCurrentEdit();
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                // The grid is already being detached from its binding context.
+            }
         }
 
         private void bt_prev_Click(object sender, EventArgs e)
@@ -1691,6 +1768,25 @@ namespace RawMat.Views.DimensionCheck
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == Keys.Enter &&
+                dtg_dimension.ContainsFocus &&
+                dtg_dimension.CurrentCell != null &&
+                dtg_dimension.CurrentCell.OwningColumn.Name == "VALUE" &&
+                dtg_dimension.CurrentCell is DataGridViewTextBoxCell &&
+                !dtg_dimension.CurrentCell.ReadOnly)
+            {
+                int currentRowIndex = dtg_dimension.CurrentCell.RowIndex;
+
+                if (!dtg_dimension.EndEdit())
+                {
+                    return true;
+                }
+
+                bindingSource.EndEdit();
+                BeginInvoke(new Action(() => MoveToNextValueRow(currentRowIndex)));
+                return true;
+            }
+
             if (dimensionImages != null && dimensionImages.Count > 1)
             {
                 if (keyData == Keys.PageUp || keyData == Keys.PageDown)
@@ -1717,6 +1813,31 @@ namespace RawMat.Views.DimensionCheck
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void MoveToNextValueRow(int currentRowIndex)
+        {
+            if (IsDisposed ||
+                dtg_dimension.IsDisposed ||
+                !dtg_dimension.IsHandleCreated ||
+                !dtg_dimension.Columns.Contains("VALUE"))
+            {
+                return;
+            }
+
+            for (int rowIndex = currentRowIndex + 1; rowIndex < dtg_dimension.Rows.Count; rowIndex++)
+            {
+                DataGridViewCell valueCell = dtg_dimension.Rows[rowIndex].Cells["VALUE"];
+                if (!valueCell.Visible || valueCell.ReadOnly || valueCell is DataGridViewComboBoxCell)
+                {
+                    continue;
+                }
+
+                dtg_dimension.CurrentCell = valueCell;
+                dtg_dimension.Focus();
+                dtg_dimension.BeginEdit(true);
+                return;
+            }
         }
 
         protected override void Dispose(bool disposing)

@@ -207,8 +207,9 @@ namespace RawMat.Views.DimensionCheck
                     //Dimension sampling type
 
                     propQA.dtDimSamp = conQA.DimensionSampling(propQA);
-                    if (propQA.dtDimSamp == null)
+                    if (propQA.dtDimSamp == null || propQA.dtDimSamp.Rows.Count == 0)
                     {
+                        MessageBox.Show("ไม่พบ Dimension Sampling Setting ของ M-CODE : " + propQA.M_CODE);
                         return;
                     }
                     else
@@ -222,14 +223,28 @@ namespace RawMat.Views.DimensionCheck
                         propQA.CAVITY_NAME = propQA.dtDimSamp.Rows[0]["Cavity_Name"].ToString();
 
 
-                        if (propQA.SAMPLING_TYPE == "4" && (propQA.CAVITY_QTY == "0" || propQA.CAVITY_QTY == string.Empty))
+                        int.TryParse(propQA.CAVITY_QTY, out int cavityQty);
+                        bool hasCavity = cavityQty > 0;
+                        List<string> cavityNames = (propQA.CAVITY_NAME ?? string.Empty)
+                            .Split(',')
+                            .Select(name => name.Trim())
+                            .Where(name => !string.IsNullOrWhiteSpace(name))
+                            .ToList();
+
+                        if (propQA.SAMPLING_TYPE == "4" && !hasCavity)
                         {
                             MessageBox.Show("ต้องมีการ Setting จำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
                             return;
                         }
-                        else if (propQA.SAMPLING_TYPE == "4" && (propQA.CAVITY_NAME == "0" || propQA.CAVITY_QTY == string.Empty))
+                        else if (propQA.SAMPLING_TYPE == "4" &&
+                                 (string.IsNullOrWhiteSpace(propQA.CAVITY_NAME) || propQA.CAVITY_NAME == "0"))
                         {
                             MessageBox.Show("ต้องมีการ Setting จำนวน Cavity_Name ของ M-CODE : " + propQA.M_CODE);
+                            return;
+                        }
+                        else if (hasCavity && cavityNames.Count < cavityQty)
+                        {
+                            MessageBox.Show("จำนวน Cavity_Name ไม่ตรงกับจำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
                             return;
                         }
                         else if ((propQA.SAMPLING_TYPE != "3") && (propQA.SAMPLING_QTY == "0" || propQA.SAMPLING_QTY == string.Empty))
@@ -237,7 +252,7 @@ namespace RawMat.Views.DimensionCheck
                             MessageBox.Show("ต้องมีการ Setting จำนวน Sampling อย่างน้อย 1 ตัว ของ M-CODE : " + propQA.M_CODE);
                             return;
                         }
-                        else if (propQA.SAMPLING_TYPE == "2" && (propQA.CAVITY_QTY != "0"))
+                        else if (propQA.SAMPLING_TYPE == "2" && hasCavity)
                         {
                             MessageBox.Show("ต้องไม่มีการ Setting จำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
                             return;
@@ -249,7 +264,7 @@ namespace RawMat.Views.DimensionCheck
                             //dtg 
                             if (propQA.SAMPLING_TYPE == "4")
                             {
-                                propQA.Cavity_Name_List = propQA.CAVITY_NAME.Split(',').ToList();
+                                propQA.Cavity_Name_List = cavityNames;
 
                                 propQA.dtCavity = new DataTable();
                                 if (!propQA.dtCavity.Columns.Contains("CAVITY_NAME"))
@@ -268,7 +283,7 @@ namespace RawMat.Views.DimensionCheck
 
                                 }
 
-                                for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
+                                for (int i = 0; i < cavityQty; i++)
                                 {
                                     // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Dimension Check
                                     propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
@@ -279,7 +294,7 @@ namespace RawMat.Views.DimensionCheck
                             else if (propQA.SAMPLING_TYPE == "3")
                             {
 
-                                propQA.Cavity_Name_List = propQA.CAVITY_NAME.Split(',').ToList();
+                                propQA.Cavity_Name_List = cavityNames;
 
                                 propQA.dtCavity = new DataTable();
                                 if (!propQA.dtCavity.Columns.Contains("CAVITY_NAME"))
@@ -313,9 +328,15 @@ namespace RawMat.Views.DimensionCheck
                                     propQA.SAMPLING_QTY = dtSampLot.Rows[0]["Sampling_Qty"].ToString();
                                 }
 
-                                if(Convert.ToInt32(propQA.CAVITY_QTY) != 0)
+                                if (!int.TryParse(propQA.SAMPLING_QTY, out int samplingQty) || samplingQty <= 0)
                                 {
-                                    for (int i = 0; i < Convert.ToInt32(propQA.CAVITY_QTY); i++)
+                                    MessageBox.Show("Dimension Sampling Qty ต้องมากกว่า 0 ของ M-CODE : " + propQA.M_CODE);
+                                    return;
+                                }
+
+                                if (hasCavity)
+                                {
+                                    for (int i = 0; i < cavityQty; i++)
                                     {
                                         // ให้ผู้ใช้กรอกจำนวน Sampling ของแต่ละ Cavity เองในหน้า Dimension Check
                                         propQA.dtCavity.Rows.Add(new object[] { propQA.Cavity_Name_List[i].ToString(), DBNull.Value });
@@ -341,8 +362,9 @@ namespace RawMat.Views.DimensionCheck
 
                     //Dimension equipment
                     propQA.dtDimEq = conQA.DimensionEquipment(propQA);
-                    if (propQA.dtDimEq == null)
+                    if (propQA.dtDimEq == null || propQA.dtDimEq.Rows.Count == 0)
                     {
+                        MessageBox.Show("ไม่พบ Dimension Equipment/Checkpoint ของ M-CODE : " + propQA.M_CODE);
                         return;
                     }
 

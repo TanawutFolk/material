@@ -526,6 +526,7 @@
     <Compile Include="Views\Setting\UserControl\NgModeSettingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Views\Setting\SettingGridActionMenu.cs" />
     <Compile Include="Views\Setting\UserControl\NgModeSettingControl.Designer.cs">
       <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </Compile>

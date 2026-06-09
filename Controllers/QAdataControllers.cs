@@ -69,6 +69,46 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public bool InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.InsertReceiveRefreshLog(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    return true;
+                }
+
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return false;
+        }
+
+        public DataTable SearchLatestReceiveRefreshLog()
+        {
+            try
+            {
+                _resultData = _model.SearchLatestReceiveRefreshLog();
+                if (_resultData.StatusOnDb)
+                {
+                    return _resultData.ResultOnDb;
+                }
+
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return null;
+        }
+
         public int SearchInspectionList(QAdataProperty dataItem)
         {
 

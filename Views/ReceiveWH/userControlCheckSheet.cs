@@ -26,6 +26,8 @@ namespace RawMat.Views.ReceiveWH
         private BackgroundWorker bgWorker = new BackgroundWorker();
         //private BackgroundWorker bgWorkerHeavy; // สำหรับงานหนัก
         private Timer loadingTimer; // เพิ่ม Timer เพื่อควบคุมการอัปเดต UI
+        private Timer autoRefreshTimer;
+        private bool isRefreshing;
         EmployeeProperty employee = EmployeeManager.CurrentEmployee;
 
 
@@ -41,6 +43,10 @@ namespace RawMat.Views.ReceiveWH
             loadingTimer.Interval = 100;
             loadingTimer.Tick += LoadingTimer_Tick;
 
+            autoRefreshTimer = new Timer();
+            autoRefreshTimer.Interval = GetAutoRefreshInterval();
+            autoRefreshTimer.Tick += AutoRefreshTimer_Tick;
+            Disposed += userControlCheckSheet_Disposed;
         }
 
         // Event Handler ของ Timer
@@ -59,25 +65,90 @@ namespace RawMat.Views.ReceiveWH
 
         private async void bt_okCheckSheet_Click(object sender, EventArgs e)
         {
-            //picLoading.Visible = true;
-            //picLoading.Visible = true;
-            //bgWorker.RunWorkerAsync(); // ให้ BackgroundWorker ทำงาน //Test
+            await RefreshReceiveDataAsync("MANUAL");
+        }
+
+        private async void AutoRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            await RefreshReceiveDataAsync("AUTO");
+        }
+
+        private async Task RefreshReceiveDataAsync(string refreshType)
+        {
+            if (isRefreshing || IsDisposed || !Visible)
+            {
+                return;
+            }
+
+            isRefreshing = true;
             SetSearchProgressVisible(true);
             bool success = false;
+            DateTime receiveDate = dtp_recDate.Value;
 
             try
             {
-                success = await Task.Run(() => ProcessData()); // เรียกฟังก์ชัน async
+                bool showMessages = refreshType == "MANUAL";
+                success = await Task.Run(() => ProcessData(receiveDate, showMessages));
+                if (success)
+                {
+                    await SaveRefreshLogAsync(refreshType, receiveDate);
+                }
             }
             finally
             {
                 SetSearchProgressVisible(false);
+                isRefreshing = false;
+            }
+        }
+
+        private async Task SaveRefreshLogAsync(string refreshType, DateTime receiveDate)
+        {
+            QAdataProperty refreshLog = new QAdataProperty
+            {
+                REFRESH_TYPE = refreshType,
+                EMP_ID = employee?.EMP_CODE ?? string.Empty,
+                dtReceiveDate = receiveDate,
+                MY_COMPUTER_NAME = Environment.MachineName
+            };
+
+            bool saved = await Task.Run(() => conQA.InsertReceiveRefreshLog(refreshLog));
+            if (saved)
+            {
+                await LoadLatestRefreshAsync();
+            }
+        }
+
+        private async Task LoadLatestRefreshAsync()
+        {
+            DataTable latest = await Task.Run(() => conQA.SearchLatestReceiveRefreshLog());
+            if (latest == null || latest.Rows.Count == 0)
+            {
+                lb_update.Text = "Last update: -";
+                return;
             }
 
-            if (success)
+            DataRow row = latest.Rows[0];
+            DateTime refreshAt = Convert.ToDateTime(row["REFRESH_AT"]);
+            lb_update.Text = $"Last update: {refreshAt:dd/MM/yyyy HH:mm:ss}";
+            lb_update.Left = Math.Max(dtg_receiveMat.Left, dtg_receiveMat.Right - lb_update.Width);
+        }
+
+        private int GetAutoRefreshInterval()
+        {
+            int minutes;
+            string configuredMinutes = ConfigurationManager.AppSettings["ReceiveCheckSheetAutoRefreshMinutes"];
+            if (!int.TryParse(configuredMinutes, out minutes) || minutes <= 0)
             {
-                //MessageBox.Show("การประมวลผลเสร็จสิ้นเรียบร้อย", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                minutes = 5;
             }
+
+            return minutes > 35791 ? int.MaxValue : minutes * 60 * 1000;
+        }
+
+        private void userControlCheckSheet_Disposed(object sender, EventArgs e)
+        {
+            loadingTimer?.Stop();
+            autoRefreshTimer?.Stop();
         }
 
         private void SetSearchProgressVisible(bool isVisible)
@@ -96,21 +167,21 @@ namespace RawMat.Views.ReceiveWH
             {
                 loadingTimer.Stop();
                 pgbOkSearch.Value = 100;
-                pgbOkSearch.Visible = true;
+                pgbOkSearch.Visible = false;
             }
 
             bt_okCheckSheet.Enabled = !isVisible;
         }
 
-        private bool ProcessData()
+        private bool ProcessData(DateTime receiveDate, bool showMessages = true)
         {
             try
             {
                 PronesProperty propPrones = new PronesProperty();
                 QAdataProperty propQA = new QAdataProperty();
 
-                propPrones.rec_date = dtp_recDate.Value.ToString("yyyy-MM-dd");
-                propQA.dtReceiveDate = dtp_recDate.Value;
+                propPrones.rec_date = receiveDate.ToString("yyyy-MM-dd");
+                propQA.dtReceiveDate = receiveDate;
                 propQA.dtToday = conQA.SearchToday();
                 propQA.Receive_Date = propPrones.rec_date;
                 propQA.EMP_ID = employee.EMP_CODE;
@@ -119,21 +190,30 @@ namespace RawMat.Views.ReceiveWH
                 DataTable dataSource = conPrones.SearchRecDate(propPrones);
                 if (dataSource.Rows.Count == 0)
                 {
-                    Invoke(new Action(() => MessageBox.Show("ไม่พบ Data ที่จะ Inspection ในวัน " + dtp_recDate.Value.ToString("yyyy-MM-dd"))));
+                    if (showMessages)
+                    {
+                        Invoke(new Action(() => MessageBox.Show("ไม่พบ Data ที่จะ Inspection ในวัน " + receiveDate.ToString("yyyy-MM-dd"))));
+                    }
                     return false;
                 }
 
                 DataTable inspectionMaster = conQA.SearchActiveInspectionList();
                 if (inspectionMaster == null || inspectionMaster.Rows.Count == 0)
                 {
-                    Invoke(new Action(() => MessageBox.Show("ไม่พบข้อมูล Inspection List ที่เปิดใช้งานอยู่")));
+                    if (showMessages)
+                    {
+                        Invoke(new Action(() => MessageBox.Show("ไม่พบข้อมูล Inspection List ที่เปิดใช้งานอยู่")));
+                    }
                     return false;
                 }
 
                 DataTable inspectionDataSource = FilterInspectionReceiveRows(dataSource, inspectionMaster);
                 if (inspectionDataSource.Rows.Count == 0)
                 {
-                    Invoke(new Action(() => MessageBox.Show("ไม่พบ M-CODE ที่อยู่ใน Inspection List ในวัน " + dtp_recDate.Value.ToString("yyyy-MM-dd"))));
+                    if (showMessages)
+                    {
+                        Invoke(new Action(() => MessageBox.Show("ไม่พบ M-CODE ที่อยู่ใน Inspection List ในวัน " + receiveDate.ToString("yyyy-MM-dd"))));
+                    }
                     return false;
                 }
 
@@ -164,11 +244,20 @@ namespace RawMat.Views.ReceiveWH
                     return false;
                 }
 
-                return GenerateIdsForDataGridView(dtg_receiveMat, propQA);
+                bool generateSuccess = false;
+                Invoke(new Action(() =>
+                {
+                    generateSuccess = GenerateIdsForDataGridView(dtg_receiveMat, propQA);
+                }));
+
+                return generateSuccess;
             }
             catch (Exception ex)
             {
-                Invoke(new Action(() => MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                if (showMessages)
+                {
+                    Invoke(new Action(() => MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                }
                 return false;
             }
         }
@@ -292,20 +381,7 @@ namespace RawMat.Views.ReceiveWH
         private void screenReceived(DataGridView dataGridView , QAdataProperty dataItem)
         {
             dataItem.process = "Receive_WH";
-
-            if (!dataGridView.Columns.Contains("REPORT_NO"))
-            {
-                // สร้างคอลัมน์ใหม่
-                DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn
-                {
-                    Name = "REPORT_NO", // ชื่อของคอลัมน์
-                    HeaderText = "Report No.", // ข้อความหัวคอลัมน์
-                    ReadOnly = false // สามารถแก้ไขได้ (หรือจะตั้งเป็น true ถ้าต้องการให้แก้ไขไม่ได้)
-                };
-
-                // เพิ่มคอลัมน์ลงใน DataGridView
-                dataGridView.Columns.Insert(0, idColumn); // เพิ่มที่ตำแหน่งแรก
-            }
+            EnsureReportNoColumn(dataGridView);
 
             // สร้างรายการแถวที่จะลบ
             List<DataGridViewRow> rowsToDelete = new List<DataGridViewRow>();
@@ -385,21 +461,7 @@ namespace RawMat.Views.ReceiveWH
         private bool GenerateIdsForDataGridView(DataGridView dataGridView, QAdataProperty dataItem)
         {
             //dataItem.process = "Receive_WH";
-
-            if (!dataGridView.Columns.Contains("REPORT_NO"))
-            {
-                // สร้างคอลัมน์ใหม่
-                DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn
-                {
-                    Name = "REPORT_NO", // ชื่อของคอลัมน์
-                    HeaderText = "Report No.", // ข้อความหัวคอลัมน์
-                    ReadOnly = false, // สามารถแก้ไขได้ (หรือจะตั้งเป็น true ถ้าต้องการให้แก้ไขไม่ได้)
-                    SortMode = DataGridViewColumnSortMode.NotSortable
-                };
-
-                // เพิ่มคอลัมน์ลงใน DataGridView
-                dataGridView.Columns.Insert(0, idColumn); // เพิ่มที่ตำแหน่งแรก
-            }
+            EnsureReportNoColumn(dataGridView);
 
             // ดึง Last ID ล่าสุดจากฐานข้อมูล lastReportNo
 
@@ -801,6 +863,26 @@ namespace RawMat.Views.ReceiveWH
             return true;
         }
 
+        private static void EnsureReportNoColumn(DataGridView dataGridView)
+        {
+            if (!dataGridView.Columns.Contains("REPORT_NO"))
+            {
+                dataGridView.Columns.Insert(0, new DataGridViewTextBoxColumn
+                {
+                    Name = "REPORT_NO",
+                    HeaderText = "Report No.",
+                    ReadOnly = true,
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                });
+            }
+
+            DataGridViewColumn reportNoColumn = dataGridView.Columns["REPORT_NO"];
+            reportNoColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            reportNoColumn.FillWeight = 16F;
+            reportNoColumn.MinimumWidth = 120;
+            reportNoColumn.DisplayIndex = 0;
+        }
+
         public bool UpdateDataGridViewWithImage(DataGridView dataGridView, string columnToSearch, string targetColumn, DataTable inspectionMaster = null)
         {
 
@@ -991,7 +1073,7 @@ namespace RawMat.Views.ReceiveWH
                     }
                     else
                     {
-                        failMsg = $"{qaProp.M_CODE} ไม่พบ พบดาต้าเบส error ลองอีกครั้ง";
+                        failMsg = $"M-Code : {qaProp.M_CODE} ไม่พบ data inspection";
                         CustomMsgBoxBase.ShowCustomMessageBox(
                                     failMsg, "ไม่สำเร็จ",
                                     CustomMsgBoxBase.MessageBoxIconType.NG, backColor: Color.Red);
@@ -1000,11 +1082,14 @@ namespace RawMat.Views.ReceiveWH
             }
         }
 
-        private void userControlCheckSheet_Load(object sender, EventArgs e)
+        private async void userControlCheckSheet_Load(object sender, EventArgs e)
         {
             //date time จาก database โดยตรง
             DateTime today = conQA.SearchToday();
             dtp_recDate.Value = today;
+            await LoadLatestRefreshAsync();
+            await RefreshReceiveDataAsync("AUTO");
+            autoRefreshTimer.Start();
         }
 
         private void loadstatus()

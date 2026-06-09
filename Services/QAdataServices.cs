@@ -55,6 +55,22 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.InsertReceiveRefreshLog(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchLatestReceiveRefreshLog()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchLatestReceiveRefreshLog();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchInspectionList(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

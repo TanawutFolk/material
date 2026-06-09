@@ -13,7 +13,7 @@ namespace RawMat.Views.Setting
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
-        private const string ColDelete = "Delete";
+        private const string ColAction = "Action";
         private const string ColSerialId = "Serial ID";
         private const string ColEquipmentType = "Equipment Type";
         private const string ColEquipmentName = "Equipment Name";
@@ -135,7 +135,7 @@ namespace RawMat.Views.Setting
             try
             {
                 grid.DataSource = dt;
-                EnsureDeleteButtonColumn();
+                EnsureActionButtonColumn();
                 ApplyColumnFormat();
             }
             finally
@@ -144,19 +144,19 @@ namespace RawMat.Views.Setting
             }
         }
 
-        private void EnsureDeleteButtonColumn()
+        private void EnsureActionButtonColumn()
         {
-            if (dtgEmployeeSetting.Columns.Contains(ColDelete))
+            if (dtgEmployeeSetting.Columns.Contains(ColAction))
             {
-                dtgEmployeeSetting.Columns[ColDelete].DisplayIndex = 0;
+                dtgEmployeeSetting.Columns[ColAction].DisplayIndex = 0;
                 return;
             }
 
             var btn = new DataGridViewButtonColumn
             {
-                Name = ColDelete,
+                Name = ColAction,
                 HeaderText = "",
-                Text = "Delete",
+                Text = "Action",
                 UseColumnTextForButtonValue = true,
                 Width = 80
             };
@@ -166,12 +166,12 @@ namespace RawMat.Views.Setting
 
         private void ApplyColumnFormat()
         {
-            SetColumnWidth(ColDelete, 80);
+            SetColumnWidth(ColAction, 80);
             SetColumnVisible(ColSerialId, false);
             SetColumnVisible(ColEquipmentType, false);
             SetColumnFill(ColEquipmentName, 55);
             SetColumnFill(ColEquipmentSerial, 45);
-            SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColAction, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEquipmentName, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEquipmentSerial, DataGridViewContentAlignment.MiddleCenter);
         }
@@ -235,7 +235,7 @@ namespace RawMat.Views.Setting
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 return;
 
-            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColDelete)
+            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColAction)
                 return;
 
             string equipmentType = GetEquipmentTypeFromRow(e.RowIndex);
@@ -245,6 +245,26 @@ namespace RawMat.Views.Setting
             if (string.IsNullOrWhiteSpace(equipmentType))
                 return;
 
+            string equipmentSerial = GetCellText(e.RowIndex, ColEquipmentSerial);
+            SettingGridActionMenu.Show(
+                dtgEmployeeSetting,
+                e.ColumnIndex,
+                e.RowIndex,
+                () => EditEquipment(equipmentType, equipmentName, equipmentSerialId, equipmentSerial),
+                () => DeleteEquipment(equipmentType, equipmentName, equipmentSerialId));
+        }
+
+        private void EditEquipment(string equipmentType, string equipmentName, string equipmentSerialId, string equipmentSerial)
+        {
+            using (var frm = new frmAddEquipment(equipmentType, equipmentName, equipmentSerialId, equipmentSerial))
+            {
+                if (frm.ShowDialog(this) == DialogResult.OK)
+                    LoadData();
+            }
+        }
+
+        private void DeleteEquipment(string equipmentType, string equipmentName, string equipmentSerialId)
+        {
             using (var frm = new frmConfirm("Are you sure you want to delete ?"))
             {
                 if (frm.ShowDialog(this) != DialogResult.Yes)

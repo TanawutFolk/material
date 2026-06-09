@@ -95,7 +95,13 @@ namespace RawMat.Views.DimensionCheck
         {
             DataTable dtAllSum = new DataTable();
 
-            bool hasCavity = propQA.SAMPLING_TYPE == "4" || propQA.SAMPLING_TYPE == "3";
+            bool hasCavity = int.TryParse(propQA.CAVITY_QTY, out int cavityQty) &&
+                             cavityQty > 0 &&
+                             dtDimPending != null &&
+                             dtDimPending.Columns.Contains("CAVITY_NAME") &&
+                             dtDimPending.AsEnumerable().Any(row =>
+                                 !row.IsNull("CAVITY_NAME") &&
+                                 !string.IsNullOrWhiteSpace(row["CAVITY_NAME"].ToString()));
 
             if (hasCavity)
             {
@@ -989,6 +995,25 @@ namespace RawMat.Views.DimensionCheck
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == Keys.Enter &&
+                dtg_dimension.ContainsFocus &&
+                dtg_dimension.CurrentCell != null &&
+                dtg_dimension.CurrentCell.OwningColumn.Name == "VALUE" &&
+                dtg_dimension.CurrentCell is DataGridViewTextBoxCell &&
+                !dtg_dimension.CurrentCell.ReadOnly)
+            {
+                int currentRowIndex = dtg_dimension.CurrentCell.RowIndex;
+
+                if (!dtg_dimension.EndEdit())
+                {
+                    return true;
+                }
+
+                bindingSource.EndEdit();
+                BeginInvoke(new Action(() => MoveToNextDimensionValueRow(currentRowIndex)));
+                return true;
+            }
+
             if (dimensionImages != null && dimensionImages.Count > 1)
             {
                 if (keyData == Keys.PageUp || keyData == Keys.PageDown)
@@ -1010,6 +1035,31 @@ namespace RawMat.Views.DimensionCheck
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void MoveToNextDimensionValueRow(int currentRowIndex)
+        {
+            if (IsDisposed ||
+                dtg_dimension.IsDisposed ||
+                !dtg_dimension.IsHandleCreated ||
+                !dtg_dimension.Columns.Contains("VALUE"))
+            {
+                return;
+            }
+
+            for (int rowIndex = currentRowIndex + 1; rowIndex < dtg_dimension.Rows.Count; rowIndex++)
+            {
+                DataGridViewCell valueCell = dtg_dimension.Rows[rowIndex].Cells["VALUE"];
+                if (!valueCell.Visible || valueCell.ReadOnly || valueCell is DataGridViewComboBoxCell)
+                {
+                    continue;
+                }
+
+                dtg_dimension.CurrentCell = valueCell;
+                dtg_dimension.Focus();
+                dtg_dimension.BeginEdit(true);
+                return;
+            }
         }
 
         private void UserControlDimension_Disposed(object sender, EventArgs e)

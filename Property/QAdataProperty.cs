@@ -34,6 +34,7 @@ namespace RawMat.Property
         public DataTable dtPackingSize { get; set; }
         public string EMP_ID { get; set; }
         public string EMP_NAME { get; set; }
+        public string REFRESH_TYPE { get; set; }
         public string rec_wh_status { get; set; }
         public string keep_data_status { get; set; }
         public string reg_check_status { get; set; }

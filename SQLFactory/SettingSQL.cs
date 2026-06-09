@@ -78,14 +78,12 @@ namespace RawMat.SQLFactory
                 string pointOrder = GetSqlValue(row, "POINT_ORDER");
                 string equipmentType = GetSqlValue(row, "EQUIPMENT_TYPE");
                 string pointName = GetSqlValue(row, "POINT_NAME");
-                string pointCal = GetSqlValue(row, "POINT_CAL");
                 string criteriaMin = GetSqlValue(row, "CRITERIA_MIN");
                 string criteriaMax = GetSqlValue(row, "CRITERIA_MAX");
 
                 if (string.IsNullOrWhiteSpace(pointOrder) &&
                     string.IsNullOrWhiteSpace(equipmentType) &&
                     string.IsNullOrWhiteSpace(pointName) &&
-                    string.IsNullOrWhiteSpace(pointCal) &&
                     string.IsNullOrWhiteSpace(criteriaMin) &&
                     string.IsNullOrWhiteSpace(criteriaMax))
                 {
@@ -99,7 +97,6 @@ namespace RawMat.SQLFactory
                         POINT_ORDER,
                         EQUIPMENT_TYPE,
                         POINT_NAME,
-                        POINT_CAL,
                         CRITERIA_MIN,
                         CRITERIA_MAX
                     )
@@ -109,7 +106,6 @@ namespace RawMat.SQLFactory
                         {ToSqlTextOrNull(pointOrder)},
                         {ToSqlTextOrNull(equipmentType)},
                         {ToSqlTextOrNull(pointName)},
-                        {ToSqlTextOrNull(pointCal)},
                         {ToSqlTextOrNull(criteriaMin)},
                         {ToSqlTextOrNull(criteriaMax)}
                     );");
@@ -505,10 +501,23 @@ namespace RawMat.SQLFactory
 
         public string UpdateNgModeSetting(SettingProperty dataItem)
         {
-            sql = @"
-                UPDATE info_ngmode
-                SET IsActive = 1
-                WHERE NG_Mode = dataItem.NG_Mode;";
+            if (!string.IsNullOrWhiteSpace(dataItem.NG_Mode_ID))
+            {
+                sql = @"
+                    UPDATE info_ngmode
+                    SET NG_Mode = dataItem.NG_Mode,
+                        IsActive = 1
+                    WHERE ID = dataItem.NG_Mode_ID;";
+
+                sql = sql.Replace("dataItem.NG_Mode_ID", ToSqlSmallIntOrNull(dataItem.NG_Mode_ID));
+            }
+            else
+            {
+                sql = @"
+                    UPDATE info_ngmode
+                    SET IsActive = 1
+                    WHERE NG_Mode = dataItem.NG_Mode;";
+            }
 
             sql = sql.Replace("dataItem.NG_Mode", ToSqlTextOrNull(dataItem.NG_Mode));
             return sql;
@@ -535,7 +544,6 @@ namespace RawMat.SQLFactory
                 a.EQUIPMENT_TYPE,
                 b.Equipment_Name,
                 a.POINT_NAME,
-                a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
             FROM info_regular_equipment a
@@ -559,7 +567,6 @@ namespace RawMat.SQLFactory
                 a.EQUIPMENT_TYPE,
                 b.Equipment_Name,
                 a.POINT_NAME,
-                a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
             FROM info_dimension_equipment a
@@ -826,8 +833,7 @@ namespace RawMat.SQLFactory
                     EQUIPMENT_TYPE_ID,
                     EQUIPMENT_SERIAL
                 )
-                VALUES
-                (
+                SELECT
                     (
                         SELECT x.Equipment_Type
                         FROM info_equipment_type x
@@ -836,7 +842,7 @@ namespace RawMat.SQLFactory
                         LIMIT 1
                     ),
                     dataItem.Equipment_Serial
-                );";
+                WHERE dataItem.Equipment_Serial IS NOT NULL;";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNextEquipmentType(dataItem.Equipment_Type));
             sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
@@ -851,19 +857,18 @@ namespace RawMat.SQLFactory
                 SET Equipment_Name = dataItem.Equipment_Name
                 WHERE Equipment_Type = dataItem.Equipment_Type;
 
-                INSERT INTO info_equipment_serial
-                (
-                    EQUIPMENT_TYPE_ID,
-                    EQUIPMENT_SERIAL
-                )
-                VALUES
-                (
-                    dataItem.Equipment_Type,
-                    dataItem.Equipment_Serial
-                );";
+                UPDATE info_equipment_serial
+                SET EQUIPMENT_SERIAL = dataItem.Equipment_Serial
+                WHERE ID = dataItem.Equipment_Serial_ID;
+
+                INSERT INTO info_equipment_serial (EQUIPMENT_TYPE_ID, EQUIPMENT_SERIAL)
+                SELECT dataItem.Equipment_Type, dataItem.Equipment_Serial
+                WHERE dataItem.Equipment_Serial_ID IS NULL
+                  AND dataItem.Equipment_Serial IS NOT NULL;";
 
             sql = sql.Replace("dataItem.Equipment_Type", ToSqlSmallIntOrNull(dataItem.Equipment_Type));
             sql = sql.Replace("dataItem.Equipment_Name", ToSqlTextOrNull(dataItem.Equipment_Name));
+            sql = sql.Replace("dataItem.Equipment_Serial_ID", ToSqlSmallIntOrNull(dataItem.Equipment_Serial_ID));
             sql = sql.Replace("dataItem.Equipment_Serial", ToSqlTextOrNull(dataItem.Equipment_Serial));
             return sql;
         }

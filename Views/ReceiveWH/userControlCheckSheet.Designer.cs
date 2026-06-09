@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlCheckSheet));
             this.dtp_recDate = new Bunifu.Framework.UI.BunifuDatepicker();
             this.label1 = new System.Windows.Forms.Label();
@@ -44,6 +44,7 @@
             this.bt_okCheckSheet = new System.Windows.Forms.Button();
             this.picLoading = new System.Windows.Forms.PictureBox();
             this.pgbOkSearch = new System.Windows.Forms.ProgressBar();
+            this.lb_update = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_receiveMat)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picLoading)).BeginInit();
             this.SuspendLayout();
@@ -77,19 +78,20 @@
             // 
             this.dtg_receiveMat.AllowUserToAddRows = false;
             this.dtg_receiveMat.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtg_receiveMat.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtg_receiveMat.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            this.dtg_receiveMat.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dtg_receiveMat.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtg_receiveMat.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_receiveMat.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.DarkGreen;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Cyan;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_receiveMat.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.DarkGreen;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Cyan;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_receiveMat.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dtg_receiveMat.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_receiveMat.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.M_CODE,
@@ -113,48 +115,57 @@
             // 
             // M_CODE
             // 
+            this.M_CODE.FillWeight = 14F;
             this.M_CODE.HeaderText = "M-CODE";
+            this.M_CODE.MinimumWidth = 100;
             this.M_CODE.Name = "M_CODE";
             this.M_CODE.ReadOnly = true;
             this.M_CODE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.M_CODE.Width = 150;
             // 
             // INVOICE_NO
             // 
+            this.INVOICE_NO.FillWeight = 14F;
             this.INVOICE_NO.HeaderText = "Invoice No.";
+            this.INVOICE_NO.MinimumWidth = 40;
             this.INVOICE_NO.Name = "INVOICE_NO";
             this.INVOICE_NO.ReadOnly = true;
             this.INVOICE_NO.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // PART_NAME
             // 
+            this.PART_NAME.FillWeight = 25F;
             this.PART_NAME.HeaderText = "Part Name";
+            this.PART_NAME.MinimumWidth = 160;
             this.PART_NAME.Name = "PART_NAME";
             this.PART_NAME.ReadOnly = true;
             this.PART_NAME.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.PART_NAME.Width = 150;
             // 
             // VENDOR
             // 
+            this.VENDOR.FillWeight = 20F;
             this.VENDOR.HeaderText = "Vendor";
+            this.VENDOR.MinimumWidth = 140;
             this.VENDOR.Name = "VENDOR";
             this.VENDOR.ReadOnly = true;
             this.VENDOR.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // GR_QTY
             // 
+            this.GR_QTY.FillWeight = 10F;
             this.GR_QTY.HeaderText = "Qty";
+            this.GR_QTY.MinimumWidth = 75;
             this.GR_QTY.Name = "GR_QTY";
             this.GR_QTY.ReadOnly = true;
             this.GR_QTY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // STATUS
             // 
+            this.STATUS.FillWeight = 15F;
             this.STATUS.HeaderText = "STATUS";
+            this.STATUS.MinimumWidth = 100;
             this.STATUS.Name = "STATUS";
             this.STATUS.ReadOnly = true;
             this.STATUS.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.STATUS.Width = 200;
             // 
             // lb_top
             // 
@@ -204,11 +215,24 @@
             this.pgbOkSearch.TabIndex = 25;
             this.pgbOkSearch.Visible = false;
             // 
+            // lb_update
+            // 
+            this.lb_update.AutoSize = true;
+            this.lb_update.BackColor = System.Drawing.Color.Navy;
+            this.lb_update.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_update.ForeColor = System.Drawing.Color.White;
+            this.lb_update.Location = new System.Drawing.Point(906, 136);
+            this.lb_update.Name = "lb_update";
+            this.lb_update.Size = new System.Drawing.Size(189, 20);
+            this.lb_update.TabIndex = 26;
+            this.lb_update.Text = "Last update To day 00:00";
+            // 
             // userControlCheckSheet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightPink;
+            this.Controls.Add(this.lb_update);
             this.Controls.Add(this.pgbOkSearch);
             this.Controls.Add(this.picLoading);
             this.Controls.Add(this.bt_okCheckSheet);
@@ -241,5 +265,6 @@
         private System.Windows.Forms.Button bt_okCheckSheet;
         private System.Windows.Forms.PictureBox picLoading;
         private System.Windows.Forms.ProgressBar pgbOkSearch;
+        private System.Windows.Forms.Label lb_update;
     }
 }

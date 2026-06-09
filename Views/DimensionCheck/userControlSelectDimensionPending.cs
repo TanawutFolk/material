@@ -144,7 +144,10 @@ namespace RawMat.Views.DimensionCheck
                     propQA.CAVITY_QTY = propQA.dtDimSamp.Rows[0]["Cavity_Qty"].ToString();
                     propQA.SAMPLING_QTY = propQA.dtDimSamp.Rows[0]["Sampling_Qty"].ToString();
 
-                    if (propQA.SAMPLING_TYPE == "4" && (propQA.CAVITY_QTY == "0" || propQA.CAVITY_QTY == string.Empty))
+                    int.TryParse(propQA.CAVITY_QTY, out int cavityQty);
+                    bool hasCavity = cavityQty > 0;
+
+                    if (propQA.SAMPLING_TYPE == "4" && !hasCavity)
                     {
                         MessageBox.Show("ต้องมีการ Setting จำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
                         return;
@@ -154,7 +157,7 @@ namespace RawMat.Views.DimensionCheck
                         MessageBox.Show("ต้องมีการ Setting จำนวน Sampling อย่างน้อย 1 ตัว ของ M-CODE : " + propQA.M_CODE);
                         return;
                     }
-                    else if (propQA.SAMPLING_TYPE == "2" && (propQA.CAVITY_QTY != "0"))
+                    else if (propQA.SAMPLING_TYPE == "2" && hasCavity)
                     {
                         MessageBox.Show("ต้องไม่มีการ Setting จำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
                         return;
@@ -163,14 +166,10 @@ namespace RawMat.Views.DimensionCheck
                     {
                         // ok 
                         //dtg 
-                        if (propQA.SAMPLING_TYPE == "4")
+                        if (propQA.SAMPLING_TYPE == "4" ||
+                            propQA.SAMPLING_TYPE == "3" ||
+                            propQA.SAMPLING_TYPE == "2")
                         {
-
-
-                        }
-                        else if (propQA.SAMPLING_TYPE == "2")
-                        {
-
                         }
                         else
                         {

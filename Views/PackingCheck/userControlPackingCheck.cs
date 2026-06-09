@@ -37,6 +37,7 @@ namespace RawMat.Views.PackingCheck
 
         private BindingSource bindingSource = new BindingSource();
         private IParent parent;
+        private readonly Dictionary<int, string> originalMethodJudgments = new Dictionary<int, string>();
 
         public userControlPackingCheck(IParent parent)
         {
@@ -78,26 +79,33 @@ namespace RawMat.Views.PackingCheck
                 DataTable dt = conQA.PackingCheck(propQA);
                 foreach (DataRow row in dt.Rows)
                 {
-                    switch (row["Method_ID"].ToString())
+                    string methodIdValue = row["Method_ID"].ToString();
+                    string judgment = row["JUDGMENT"].ToString();
+                    if (int.TryParse(methodIdValue, out int methodId))
+                    {
+                        originalMethodJudgments[methodId] = judgment;
+                    }
+
+                    switch (methodIdValue)
                     {
                         case "1":
-                            UpdateMethodUI(1, row["JUDGMENT"].ToString(), row["DETAIL_JUDGE"]);
-                            if (row["JUDGMENT"].ToString() == "1")
+                            UpdateMethodUI(1, judgment, row["DETAIL_JUDGE"]);
+                            if (judgment == "1")
                             {
                                 gb_method1.Enabled = false;
                             }
                             break;
                         case "2":
-                            UpdateMethodUI(2, row["JUDGMENT"].ToString(), row["DETAIL_JUDGE"]);
-                            if (row["JUDGMENT"].ToString() == "1")
+                            UpdateMethodUI(2, judgment, row["DETAIL_JUDGE"]);
+                            if (judgment == "1")
                             {
                                 gb_method2.Enabled = false;
                             }
                             break;
                         case "3":
                             rb_ok_method3.CheckedChanged -= rb_ok_method3_CheckedChanged;
-                            UpdateMethodUI(3, row["JUDGMENT"].ToString(), row["DETAIL_JUDGE"]);
-                            if (row["JUDGMENT"].ToString() == "1")
+                            UpdateMethodUI(3, judgment, row["DETAIL_JUDGE"]);
+                            if (judgment == "1")
                             {
                                 gb_method3.Enabled = false;
                                 dtg_packing_size.RowValidating -= dtg_packing_size_RowValidating;
@@ -269,6 +277,18 @@ namespace RawMat.Views.PackingCheck
             propQA.process = "Packing_Check";
             propQA.EMP_ID = employee.EMP_CODE;
 
+            if (IsAdminPartialApproval())
+            {
+                if (!SaveAdminPartialApproval())
+                {
+                    return;
+                }
+
+                parentForm?.LoadStatus();
+                NavigateBasedOnStatus();
+                return;
+            }
+
             // Validation ข้อมูลทั้งหมดก่อน
             if (!ValidateAllData())
             {
@@ -391,6 +411,64 @@ namespace RawMat.Views.PackingCheck
 
             parentForm?.LoadStatus();
             NavigateBasedOnStatus();
+        }
+
+        private bool IsAdminPartialApproval()
+        {
+            if (employee.EMP_LEVEL != "1")
+            {
+                return false;
+            }
+
+            return originalMethodJudgments.Any(item =>
+                (item.Value == "0" || item.Value == "6") &&
+                GetMethodControls(item.Key).rbOk.Checked);
+        }
+
+        private bool SaveAdminPartialApproval()
+        {
+            List<int> approvedMethodIds = originalMethodJudgments
+                .Where(item =>
+                    (item.Value == "0" || item.Value == "6") &&
+                    GetMethodControls(item.Key).rbOk.Checked)
+                .Select(item => item.Key)
+                .ToList();
+
+            foreach (int methodId in approvedMethodIds)
+            {
+                var (_, _, tbDetail, _) = GetMethodControls(methodId);
+                propQA.METHOD_ID = methodId.ToString();
+                propQA.detail_Method = tbDetail.Text;
+                propQA.judge = ((int)ProcStatus.OK).ToString();
+                propQA.EMP_ID = employee.EMP_CODE;
+
+                if (!conQA.InsertPackingCheck(propQA))
+                {
+                    MessageBox.Show(
+                        $"เกิดข้อผิดพลาดในการบันทึกผล Packing Check Method {methodId}",
+                        "ข้อผิดพลาด",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+
+            propQA.inProcStatus = ((int)ProcStatus.Unfinished).ToString();
+            propQA.reportStatus = ((int)ProcStatus.Unfinished).ToString();
+
+            if (!conQA.UpdateStatus(propQA))
+            {
+                MessageBox.Show(
+                    "เกิดข้อผิดพลาดในการส่งงานกลับให้พนักงานดำเนินการต่อ",
+                    "ข้อผิดพลาด",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }
+
+            conQA.DeleteReportActive(propQA);
+            loadstatus();
+            return true;
         }
 
         // เพิ่มฟังก์ชันสำหรับ validation ข้อมูลทั้งหมด
@@ -1404,6 +1482,59 @@ namespace RawMat.Views.PackingCheck
             {
                 mainForm.LoadStatus();
             }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter &&
+                dtg_packing_size.ContainsFocus &&
+                dtg_packing_size.CurrentCell != null &&
+                !dtg_packing_size.CurrentCell.ReadOnly)
+            {
+                string columnName = dtg_packing_size.CurrentCell.OwningColumn.Name;
+                if (columnName == "VALUE" || columnName == "PACK_COUNT")
+                {
+                    int currentRowIndex = dtg_packing_size.CurrentCell.RowIndex;
+
+                    if (!dtg_packing_size.EndEdit())
+                    {
+                        return true;
+                    }
+
+                    BeginInvoke(new Action(() => MoveToNextPackingInput(currentRowIndex, columnName)));
+                    return true;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void MoveToNextPackingInput(int currentRowIndex, string currentColumnName)
+        {
+            if (IsDisposed || dtg_packing_size.IsDisposed || !dtg_packing_size.IsHandleCreated)
+            {
+                return;
+            }
+
+            string targetColumnName = currentColumnName == "VALUE" ? "PACK_COUNT" : "VALUE";
+            int targetRowIndex = currentColumnName == "VALUE" ? currentRowIndex : currentRowIndex + 1;
+
+            if (!dtg_packing_size.Columns.Contains(targetColumnName) ||
+                targetRowIndex < 0 ||
+                targetRowIndex >= dtg_packing_size.Rows.Count)
+            {
+                return;
+            }
+
+            DataGridViewCell targetCell = dtg_packing_size.Rows[targetRowIndex].Cells[targetColumnName];
+            if (!targetCell.Visible || targetCell.ReadOnly)
+            {
+                return;
+            }
+
+            dtg_packing_size.CurrentCell = targetCell;
+            dtg_packing_size.Focus();
+            dtg_packing_size.BeginEdit(true);
         }
 
     }

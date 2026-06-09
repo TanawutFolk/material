@@ -435,7 +435,6 @@ namespace RawMat.Views.Setting
             dt.Columns.Add("POINT_ORDER");
             dt.Columns.Add("EQUIPMENT_TYPE");
             dt.Columns.Add("POINT_NAME");
-            dt.Columns.Add("POINT_CAL");
             dt.Columns.Add("CRITERIA_MIN");
             dt.Columns.Add("CRITERIA_MAX");
             return dt;
@@ -463,7 +462,6 @@ namespace RawMat.Views.Setting
                 row["POINT_ORDER"] = GetGridCellText(gridRow, "POINT_ORDER");
                 row["EQUIPMENT_TYPE"] = GetGridCellText(gridRow, "EQUIPMENT_TYPE");
                 row["POINT_NAME"] = GetGridCellText(gridRow, "POINT_NAME");
-                row["POINT_CAL"] = GetGridCellText(gridRow, "POINT_CAL");
                 row["CRITERIA_MIN"] = GetGridCellText(gridRow, "CRITERIA_MIN");
                 row["CRITERIA_MAX"] = GetGridCellText(gridRow, "CRITERIA_MAX");
                 result.Rows.Add(row);
@@ -479,7 +477,7 @@ namespace RawMat.Views.Setting
 
         private static bool IsEmptyEquipmentRow(DataGridViewRow row)
         {
-            foreach (var columnName in new[] { "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_NAME", "POINT_CAL", "CRITERIA_MIN", "CRITERIA_MAX" })
+            foreach (var columnName in new[] { "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_NAME", "CRITERIA_MIN", "CRITERIA_MAX" })
             {
                 if (!string.IsNullOrWhiteSpace(GetGridCellText(row, columnName)))
                 {
@@ -645,11 +643,16 @@ namespace RawMat.Views.Setting
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                 },
                 new DataGridViewTextBoxColumn { Name = "POINT_NAME", HeaderText = "Point Name", DataPropertyName = "POINT_NAME", Width = 160 },
-                new DataGridViewTextBoxColumn { Name = "POINT_CAL", HeaderText = "Point Cal", DataPropertyName = "POINT_CAL", Width = 120 },
                 new DataGridViewTextBoxColumn { Name = "CRITERIA_MIN", HeaderText = "Min", DataPropertyName = "CRITERIA_MIN", Width = 80 },
                 new DataGridViewTextBoxColumn { Name = "CRITERIA_MAX", HeaderText = "Max", DataPropertyName = "CRITERIA_MAX", Width = 80 },
-                new DataGridViewButtonColumn { Name = "DELETE_ROW", HeaderText = "", Text = "Delete", UseColumnTextForButtonValue = true, Width = 70 }
+                new DataGridViewButtonColumn { Name = "ROW_ACTION", HeaderText = "", Text = "Action", UseColumnTextForButtonValue = true, Width = 70 }
             );
+
+            if (dtg == dtgDimensionEquipment)
+            {
+                dtg.Columns["CRITERIA_MIN"].DefaultCellStyle.Format = "0.000";
+                dtg.Columns["CRITERIA_MAX"].DefaultCellStyle.Format = "0.000";
+            }
         }
 
         private void dtgEquipment_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -657,15 +660,36 @@ namespace RawMat.Views.Setting
             if (e.RowIndex < 0) return;
 
             var dtg = sender as DataGridView;
-            if (dtg == null || dtg.Columns[e.ColumnIndex].Name != "DELETE_ROW") return;
+            if (dtg == null || dtg.Columns[e.ColumnIndex].Name != "ROW_ACTION") return;
             if (dtg.Rows[e.RowIndex].IsNewRow) return;
 
+            SettingGridActionMenu.Show(
+                dtg,
+                e.ColumnIndex,
+                e.RowIndex,
+                () => EditEquipmentRow(dtg, e.RowIndex),
+                () => DeleteEquipmentRow(dtg, e.RowIndex));
+        }
+
+        private void EditEquipmentRow(DataGridView dtg, int rowIndex)
+        {
+            string[] editableColumns = { "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_NAME", "CRITERIA_MIN", "CRITERIA_MAX" };
+            string firstEditableColumn = editableColumns.FirstOrDefault(name => dtg.Columns.Contains(name));
+            if (firstEditableColumn == null)
+                return;
+
+            dtg.CurrentCell = dtg.Rows[rowIndex].Cells[firstEditableColumn];
+            dtg.BeginEdit(true);
+        }
+
+        private void DeleteEquipmentRow(DataGridView dtg, int rowIndex)
+        {
             var confirm = MessageBox.Show("ต้องการลบ Equipment แถวนี้หรือไม่?",
                 "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (confirm != DialogResult.Yes) return;
 
-            dtg.Rows.RemoveAt(e.RowIndex);
+            dtg.Rows.RemoveAt(rowIndex);
         }
 
         private void dtgEquipment_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)

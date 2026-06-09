@@ -32,7 +32,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlAppear));
             this.lb_top = new System.Windows.Forms.Label();
             this.lb_lotSize = new System.Windows.Forms.Label();
@@ -46,11 +45,13 @@
             this.picbox_Appear = new System.Windows.Forms.PictureBox();
             this.dtg_show_appear = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.gb_ngMode = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lb_Qty = new System.Windows.Forms.Label();
             this.dtg_ngMode = new System.Windows.Forms.DataGridView();
             this.QTY_NG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NG_MODE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gb_input = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lb_CountAll = new System.Windows.Forms.Label();
             this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
             this.dtg_packing_size_appear = new System.Windows.Forms.DataGridView();
             this.bt_select_packing_size_appear = new System.Windows.Forms.Button();
@@ -185,9 +186,9 @@
             this.dtg_show_appear.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_show_appear.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.SeaGreen;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Cyan;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Blue;
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
@@ -195,8 +196,8 @@
             this.dtg_show_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_show_appear.DoubleBuffered = true;
             this.dtg_show_appear.EnableHeadersVisualStyles = false;
-            this.dtg_show_appear.HeaderBgColor = System.Drawing.Color.SeaGreen;
-            this.dtg_show_appear.HeaderForeColor = System.Drawing.Color.Cyan;
+            this.dtg_show_appear.HeaderBgColor = System.Drawing.Color.White;
+            this.dtg_show_appear.HeaderForeColor = System.Drawing.Color.Blue;
             this.dtg_show_appear.Location = new System.Drawing.Point(6, 48);
             this.dtg_show_appear.Name = "dtg_show_appear";
             this.dtg_show_appear.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -204,42 +205,35 @@
             this.dtg_show_appear.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtg_show_appear.RowTemplate.Height = 41;
             this.dtg_show_appear.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dtg_show_appear.Size = new System.Drawing.Size(684, 250);
+            this.dtg_show_appear.Size = new System.Drawing.Size(684, 395);
             this.dtg_show_appear.TabIndex = 81;
             this.dtg_show_appear.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dtg_show_appear_DataBindingComplete);
             // 
             // gb_ngMode
             // 
-            this.gb_ngMode.Controls.Add(this.label2);
+            this.gb_ngMode.Controls.Add(this.lb_Qty);
             this.gb_ngMode.Controls.Add(this.dtg_ngMode);
             this.gb_ngMode.Enabled = false;
+            this.gb_ngMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gb_ngMode.Location = new System.Drawing.Point(721, 733);
             this.gb_ngMode.Name = "gb_ngMode";
             this.gb_ngMode.Size = new System.Drawing.Size(381, 543);
             this.gb_ngMode.TabIndex = 85;
             this.gb_ngMode.TabStop = false;
-            this.gb_ngMode.Text = "NG MODE";
+            this.gb_ngMode.Text = "Q\'ty Pending";
             // 
-            // label2
+            // lb_Qty
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(6, 14);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(176, 20);
-            this.label2.TabIndex = 87;
-            this.label2.Text = "ระบุอาการเสียแล้ว: 0 / 0 ชิ้น";
+            this.lb_Qty.AutoSize = true;
+            this.lb_Qty.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_Qty.Location = new System.Drawing.Point(111, 0);
+            this.lb_Qty.Name = "lb_Qty";
+            this.lb_Qty.Size = new System.Drawing.Size(35, 20);
+            this.lb_Qty.TabIndex = 87;
+            this.lb_Qty.Text = "Pcs";
             // 
             // dtg_ngMode
             // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_ngMode.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dtg_ngMode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_ngMode.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.QTY_NG,
@@ -263,16 +257,39 @@
             // 
             // gb_input
             // 
+            this.gb_input.Controls.Add(this.label3);
+            this.gb_input.Controls.Add(this.lb_CountAll);
             this.gb_input.Controls.Add(this.tb_record);
             this.gb_input.Controls.Add(this.dtg_show_appear);
             this.gb_input.Enabled = false;
             this.gb_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gb_input.ForeColor = System.Drawing.Color.Blue;
             this.gb_input.Location = new System.Drawing.Point(6, 1046);
             this.gb_input.Name = "gb_input";
-            this.gb_input.Size = new System.Drawing.Size(709, 375);
+            this.gb_input.Size = new System.Drawing.Size(709, 547);
             this.gb_input.TabIndex = 87;
             this.gb_input.TabStop = false;
             this.gb_input.Text = "Result Appearance Inspection";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.Blue;
+            this.label3.Location = new System.Drawing.Point(240, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(105, 20);
+            this.label3.TabIndex = 90;
+            this.label3.Text = "จำนวนตรวจสอบ";
+            // 
+            // lb_CountAll
+            // 
+            this.lb_CountAll.AutoSize = true;
+            this.lb_CountAll.ForeColor = System.Drawing.Color.Blue;
+            this.lb_CountAll.Location = new System.Drawing.Point(347, 0);
+            this.lb_CountAll.Name = "lb_CountAll";
+            this.lb_CountAll.Size = new System.Drawing.Size(93, 20);
+            this.lb_CountAll.TabIndex = 89;
+            this.lb_CountAll.Text = "1000 / 1000";
             // 
             // tb_record
             // 
@@ -297,7 +314,7 @@
             this.tb_record.IconVisible = true;
             this.tb_record.IconZoom = 90D;
             this.tb_record.IsTab = false;
-            this.tb_record.Location = new System.Drawing.Point(246, 306);
+            this.tb_record.Location = new System.Drawing.Point(246, 473);
             this.tb_record.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.tb_record.Name = "tb_record";
             this.tb_record.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
@@ -391,7 +408,7 @@
             // bt_back
             // 
             this.bt_back.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
-            this.bt_back.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.BackColor = System.Drawing.Color.Goldenrod;
             this.bt_back.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.bt_back.BorderRadius = 0;
             this.bt_back.ButtonText = "ย้อนกลับ";
@@ -410,8 +427,9 @@
             this.bt_back.IconZoom = 56D;
             this.bt_back.IsTab = false;
             this.bt_back.Location = new System.Drawing.Point(18, 7);
+            this.bt_back.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.bt_back.Name = "bt_back";
-            this.bt_back.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.bt_back.Normalcolor = System.Drawing.Color.Goldenrod;
             this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
             this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_back.selected = false;
@@ -443,7 +461,7 @@
             this.Controls.Add(this.lb_top);
             this.Controls.Add(this.gb_input);
             this.Name = "userControlAppear";
-            this.Size = new System.Drawing.Size(1115, 1430);
+            this.Size = new System.Drawing.Size(1115, 1601);
             this.Load += new System.EventHandler(this.userControlAppear_Load);
             this.VisibleChanged += new System.EventHandler(this.userControlAppear_VisibleChanged);
             this.Leave += new System.EventHandler(this.userControlAppear_Leave);
@@ -455,6 +473,7 @@
             this.gb_ngMode.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_ngMode)).EndInit();
             this.gb_input.ResumeLayout(false);
+            this.gb_input.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtg_packing_size_appear)).EndInit();
             this.gb_pack.ResumeLayout(false);
             this.gb_pack.PerformLayout();
@@ -477,7 +496,7 @@
         private System.Windows.Forms.PictureBox picbox_Appear;
         private Bunifu.Framework.UI.BunifuCustomDataGrid dtg_show_appear;
         private System.Windows.Forms.GroupBox gb_ngMode;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lb_Qty;
         private System.Windows.Forms.DataGridView dtg_ngMode;
         private System.Windows.Forms.GroupBox gb_input;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;
@@ -490,5 +509,7 @@
         private System.Windows.Forms.Label lbCount;
         private System.Windows.Forms.GroupBox gb_pack;
         private Bunifu.Framework.UI.BunifuFlatButton bt_back;
+        private System.Windows.Forms.Label lb_CountAll;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -13,7 +13,7 @@ namespace RawMat.Views.Setting
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
-        private const string ColEdit = "Edit";
+        private const string ColAction = "Action";
         private const string ColEmployeeId = "Employee ID";
         private const string ColEmployeeFirstName = "Employee FirstName";
         private const string ColEmployeeLastName = "Employee LastName";
@@ -136,7 +136,7 @@ namespace RawMat.Views.Setting
             try
             {
                 grid.DataSource = dt;
-                EnsureEditButtonColumn();
+                EnsureActionButtonColumn();
                 ApplyColumnFormat();
             }
             finally
@@ -145,19 +145,19 @@ namespace RawMat.Views.Setting
             }
         }
 
-        private void EnsureEditButtonColumn()
+        private void EnsureActionButtonColumn()
         {
-            if (dtgEmployeeSetting.Columns.Contains(ColEdit))
+            if (dtgEmployeeSetting.Columns.Contains(ColAction))
             {
-                dtgEmployeeSetting.Columns[ColEdit].DisplayIndex = 0;
+                dtgEmployeeSetting.Columns[ColAction].DisplayIndex = 0;
                 return;
             }
 
             var btn = new DataGridViewButtonColumn
             {
-                Name = ColEdit,
+                Name = ColAction,
                 HeaderText = "",
-                Text = "Edit",
+                Text = "Action",
                 UseColumnTextForButtonValue = true,
                 Width = 80
             };
@@ -167,7 +167,7 @@ namespace RawMat.Views.Setting
 
         private void ApplyColumnFormat()
         {
-            SetColumnWidth(ColEdit, 80);
+            SetColumnWidth(ColAction, 80);
             SetColumnVisible(ColEmployeeLevelId, false);
 
             SetColumnFill(ColEmployeeId, 20);
@@ -175,7 +175,7 @@ namespace RawMat.Views.Setting
             SetColumnFill(ColEmployeeLastName, 30);
             SetColumnFill(ColEmployeeLevelName, 20);
 
-            SetColumnAlignment(ColEdit, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColAction, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEmployeeId, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColEmployeeLevelName, DataGridViewContentAlignment.MiddleCenter);
         }
@@ -239,18 +239,48 @@ namespace RawMat.Views.Setting
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 return;
 
-            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColEdit)
+            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColAction)
                 return;
 
             string employeeId = GetEmployeeIdFromRow(e.RowIndex);
             if (string.IsNullOrWhiteSpace(employeeId))
                 return;
 
+            SettingGridActionMenu.Show(
+                dtgEmployeeSetting,
+                e.ColumnIndex,
+                e.RowIndex,
+                () => EditEmployee(employeeId),
+                () => DeleteEmployee(employeeId));
+        }
+
+        private void EditEmployee(string employeeId)
+        {
             using (var frm = new frmEditEmployee(employeeId))
             {
                 if (frm.ShowDialog(this) == DialogResult.OK)
                     LoadData();
             }
+        }
+
+        private void DeleteEmployee(string employeeId)
+        {
+            using (var frm = new frmConfirm($"Delete Employee '{employeeId}' ?"))
+            {
+                if (frm.ShowDialog(this) != DialogResult.Yes)
+                    return;
+            }
+
+            if (!_controller.DeleteEmployeeSetting(new SettingProperty { Employee_ID = employeeId }))
+            {
+                MessageBox.Show("Delete Employee Setting Failed", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show("Delete Employee Setting", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LoadData();
         }
 
         private string GetEmployeeIdFromRow(int rowIndex)

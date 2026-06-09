@@ -9,10 +9,26 @@ namespace RawMat.Views.Setting.form
     public partial class frmAddEquipment : Form
     {
         private readonly SettingControllers _controller = new SettingControllers();
+        private readonly string _equipmentType;
+        private readonly string _equipmentName;
+        private readonly string _equipmentSerialId;
+        private readonly string _equipmentSerial;
+        private readonly bool _isEditMode;
 
         public frmAddEquipment()
+            : this("", "", "", "")
+        {
+        }
+
+        public frmAddEquipment(string equipmentType, string equipmentName, string equipmentSerialId, string equipmentSerial)
         {
             InitializeComponent();
+
+            _equipmentType = equipmentType?.Trim() ?? "";
+            _equipmentName = equipmentName?.Trim() ?? "";
+            _equipmentSerialId = equipmentSerialId?.Trim() ?? "";
+            _equipmentSerial = equipmentSerial?.Trim() ?? "";
+            _isEditMode = !string.IsNullOrWhiteSpace(_equipmentType);
 
             Load += frmAddEquipment_Load;
             btnSave.Click += btnSave_Click;
@@ -21,9 +37,14 @@ namespace RawMat.Views.Setting.form
 
         private void frmAddEquipment_Load(object sender, EventArgs e)
         {
-            Text = "Add New Equipment";
+            Text = _isEditMode ? "Edit Equipment" : "Add New Equipment";
             StartPosition = FormStartPosition.CenterParent;
             BindEquipmentList();
+            if (_isEditMode)
+            {
+                cboEquipment.Text = _equipmentName;
+                txtSerial.Text = _equipmentSerial;
+            }
             cboEquipment.Focus();
         }
 
@@ -73,14 +94,6 @@ namespace RawMat.Views.Setting.form
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtSerial.Text))
-            {
-                MessageBox.Show("กรุณาระบุ Equipment Serial", "Warning",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtSerial.Focus();
-                return false;
-            }
-
             if (txtSerial.Text.Trim().Length > 255)
             {
                 MessageBox.Show("Equipment Serial ต้องไม่เกิน 255 ตัวอักษร", "Warning",
@@ -98,12 +111,16 @@ namespace RawMat.Views.Setting.form
             {
                 Equipment_Type = GetSelectedEquipmentType(),
                 Equipment_Name = cboEquipment.Text.Trim(),
+                Equipment_Serial_ID = _equipmentSerialId,
                 Equipment_Serial = txtSerial.Text.Trim()
             };
         }
 
         private string GetSelectedEquipmentType()
         {
+            if (_isEditMode)
+                return _equipmentType;
+
             if (cboEquipment.SelectedIndex < 0 || cboEquipment.SelectedValue == null)
                 return "";
 
@@ -123,7 +140,9 @@ namespace RawMat.Views.Setting.form
                 if (frm.ShowDialog(this) != DialogResult.Yes) return;
             }
 
-            bool result = _controller.SaveEquipmentTypeSetting(GetDataFromScreen());
+            bool result = _isEditMode
+                ? _controller.UpdateEquipmentTypeSetting(GetDataFromScreen())
+                : _controller.SaveEquipmentTypeSetting(GetDataFromScreen());
 
             if (!result)
             {

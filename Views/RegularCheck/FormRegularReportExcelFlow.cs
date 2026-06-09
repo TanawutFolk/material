@@ -508,7 +508,8 @@ namespace RawMat.Views.RegularCheck
             SetColumnWidth(sheet, 3, 5.5);
             SetColumnWidth(sheet, 4, 5.5);
             SetColumnWidth(sheet, 5, 4.5);
-            SetColumnWidth(sheet, 29, 4.2);
+            SetColumnWidth(sheet, 8, 4.2);
+            SetColumnWidth(sheet, 9, 4.2);
             SetColumnWidth(sheet, 30, 4.2);
             SetColumnWidth(sheet, 31, 4.2);
         }
@@ -586,8 +587,8 @@ namespace RawMat.Views.RegularCheck
 
         private static void BuildReportPage(Excel.Worksheet sheet, QAdataProperty dataItem, DataTable data, System.Collections.Generic.List<string> sampleNos, int topRow, int page, string referenceText, string imagePath)
         {
-            int imageTop = topRow + 8;
-            int tableTop = topRow + 27;
+            int imageTop = topRow + 7;
+            int tableTop = topRow + 26;
 
             ApplyAutoReportRowLayout(sheet, topRow);
 
@@ -595,30 +596,30 @@ namespace RawMat.Views.RegularCheck
             SetLabel(sheet, topRow, 22, topRow, 26, "Report No.");
             SetLabel(sheet, topRow, 27, topRow, 31, "Approve");
             SetLabel(sheet, topRow + 1, 1, topRow + 1, 5, "M-Code");
-            Merge(sheet, topRow + 1, 6, topRow + 1, 21, dataItem?.M_CODE);
+            Merge(sheet, topRow + 1, 6, topRow + 1, 10, dataItem?.M_CODE);
+            SetLabel(sheet, topRow + 1, 11, topRow + 1, 15, "Material Name");
+            Merge(sheet, topRow + 1, 16, topRow + 1, 21, dataItem?.Material_Name);
             Merge(sheet, topRow + 1, 22, topRow + 2, 26, dataItem?.Report_No);
             Merge(sheet, topRow + 1, 27, topRow + 2, 31, string.Empty);
-            SetLabel(sheet, topRow + 2, 1, topRow + 2, 5, "Material Name");
-            Merge(sheet, topRow + 2, 6, topRow + 2, 21, dataItem?.Material_Name);
 
-            SetLabel(sheet, topRow + 3, 1, topRow + 3, 5, "Vender");
-            Merge(sheet, topRow + 3, 6, topRow + 3, 31, dataItem?.Vendor_Name);
-            SetLabel(sheet, topRow + 4, 1, topRow + 4, 5, "Receive Date");
-            Merge(sheet, topRow + 4, 6, topRow + 4, 17, FormatDate(dataItem?.dtReceiveDate));
-            SetLabel(sheet, topRow + 4, 18, topRow + 4, 21, "INV. No.");
-            Merge(sheet, topRow + 4, 22, topRow + 4, 31, dataItem?.Invoice_No);
-            SetLabel(sheet, topRow + 5, 1, topRow + 5, 5, "Lot Size");
-            Merge(sheet, topRow + 5, 6, topRow + 5, 17, dataItem?.Qty);
-            SetLabel(sheet, topRow + 5, 18, topRow + 5, 21, "Lot No.");
-            Merge(sheet, topRow + 5, 22, topRow + 5, 31, dataItem?.Lot_No);
-            SetLabel(sheet, topRow + 6, 1, topRow + 6, 5, "Inspection Size");
-            Merge(sheet, topRow + 6, 6, topRow + 6, 17, dataItem?.SAMPLING_QTY);
-            SetLabel(sheet, topRow + 6, 18, topRow + 6, 21, "Reference");
-            Merge(sheet, topRow + 6, 22, topRow + 6, 31, referenceText);
-            SetLabel(sheet, topRow + 7, 1, topRow + 7, 5, "Inspection Date");
-            MergeLeft(sheet, topRow + 7, 6, topRow + 7, 17, DateTime.Now.ToString("dd-MMM-yyyy"));
-            SetLabel(sheet, topRow + 7, 18, topRow + 7, 21, "Inspector");
-            Merge(sheet, topRow + 7, 22, topRow + 7, 31, dataItem?.EMP_ID);
+            SetLabel(sheet, topRow + 2, 1, topRow + 2, 5, "Vender");
+            Merge(sheet, topRow + 2, 6, topRow + 2, 21, dataItem?.Vendor_Name);
+            SetLabel(sheet, topRow + 3, 1, topRow + 3, 5, "Receive Date");
+            Merge(sheet, topRow + 3, 6, topRow + 3, 17, FormatDate(dataItem?.dtReceiveDate));
+            SetLabel(sheet, topRow + 3, 18, topRow + 3, 21, "INV. No.");
+            Merge(sheet, topRow + 3, 22, topRow + 3, 31, dataItem?.Invoice_No);
+            SetLabel(sheet, topRow + 4, 1, topRow + 4, 5, "Lot Size");
+            Merge(sheet, topRow + 4, 6, topRow + 4, 17, dataItem?.Qty);
+            SetLabel(sheet, topRow + 4, 18, topRow + 4, 21, "Lot No.");
+            Merge(sheet, topRow + 4, 22, topRow + 4, 31, dataItem?.Lot_No);
+            SetLabel(sheet, topRow + 5, 1, topRow + 5, 5, "Inspection Size");
+            Merge(sheet, topRow + 5, 6, topRow + 5, 17, dataItem?.SAMPLING_QTY);
+            SetLabel(sheet, topRow + 5, 18, topRow + 5, 21, "Reference");
+            Merge(sheet, topRow + 5, 22, topRow + 5, 31, referenceText);
+            SetLabel(sheet, topRow + 6, 1, topRow + 6, 5, "Inspection Date");
+            MergeLeft(sheet, topRow + 6, 6, topRow + 6, 17, DateTime.Now.ToString("dd-MMM-yyyy"));
+            SetLabel(sheet, topRow + 6, 18, topRow + 6, 21, "Inspector");
+            Merge(sheet, topRow + 6, 22, topRow + 6, 31, dataItem?.EMP_ID);
 
             MergeLeft(sheet, imageTop, 1, imageTop, 31, "Check Point");
             StyleCheckPointHeader(sheet, imageTop, 1, 31);
@@ -1038,6 +1039,7 @@ namespace RawMat.Views.RegularCheck
             message.AppendLine("Point <- POINT_NAME");
             message.AppendLine("Min <- CRITERIA_MIN");
             message.AppendLine("Max <- CRITERIA_MAX");
+            message.AppendLine("Equipment <- EQUIPMENT_NAME");
             message.AppendLine("Cavity No <- CAVITY_NAME");
             message.AppendLine("Actual <- VALUE");
             message.AppendLine("Judg <- POINT_JUDGE summary");
@@ -1047,18 +1049,19 @@ namespace RawMat.Views.RegularCheck
 
         private static void BuildAutoReportTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop)
         {
-            SetMergedHeader(sheet, tableTop, 1, 4, "Point", Color.LightBlue, Color.Black);
-            SetMergedHeader(sheet, tableTop, 5, 6, "Min", Color.LightBlue, Color.Black);
-            SetMergedHeader(sheet, tableTop, 7, 8, "Max", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 1, 3, "Point", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 4, 5, "Min", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 6, 7, "Max", Color.LightBlue, Color.Black);
+            SetMergedHeader(sheet, tableTop, 8, 9, "Equipment", Color.LightYellow, Color.Black);
 
             for (int i = 0; i < 5; i++)
             {
-                int col = 9 + (i * 4);
+                int col = 10 + (i * 4);
                 SetMergedHeader(sheet, tableTop, col, col + 1, "Cavity\nNo", Color.White, Color.Green);
                 SetMergedHeader(sheet, tableTop, col + 2, col + 3, "Actual", Color.White, Color.Black);
             }
 
-            SetMergedHeader(sheet, tableTop, 29, 31, "Judg", Color.White, Color.Blue);
+            SetMergedHeader(sheet, tableTop, 30, 31, "Judg", Color.White, Color.Blue);
 
             var points = data.AsEnumerable()
                 .GroupBy(row => GetString(row, "POINT_ORDER"))
@@ -1072,14 +1075,15 @@ namespace RawMat.Views.RegularCheck
                 var pointGroup = rowOffset < points.Count ? points[rowOffset] : null;
                 DataRow point = pointGroup?.First();
 
-                Merge(sheet, rowIndex, 1, rowIndex, 4, GetString(point, "POINT_NAME"));
-                Merge(sheet, rowIndex, 5, rowIndex, 6, GetString(point, "CRITERIA_MIN"));
-                Merge(sheet, rowIndex, 7, rowIndex, 8, GetString(point, "CRITERIA_MAX"));
+                Merge(sheet, rowIndex, 1, rowIndex, 3, GetString(point, "POINT_NAME"));
+                Merge(sheet, rowIndex, 4, rowIndex, 5, GetString(point, "CRITERIA_MIN"));
+                Merge(sheet, rowIndex, 6, rowIndex, 7, GetString(point, "CRITERIA_MAX"));
+                Merge(sheet, rowIndex, 8, rowIndex, 9, GetEquipmentText(pointGroup));
 
                 string totalJudge = string.Empty;
                 for (int i = 0; i < 5; i++)
                 {
-                    int col = 9 + (i * 4);
+                    int col = 10 + (i * 4);
                     DataRow sampleRow = null;
                     if (pointGroup != null && i < sampleNos.Count)
                     {
@@ -1100,7 +1104,7 @@ namespace RawMat.Views.RegularCheck
                     }
                 }
 
-                Merge(sheet, rowIndex, 29, rowIndex, 31, totalJudge);
+                Merge(sheet, rowIndex, 30, rowIndex, 31, totalJudge);
             }
 
             Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + AutoReportTableBodyRows, AutoReportColumns]];
@@ -1111,9 +1115,13 @@ namespace RawMat.Views.RegularCheck
             tableRange.WrapText = true;
             ReleaseCom(tableRange);
 
-            Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + AutoReportTableBodyRows, 8]];
+            Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, 1], sheet.Cells[tableTop + AutoReportTableBodyRows, 7]];
             firstColumns.Interior.Color = ColorTranslator.ToOle(Color.LightBlue);
             ReleaseCom(firstColumns);
+
+            Excel.Range equipmentColumn = sheet.Range[sheet.Cells[tableTop, 8], sheet.Cells[tableTop + AutoReportTableBodyRows, 9]];
+            equipmentColumn.Interior.Color = ColorTranslator.ToOle(Color.LightYellow);
+            ReleaseCom(equipmentColumn);
         }
 
         private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop, int startCol = 1)
@@ -1121,15 +1129,16 @@ namespace RawMat.Views.RegularCheck
             SetHeader(sheet, tableTop, startCol, "Point");
             SetHeader(sheet, tableTop, startCol + 1, "Min");
             SetHeader(sheet, tableTop, startCol + 2, "Max");
+            SetHeader(sheet, tableTop, startCol + 3, "Equipment");
 
             for (int i = 0; i < 5; i++)
             {
-                int col = startCol + 3 + (i * 2);
+                int col = startCol + 4 + (i * 2);
                 SetHeader(sheet, tableTop, col, "Cavity\nNo");
                 SetHeader(sheet, tableTop, col + 1, "Actual");
             }
 
-            SetHeader(sheet, tableTop, startCol + 15, "Judg");
+            SetHeader(sheet, tableTop, startCol + 14, "Judg");
 
             var points = data.AsEnumerable()
                 .GroupBy(row => GetString(row, "POINT_ORDER"))
@@ -1144,6 +1153,7 @@ namespace RawMat.Views.RegularCheck
                 sheet.Cells[rowIndex, startCol] = GetString(point, "POINT_NAME");
                 sheet.Cells[rowIndex, startCol + 1] = GetString(point, "CRITERIA_MIN");
                 sheet.Cells[rowIndex, startCol + 2] = GetString(point, "CRITERIA_MAX");
+                sheet.Cells[rowIndex, startCol + 3] = GetEquipmentText(pointGroup);
 
                 string totalJudge = "1";
                 for (int i = 0; i < sampleNos.Count; i++)
@@ -1154,7 +1164,7 @@ namespace RawMat.Views.RegularCheck
                         continue;
                     }
 
-                    int col = startCol + 3 + (i * 2);
+                    int col = startCol + 4 + (i * 2);
                     sheet.Cells[rowIndex, col] = GetString(sampleRow, "CAVITY_NAME");
                     sheet.Cells[rowIndex, col + 1] = GetString(sampleRow, "VALUE");
                     string judge = GetString(sampleRow, "POINT_JUDGE");
@@ -1164,11 +1174,11 @@ namespace RawMat.Views.RegularCheck
                     }
                 }
 
-                sheet.Cells[rowIndex, startCol + 15] = totalJudge == "0" ? "NG" : "OK";
+                sheet.Cells[rowIndex, startCol + 14] = totalJudge == "0" ? "NG" : "OK";
                 rowIndex++;
             }
 
-            Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, startCol], sheet.Cells[tableTop + 13, startCol + 15]];
+            Excel.Range tableRange = sheet.Range[sheet.Cells[tableTop, startCol], sheet.Cells[tableTop + 13, startCol + 14]];
             tableRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             tableRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
             tableRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
@@ -1178,6 +1188,23 @@ namespace RawMat.Views.RegularCheck
             Excel.Range firstColumns = sheet.Range[sheet.Cells[tableTop, startCol], sheet.Cells[tableTop + 13, startCol + 2]];
             firstColumns.Interior.Color = ColorTranslator.ToOle(Color.LightBlue);
             ReleaseCom(firstColumns);
+
+            Excel.Range equipmentColumn = sheet.Range[sheet.Cells[tableTop, startCol + 3], sheet.Cells[tableTop + 13, startCol + 3]];
+            equipmentColumn.Interior.Color = ColorTranslator.ToOle(Color.LightYellow);
+            ReleaseCom(equipmentColumn);
+        }
+
+        private static string GetEquipmentText(System.Collections.Generic.IEnumerable<DataRow> rows)
+        {
+            if (rows == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join(", ", rows
+                .Select(row => GetString(row, "EQUIPMENT_NAME"))
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase));
         }
 
         private static void AddStampImage(Excel.Worksheet sheet, string stampImagePath)

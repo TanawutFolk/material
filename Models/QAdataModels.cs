@@ -26,6 +26,18 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            resultData = services.InsertReceiveRefreshLog(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchLatestReceiveRefreshLog()
+        {
+            resultData = services.SearchLatestReceiveRefreshLog();
+            return resultData;
+        }
+
         public OutputOnDbProperty SearchInspectionList(QAdataProperty dataItem)
         {
             resultData = services.SearchInspectionList(dataItem);

@@ -678,6 +678,25 @@ namespace RawMat.Views.RegularCheck
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == Keys.Enter &&
+                dtg_regular.ContainsFocus &&
+                dtg_regular.CurrentCell != null &&
+                dtg_regular.CurrentCell.OwningColumn.Name == "VALUE" &&
+                dtg_regular.CurrentCell is DataGridViewTextBoxCell &&
+                !dtg_regular.CurrentCell.ReadOnly)
+            {
+                int currentRowIndex = dtg_regular.CurrentCell.RowIndex;
+
+                if (!dtg_regular.EndEdit())
+                {
+                    return true;
+                }
+
+                bindingSource.EndEdit();
+                BeginInvoke(new Action(() => MoveToNextRegularValueRow(currentRowIndex)));
+                return true;
+            }
+
             if (regularImages != null && regularImages.Count > 1)
             {
                 if (keyData == Keys.PageUp || keyData == Keys.PageDown)
@@ -704,6 +723,31 @@ namespace RawMat.Views.RegularCheck
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void MoveToNextRegularValueRow(int currentRowIndex)
+        {
+            if (IsDisposed ||
+                dtg_regular.IsDisposed ||
+                !dtg_regular.IsHandleCreated ||
+                !dtg_regular.Columns.Contains("VALUE"))
+            {
+                return;
+            }
+
+            for (int rowIndex = currentRowIndex + 1; rowIndex < dtg_regular.Rows.Count; rowIndex++)
+            {
+                DataGridViewCell valueCell = dtg_regular.Rows[rowIndex].Cells["VALUE"];
+                if (!valueCell.Visible || valueCell.ReadOnly || valueCell is DataGridViewComboBoxCell)
+                {
+                    continue;
+                }
+
+                dtg_regular.CurrentCell = valueCell;
+                dtg_regular.Focus();
+                dtg_regular.BeginEdit(true);
+                return;
+            }
         }
 
         private void UserControlRegular_Disposed(object sender, EventArgs e)

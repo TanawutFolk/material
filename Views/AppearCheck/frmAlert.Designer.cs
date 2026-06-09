@@ -40,11 +40,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Century Gothic", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(32)))), ((int)(((byte)(96)))));
-            this.label1.Location = new System.Drawing.Point(107, 12);
+            this.label1.Location = new System.Drawing.Point(73, 12);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(419, 29);
+            this.label1.Size = new System.Drawing.Size(505, 38);
             this.label1.TabIndex = 0;
             this.label1.Text = "อย่าลืม Print Label และ Move Prones";
             // 
@@ -52,7 +52,7 @@
             // 
             this.btnOk.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnOk.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(32)))), ((int)(((byte)(96)))));
-            this.btnOk.Location = new System.Drawing.Point(260, 315);
+            this.btnOk.Location = new System.Drawing.Point(288, 332);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(95, 38);
             this.btnOk.TabIndex = 1;
@@ -85,7 +85,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Pink;
-            this.ClientSize = new System.Drawing.Size(649, 359);
+            this.ClientSize = new System.Drawing.Size(649, 388);
             this.Controls.Add(this.pcPrintLabel);
             this.Controls.Add(this.pcMovePrones);
             this.Controls.Add(this.btnOk);

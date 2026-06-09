@@ -13,7 +13,7 @@ namespace RawMat.Views.Setting.UserControl
     {
         private readonly SettingControllers _controller = new SettingControllers();
 
-        private const string ColDelete = "Delete";
+        private const string ColAction = "Action";
         private const string ColId = "ID";
         private const string ColNgMode = "NG Mode";
         private const string ColStatus = "Status";
@@ -136,7 +136,7 @@ namespace RawMat.Views.Setting.UserControl
             try
             {
                 grid.DataSource = dt;
-                EnsureDeleteButtonColumn();
+                EnsureActionButtonColumn();
                 ApplyColumnFormat();
             }
             finally
@@ -145,19 +145,19 @@ namespace RawMat.Views.Setting.UserControl
             }
         }
 
-        private void EnsureDeleteButtonColumn()
+        private void EnsureActionButtonColumn()
         {
-            if (dtgEmployeeSetting.Columns.Contains(ColDelete))
+            if (dtgEmployeeSetting.Columns.Contains(ColAction))
             {
-                dtgEmployeeSetting.Columns[ColDelete].DisplayIndex = 0;
+                dtgEmployeeSetting.Columns[ColAction].DisplayIndex = 0;
                 return;
             }
 
             var btn = new DataGridViewButtonColumn
             {
-                Name = ColDelete,
+                Name = ColAction,
                 HeaderText = "",
-                Text = "Delete",
+                Text = "Action",
                 UseColumnTextForButtonValue = true,
                 Width = 80
             };
@@ -174,8 +174,8 @@ namespace RawMat.Views.Setting.UserControl
 
         private void ApplyColumnFormat()
         {
-            // โชว์ Delete + NG Mode
-            SetColumnVisible(ColDelete, true);
+            // Show Action + NG Mode
+            SetColumnVisible(ColAction, true);
             SetColumnVisible(ColNgMode, true);
 
             // ซ่อนอันอื่น
@@ -183,7 +183,7 @@ namespace RawMat.Views.Setting.UserControl
             SetColumnVisible(ColStatus, false);
             SetColumnVisible(ColCreateDate, false);
 
-            SetColumnWidth(ColDelete, 80);
+            SetColumnWidth(ColAction, 80);
             SetColumnWidth(ColId, 70);
             SetColumnFill(ColNgMode, 100);
 
@@ -191,7 +191,7 @@ namespace RawMat.Views.Setting.UserControl
             if (idColumn != null)
                 idColumn.HeaderText = "No.";
 
-            SetColumnAlignment(ColDelete, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColAction, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColId, DataGridViewContentAlignment.MiddleCenter);
             SetColumnAlignment(ColNgMode, DataGridViewContentAlignment.MiddleCenter);
         }
@@ -249,7 +249,7 @@ namespace RawMat.Views.Setting.UserControl
             if (e.RowIndex < 0 || e.ColumnIndex < 0)
                 return;
 
-            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColDelete)
+            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColAction)
                 return;
 
             string id = GetCellText(e.RowIndex, ColId);
@@ -259,6 +259,25 @@ namespace RawMat.Views.Setting.UserControl
             if (string.IsNullOrWhiteSpace(id) || status.Equals("InActive", StringComparison.OrdinalIgnoreCase))
                 return;
 
+            SettingGridActionMenu.Show(
+                dtgEmployeeSetting,
+                e.ColumnIndex,
+                e.RowIndex,
+                () => EditNgMode(id, ngMode),
+                () => DeleteNgMode(id, ngMode));
+        }
+
+        private void EditNgMode(string id, string ngMode)
+        {
+            using (var frm = new frmAddNewNgMode(id, ngMode))
+            {
+                if (frm.ShowDialog(this) == DialogResult.OK)
+                    LoadData();
+            }
+        }
+
+        private void DeleteNgMode(string id, string ngMode)
+        {
             using (var frm = new frmConfirm($"Delete NG Mode '{ngMode}' ?"))
             {
                 if (frm.ShowDialog(this) != DialogResult.Yes)
