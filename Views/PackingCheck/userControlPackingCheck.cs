@@ -277,9 +277,20 @@ namespace RawMat.Views.PackingCheck
             propQA.process = "Packing_Check";
             propQA.EMP_ID = employee.EMP_CODE;
 
-            if (IsAdminPartialApproval())
+            if (IsAdminPendingReview())
             {
-                if (!SaveAdminPartialApproval())
+                List<int> approvedMethodIds = GetAdminApprovedMethodIds();
+                if (approvedMethodIds.Count == 0)
+                {
+                    MessageBox.Show(
+                        "กรุณาเลือกกล่องที่ต้องการเปลี่ยนสถานะจาก NG เป็น OK อย่างน้อย 1 กล่อง",
+                        "ข้อมูล",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!SaveAdminPartialApproval(approvedMethodIds))
                 {
                     return;
                 }
@@ -413,27 +424,28 @@ namespace RawMat.Views.PackingCheck
             NavigateBasedOnStatus();
         }
 
-        private bool IsAdminPartialApproval()
+        private bool IsAdminPendingReview()
         {
             if (employee.EMP_LEVEL != "1")
             {
                 return false;
             }
 
-            return originalMethodJudgments.Any(item =>
-                (item.Value == "0" || item.Value == "6") &&
-                GetMethodControls(item.Key).rbOk.Checked);
+            return originalMethodJudgments.Any(item => item.Value == "0" || item.Value == "6");
         }
 
-        private bool SaveAdminPartialApproval()
+        private List<int> GetAdminApprovedMethodIds()
         {
-            List<int> approvedMethodIds = originalMethodJudgments
+            return originalMethodJudgments
                 .Where(item =>
                     (item.Value == "0" || item.Value == "6") &&
                     GetMethodControls(item.Key).rbOk.Checked)
                 .Select(item => item.Key)
                 .ToList();
+        }
 
+        private bool SaveAdminPartialApproval(List<int> approvedMethodIds)
+        {
             foreach (int methodId in approvedMethodIds)
             {
                 var (_, _, tbDetail, _) = GetMethodControls(methodId);
