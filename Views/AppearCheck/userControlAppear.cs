@@ -1057,10 +1057,11 @@ namespace RawMat.Views.AppearCheck
             {
                 string batch = packingRow["BATCH"]?.ToString() ?? "";
                 int packCount = Math.Max(ParseIntSafe(packingRow["PACK_COUNT"]), 1);
-                int packingValue = ParseIntSafe(packingRow["VALUE"]);
-                int totalSampleQty = ParseIntSafe(packingRow["PACKING_SIZE"]);
-                int lotSize = packingValue * packCount;
-                int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
+int packingValue = ParseIntSafe(packingRow["VALUE"]);
+int lotSize = packingValue * packCount;
+// เช็คเงื่อนไขโหมด All
+int totalSampleQty = IsAllAppearanceMode() ? lotSize : ParseIntSafe(packingRow["PACKING_SIZE"]);
+int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
 
                 propQA.BATCH = batch;
                 DataTable savedData = conQA.SearchAppearData(propQA);
