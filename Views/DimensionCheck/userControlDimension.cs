@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Interop.Excel;
 using MySqlX.XDevAPI.Relational;
 using RawMat.Controllers;
 using RawMat.Property;
@@ -893,7 +893,7 @@ namespace RawMat.Views.DimensionCheck
             string mutexKey = $"Global\\ReportLock_{propQA.Report_No}_{propQA.process}";
             parent?.ReleaseReportMutex(mutexKey);
 
-            userControlSelectDimension usrConSelectDim = new userControlSelectDimension(parent)
+            userControlSelectDimension usrConSelectDim = new userControlSelectDimension()
             {
                 Dock = DockStyle.Fill,
                 propQA = new QAdataProperty()
@@ -1081,9 +1081,9 @@ namespace RawMat.Views.DimensionCheck
         // เมธอดสำหรับปล่อย Mutex
         private void ReleaseReportMutex(string mutexKey)
         {
-            if (!string.IsNullOrEmpty(currentMutexKey) && mainForm != null)
+            if (!string.IsNullOrEmpty(currentMutexKey) && parent != null)
             {
-                mainForm.ReleaseReportMutex(currentMutexKey);
+                parent.ReleaseReportMutex(currentMutexKey);
                 currentMutexKey = null; // รีเซ็ต mutexKey
             }
         }

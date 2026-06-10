@@ -1,4 +1,4 @@
-﻿namespace RawMat.Views.DimensionCheck
+namespace RawMat.Views.DimensionCheck
 {
     partial class userControlDimension
     {
@@ -114,8 +114,6 @@
             this.dtg_dimension.TabIndex = 33;
             this.dtg_dimension.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_dimension_CellEndEdit);
             this.dtg_dimension.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dtg_dimension_CellValidating);
-            this.dtg_dimension.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_dimension_CellValueChanged);
-            this.dtg_dimension.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dtg_dimension_DataBindingComplete);
             // 
             // lb_top
             // 

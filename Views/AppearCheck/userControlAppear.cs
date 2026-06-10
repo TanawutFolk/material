@@ -1,4 +1,4 @@
-﻿using MySqlX.XDevAPI.Common;
+using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.Crmf;
 using RawMat.Controllers;
 using RawMat.Property;
@@ -321,6 +321,7 @@ namespace RawMat.Views.AppearCheck
 
         private void dtg_packing_size_appear_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
+            bool isAllAppearance = IsAllAppearanceMode();
             dtg_packing_size_appear.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dtg_packing_size_appear.AllowUserToAddRows = false;
             dtg_packing_size_appear.ReadOnly = true;
@@ -329,6 +330,7 @@ namespace RawMat.Views.AppearCheck
             {
                 dtg_packing_size_appear.Columns["DISPLAY_NO"].HeaderText = "ลำดับที่";
                 dtg_packing_size_appear.Columns["DISPLAY_NO"].ReadOnly = true;
+                dtg_packing_size_appear.Columns["DISPLAY_NO"].Visible = !isAllAppearance;
             }
 
             if (dtg_packing_size_appear.Columns["PACKING_VALUE"] != null)
@@ -344,7 +346,9 @@ namespace RawMat.Views.AppearCheck
 
             if (dtg_packing_size_appear.Columns["QTY_SELECT"] != null)
             {
-                dtg_packing_size_appear.Columns["QTY_SELECT"].HeaderText = "จำนวนตรวจสอบ / Packing";
+                dtg_packing_size_appear.Columns["QTY_SELECT"].HeaderText = isAllAppearance
+                    ? "จำนวนตรวจสอบ"
+                    : "จำนวนตรวจสอบ / Packing";
                 dtg_packing_size_appear.Columns["QTY_SELECT"].ReadOnly = true;
             }
 
@@ -429,10 +433,19 @@ namespace RawMat.Views.AppearCheck
 
             dtg_packing_size_appear.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dtg_packing_size_appear.ColumnHeadersHeight = 42;
-            SetPackingColumnDisplay("DISPLAY_NO", 0, 55);
-            SetPackingColumnDisplay("PACKING_VALUE", 1, 90);
-            SetPackingColumnDisplay("QTY_SELECT", 2, 150);
-            SetPackingColumnDisplay("STATUS_TEXT", 3, 90);
+            if (!isAllAppearance)
+            {
+                SetPackingColumnDisplay("DISPLAY_NO", 0, 55);
+                SetPackingColumnDisplay("PACKING_VALUE", 1, 90);
+                SetPackingColumnDisplay("QTY_SELECT", 2, 150);
+                SetPackingColumnDisplay("STATUS_TEXT", 3, 90);
+            }
+            else
+            {
+                SetPackingColumnDisplay("PACKING_VALUE", 0, 90);
+                SetPackingColumnDisplay("QTY_SELECT", 1, 150);
+                SetPackingColumnDisplay("STATUS_TEXT", 2, 90);
+            }
 
             foreach (DataGridViewColumn column in dtg_packing_size_appear.Columns)
             {
@@ -474,7 +487,17 @@ namespace RawMat.Views.AppearCheck
                 }
             }
 
-            lbCount.Text = $"{inspectedQty} / {totalQty}";
+            // All mode: แสดง Lot Size เป็นเป้าหมาย, ไม่ใช่ผลรวม Packing
+            if (IsAllAppearanceMode())
+            {
+                int lotSize = ParseInt(propQA.Qty);
+                if (lotSize <= 0) lotSize = totalQty;
+                lbCount.Text = $"{inspectedQty} / {lotSize}";
+            }
+            else
+            {
+                lbCount.Text = $"{inspectedQty} / {totalQty}";
+            }
 
             if (IsAllAppearanceMode())
             {
