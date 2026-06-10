@@ -1,4 +1,4 @@
-﻿using RawMat.Controllers;
+﻿﻿using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.CustomMsg;
@@ -853,7 +853,6 @@ namespace RawMat.Views.DimensionCheck
                     return false;
                 }
 
-                // ???????????????? ????? Equipment Serial
                 if (equipmentType != "0" && string.IsNullOrWhiteSpace(equipmentSerial))
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(

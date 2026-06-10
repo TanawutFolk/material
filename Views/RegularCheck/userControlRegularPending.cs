@@ -1,4 +1,4 @@
-﻿using RawMat.Controllers;
+﻿﻿using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.CustomMsg;
@@ -34,7 +34,7 @@ namespace RawMat.Views.RegularCheck
 
         private List<Image> regularImages;
         private int currentRegularImageIndex = 0;
-        private Image _defaultImage = null; // ????????????? placeholder ????
+        private Image _defaultImage = null;
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
 
         public userControlRegularPending()
@@ -63,13 +63,12 @@ namespace RawMat.Views.RegularCheck
             dtg_regular.CellFormatting -= dtg_regular_CellFormatting;
             dtg_regular.CellFormatting += dtg_regular_CellFormatting;
 
-            //tb_pageMax.Text = ""; //????? info_regular_sampling 
+            //tb_pageMax.Text = "";
             //tb_pageCount.Text = ""; // 1 record 2 record ????? pageMax
             lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
                 ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
                 : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
-            // ??????? Function ??? async (?????? pagination ???? list ????????????)
             regularImages = await imgCls.LoadImagesAsync("RegularPath", propQA.M_CODE);
             currentRegularImageIndex = 0;
 
@@ -80,7 +79,7 @@ namespace RawMat.Views.RegularCheck
             else
             {
                 // Fallback: LoadImages ?????? single ???? ?????????? return empty list
-                picbox_reg.Image = _defaultImage; // ???? null ???????? default
+                picbox_reg.Image = _defaultImage;
             }
 
 
@@ -189,13 +188,11 @@ namespace RawMat.Views.RegularCheck
             bindingSource.DataSource = originalDataTable;
             dtg_regular.DataSource = bindingSource;
 
-            // ????????????????????? "VALUE" ??? "EQUIPMENT_SERIAL" ???? ReadOnly
             foreach (DataGridViewColumn column in dtg_regular.Columns)
             {
                 column.ReadOnly = (column.Name != "VALUE" && column.Name != "EQUIPMENT_SERIAL");
             }
 
-            // ??????? HeaderText
             if (dtg_regular.Columns.Contains("CAVITY_NAME")) dtg_regular.Columns["CAVITY_NAME"].HeaderText = "CAV.";
             if (dtg_regular.Columns.Contains("SAMPLING_NO")) dtg_regular.Columns["SAMPLING_NO"].HeaderText = "SAMPLE";
             if (dtg_regular.Columns.Contains("POINT_NAME")) dtg_regular.Columns["POINT_NAME"].HeaderText = "CHECKPOINT";
@@ -222,9 +219,9 @@ namespace RawMat.Views.RegularCheck
 
         private void ShowPage(int page)
         {
-            bindingSource.Filter = $"POINT_ORDER = '{page}'"; // ????????????????? POINT_ORDER ??????????
+            bindingSource.Filter = $"POINT_ORDER = '{page}'";
             ApplyEquipmentSerialComboBoxes();
-            lb_page.Text = $"{page}/{totalPages}"; // ???????? (1/8)
+            lb_page.Text = $"{page}/{totalPages}";
         }
 
         private void bt_prev_Click(object sender, EventArgs e)
@@ -252,17 +249,15 @@ namespace RawMat.Views.RegularCheck
         {
             foreach (DataRow row in table.Rows)
             {
-                // ?????????????? (POINT_ORDER)
                 int pageNumber = row["POINT_ORDER"] != DBNull.Value ? Convert.ToInt32(row["POINT_ORDER"]) : 0;
 
-                // ?????? Sampling No (?????????? Row Index)
                 string samplingNo = row["SAMPLING_NO"] != DBNull.Value ? row["SAMPLING_NO"].ToString() : "N/A";
 
                 foreach (DataColumn column in table.Columns)
                 {
                     if (row[column] == DBNull.Value || string.IsNullOrWhiteSpace(row[column].ToString()))
                     {
-                        string columnName = column.ColumnName; // ???????????
+                        string columnName = column.ColumnName;
 
                         MessageBox.Show($"????????????????? {pageNumber}, Sampling No {samplingNo}, ??????? {columnName}",
                             "???????", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -278,33 +273,28 @@ namespace RawMat.Views.RegularCheck
         {
             if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
             {
-                // ?????????????????? CRITERIA_MIN ??? CRITERIA_MAX ?????
                 if (dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value != null &&
                     dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value != null)
                 {
                     double minValue = Convert.ToDouble(dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value);
                     double maxValue = Convert.ToDouble(dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value);
 
-                    // ????????: ??? CRITERIA_MIN == 1 && CRITERIA_MAX == 1 ?????? ComboBoxCell
                     if (minValue == 1 && maxValue == 1)
                     {
-                        // ??????????????? VALUE ????????? ComboBoxCell
                         if (!(dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewComboBoxCell))
                         {
                             DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
                             comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
              {
-                 new KeyValuePair<string, string>("", ""),  // ????????
+                 new KeyValuePair<string, string>("", ""),
                  new KeyValuePair<string, string>("0", "NG"),
                  new KeyValuePair<string, string>("1", "OK")
              };
                             comboBoxCell.ValueMember = "Key";
                             comboBoxCell.DisplayMember = "Value";
 
-                            // ??? BeginInvoke ??????????????????????? CellFormatting ???
                             this.BeginInvoke((MethodInvoker)delegate
                             {
-                                // ?????????? RowIndex ??? ColumnIndex ???????????????? DataGridView
                                 if (e.RowIndex >= 0 && e.RowIndex < dtg_regular.Rows.Count &&
                                     e.ColumnIndex >= 0 && e.ColumnIndex < dtg_regular.Columns.Count)
                                 {
@@ -315,7 +305,6 @@ namespace RawMat.Views.RegularCheck
                     }
                     else
                     {
-                        // ????????????????? ?????? TextBoxCell
                         if (!(dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewTextBoxCell))
                         {
                             DataGridViewTextBoxCell textBoxCell = new DataGridViewTextBoxCell();
@@ -333,7 +322,6 @@ namespace RawMat.Views.RegularCheck
 
         private void dtg_regular_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            // ???????????????????????? "Value"
             if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
             {
 
@@ -344,26 +332,23 @@ namespace RawMat.Views.RegularCheck
 
                 string input = e.FormattedValue.ToString();
 
-                // ?????????????? ?????????????????????
                 if (string.IsNullOrWhiteSpace(input))
                 {
                     //MessageBox.Show("???????????? ?????????????", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //e.Cancel = true; // ??????????????????????????
+                    //e.Cancel = true;
                     return;
                 }
 
-                // ???????????????????? ??????????????????? 1 ???
                 if (!IsValidDecimal(input))
                 {
                     MessageBox.Show("??????????????????????? ?????????????????????????????? 1 ??????", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true; // ???????????????????????
+                    e.Cancel = true;
                 }
             }
         }
 
         private bool IsValidDecimal(string input)
         {
-            // ?????????????????????????? ????????????????????? 1 ???
             return decimal.TryParse(input, out _) && input.Count(c => c == '.') <= 1;
         }
 
@@ -421,15 +406,13 @@ namespace RawMat.Views.RegularCheck
 
                     if (decimal.TryParse(row.Cells["VALUE"].Value.ToString(), out value))
                     {
-                        // ????? Point_Judge (1 ????????????? min-max, 0 ??????????)
                         row.Cells["POINT_JUDGE"].Value = (value >= min && value <= max) ? 1 : 0;
                     }
                     else
                     {
-                        row.Cells["POINT_JUDGE"].Value = DBNull.Value; // ???????????????? ??????????????
+                        row.Cells["POINT_JUDGE"].Value = DBNull.Value;
                     }
 
-                    // ????? Total_Judge
                     CalculateTotalJudge();
                 }
             }
@@ -544,7 +527,6 @@ namespace RawMat.Views.RegularCheck
                 }
 
             }
-            // ????????????? 1 ??? Total_Judge ???? 1
             SetTotalJudge(1);
         }
 
@@ -558,18 +540,17 @@ namespace RawMat.Views.RegularCheck
 
         private void tb_record_Click(object sender, EventArgs e)
         {
-            // ???????????????????????? DataGridView
             if (dtg_regular.IsCurrentCellDirty || dtg_regular.IsCurrentRowDirty)
             {
-                dtg_regular.EndEdit(); // ???????????????????????
-                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit); // ??????????? DataSource
-                bindingSource.EndEdit(); // ????????????? BindingSource (??????)
+                dtg_regular.EndEdit();
+                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                bindingSource.EndEdit();
             }
 
 
-            if (!IsDataTableValid(originalDataTable)) // ?????????? DataTable ???
+            if (!IsDataTableValid(originalDataTable))
             {
-                return; // ??????????????????????
+                return;
             }
 
             propQA.TOTAL_STATUS = "1";
@@ -620,7 +601,7 @@ namespace RawMat.Views.RegularCheck
                     ProcStatus status;
 
                     bool parsed = int.TryParse(propQA.inProcStatus, out int statusId) && Enum.IsDefined(typeof(ProcStatus), statusId);
-                    status = parsed ? (ProcStatus)statusId : ProcStatus.NG; // ??????????????? NG ?????????????
+                    status = parsed ? (ProcStatus)statusId : ProcStatus.NG;
 
                     switch (status)
                     {
@@ -684,7 +665,6 @@ namespace RawMat.Views.RegularCheck
 
                 if (foundPanels.Length > 0 && foundPanels[0] is Panel panelMain)
                 {
-                    // ??????????????? UserControl ????
                     panelMain.Controls.Clear();
                     panelMain.Controls.Add(usrSelectRegPending);
                     usrSelectRegPending.BringToFront();
@@ -739,7 +719,6 @@ namespace RawMat.Views.RegularCheck
                         currentRegularImageIndex = (currentRegularImageIndex + 1) % regularImages.Count;
                     }
 
-                    // ?????? dispose ??? ??????????????? dispose Image ?? list
                     // if (picbox_func.Image != null)
                     // {
                     //     picbox_func.Image.Dispose();
@@ -747,7 +726,7 @@ namespace RawMat.Views.RegularCheck
                     // }
                     picbox_reg.Image = regularImages[currentRegularImageIndex];
 
-                    return true; // ???????????? key ???? ???????????
+                    return true;
                 }
             }
 
