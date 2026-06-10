@@ -34,12 +34,19 @@ namespace RawMat.Views.RegularCheck
 
         private List<Image> regularImages;
         private int currentRegularImageIndex = 0;
-        private Image _defaultImage = null; // ถ้าไม่ต้องการ placeholder จริง
+        private Image _defaultImage = null; // ????????????? placeholder ????
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
 
         public userControlRegularPending()
         {
             InitializeComponent();
+            dtg_regular.DataError += dtg_regular_DataError;
+        }
+
+        private void dtg_regular_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         private async void userControlRegularPending_Load(object sender, EventArgs e)
@@ -56,13 +63,13 @@ namespace RawMat.Views.RegularCheck
             dtg_regular.CellFormatting -= dtg_regular_CellFormatting;
             dtg_regular.CellFormatting += dtg_regular_CellFormatting;
 
-            //tb_pageMax.Text = ""; //มาจาก info_regular_sampling 
-            //tb_pageCount.Text = ""; // 1 record 2 record จนถึง pageMax
+            //tb_pageMax.Text = ""; //????? info_regular_sampling 
+            //tb_pageCount.Text = ""; // 1 record 2 record ????? pageMax
             lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
                 ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
                 : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
-            // โหลดรูป Function แบบ async (สำหรับ pagination ด้วย list ถ้ามีหลายรูป)
+            // ??????? Function ??? async (?????? pagination ???? list ????????????)
             regularImages = await imgCls.LoadImagesAsync("RegularPath", propQA.M_CODE);
             currentRegularImageIndex = 0;
 
@@ -72,8 +79,8 @@ namespace RawMat.Views.RegularCheck
             }
             else
             {
-                // Fallback: LoadImages จัดการ single แล้ว ถ้าไม่มีจะ return empty list
-                picbox_reg.Image = _defaultImage; // หรือ null ถ้าไม่มี default
+                // Fallback: LoadImages ?????? single ???? ?????????? return empty list
+                picbox_reg.Image = _defaultImage; // ???? null ???????? default
             }
 
 
@@ -81,7 +88,7 @@ namespace RawMat.Views.RegularCheck
 
             if (dtRegPending.Rows.Count == 0)
             {
-                MessageBox.Show("ไม่พบ data regular ที่ Pending ใน db_regular_data");
+                MessageBox.Show("????? data regular ??? Pending ?? db_regular_data");
                 return;
             }
 
@@ -115,7 +122,7 @@ namespace RawMat.Views.RegularCheck
                     dtRow["SAMPLING_NO"].ToString(),
                     dtRow["POINT_ORDER"].ToString(),
                     dtRow["POINT_CAL"].ToString(),
-                    dtRow["EQUIPMENT_SERIAL_ID"].ToString(),
+                    GetSerialTextById(dtRow["EQUIPMENT_TYPE"].ToString(), dtRow["EQUIPMENT_SERIAL_ID"].ToString()),
                     dtRow["EQUIPMENT_TYPE"].ToString(),
                     dtRow["EQUIPMENT_NAME"].ToString(),
                     dtRow["POINT_NAME"].ToString(),
@@ -153,7 +160,7 @@ namespace RawMat.Views.RegularCheck
                     dtRow["SAMPLING_NO"].ToString(),
                     dtRow["POINT_ORDER"].ToString(),
                     dtRow["POINT_CAL"].ToString(),
-                    dtRow["EQUIPMENT_SERIAL_ID"].ToString(),
+                    GetSerialTextById(dtRow["EQUIPMENT_TYPE"].ToString(), dtRow["EQUIPMENT_SERIAL_ID"].ToString()),
                     dtRow["EQUIPMENT_TYPE"].ToString(),
                     dtRow["EQUIPMENT_NAME"].ToString(),
                     dtRow["POINT_NAME"].ToString(),
@@ -182,13 +189,13 @@ namespace RawMat.Views.RegularCheck
             bindingSource.DataSource = originalDataTable;
             dtg_regular.DataSource = bindingSource;
 
-            // ทำให้คอลัมน์ที่ไม่ใช่ "VALUE" และ "EQUIPMENT_SERIAL" เป็น ReadOnly
+            // ????????????????????? "VALUE" ??? "EQUIPMENT_SERIAL" ???? ReadOnly
             foreach (DataGridViewColumn column in dtg_regular.Columns)
             {
                 column.ReadOnly = (column.Name != "VALUE" && column.Name != "EQUIPMENT_SERIAL");
             }
 
-            // เปลี่ยน HeaderText
+            // ??????? HeaderText
             if (dtg_regular.Columns.Contains("CAVITY_NAME")) dtg_regular.Columns["CAVITY_NAME"].HeaderText = "CAV.";
             if (dtg_regular.Columns.Contains("SAMPLING_NO")) dtg_regular.Columns["SAMPLING_NO"].HeaderText = "SAMPLE";
             if (dtg_regular.Columns.Contains("POINT_NAME")) dtg_regular.Columns["POINT_NAME"].HeaderText = "CHECKPOINT";
@@ -215,9 +222,9 @@ namespace RawMat.Views.RegularCheck
 
         private void ShowPage(int page)
         {
-            bindingSource.Filter = $"POINT_ORDER = '{page}'"; // กรองเฉพาะแถวที่มี POINT_ORDER ตรงกับหน้า
+            bindingSource.Filter = $"POINT_ORDER = '{page}'"; // ????????????????? POINT_ORDER ??????????
             ApplyEquipmentSerialComboBoxes();
-            lb_page.Text = $"{page}/{totalPages}"; // แสดงหน้า (1/8)
+            lb_page.Text = $"{page}/{totalPages}"; // ???????? (1/8)
         }
 
         private void bt_prev_Click(object sender, EventArgs e)
@@ -245,20 +252,20 @@ namespace RawMat.Views.RegularCheck
         {
             foreach (DataRow row in table.Rows)
             {
-                // ดึงหมายเลขหน้า (POINT_ORDER)
+                // ?????????????? (POINT_ORDER)
                 int pageNumber = row["POINT_ORDER"] != DBNull.Value ? Convert.ToInt32(row["POINT_ORDER"]) : 0;
 
-                // ดึงค่า Sampling No (อ้างอิงแทน Row Index)
+                // ?????? Sampling No (?????????? Row Index)
                 string samplingNo = row["SAMPLING_NO"] != DBNull.Value ? row["SAMPLING_NO"].ToString() : "N/A";
 
                 foreach (DataColumn column in table.Columns)
                 {
                     if (row[column] == DBNull.Value || string.IsNullOrWhiteSpace(row[column].ToString()))
                     {
-                        string columnName = column.ColumnName; // ชื่อคอลัมน์
+                        string columnName = column.ColumnName; // ???????????
 
-                        MessageBox.Show($"พบเซลล์ว่างในหน้า {pageNumber}, Sampling No {samplingNo}, คอลัมน์ {columnName}",
-                            "คำเตือน", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show($"????????????????? {pageNumber}, Sampling No {samplingNo}, ??????? {columnName}",
+                            "???????", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return false;
                     }
                 }
@@ -271,33 +278,33 @@ namespace RawMat.Views.RegularCheck
         {
             if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
             {
-                // ตรวจสอบว่าข้อมูลใน CRITERIA_MIN และ CRITERIA_MAX มีค่า
+                // ?????????????????? CRITERIA_MIN ??? CRITERIA_MAX ?????
                 if (dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value != null &&
                     dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value != null)
                 {
                     double minValue = Convert.ToDouble(dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value);
                     double maxValue = Convert.ToDouble(dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value);
 
-                    // เงื่อนไข: ถ้า CRITERIA_MIN == 1 && CRITERIA_MAX == 1 ให้ใช้ ComboBoxCell
+                    // ????????: ??? CRITERIA_MIN == 1 && CRITERIA_MAX == 1 ?????? ComboBoxCell
                     if (minValue == 1 && maxValue == 1)
                     {
-                        // ตรวจสอบว่าเซลล์ VALUE ยังไม่ใช่ ComboBoxCell
+                        // ??????????????? VALUE ????????? ComboBoxCell
                         if (!(dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewComboBoxCell))
                         {
                             DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
                             comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
              {
-                 new KeyValuePair<string, string>("", ""),  // ช่องว่าง
+                 new KeyValuePair<string, string>("", ""),  // ????????
                  new KeyValuePair<string, string>("0", "NG"),
                  new KeyValuePair<string, string>("1", "OK")
              };
                             comboBoxCell.ValueMember = "Key";
                             comboBoxCell.DisplayMember = "Value";
 
-                            // ใช้ BeginInvoke เพื่อหลีกเลี่ยงการเรียก CellFormatting ซ้ำ
+                            // ??? BeginInvoke ??????????????????????? CellFormatting ???
                             this.BeginInvoke((MethodInvoker)delegate
                             {
-                                // ตรวจสอบว่า RowIndex และ ColumnIndex ไม่เกินขอบเขตของ DataGridView
+                                // ?????????? RowIndex ??? ColumnIndex ???????????????? DataGridView
                                 if (e.RowIndex >= 0 && e.RowIndex < dtg_regular.Rows.Count &&
                                     e.ColumnIndex >= 0 && e.ColumnIndex < dtg_regular.Columns.Count)
                                 {
@@ -308,7 +315,7 @@ namespace RawMat.Views.RegularCheck
                     }
                     else
                     {
-                        // ถ้าไม่ตรงเงื่อนไข ให้ใช้ TextBoxCell
+                        // ????????????????? ?????? TextBoxCell
                         if (!(dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewTextBoxCell))
                         {
                             DataGridViewTextBoxCell textBoxCell = new DataGridViewTextBoxCell();
@@ -326,7 +333,7 @@ namespace RawMat.Views.RegularCheck
 
         private void dtg_regular_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
-            // เช็คว่ากำลังแก้ไขคอลัมน์ "Value"
+            // ???????????????????????? "Value"
             if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
             {
 
@@ -337,27 +344,35 @@ namespace RawMat.Views.RegularCheck
 
                 string input = e.FormattedValue.ToString();
 
-                // ถ้าเว้นว่างไว้ ให้เตือนและไม่ให้ผ่าน
+                // ?????????????? ?????????????????????
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    //MessageBox.Show("กรุณากรอกค่า ห้ามปล่อยว่าง", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //e.Cancel = true; // ไม่ให้ผู้ใช้เปลี่ยนแปลงค่า
+                    //MessageBox.Show("???????????? ?????????????", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //e.Cancel = true; // ??????????????????????????
                     return;
                 }
 
-                // ตรวจสอบว่าเป็นตัวเลข และต้องไม่มีจุดเกิน 1 จุด
+                // ???????????????????? ??????????????????? 1 ???
                 if (!IsValidDecimal(input))
                 {
-                    MessageBox.Show("กรุณากรอกตัวเลขเท่านั้น และไม่สามารถมีจุดทศนิยมมากกว่า 1 จุดได้", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true; // ยกเลิกการเปลี่ยนแปลงค่า
+                    MessageBox.Show("??????????????????????? ?????????????????????????????? 1 ??????", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    e.Cancel = true; // ???????????????????????
                 }
             }
         }
 
         private bool IsValidDecimal(string input)
         {
-            // เช็คว่าค่าที่ใส่เป็นตัวเลข และมีจุดทศนิยมไม่เกิน 1 จุด
+            // ?????????????????????????? ????????????????????? 1 ???
             return decimal.TryParse(input, out _) && input.Count(c => c == '.') <= 1;
+        }
+
+        private string GetSerialTextById(string equipmentType, string serialId)
+        {
+            if (string.IsNullOrWhiteSpace(serialId)) return "";
+            System.Data.DataTable serialSource = GetEquipmentSerialSource(equipmentType);
+            var row = serialSource.AsEnumerable().FirstOrDefault(r => string.Equals(r["VALUE"].ToString(), serialId, System.StringComparison.OrdinalIgnoreCase));
+            return row != null ? row["TEXT"].ToString() : serialId;
         }
 
         private void dtg_regular_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -406,15 +421,15 @@ namespace RawMat.Views.RegularCheck
 
                     if (decimal.TryParse(row.Cells["VALUE"].Value.ToString(), out value))
                     {
-                        // คำนวณ Point_Judge (1 ถ้าอยู่ในช่วง min-max, 0 ถ้านอกช่วง)
+                        // ????? Point_Judge (1 ????????????? min-max, 0 ??????????)
                         row.Cells["POINT_JUDGE"].Value = (value >= min && value <= max) ? 1 : 0;
                     }
                     else
                     {
-                        row.Cells["POINT_JUDGE"].Value = DBNull.Value; // ถ้าค่าไม่ถูกต้อง ให้เป็นค่าว่าง
+                        row.Cells["POINT_JUDGE"].Value = DBNull.Value; // ???????????????? ??????????????
                     }
 
-                    // คำนวณ Total_Judge
+                    // ????? Total_Judge
                     CalculateTotalJudge();
                 }
             }
@@ -436,7 +451,7 @@ namespace RawMat.Views.RegularCheck
                 DataTable serialSource = GetEquipmentSerialSource(equipmentType);
                 object currentValue = row.Cells["EQUIPMENT_SERIAL"].Value;
 
-                EnsureCurrentSerialIdExists(serialSource, currentValue);
+                EnsureCurrentSerialExists(serialSource, currentValue);
 
                 DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell
                 {
@@ -480,11 +495,11 @@ namespace RawMat.Views.RegularCheck
                     if (string.IsNullOrWhiteSpace(serialId) || string.IsNullOrWhiteSpace(serial)) continue;
 
                     bool exists = serialSource.AsEnumerable()
-                        .Any(r => string.Equals(r["VALUE"].ToString(), serialId, StringComparison.OrdinalIgnoreCase));
+                        .Any(r => string.Equals(r["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
 
                     if (!exists)
                     {
-                        serialSource.Rows.Add(serial, serialId);
+                        serialSource.Rows.Add(serial, serial);
                     }
                 }
             }
@@ -501,20 +516,20 @@ namespace RawMat.Views.RegularCheck
             return table;
         }
 
-        private static void EnsureCurrentSerialIdExists(DataTable serialSource, object currentValue)
+        private static void EnsureCurrentSerialExists(DataTable serialSource, object currentValue)
         {
-            string serialId = currentValue == null || currentValue == DBNull.Value
+            string serial = currentValue == null || currentValue == DBNull.Value
                 ? ""
                 : currentValue.ToString().Trim();
 
-            if (string.IsNullOrWhiteSpace(serialId)) return;
+            if (string.IsNullOrWhiteSpace(serial)) return;
 
             bool exists = serialSource.AsEnumerable()
-                .Any(row => string.Equals(row["VALUE"].ToString(), serialId, StringComparison.OrdinalIgnoreCase));
+                .Any(row => string.Equals(row["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
 
             if (!exists)
             {
-                serialSource.Rows.Add(serialId, serialId);
+                serialSource.Rows.Add(serial, serial);
             }
         }
 
@@ -529,7 +544,7 @@ namespace RawMat.Views.RegularCheck
                 }
 
             }
-            // ถ้าทุกแถวเป็น 1 ให้ Total_Judge เป็น 1
+            // ????????????? 1 ??? Total_Judge ???? 1
             SetTotalJudge(1);
         }
 
@@ -543,32 +558,46 @@ namespace RawMat.Views.RegularCheck
 
         private void tb_record_Click(object sender, EventArgs e)
         {
-            // บันทึกค่าที่กำลังแก้ไขใน DataGridView
+            // ???????????????????????? DataGridView
             if (dtg_regular.IsCurrentCellDirty || dtg_regular.IsCurrentRowDirty)
             {
-                dtg_regular.EndEdit(); // จบการแก้ไขเซลล์ปัจจุบัน
-                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit); // บันทึกค่าลง DataSource
-                bindingSource.EndEdit(); // บันทึกค่าลงใน BindingSource (ถ้าใช้)
+                dtg_regular.EndEdit(); // ???????????????????????
+                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit); // ??????????? DataSource
+                bindingSource.EndEdit(); // ????????????? BindingSource (??????)
             }
 
 
-            if (!IsDataTableValid(originalDataTable)) // ตรวจสอบจาก DataTable แทน
+            if (!IsDataTableValid(originalDataTable)) // ?????????? DataTable ???
             {
-                return; // ไม่ทำต่อถ้ามีเซลล์ว่าง
+                return; // ??????????????????????
             }
 
             propQA.TOTAL_STATUS = "1";
             propQA.EMP_ID = employee.EMP_CODE;
 
-            // ✅ วนลูปผ่าน originalDataTable เพื่อให้แน่ใจว่าใช้ข้อมูลจากทุกหน้า
+            // ? ????????? originalDataTable ???????????????????????????????????
             foreach (DataRow row in originalDataTable.Rows)
             {
 
                 propQA.TOTAL_STATUS = (Convert.ToInt32(row["TOTAL_JUDGE"]?.ToString()) * Convert.ToInt32(propQA.TOTAL_STATUS)).ToString();
             }
 
+            DataTable regularDataToSave = originalDataTable.Copy();
+
+            foreach (DataRow row in regularDataToSave.Rows)
+            {
+                propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
+                propQA.EQUIPMENT_TYPE_ID = row["EQUIPMENT_TYPE"]?.ToString();
+
+                if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
+                {
+                    int id = conQA.InsertEquipmentSerial(propQA);
+                    row["EQUIPMENT_SERIAL"] = id;
+                }
+            }
+
             propQA.dtgRegData = new DataGridView();
-            propQA.dtgRegData.DataSource = originalDataTable;
+            propQA.dtgRegData.DataSource = regularDataToSave;
 
 
             if (conQA.InsertRegularData(propQA) == true)
@@ -591,26 +620,26 @@ namespace RawMat.Views.RegularCheck
                     ProcStatus status;
 
                     bool parsed = int.TryParse(propQA.inProcStatus, out int statusId) && Enum.IsDefined(typeof(ProcStatus), statusId);
-                    status = parsed ? (ProcStatus)statusId : ProcStatus.NG; // ค่าเริ่มต้นเป็น NG ถ้าแปลงไม่ได้
+                    status = parsed ? (ProcStatus)statusId : ProcStatus.NG; // ??????????????? NG ?????????????
 
                     switch (status)
                     {
                         case ProcStatus.OK:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record Regular งาน OK เรียบร้อยแล้ว",
-                                "สำเร็จ",
+                                "Record Regular ??? OK ?????????????",
+                                "??????",
                                 CustomMsgBoxBase.MessageBoxIconType.OK);
                             break;
                         case ProcStatus.NG:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record Regular พบงาน ถูก NG",
-                                "สำเร็จ",
+                                "Record Regular ????? ??? NG",
+                                "??????",
                                 CustomMsgBoxBase.MessageBoxIconType.NG);
                             break;
                         default:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "สถานะไม่รู้จัก",
-                                "ข้อผิดพลาด",
+                                "??????????????",
+                                "??????????",
                                 CustomMsgBoxBase.MessageBoxIconType.Pending);
                             break;
                     }
@@ -622,8 +651,8 @@ namespace RawMat.Views.RegularCheck
                 else
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record regular status ไม่ได้ กรุณากด record อีกครั้ง",
-                                "ข้อผิดพลาด",
+                                "Record regular status ?????? ??????? record ????????",
+                                "??????????",
                                 CustomMsgBoxBase.MessageBoxIconType.NG);
                     return;
                 }
@@ -631,8 +660,8 @@ namespace RawMat.Views.RegularCheck
             else
             {
                 CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record regular ไม่ได้ กรุณากด record อีกครั้ง",
-                                "ข้อผิดพลาด",
+                                "Record regular ?????? ??????? record ????????",
+                                "??????????",
                                 CustomMsgBoxBase.MessageBoxIconType.NG);
                 return;
             }
@@ -655,14 +684,14 @@ namespace RawMat.Views.RegularCheck
 
                 if (foundPanels.Length > 0 && foundPanels[0] is Panel panelMain)
                 {
-                    // เคลียร์และเพิ่ม UserControl ใหม่
+                    // ??????????????? UserControl ????
                     panelMain.Controls.Clear();
                     panelMain.Controls.Add(usrSelectRegPending);
                     usrSelectRegPending.BringToFront();
                 }
                 else
                 {
-                    MessageBox.Show("ไม่พบ หน้าจอหลัก panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("????? ?????????? panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -710,7 +739,7 @@ namespace RawMat.Views.RegularCheck
                         currentRegularImageIndex = (currentRegularImageIndex + 1) % regularImages.Count;
                     }
 
-                    // ลบส่วน dispose ออก เพื่อป้องกันการ dispose Image ใน list
+                    // ?????? dispose ??? ??????????????? dispose Image ?? list
                     // if (picbox_func.Image != null)
                     // {
                     //     picbox_func.Image.Dispose();
@@ -718,7 +747,7 @@ namespace RawMat.Views.RegularCheck
                     // }
                     picbox_reg.Image = regularImages[currentRegularImageIndex];
 
-                    return true; // บอกว่าจัดการ key แล้ว ไม่ให้ไปต่อ
+                    return true; // ???????????? key ???? ???????????
                 }
             }
 
@@ -752,7 +781,7 @@ namespace RawMat.Views.RegularCheck
 
         private void UserControlRegular_Disposed(object sender, EventArgs e)
         {
-            // Dispose logic เดิม
+            // Dispose logic ????
             if (regularImages != null)
             {
                 foreach (var img in regularImages)
@@ -763,9 +792,9 @@ namespace RawMat.Views.RegularCheck
                 regularImages = null;
             }
 
-            // Dispose อื่นๆ ถ้ามี (เช่น materialImages, cavityImages ถ้า hold list ไว้)
+            // Dispose ????? ????? (???? materialImages, cavityImages ??? hold list ???)
 
-            // Unsubscribe event เพื่อป้องกัน memory leak
+            // Unsubscribe event ???????????? memory leak
             this.Disposed -= UserControlRegular_Disposed;
         }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Interop.Excel;
 using MySqlX.XDevAPI.Relational;
 using RawMat.Controllers;
 using RawMat.Property;
@@ -46,7 +46,7 @@ namespace RawMat.Views.DimensionCheck
         private int currentPage = 1;
         private int totalPages = 1;
         private frmMain mainForm;
-        private string currentMutexKey; // ตัวแปรเก็บ mutexKey
+        private string currentMutexKey; // ?????????? mutexKey
                                         // Add this event delegate at the top of your userControlRegular class:
         private IParent parent;
         public delegate void UserControlDisposedEventHandler(object sender, string reportNo);
@@ -56,11 +56,11 @@ namespace RawMat.Views.DimensionCheck
 
         private List<Image> dimensionImages;
         private int currentDimensionImageIndex = 0;
-        private Image _defaultImage = null; // ถ้าไม่ต้องการ placeholder จริง
+        private Image _defaultImage = null; // ????????????? placeholder ????
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
         private bool _isNavigatingAway;
 
-        // Dictionary เพื่อเก็บ VALUE ของแต่ละ POINT_ORDER และ SAMPLING_NO
+        // Dictionary ????????? VALUE ???????? POINT_ORDER ??? SAMPLING_NO
         private Dictionary<string, Dictionary<string, decimal>> pointValues = new Dictionary<string, Dictionary<string, decimal>>();
 
         public userControlDimension(IParent parent)
@@ -69,40 +69,47 @@ namespace RawMat.Views.DimensionCheck
             this.parent = parent;
 
             dtg_dimension.TabStop = false;
-            // ตั้งค่าให้ UserControl ไม่โฟกัสอัตโนมัติ
+            dtg_dimension.DataError += dtg_dimension_DataError;
+            // ?????????? UserControl ?????????????????
             this.SetStyle(ControlStyles.Selectable, false);
 
-            // ปิดการรับโฟกัส
+            // ??????????????
             this.TabStop = false;
 
+        }
+
+        private void dtg_dimension_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         private void tb_record_Click(object sender, EventArgs e)
         {
 
-            // บันทึกค่าที่กำลังแก้ไขใน DataGridView
+            // ???????????????????????? DataGridView
             if (dtg_dimension.IsCurrentCellDirty || dtg_dimension.IsCurrentRowDirty)
             {
-                dtg_dimension.EndEdit(); // จบการแก้ไขเซลล์ปัจจุบัน
-                dtg_dimension.CommitEdit(DataGridViewDataErrorContexts.Commit); // บันทึกค่าลง DataSource
-                bindingSource.EndEdit(); // บันทึกค่าลงใน BindingSource (ถ้าใช้)
+                dtg_dimension.EndEdit(); // ???????????????????????
+                dtg_dimension.CommitEdit(DataGridViewDataErrorContexts.Commit); // ??????????? DataSource
+                bindingSource.EndEdit(); // ????????????? BindingSource (??????)
             }
 
             if (dtg_dimension.Rows.Count == 0)
             {
-                MessageBox.Show("ยังไม่พบ data ที่จะทำการ Dimension");
+                MessageBox.Show("???????? data ?????????? Dimension");
                 return;
             }
 
-            if (!IsDataTableValid(originalDataTable)) // ตรวจสอบจาก DataTable แทน
+            if (!IsDataTableValid(originalDataTable)) // ?????????? DataTable ???
             {
-                return; // ไม่ทำต่อถ้ามีเซลล์ว่าง
+                return; // ??????????????????????
             }
 
             propQA.TOTAL_STATUS = "1";
             propQA.EMP_ID = employee.EMP_CODE;
 
-            // ✅ วนลูปผ่าน originalDataTable เพื่อให้แน่ใจว่าใช้ข้อมูลจากทุกหน้า
+            // ? ????????? originalDataTable ???????????????????????????????????
             foreach (DataRow row in originalDataTable.Rows)
             {
                 propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
@@ -111,7 +118,7 @@ namespace RawMat.Views.DimensionCheck
                 if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
                 {
                     int id = conQA.InsertEquipmentSerial(propQA);
-                    row["EQUIPMENT_SERIAL"] = id; // ✅ อัปเดตค่า ID กลับไปที่ DataTable
+                    row["EQUIPMENT_SERIAL"] = id; // ? ????????? ID ????????? DataTable
                 }
 
                 propQA.TOTAL_STATUS = (Convert.ToInt32(row["TOTAL_JUDGE"]?.ToString()) * Convert.ToInt32(propQA.TOTAL_STATUS)).ToString();
@@ -137,26 +144,26 @@ namespace RawMat.Views.DimensionCheck
                     {
                         ProcStatus status;
                         bool parsed = int.TryParse(propQA.inProcStatus, out int statusId) && Enum.IsDefined(typeof(ProcStatus), statusId);
-                        status = parsed ? (ProcStatus)statusId : ProcStatus.NG; // ค่าเริ่มต้นเป็น NG ถ้าแปลงไม่ได้
+                        status = parsed ? (ProcStatus)statusId : ProcStatus.NG; // ??????????????? NG ?????????????
 
                         switch (status)
                         {
                             case ProcStatus.OK:
                                 CustomMsgBoxBase.ShowCustomMessageBox(
-                                    "Record Dimension งาน OK เรียบร้อยแล้ว",
-                                    "สำเร็จ",
+                                    "Record Dimension ??? OK ?????????????",
+                                    "??????",
                                     CustomMsgBoxBase.MessageBoxIconType.OK);
                                 break;
                             case ProcStatus.Pending:
                                 CustomMsgBoxBase.ShowCustomMessageBox(
-                                    "Record Dimension พบงาน ถูก PENDING",
-                                    "สำเร็จ",
+                                    "Record Dimension ????? ??? PENDING",
+                                    "??????",
                                     CustomMsgBoxBase.MessageBoxIconType.Pending);
                                 break;
                             default:
                                 CustomMsgBoxBase.ShowCustomMessageBox(
-                                    "สถานะไม่รู้จัก",
-                                    "ข้อผิดพลาด",
+                                    "??????????????",
+                                    "??????????",
                                     CustomMsgBoxBase.MessageBoxIconType.Pending);
                                 break;
                         }
@@ -167,13 +174,13 @@ namespace RawMat.Views.DimensionCheck
                     }
                     else
                     {
-                        CustomMsgBoxBase.ShowCustomMessageBox("ไม่สามารถ record data ลง database ได้", "ข้อผิดพลาด", CustomMsgBoxBase.MessageBoxIconType.NG);
+                        CustomMsgBoxBase.ShowCustomMessageBox("????????? record data ?? database ???", "??????????", CustomMsgBoxBase.MessageBoxIconType.NG);
 
                     }
                 }
                 else
                 {
-                    CustomMsgBoxBase.ShowCustomMessageBox("ไม่สามารถ record data ลง database ได้", "ข้อผิดพลาด", CustomMsgBoxBase.MessageBoxIconType.NG);
+                    CustomMsgBoxBase.ShowCustomMessageBox("????????? record data ?? database ???", "??????????", CustomMsgBoxBase.MessageBoxIconType.NG);
                 }
             }
             finally
@@ -184,15 +191,15 @@ namespace RawMat.Views.DimensionCheck
                 propQA.reportStatus = conQA.ReportFDA_Status(propQA);
                 if (!conQA.UpdateReportStatus(propQA))
                 {
-                    MessageBox.Show("ไม่สามารถ update report status ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("????????? update report status ???", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 if (!conQA.DeleteReportActive(propQA))
                 {
-                    MessageBox.Show("ไม่สามารถคืนสถานะ report no ด้วย ip เครื่องนี้ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("????????????????? report no ???? ip ?????????????", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
-                // หยุดและกำจัด Timer
+                // ???????????? Timer
                 if (checkTimer != null)
                 {
                     checkTimer.Stop();
@@ -231,39 +238,39 @@ namespace RawMat.Views.DimensionCheck
 
             cb_lotNo.Items.Clear();
 
-            // ตรวจสอบว่า propQA.dtLotNo ไม่ใช่ null และมีแถวข้อมูล
+            // ?????????? propQA.dtLotNo ?????? null ??????????????
             if (propQA.dtLotNo != null && propQA.dtLotNo.Rows.Count > 0)
             {
-                // วนลูปผ่านแถวใน DataTable เพื่อดึงค่า LOT_NO
+                // ?????????????? DataTable ??????????? LOT_NO
                 foreach (DataRow row in propQA.dtLotNo.Rows)
                 {
                     string lotNo = row["LOT_NO"]?.ToString()?.Trim();
                     if (!string.IsNullOrWhiteSpace(lotNo))
                     {
-                        cb_lotNo.Items.Add(lotNo); // เพิ่ม LOT_NO ลงใน ComboBox
+                        cb_lotNo.Items.Add(lotNo); // ????? LOT_NO ???? ComboBox
                     }
                 }
 
-                // ถ้ามีรายการเดียวใน ComboBox ให้เลือกอัตโนมัติ
+                // ?????????????????? ComboBox ?????????????????
                 if (cb_lotNo.Items.Count == 1)
                 {
-                    cb_lotNo.SelectedIndex = 0; // เลือกรายการแรก (และรายการเดียว) อัตโนมัติ
+                    cb_lotNo.SelectedIndex = 0; // ?????????????? (??????????????) ?????????
                 }
                 else
                 {
-                    cb_lotNo.SelectedIndex = -1; // รีเซ็ตถ้ามีมากกว่า 1 รายการ
+                    cb_lotNo.SelectedIndex = -1; // ?????????????????? 1 ??????
                 }
             }
             else
             {
-                cb_lotNo.SelectedIndex = -1; // รีเซ็ตถ้าไม่มีข้อมูล
+                cb_lotNo.SelectedIndex = -1; // ????????????????????
             }
 
             lb_sampName.Text = propQA.SAMPLING_NAME == "Fix"
                 ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
                 : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
-            // โหลดรูป Function แบบ async (สำหรับ pagination ด้วย list ถ้ามีหลายรูป)
+            // ??????? Function ??? async (?????? pagination ???? list ????????????)
             dimensionImages = await imgCls.LoadImagesAsync("DimensionPath", propQA.M_CODE);
             currentDimensionImageIndex = 0;
 
@@ -273,8 +280,8 @@ namespace RawMat.Views.DimensionCheck
             }
             else
             {
-                // Fallback: LoadImages จัดการ single แล้ว ถ้าไม่มีจะ return empty list
-                picbox_dim.Image = _defaultImage; // หรือ null ถ้าไม่มี default
+                // Fallback: LoadImages ?????? single ???? ?????????? return empty list
+                picbox_dim.Image = _defaultImage; // ???? null ???????? default
             }
 
 
@@ -289,10 +296,10 @@ namespace RawMat.Views.DimensionCheck
                 dtg_cavity.DataSource = propQA.dtCavity;
 
 
-                // ตรวจสอบว่ามีคอลัมน์ "DATA_NO" หรือยัง
+                // ??????????????????? "DATA_NO" ???????
                 if (dtg_cavity.Columns["CAVITY_NAME"] != null)
                 {
-                    dtg_cavity.Columns["CAVITY_NAME"].HeaderText = "ชื่อคาวิตี้";
+                    dtg_cavity.Columns["CAVITY_NAME"].HeaderText = "???????????";
                     dtg_cavity.Columns["CAVITY_NAME"].ReadOnly = true;
                 }
 
@@ -300,7 +307,7 @@ namespace RawMat.Views.DimensionCheck
 
                 if (dtg_cavity.Columns["SAMPLING_QTY"] != null)
                 {
-                    dtg_cavity.Columns["SAMPLING_QTY"].HeaderText = "จำนวน";
+                    dtg_cavity.Columns["SAMPLING_QTY"].HeaderText = "?????";
                 }
 
 
@@ -309,13 +316,13 @@ namespace RawMat.Views.DimensionCheck
             {
                 if (!int.TryParse(propQA.SAMPLING_QTY, out int samplingQty) || samplingQty <= 0)
                 {
-                    MessageBox.Show("ไม่พบจำนวน Sampling สำหรับ Dimension ของ M-CODE : " + propQA.M_CODE);
+                    MessageBox.Show("?????????? Sampling ?????? Dimension ??? M-CODE : " + propQA.M_CODE);
                     return;
                 }
 
                 if (propQA.dtDimEq == null || propQA.dtDimEq.Rows.Count == 0)
                 {
-                    MessageBox.Show("ไม่พบ Dimension Equipment/Checkpoint ของ M-CODE : " + propQA.M_CODE);
+                    MessageBox.Show("????? Dimension Equipment/Checkpoint ??? M-CODE : " + propQA.M_CODE);
                     return;
                 }
 
@@ -323,16 +330,16 @@ namespace RawMat.Views.DimensionCheck
 
             }
 
-            // เริ่มต้นและตั้งค่า Timer
+            // ?????????????????? Timer
             checkTimer = new System.Windows.Forms.Timer();
-            checkTimer.Interval = 60000; // 3 นาที (180,000 มิลลิวินาที)
+            checkTimer.Interval = 60000; // 3 ???? (180,000 ???????????)
             checkTimer.Tick += CheckTimer_Tick;
             checkTimer.Start();
 
-            // หลังจากโหลดข้อมูลเสร็จ
+            // ??????????????????????
             this.AutoScroll = true;
 
-            // รีเซ็ตตำแหน่ง Scrollbar ไปด้านบน
+            // ????????????? Scrollbar ????????
             this.ScrollControlIntoView(lb_top);
 
             this.Focus();
@@ -342,12 +349,12 @@ namespace RawMat.Views.DimensionCheck
 
         }
 
-        // Event Handler สำหรับ Timer
+        // Event Handler ?????? Timer
         private void CheckTimer_Tick(object sender, EventArgs e)
         {
             if (conQA.CheckReportStatus(propQA) == false)
             {
-                CustomMsgBoxBase.ShowCustomMessageBox($"พบงานที่ติด Pending จาก process อื่น", "แจ้งเตือน", CustomMsgBoxBase.MessageBoxIconType.NG);
+                CustomMsgBoxBase.ShowCustomMessageBox($"??????????? Pending ??? process ????", "?????????", CustomMsgBoxBase.MessageBoxIconType.NG);
                 bt_dim_Click();
                 checkTimer.Stop();
             }
@@ -360,7 +367,7 @@ namespace RawMat.Views.DimensionCheck
                 return;
             }
 
-            // เช็คว่ากำลังแก้ไขคอลัมน์ "Value"
+            // ???????????????????????? "Value"
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE")
             {
 
@@ -371,17 +378,17 @@ namespace RawMat.Views.DimensionCheck
 
                 string input = e.FormattedValue.ToString();
 
-                // ถ้าเว้นว่างไว้ ให้เตือนและไม่ให้ผ่าน
+                // ?????????????? ?????????????????????
                 if (string.IsNullOrWhiteSpace(input))
                 {
                     return;
                 }
 
-                // ตรวจสอบว่าเป็นตัวเลข และต้องไม่มีจุดเกิน 1 จุด
+                // ???????????????????? ??????????????????? 1 ???
                 if (!IsValidDecimal(input))
                 {
-                    MessageBox.Show("กรุณากรอกตัวเลขเท่านั้น และไม่สามารถมีจุดทศนิยมมากกว่า 1 จุดได้", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    e.Cancel = true; // ยกเลิกการเปลี่ยนแปลงค่า
+                    MessageBox.Show("??????????????????????? ?????????????????????????????? 1 ??????", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    e.Cancel = true; // ???????????????????????
                 }
             }
         }
@@ -396,19 +403,19 @@ namespace RawMat.Views.DimensionCheck
         {
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "EQUIPMENT_SERIAL")
             {
-                // ดึง DataTable จาก DataGridView
+                // ??? DataTable ??? DataGridView
                 BindingSource bs = dtg_dimension.DataSource as BindingSource;
                 DataTable dtData = bs != null ? (DataTable)bs.DataSource : dtg_dimension.DataSource as DataTable;
                 if (dtData == null) return;
 
-                // ดึงค่า EQUIPMENT_SERIAL และ EQUIPMENT_TYPE จากแถวที่แก้ไข
+                // ?????? EQUIPMENT_SERIAL ??? EQUIPMENT_TYPE ??????????????
                 string newSerial = dtg_dimension.Rows[e.RowIndex].Cells["EQUIPMENT_SERIAL"].Value?.ToString();
                 string eqType = dtg_dimension.Rows[e.RowIndex].Cells["EQUIPMENT_TYPE"].Value?.ToString();
 
-                // ตรวจสอบว่ามีค่าใหม่หรือไม่
+                // ??????????????????????????
                 if (!string.IsNullOrEmpty(newSerial) && !string.IsNullOrEmpty(eqType))
                 {
-                    // อัปเดตทุกแถวที่มี EQUIPMENT_TYPE เดียวกัน
+                    // ????????????????? EQUIPMENT_TYPE ????????
                     foreach (DataRow row in dtData.Rows)
                     {
                         if (row["EQUIPMENT_TYPE"].ToString() == eqType)
@@ -417,14 +424,14 @@ namespace RawMat.Views.DimensionCheck
                         }
                     }
 
-                    // รีเฟรช DataGridView เพื่อให้ข้อมูลอัปเดต
+                    // ?????? DataGridView ????????????????????
                     bs?.ResetBindings(false);
                     dtg_dimension.Refresh();
                     ApplyEquipmentSerialComboBoxes();
                 }
             }
 
-            // เรียกใช้การคำนวณ VALUE เมื่อมีการกรอก VALUE
+            // ???????????????? VALUE ?????????????? VALUE
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE")
             {
                 CalculatePointValues();
@@ -433,10 +440,10 @@ namespace RawMat.Views.DimensionCheck
 
         //private void CalculatePointValues()
         //{
-        //    // ล้างค่าเก่าใน Dictionary
+        //    // ????????????? Dictionary
         //    pointValues.Clear();
 
-        //    // เก็บ VALUE ของแต่ละ POINT_ORDER ที่กรอกแล้วจาก originalDataTable
+        //    // ???? VALUE ???????? POINT_ORDER ?????????????? originalDataTable
         //    foreach (DataRow row in originalDataTable.Rows)
         //    {
         //        string pointOrder = row["POINT_ORDER"].ToString();
@@ -452,7 +459,7 @@ namespace RawMat.Views.DimensionCheck
         //        }
         //    }
 
-        //    // คำนวณ VALUE สำหรับ POINT_ORDER ที่มี POINT_CAL ไม่ใช่ "0"
+        //    // ????? VALUE ?????? POINT_ORDER ????? POINT_CAL ?????? "0"
         //    foreach (DataRow row in originalDataTable.Rows)
         //    {
         //        string pointCal = row["POINT_CAL"]?.ToString();
@@ -487,16 +494,16 @@ namespace RawMat.Views.DimensionCheck
         //        }
         //    }
 
-        //    // อัปเดต UI
+        //    // ?????? UI
         //    dtg_dimension.Refresh();
         //}
 
         //private void CalculatePointValues()
         //{
-        //    // ล้างค่าเก่าใน Dictionary
+        //    // ????????????? Dictionary
         //    pointValues.Clear();
 
-        //    // เก็บ VALUE ของแต่ละ POINT_ORDER ที่ EQUIPMENT_TYPE = 0 (กรอกได้) จากข้อมูลที่แสดง
+        //    // ???? VALUE ???????? POINT_ORDER ??? EQUIPMENT_TYPE = 0 (???????) ????????????????
         //    int currentPage = Convert.ToInt32(bindingSource.Filter.Replace("POINT_ORDER = '", "").Replace("'", ""));
         //    foreach (DataGridViewRow row in dtg_dimension.Rows)
         //    {
@@ -513,12 +520,12 @@ namespace RawMat.Views.DimensionCheck
         //        }
         //    }
 
-        //    // คำนวณ VALUE สำหรับ POINT_ORDER ปัจจุบันถ้า EQUIPMENT_TYPE != "0"
+        //    // ????? VALUE ?????? POINT_ORDER ??????????? EQUIPMENT_TYPE != "0"
         //    string currentEquipmentType = dtg_dimension.Rows[0].Cells["EQUIPMENT_TYPE"].Value?.ToString();
         //    if (!string.IsNullOrEmpty(currentEquipmentType) && currentEquipmentType != "0")
         //    {
-        //        // สมมติว่า EQUIPMENT_TYPE เก็บข้อมูลที่บ่งบอก POINT_ORDER ที่จะบวก (เช่น "1+2")
-        //        string[] orders = currentEquipmentType.Split('+'); // ใช้ EQUIPMENT_TYPE เป็นตัวบ่งชี้การบวก
+        //        // ???????? EQUIPMENT_TYPE ??????????????????? POINT_ORDER ???????? (???? "1+2")
+        //        string[] orders = currentEquipmentType.Split('+'); // ??? EQUIPMENT_TYPE ???????????????????
         //        decimal sum = 0;
         //        bool canCalculate = true;
 
@@ -540,7 +547,7 @@ namespace RawMat.Views.DimensionCheck
         //        {
         //            foreach (DataGridViewRow row in dtg_dimension.Rows)
         //            {
-        //                row.Cells["VALUE"].Value = sum.ToString(); // ตั้งค่า VALUE เดียวกันสำหรับทุกแถวในหน้า
+        //                row.Cells["VALUE"].Value = sum.ToString(); // ??????? VALUE ??????????????????????????
         //            }
         //        }
         //        else
@@ -552,18 +559,18 @@ namespace RawMat.Views.DimensionCheck
         //        }
         //    }
 
-        //    // อัปเดต UI
+        //    // ?????? UI
         //    dtg_dimension.Refresh();
         //}
 
         private void CalculatePointValues()
         {
-            if (isUpdating) return; // ป้องกันการเรียกซ้ำ
+            if (isUpdating) return; // ??????????????????
 
-            // ล้างค่าเก่าใน Dictionary
+            // ????????????? Dictionary
             pointValues.Clear();
 
-            // เก็บ VALUE ของทุก POINT_ORDER และ SAMPLING_NO ที่มีค่าไม่ว่างจาก originalDataTable
+            // ???? VALUE ?????? POINT_ORDER ??? SAMPLING_NO ?????????????????? originalDataTable
             Console.WriteLine("Dumping originalDataTable before calculation:");
             foreach (DataRow row in originalDataTable.Rows)
             {
@@ -586,7 +593,7 @@ namespace RawMat.Views.DimensionCheck
                 }
             }
 
-            // คำนวณ VALUE สำหรับทุกแถวใน originalDataTable
+            // ????? VALUE ?????????????? originalDataTable
             Console.WriteLine($"Calculating for all pages, total rows in originalDataTable: {originalDataTable.Rows.Count}");
 
             isUpdating = true;
@@ -603,7 +610,7 @@ namespace RawMat.Views.DimensionCheck
                     Console.WriteLine($"Processing row (POINT_ORDER={pointOrder}, SAMPLING_NO={samplingNo}), POINT_CAL = {pointCal}, EQUIPMENT_TYPE = {equipmentType}");
 
                     string key = $"{samplingNo}_{pointOrder}";
-                    // คำนวณเมื่อ EQUIPMENT_TYPE เป็น 0 และ POINT_CAL มีการบวก
+                    // ?????????? EQUIPMENT_TYPE ???? 0 ??? POINT_CAL ????????
                     if (equipmentType == "0" && !string.IsNullOrEmpty(pointCal) && pointCal.Contains("+"))
                     {
                         string[] orders = pointCal.Split('+');
@@ -626,7 +633,7 @@ namespace RawMat.Views.DimensionCheck
                             {
                                 canCalculate = false;
                                 Console.WriteLine($"Missing value for {depKey}[{trimmedOrder}]");
-                                break; // ออกจากลูปทันทีเมื่อพบข้อมูลขาดหาย
+                                break; // ?????????????????????????????????
                             }
                         }
 
@@ -634,7 +641,7 @@ namespace RawMat.Views.DimensionCheck
                         {
                             row["VALUE"] = sum.ToString();
                             Console.WriteLine($"Setting VALUE to {sum} for POINT_ORDER={pointOrder}, SAMPLING_NO={samplingNo}");
-                            // ตรวจสอบกับ CRITERIA_MIN และ CRITERIA_MAX
+                            // ?????????? CRITERIA_MIN ??? CRITERIA_MAX
                             if (row["CRITERIA_MIN"] != DBNull.Value && row["CRITERIA_MAX"] != DBNull.Value)
                             {
                                 decimal min = Convert.ToDecimal(row["CRITERIA_MIN"]);
@@ -653,7 +660,7 @@ namespace RawMat.Views.DimensionCheck
                     }
                     else
                     {
-                        // ถ้า POINT_CAL เป็น "0" หรือไม่มีค่า ใช้ VALUE เดิมที่กรอก
+                        // ??? POINT_CAL ???? "0" ???????????? ??? VALUE ???????????
                         Console.WriteLine($"No calculation needed or invalid POINT_CAL for POINT_ORDER={pointOrder}, SAMPLING_NO={samplingNo}");
                     }
                 }
@@ -661,7 +668,7 @@ namespace RawMat.Views.DimensionCheck
             finally
             {
                 isUpdating = false;
-                bindingSource.ResetBindings(false); // รีเฟรช UI ด้วยข้อมูลที่อัปเดต
+                bindingSource.ResetBindings(false); // ?????? UI ???????????????????
                 Console.WriteLine("Calculation completed for all pages");
             }
         }
@@ -676,7 +683,7 @@ namespace RawMat.Views.DimensionCheck
                     return;
                 }
             }
-            // ถ้าทุกแถวเป็น 1 ให้ Total_Judge เป็น 1
+            // ????????????? 1 ??? Total_Judge ???? 1
             SetTotalJudge(1);
         }
 
@@ -707,7 +714,7 @@ namespace RawMat.Views.DimensionCheck
 
             int totalQty = 0;
 
-            // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
+            // ????????????????????????????? 0 ????????????
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
                 if (row.IsNewRow)
@@ -719,7 +726,7 @@ namespace RawMat.Views.DimensionCheck
 
                 if (!int.TryParse(samplingQty, out int qty) || qty < 0)
                 {
-                    MessageBox.Show("กรุณากรอกจำนวน Cavity เป็นตัวเลขตั้งแต่ 0 ขึ้นไปทุกแถว!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("?????????????? Cavity ????????????????? 0 ????????????!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -728,11 +735,11 @@ namespace RawMat.Views.DimensionCheck
 
             if (totalQty != Convert.ToInt32(propQA.SAMPLING_QTY))
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"???????? QTY ??????? {Convert.ToInt32(propQA.SAMPLING_QTY)}  (????????: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // ล็อก dtg_data ไม่ให้แก้ไขข้อมูล
+            // ???? dtg_data ?????????????????
             dtg_cavity.ReadOnly = true;
 
 
@@ -740,22 +747,22 @@ namespace RawMat.Views.DimensionCheck
 
         }
 
-        //// ฟังก์ชันแสดงเฉพาะแถวที่เป็น POINT_ORDER ของหน้าปัจจุบัน
+        //// ??????????????????????????? POINT_ORDER ???????????????
         //private void ShowPage(int page)
         //{
-        //    bindingSource.Filter = $"POINT_ORDER = '{page}'"; // กรองเฉพาะแถวที่มี POINT_ORDER ตรงกับหน้า
-        //    CalculatePointValues(); // คำนวณใหม่ทุกครั้งที่เปลี่ยนหน้า
+        //    bindingSource.Filter = $"POINT_ORDER = '{page}'"; // ????????????????? POINT_ORDER ??????????
+        //    CalculatePointValues(); // ???????????????????????????????
         //    UpdateReadOnlyCells();
-        //    lb_page.Text = $"{page}/{totalPages}"; // แสดงหน้า (1/8)
+        //    lb_page.Text = $"{page}/{totalPages}"; // ???????? (1/8)
         //}
 
         private void ShowPage(int pageNumber)
         {
             currentPage = pageNumber;
-            bindingSource.Filter = $"POINT_ORDER = '{pageNumber}'"; // กรองเฉพาะหน้า
-            dtg_dimension.DataSource = bindingSource; // อัปเดต DataGridView
-            dtg_dimension.Refresh(); // รีเฟรชเพื่อให้แน่ใจว่าแสดงข้อมูลล่าสุด
-            CalculatePointValues(); // คำนวณใหม่ทุกครั้งที่เปลี่ยนหน้า
+            bindingSource.Filter = $"POINT_ORDER = '{pageNumber}'"; // ?????????????
+            dtg_dimension.DataSource = bindingSource; // ?????? DataGridView
+            dtg_dimension.Refresh(); // ??????????????????????????????????????
+            CalculatePointValues(); // ???????????????????????????????
             UpdateReadOnlyCells();
             ApplyEquipmentSerialComboBoxes();
             lb_page.Text = $"{pageNumber}/{totalPages}";
@@ -766,7 +773,7 @@ namespace RawMat.Views.DimensionCheck
         {
             if (originalDataTable == null) return;
 
-            // กรองข้อมูลจาก DataTable เดิมตาม POINT_ORDER ปัจจุบัน
+            // ????????????? DataTable ??????? POINT_ORDER ????????
             var filteredData = originalDataTable.AsEnumerable()
                 .Where(row => Convert.ToInt32(row["POINT_ORDER"]) == currentPage);
 
@@ -776,15 +783,15 @@ namespace RawMat.Views.DimensionCheck
             }
             else
             {
-                bindingSource.DataSource = new DataTable(); // ถ้าไม่มีข้อมูลให้ตั้งเป็น DataTable เปล่า
+                bindingSource.DataSource = new DataTable(); // ????????????????????????? DataTable ?????
             }
 
             dtg_dimension.DataSource = bindingSource;
 
-            // อัปเดต Label แสดงสถานะ
+            // ?????? Label ?????????
             lb_page.Text = $"Page {currentPage} / {totalPages}";
 
-            // ปิดการใช้งานปุ่ม Prev / Next ถ้าถึงขอบ
+            // ???????????????? Prev / Next ?????????
             bt_prev.Enabled = currentPage > 1;
             bt_next.Enabled = currentPage < totalPages;
         }
@@ -799,10 +806,10 @@ namespace RawMat.Views.DimensionCheck
             if (e.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
                 string value = e.FormattedValue?.ToString();
-                // ตรวจสอบว่าเป็นตัวเลขตั้งแต่ 0 ขึ้นไป และห้ามเว้นว่าง
+                // ??????????????????????????? 0 ?????? ???????????????
                 if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, out int qty) || qty < 0)
                 {
-                    e.Cancel = true; // ยกเลิกการออกจากเซลล์โดยไม่แสดงข้อความ
+                    e.Cancel = true; // ?????????????????????????????????????
                 }
             }
         }
@@ -818,7 +825,7 @@ namespace RawMat.Views.DimensionCheck
 
             if (dtgCavity != null)
             {
-                dtAllSum.Columns.Add("CAVITY_NAME", typeof(string)); // ใช้เฉพาะ Code B
+                dtAllSum.Columns.Add("CAVITY_NAME", typeof(string)); // ???????? Code B
             }
 
             dtAllSum.Columns.Add("SAMPLING_NO", typeof(int));
@@ -908,7 +915,7 @@ namespace RawMat.Views.DimensionCheck
 
             dtg_dimension.DataSource = dtAllSum;
 
-            // ซ่อนคอลัมน์ที่ไม่ต้องการแสดง
+            // ????????????????????????????
             string[] hiddenColumns = { "POINT_CAL", "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_JUDGE", "TOTAL_JUDGE" };
             foreach (var col in hiddenColumns)
             {
@@ -919,13 +926,13 @@ namespace RawMat.Views.DimensionCheck
             }
 
 
-            // ทำให้คอลัมน์ที่ไม่ใช่ "VALUE" และ "EQUIPMENT_SERIAL" เป็น ReadOnly
+            // ????????????????????? "VALUE" ??? "EQUIPMENT_SERIAL" ???? ReadOnly
             foreach (DataGridViewColumn column in dtg_dimension.Columns)
             {
                 column.ReadOnly = (column.Name != "VALUE" && column.Name != "EQUIPMENT_SERIAL");
             }
 
-            //// ตั้งค่า ReadOnly สำหรับเซลล์ VALUE ที่มี POINT_CAL ไม่ใช่ "0"
+            //// ??????? ReadOnly ??????????? VALUE ????? POINT_CAL ?????? "0"
             //foreach (DataGridViewRow row in dtg_dimension.Rows)
             //{
             //    string pointCal = row.Cells["POINT_CAL"].Value?.ToString();
@@ -935,20 +942,20 @@ namespace RawMat.Views.DimensionCheck
             //    }
             //}
 
-            // ตั้งค่า ReadOnly สำหรับเซลล์ทันทีหลังโหลดข้อมูล
+            // ??????? ReadOnly ??????????????????????????????
             UpdateReadOnlyCells();
 
 
-            // บันทึกข้อมูลต้นฉบับ
+            // ???????????????????
             //originalDataTable = (DataTable)dtg_dimension.DataSource;
             //bindingSource.DataSource = originalDataTable;
             //dtg_dimension.DataSource = bindingSource;
 
-            originalDataTable = dtAllSum.Copy(); // ใช้ Copy เพื่อให้แน่ใจว่าเป็นข้อมูลดิบ
+            originalDataTable = dtAllSum.Copy(); // ??? Copy ?????????????????????????????
             bindingSource.DataSource = originalDataTable;
             dtg_dimension.DataSource = bindingSource;
 
-            // คำนวณจำนวน POINT_ORDER ที่มีทั้งหมด
+            // ?????????? POINT_ORDER ????????????
             totalPages = originalDataTable.AsEnumerable()
                 .Select(row => row["POINT_ORDER"].ToString())
                 .Distinct()
@@ -956,7 +963,7 @@ namespace RawMat.Views.DimensionCheck
 
             ShowPage(currentPage);
 
-            // เปลี่ยน HeaderText
+            // ??????? HeaderText
             if (dtg_dimension.Columns.Contains("CAVITY_NAME")) dtg_dimension.Columns["CAVITY_NAME"].HeaderText = "CAV.";
             if (dtg_dimension.Columns.Contains("SAMPLING_NO")) dtg_dimension.Columns["SAMPLING_NO"].HeaderText = "SAMPLE";
             if (dtg_dimension.Columns.Contains("POINT_NAME")) dtg_dimension.Columns["POINT_NAME"].HeaderText = "CHECKPOINT";
@@ -965,7 +972,7 @@ namespace RawMat.Views.DimensionCheck
             if (dtg_dimension.Columns.Contains("CRITERIA_MIN")) dtg_dimension.Columns["CRITERIA_MIN"].HeaderText = "MIN";
             if (dtg_dimension.Columns.Contains("CRITERIA_MAX")) dtg_dimension.Columns["CRITERIA_MAX"].HeaderText = "MAX";
 
-            // ตรวจสอบว่า VALUE ควรเป็น ComboBox หรือไม่
+            // ?????????? VALUE ??????? ComboBox ???????
             //dtg_regular.CellFormatting += (sender, e) =>
             //{
             //    if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
@@ -975,11 +982,11 @@ namespace RawMat.Views.DimensionCheck
 
             //        if (minValue == 1 && maxValue == 1)
             //        {
-            //            // ใช้ ComboBoxColumn
+            //            // ??? ComboBoxColumn
             //            DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
             //            comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
             //            {
-            //                new KeyValuePair<string, string>("", ""), // Null ค่าเป็นช่องว่าง
+            //                new KeyValuePair<string, string>("", ""), // Null ???????????????
             //                new KeyValuePair<string, string>("0", "NG"),
             //                new KeyValuePair<string, string>("1", "OK")
             //            };
@@ -990,7 +997,7 @@ namespace RawMat.Views.DimensionCheck
             //        }
             //        else
             //        {
-            //            // ใช้ TextBoxColumn
+            //            // ??? TextBoxColumn
             //            DataGridViewTextBoxCell textBoxCell = new DataGridViewTextBoxCell();
             //            textBoxCell.Value = dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
             //            dtg_regular.Rows[e.RowIndex].Cells[e.ColumnIndex] = textBoxCell;
@@ -1014,38 +1021,38 @@ namespace RawMat.Views.DimensionCheck
         {
             foreach (DataRow row in table.Rows)
             {
-                // ดึงหมายเลขหน้า (POINT_ORDER)
+                // ?????????????? (POINT_ORDER)
                 int pageNumber = row["POINT_ORDER"] != DBNull.Value ? Convert.ToInt32(row["POINT_ORDER"]) : 0;
 
-                // ดึงค่า Sampling No (อ้างอิงแทน Row Index)
+                // ?????? Sampling No (?????????? Row Index)
                 string samplingNo = row["SAMPLING_NO"] != DBNull.Value ? row["SAMPLING_NO"].ToString() : "N/A";
 
                 foreach (DataColumn column in table.Columns)
                 {
                     if (row[column] == DBNull.Value || string.IsNullOrWhiteSpace(row[column].ToString()))
                     {
-                        string columnName = column.ColumnName; // ชื่อคอลัมน์
+                        string columnName = column.ColumnName; // ???????????
 
                         if (columnName == "EQUIPMENT_SERIAL")
                         {
-                            CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในหน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ EQ_SN",
-                                "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                            CustomMsgBoxBase.ShowCustomMessageBox($"????????????????? {pageNumber}, Sample {samplingNo}, ??????? EQ_SN",
+                                "???????", CustomMsgBoxBase.MessageBoxIconType.Warning);
                         }
                         else if (columnName == "VALUE")
                         {
                             string pointCal = row["POINT_CAL"]?.ToString();
                             if (string.IsNullOrEmpty(pointCal) || pointCal == "0")
                             {
-                                CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในหน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ {columnName}",
-                                   "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                                CustomMsgBoxBase.ShowCustomMessageBox($"????????????????? {pageNumber}, Sample {samplingNo}, ??????? {columnName}",
+                                   "???????", CustomMsgBoxBase.MessageBoxIconType.Warning);
                                 return false;
                             }
                         }
                         else
                         {
 
-                            CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในหน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ {columnName}",
-                                "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                            CustomMsgBoxBase.ShowCustomMessageBox($"????????????????? {pageNumber}, Sample {samplingNo}, ??????? {columnName}",
+                                "???????", CustomMsgBoxBase.MessageBoxIconType.Warning);
                         }
                         return false;
                     }
@@ -1058,16 +1065,16 @@ namespace RawMat.Views.DimensionCheck
         {
             foreach (DataGridViewRow row in dtg.Rows)
             {
-                // ข้ามแถวใหม่ที่ยังไม่เพิ่มข้อมูล (AllowUserToAddRows = true)
+                // ??????????????????????????????? (AllowUserToAddRows = true)
                 if (row.IsNewRow) continue;
 
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    // ตรวจสอบค่าในเซลล์
+                    // ?????????????????
                     if (cell.Value == null || string.IsNullOrWhiteSpace(cell.Value.ToString()))
                     {
-                        CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในแถวที่ {row.Index + 1} คอลัมน์ {dtg.Columns[cell.ColumnIndex].HeaderText}", "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
-                        dtg.CurrentCell = cell; // ตั้งค่าให้เซลล์ที่ว่างเป็น Active
+                        CustomMsgBoxBase.ShowCustomMessageBox($"??????????????????? {row.Index + 1} ??????? {dtg.Columns[cell.ColumnIndex].HeaderText}", "???????", CustomMsgBoxBase.MessageBoxIconType.Warning);
+                        dtg.CurrentCell = cell; // ?????????????????????????? Active
                         return false;
                     }
                 }
@@ -1082,10 +1089,10 @@ namespace RawMat.Views.DimensionCheck
 
                 if (e.Control is TextBox textBox)
                 {
-                    // ลบ Event เดิม (ถ้ามี) เพื่อป้องกันการซ้ำซ้อน
+                    // ?? Event ???? (?????) ??????????????????????
                     textBox.KeyPress -= TextBox_KeyPress;
 
-                    // เพิ่ม Event ใหม่
+                    // ????? Event ????
                     textBox.KeyPress += TextBox_KeyPress;
                 }
 
@@ -1098,10 +1105,10 @@ namespace RawMat.Views.DimensionCheck
         {
             if (dtg_cavity.CurrentCell.ColumnIndex == dtg_cavity.Columns["SAMPLING_QTY"].Index)
             {
-                // อนุญาตเฉพาะตัวเลขและปุ่มควบคุม (เช่น Backspace, Delete)
+                // ?????????????????????????????? (???? Backspace, Delete)
                 if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 {
-                    e.Handled = true; // ยกเลิกอักขระที่ไม่ใช่ตัวเลข
+                    e.Handled = true; // ???????????????????????????
                 }
             }
         }
@@ -1113,12 +1120,12 @@ namespace RawMat.Views.DimensionCheck
 
             if (!conQA.UpdateStatus(propQA))
             {
-                MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Unfinished ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("????????????????????????????? Unfinished ???", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             if (!conQA.DeleteReportActive(propQA))
             {
-                MessageBox.Show("ไม่สามารถเพิ่ม report no กับ IP ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("?????????????? report no ??? IP ???", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             bt_dim_Click();
@@ -1146,7 +1153,7 @@ namespace RawMat.Views.DimensionCheck
             dt = conQA.SearchForOpDimension(usrConSelectDim.propQA);
             usrConSelectDim.propQA.dtgRawMat = new DataGridView();
 
-            // แก้ไขค่าในคอลัมน์ "Status" หากเป็น null ให้แทนด้วย "Ready"
+            // ????????????????? "Status" ??????? null ?????????? "Ready"
             foreach (DataRow row in dt.Rows)
             {
                 if (row["Status"] == DBNull.Value || string.IsNullOrWhiteSpace(row["Status"].ToString()))
@@ -1169,7 +1176,7 @@ namespace RawMat.Views.DimensionCheck
 
                 if (foundPanels.Length > 0 && foundPanels[0] is Panel panelMain)
                 {
-                    // เคลียร์และเพิ่ม UserControl ใหม่
+                    // ??????????????? UserControl ????
 
                     panelMain.Controls.Clear();
                     panelMain.Controls.Add(usrConSelectDim);
@@ -1177,7 +1184,7 @@ namespace RawMat.Views.DimensionCheck
                 }
                 else
                 {
-                    MessageBox.Show("ไม่พบ หน้าจอหลัก panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("????? ?????????? panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             //else
@@ -1187,7 +1194,7 @@ namespace RawMat.Views.DimensionCheck
 
             //    if (foundPanels.Length > 0 && foundPanels[0] is Panel panelMain)
             //    {
-            //        // เคลียร์และเพิ่ม UserControl ใหม่
+            //        // ??????????????? UserControl ????
 
             //        panelMain.Controls.Clear();
             //        panelMain.Controls.Add(usrConSelectReg);
@@ -1195,7 +1202,7 @@ namespace RawMat.Views.DimensionCheck
             //    }
             //    else
             //    {
-            //        MessageBox.Show("ไม่พบ หน้าจอหลัก panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //        MessageBox.Show("????? ?????????? panelMain", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             //    }
             //}
 
@@ -1269,7 +1276,7 @@ namespace RawMat.Views.DimensionCheck
                 }
                 else
                 {
-                    row.Cells["VALUE"].ReadOnly = false; // เพื่อให้แน่ใจว่าเซลล์อื่นยังแก้ไขได้
+                    row.Cells["VALUE"].ReadOnly = false; // ????????????????????????????????????
                 }
             }
         }
@@ -1378,17 +1385,17 @@ namespace RawMat.Views.DimensionCheck
             string pointCal = row["POINT_CAL"]?.ToString();
             if (string.IsNullOrEmpty(pointCal) || pointCal == "0")
             {
-                return 0; // ไม่ต้องคำนวณถ้า POINT_CAL เป็น 0 หรือว่าง
+                return 0; // ??????????????? POINT_CAL ???? 0 ????????
             }
 
             decimal sum = 0;
-            string[] orders = pointCal.Split('+'); // แยก POINT_ORDER ที่จะบวกกัน (เช่น "1+2+3")
+            string[] orders = pointCal.Split('+'); // ??? POINT_ORDER ??????????? (???? "1+2+3")
             bool canCalculate = true;
 
             foreach (string order in orders)
             {
                 string trimmedOrder = order.Trim();
-                // ค้นหาแถวใน originalDataTable ที่ตรงกับ POINT_ORDER
+                // ?????????? originalDataTable ????????? POINT_ORDER
                 var relatedRows = originalDataTable.AsEnumerable()
                     .Where(r => r["POINT_ORDER"].ToString() == trimmedOrder && r["VALUE"] != DBNull.Value);
 
@@ -1399,12 +1406,12 @@ namespace RawMat.Views.DimensionCheck
                 }
                 else
                 {
-                    canCalculate = false; // ถ้าไม่มีข้อมูลให้คำนวณได้
+                    canCalculate = false; // ?????????????????????????
                     break;
                 }
             }
 
-            return canCalculate ? sum : 0; // คืนค่า 0 ถ้าคำนวณไม่ได้
+            return canCalculate ? sum : 0; // ?????? 0 ??????????????
         }
 
         //private void dtg_regular_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -1412,11 +1419,11 @@ namespace RawMat.Views.DimensionCheck
         //    DataGridViewTextBoxEditingControl textBox = e.Control as DataGridViewTextBoxEditingControl;
         //    if (textBox != null)
         //    {
-        //        // ตรวจสอบคอลัมน์ที่ต้องการเปลี่ยนเป็น ComboBox
+        //        // ??????????????????????????????????? ComboBox
         //        int columnIndex = dtg_regular.CurrentCell.ColumnIndex;
         //        if (dtg_regular.Columns[columnIndex].Name == "VALUE")
         //        {
-        //            // เปลี่ยนเป็น ComboBox
+        //            // ??????????? ComboBox
         //            DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
         //            comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
         //    {
@@ -1427,7 +1434,7 @@ namespace RawMat.Views.DimensionCheck
         //            comboBoxCell.DisplayMember = "Key";
         //            comboBoxCell.ValueMember = "Value";
 
-        //            // แทนที่เซลล์ แต่ต้องใช้ BeginInvoke เพื่อป้องกัน StackOverflow
+        //            // ??????????? ?????????? BeginInvoke ???????????? StackOverflow
         //            this.BeginInvoke((MethodInvoker)delegate
         //            {
         //                dtg_regular.Rows[dtg_regular.CurrentCell.RowIndex].Cells[columnIndex] = comboBoxCell;
@@ -1440,33 +1447,33 @@ namespace RawMat.Views.DimensionCheck
         {
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE")
             {
-                // ตรวจสอบว่าข้อมูลใน CRITERIA_MIN และ CRITERIA_MAX มีค่า
+                // ?????????????????? CRITERIA_MIN ??? CRITERIA_MAX ?????
                 if (dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value != null &&
                     dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value != null)
                 {
                     double minValue = Convert.ToDouble(dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value);
                     double maxValue = Convert.ToDouble(dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value);
 
-                    // เงื่อนไข: ถ้า CRITERIA_MIN == 1 && CRITERIA_MAX == 1 ให้ใช้ ComboBoxCell
+                    // ????????: ??? CRITERIA_MIN == 1 && CRITERIA_MAX == 1 ?????? ComboBoxCell
                     if (minValue == 1 && maxValue == 1)
                     {
-                        // ตรวจสอบว่าเซลล์ VALUE ยังไม่ใช่ ComboBoxCell
+                        // ??????????????? VALUE ????????? ComboBoxCell
                         if (!(dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewComboBoxCell))
                         {
                             DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
                             comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
                     {
-                        new KeyValuePair<string, string>("", ""),  // ช่องว่าง
+                        new KeyValuePair<string, string>("", ""),  // ????????
                         new KeyValuePair<string, string>("0", "NG"),
                         new KeyValuePair<string, string>("1", "OK")
                     };
                             comboBoxCell.ValueMember = "Key";
                             comboBoxCell.DisplayMember = "Value";
 
-                            // ใช้ BeginInvoke เพื่อหลีกเลี่ยงการเรียก CellFormatting ซ้ำ
+                            // ??? BeginInvoke ??????????????????????? CellFormatting ???
                             this.BeginInvoke((MethodInvoker)delegate
                             {
-                                // ตรวจสอบว่า RowIndex และ ColumnIndex ไม่เกินขอบเขตของ DataGridView
+                                // ?????????? RowIndex ??? ColumnIndex ???????????????? DataGridView
                                 if (e.RowIndex >= 0 && e.RowIndex < dtg_dimension.Rows.Count &&
                                     e.ColumnIndex >= 0 && e.ColumnIndex < dtg_dimension.Columns.Count)
                                 {
@@ -1477,7 +1484,7 @@ namespace RawMat.Views.DimensionCheck
                     }
                     else
                     {
-                        // ถ้าไม่ตรงเงื่อนไข ให้ใช้ TextBoxCell
+                        // ????????????????? ?????? TextBoxCell
                         if (!(dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewTextBoxCell))
                         {
                             DataGridViewTextBoxCell textBoxCell = new DataGridViewTextBoxCell();
@@ -1496,22 +1503,22 @@ namespace RawMat.Views.DimensionCheck
         private void dtg_dimension_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
 
-            UpdateReadOnlyCells(); // เรียกอัปเดต ReadOnly หลังการผูกข้อมูล
+            UpdateReadOnlyCells(); // ??????????? ReadOnly ????????????????
             ApplyEquipmentSerialComboBoxes();
 
             foreach (DataGridViewRow row in dtg_dimension.Rows)
             {
-                // ตรวจสอบว่ามีค่าใน VALUE และ POINT_JUDGE หรือไม่
+                // ????????????????? VALUE ??? POINT_JUDGE ???????
                 if (row.Cells["VALUE"].Value != null &&
                     !string.IsNullOrWhiteSpace(row.Cells["VALUE"].Value.ToString()) &&
                     row.Cells["POINT_JUDGE"].Value != null &&
                     row.Cells["POINT_JUDGE"].Value.ToString() == "0")
                 {
-                    row.DefaultCellStyle.BackColor = Color.Red; // เปลี่ยนสีเป็นแดงถ้า POINT_JUDGE = "0"
+                    row.DefaultCellStyle.BackColor = Color.Red; // ??????????????????? POINT_JUDGE = "0"
                 }
                 else
                 {
-                    row.DefaultCellStyle.BackColor = Color.White; // คืนสีพื้นหลังเป็นสีขาว (หรือสีปกติ)
+                    row.DefaultCellStyle.BackColor = Color.White; // ?????????????????????? (??????????)
                 }
             }
         }
@@ -1546,7 +1553,7 @@ namespace RawMat.Views.DimensionCheck
         //{
         //    //if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
         //    //{
-        //    //    // รีเซ็ตสถานะเมื่อออกจากเซลล์
+        //    //    // ???????????????????????????
 
         //    //}
         //}
@@ -1560,7 +1567,7 @@ namespace RawMat.Views.DimensionCheck
 
 
         //    //_isKeyboardInputDetected = true;
-        //    //MessageBox.Show("ไม่ควรพิมพ์ข้อมูลดังกล่าวด้วย keyboard", "คำเตือน", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //    //MessageBox.Show("????????????????????????????? keyboard", "???????", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         //    //if (textBox != null)
         //    //{
         //    //    textBox.Text = string.Empty;
@@ -1578,7 +1585,7 @@ namespace RawMat.Views.DimensionCheck
         //        string pointOrder = row.Cells["POINT_ORDER"].Value?.ToString();
         //        int rowIndex = row.Index;
 
-        //        // คำนวณ POINT_JUDGE เมื่อค่าเปลี่ยนแปลง
+        //        // ????? POINT_JUDGE ???????????????????
         //        if (row.Cells["CRITERIA_MIN"].Value != null &&
         //            row.Cells["CRITERIA_MAX"].Value != null &&
         //            row.Cells["VALUE"].Value != null &&
@@ -1602,7 +1609,7 @@ namespace RawMat.Views.DimensionCheck
         //            CalculateTotalJudge();
         //        }
 
-        //        // อัปเดต originalDataTable ด้วยค่าใหม่จาก dtg_dimension โดยใช้ POINT_ORDER เป็นคีย์
+        //        // ?????? originalDataTable ?????????????? dtg_dimension ?????? POINT_ORDER ????????
         //        if (originalDataTable != null)
         //        {
         //            foreach (DataRow dataRow in originalDataTable.Rows)
@@ -1618,17 +1625,17 @@ namespace RawMat.Views.DimensionCheck
 
         //    }
 
-        //    // เรียกใช้การคำนวณ VALUE เมื่อ VALUE เปลี่ยนแปลง
+        //    // ???????????????? VALUE ????? VALUE ???????????
         //    CalculatePointValues();
         //}
 
-        private bool isUpdating = false; // ตัวแปรควบคุมเพื่อป้องกันการเรียกซ้ำ
+        private bool isUpdating = false; // ???????????????????????????????????
 
         private void dtg_dimension_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE" && !isUpdating)
             {
-                // บล็อกการเรียกซ้ำ
+                // ????????????????
                 isUpdating = true;
                 try
                 {
@@ -1636,21 +1643,21 @@ namespace RawMat.Views.DimensionCheck
                     string pointOrder = row.Cells["POINT_ORDER"].Value?.ToString() ?? "";
                     string samplingNo = row.Cells["SAMPLING_NO"].Value?.ToString() ?? "";
 
-                    // ตรวจสอบค่า VALUE ปัจจุบัน
+                    // ?????????? VALUE ????????
                     string valueStr = row.Cells["VALUE"].Value?.ToString() ?? "";
                     if (string.IsNullOrWhiteSpace(valueStr))
                     {
-                        // ถ้าเป็นว่าง ตั้งค่าใน originalDataTable เป็น DBNull และข้ามการคำนวณ
+                        // ??????????? ????????? originalDataTable ???? DBNull ???????????????
                         DataRow[] matchingRows = originalDataTable.Select($"POINT_ORDER = '{pointOrder}' AND SAMPLING_NO = {samplingNo}");
                         if (matchingRows.Length > 0)
                         {
                             matchingRows[0]["VALUE"] = DBNull.Value;
                             Console.WriteLine($"Updated originalDataTable: POINT_ORDER={pointOrder}, SAMPLING_NO={samplingNo}, VALUE=null");
                         }
-                        return; // ข้ามการคำนวณต่อไป
+                        return; // ?????????????????
                     }
 
-                    // คำนวณ POINT_JUDGE เมื่อค่าเปลี่ยนแปลง
+                    // ????? POINT_JUDGE ???????????????????
                     if (row.Cells["CRITERIA_MIN"].Value != null &&
                         row.Cells["CRITERIA_MAX"].Value != null &&
                         row.Cells["VALUE"].Value != null &&
@@ -1674,7 +1681,7 @@ namespace RawMat.Views.DimensionCheck
                         CalculateTotalJudge();
                     }
 
-                    // อัปเดต originalDataTable ด้วยค่าใหม่
+                    // ?????? originalDataTable ???????????
                     DataRow[] rows = originalDataTable.Select($"POINT_ORDER = '{pointOrder}' AND SAMPLING_NO = {samplingNo}");
                     if (rows.Length > 0)
                     {
@@ -1686,7 +1693,7 @@ namespace RawMat.Views.DimensionCheck
                         Console.WriteLine($"No matching row found in originalDataTable for POINT_ORDER={pointOrder}, SAMPLING_NO={samplingNo}");
                     }
 
-                    // เรียกคำนวณใหม่
+                    // ??????????????
                     CalculatePointValues();
                 }
                 finally
@@ -1700,7 +1707,7 @@ namespace RawMat.Views.DimensionCheck
         //{
         //    if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE" && !isUpdating)
         //    {
-        //        // บังคับซิงโครไนซ์ข้อมูลทันที
+        //        // ???????????????????????????
         //        dtg_dimension.EndEdit();
         //        bindingSource.EndEdit();
 
@@ -1708,7 +1715,7 @@ namespace RawMat.Views.DimensionCheck
         //        string pointOrder = row.Cells["POINT_ORDER"].Value?.ToString();
         //        string samplingNo = row.Cells["SAMPLING_NO"].Value?.ToString();
 
-        //        // คำนวณ POINT_JUDGE เมื่อค่าเปลี่ยนแปลง
+        //        // ????? POINT_JUDGE ???????????????????
         //        if (row.Cells["CRITERIA_MIN"].Value != null &&
         //            row.Cells["CRITERIA_MAX"].Value != null &&
         //            row.Cells["VALUE"].Value != null &&
@@ -1732,7 +1739,7 @@ namespace RawMat.Views.DimensionCheck
         //            CalculateTotalJudge();
         //        }
 
-        //        // อัปเดตผ่าน bindingSource เพื่อป้องกันการเรียกซ้ำ
+        //        // ?????????? bindingSource ???????????????????????
         //        isUpdating = true;
         //        try
         //        {
@@ -1752,7 +1759,7 @@ namespace RawMat.Views.DimensionCheck
         //            isUpdating = false;
         //        }
 
-        //        // เรียกคำนวณใหม่ทันทีหลังอัปเดต
+        //        // ?????????????????????????????
         //        CalculatePointValues();
         //    }
         //}
@@ -1800,7 +1807,7 @@ namespace RawMat.Views.DimensionCheck
                         currentDimensionImageIndex = (currentDimensionImageIndex + 1) % dimensionImages.Count;
                     }
 
-                    // ลบส่วน dispose ออก เพื่อป้องกันการ dispose Image ใน list
+                    // ?????? dispose ??? ??????????????? dispose Image ?? list
                     // if (picbox_func.Image != null)
                     // {
                     //     picbox_func.Image.Dispose();
@@ -1808,7 +1815,7 @@ namespace RawMat.Views.DimensionCheck
                     // }
                     picbox_dim.Image = dimensionImages[currentDimensionImageIndex];
 
-                    return true; // บอกว่าจัดการ key แล้ว ไม่ให้ไปต่อ
+                    return true; // ???????????? key ???? ???????????
                 }
             }
 
@@ -1853,7 +1860,7 @@ namespace RawMat.Views.DimensionCheck
                     dimensionImages.Clear();
                     dimensionImages = null;
                 }
-                // dispose อื่นๆ ถ้ามี
+                // dispose ????? ?????
             }
             base.Dispose(disposing);
         }
@@ -1863,13 +1870,13 @@ namespace RawMat.Views.DimensionCheck
         //    RequestReleaseMutex?.Invoke($"Global\\ReportLock_{propQA.Report_No}_{propQA.process}");
         //}
 
-        // เมธอดสำหรับปล่อย Mutex
+        // ???????????????? Mutex
         //private void ReleaseReportMutex(string mutexKey)
         //{
         //    if (!string.IsNullOrEmpty(currentMutexKey) && mainForm != null)
         //    {
         //        mainForm.ReleaseReportMutex(currentMutexKey);
-        //        currentMutexKey = null; // รีเซ็ต mutexKey
+        //        currentMutexKey = null; // ?????? mutexKey
         //    }
         //}
 

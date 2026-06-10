@@ -1,4 +1,4 @@
-﻿using MySqlX.XDevAPI.Common;
+using MySqlX.XDevAPI.Common;
 using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
@@ -54,7 +54,14 @@ namespace RawMat.Views.FunctionCheck
             InitializeComponent();
             dtg_cavity.CellValidating += dtg_cavity_CellValidating;
             dtg_cavity.EditingControlShowing += dtg_cavity_EditingControlShowing;
+            dtg_function.DataError += dtg_function_DataError;
 
+        }
+
+        private void dtg_function_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         //private void ReleaseReportMutex(string mutexKey)

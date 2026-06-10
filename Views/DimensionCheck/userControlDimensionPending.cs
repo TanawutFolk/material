@@ -42,6 +42,13 @@ namespace RawMat.Views.DimensionCheck
         public userControlDimensionPending()
         {
             InitializeComponent();
+            dtg_dimension.DataError += dtg_dimension_DataError;
+        }
+
+        private void dtg_dimension_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         private void userControlDimensionPending_Load(object sender, EventArgs e)
@@ -60,7 +67,7 @@ namespace RawMat.Views.DimensionCheck
 
             if (dtDimPending == null || dtDimPending.Rows.Count == 0)
             {
-                MessageBox.Show("ไม่พบ data Dimension ที่ Pending ใน db_Dimension_data");
+                MessageBox.Show("????? data Dimension ??? Pending ?? db_Dimension_data");
                 return;
             }
 
@@ -137,7 +144,7 @@ namespace RawMat.Views.DimensionCheck
                         ToInt(GetString(dtRow, "SAMPLING_NO")),
                         GetString(dtRow, "POINT_ORDER"),
                         GetString(dtRow, "POINT_CAL"),
-                        GetString(dtRow, "EQUIPMENT_SERIAL_ID"),
+                        GetSerialTextById(GetString(dtRow, "EQUIPMENT_TYPE"), GetString(dtRow, "EQUIPMENT_SERIAL_ID")),
                         GetString(dtRow, "EQUIPMENT_TYPE"),
                         GetString(dtRow, "EQUIPMENT_NAME"),
                         GetString(dtRow, "POINT_NAME"),
@@ -154,7 +161,7 @@ namespace RawMat.Views.DimensionCheck
                         ToInt(GetString(dtRow, "SAMPLING_NO")),
                         GetString(dtRow, "POINT_ORDER"),
                         GetString(dtRow, "POINT_CAL"),
-                        GetString(dtRow, "EQUIPMENT_SERIAL_ID"),
+                        GetSerialTextById(GetString(dtRow, "EQUIPMENT_TYPE"), GetString(dtRow, "EQUIPMENT_SERIAL_ID")),
                         GetString(dtRow, "EQUIPMENT_TYPE"),
                         GetString(dtRow, "EQUIPMENT_NAME"),
                         GetString(dtRow, "POINT_NAME"),
@@ -430,13 +437,21 @@ namespace RawMat.Views.DimensionCheck
             if (!IsValidDecimal(input))
             {
                 MessageBox.Show(
-                    "กรุณากรอกตัวเลขเท่านั้น และไม่สามารถมีจุดทศนิยมมากกว่า 1 จุดได้",
+                    "??????????????????????? ?????????????????????????????? 1 ??????",
                     "Warning",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
 
                 e.Cancel = true;
             }
+        }
+
+        private string GetSerialTextById(string equipmentType, string serialId)
+        {
+            if (string.IsNullOrWhiteSpace(serialId)) return "";
+            System.Data.DataTable serialSource = GetEquipmentSerialSource(equipmentType);
+            var row = serialSource.AsEnumerable().FirstOrDefault(r => string.Equals(r["VALUE"].ToString(), serialId, System.StringComparison.OrdinalIgnoreCase));
+            return row != null ? row["TEXT"].ToString() : serialId;
         }
 
         private void dtg_dimension_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -546,7 +561,7 @@ namespace RawMat.Views.DimensionCheck
                 DataTable serialSource = GetEquipmentSerialSource(equipmentType);
                 object currentValue = row.Cells["EQUIPMENT_SERIAL"].Value;
 
-                EnsureCurrentSerialIdExists(serialSource, currentValue);
+                EnsureCurrentSerialExists(serialSource, currentValue);
 
                 DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell
                 {
@@ -590,11 +605,11 @@ namespace RawMat.Views.DimensionCheck
                     if (string.IsNullOrWhiteSpace(serialId) || string.IsNullOrWhiteSpace(serial)) continue;
 
                     bool exists = serialSource.AsEnumerable()
-                        .Any(r => string.Equals(r["VALUE"].ToString(), serialId, StringComparison.OrdinalIgnoreCase));
+                        .Any(r => string.Equals(r["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
 
                     if (!exists)
                     {
-                        serialSource.Rows.Add(serial, serialId);
+                        serialSource.Rows.Add(serial, serial);
                     }
                 }
             }
@@ -611,20 +626,20 @@ namespace RawMat.Views.DimensionCheck
             return table;
         }
 
-        private static void EnsureCurrentSerialIdExists(DataTable serialSource, object currentValue)
+        private static void EnsureCurrentSerialExists(DataTable serialSource, object currentValue)
         {
-            string serialId = currentValue == null || currentValue == DBNull.Value
+            string serial = currentValue == null || currentValue == DBNull.Value
                 ? ""
                 : currentValue.ToString().Trim();
 
-            if (string.IsNullOrWhiteSpace(serialId)) return;
+            if (string.IsNullOrWhiteSpace(serial)) return;
 
             bool exists = serialSource.AsEnumerable()
-                .Any(row => string.Equals(row["VALUE"].ToString(), serialId, StringComparison.OrdinalIgnoreCase));
+                .Any(row => string.Equals(row["VALUE"].ToString(), serial, StringComparison.OrdinalIgnoreCase));
 
             if (!exists)
             {
-                serialSource.Rows.Add(serialId, serialId);
+                serialSource.Rows.Add(serial, serial);
             }
         }
 
@@ -646,7 +661,7 @@ namespace RawMat.Views.DimensionCheck
             {
                 pointValues.Clear();
 
-                // 1) เก็บค่า VALUE ของแถวที่ไม่ใช่สูตร โดย key ต้องแยก Cavity ด้วย
+                // 1) ??????? VALUE ??????????????????? ??? key ??????? Cavity ????
                 foreach (DataRow row in originalDataTable.Rows)
                 {
                     if (IsCalculatedPoint(row))
@@ -661,7 +676,7 @@ namespace RawMat.Views.DimensionCheck
                     }
                 }
 
-                // 2) คำนวณแถวสูตร เช่น POINT_CAL = 1+2+3 โดยแยก Cavity + Sample
+                // 2) ???????????? ???? POINT_CAL = 1+2+3 ?????? Cavity + Sample
                 foreach (DataRow row in originalDataTable.Rows)
                 {
                     if (IsCalculatedPoint(row))
@@ -790,8 +805,8 @@ namespace RawMat.Views.DimensionCheck
             if (table == null)
             {
                 CustomMsgBoxBase.ShowCustomMessageBox(
-                    "ไม่พบข้อมูล Dimension",
-                    "คำเตือน",
+                    "??????????? Dimension",
+                    "???????",
                     CustomMsgBoxBase.MessageBoxIconType.Warning);
                 return false;
             }
@@ -814,8 +829,8 @@ namespace RawMat.Views.DimensionCheck
                 if (table.Columns.Contains("CAVITY_NAME") && string.IsNullOrWhiteSpace(cavityName))
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(
-                        $"พบ Cavity ว่าง: หน้า {pageNumber}, Sampling No {samplingNo}",
-                        "คำเตือน",
+                        $"?? Cavity ????: ???? {pageNumber}, Sampling No {samplingNo}",
+                        "???????",
                         CustomMsgBoxBase.MessageBoxIconType.Warning);
                     return false;
                 }
@@ -823,8 +838,8 @@ namespace RawMat.Views.DimensionCheck
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(
-                        $"พบ VALUE ว่าง: Cavity {cavityName}, หน้า {pageNumber}, Sampling No {samplingNo}",
-                        "คำเตือน",
+                        $"?? VALUE ????: Cavity {cavityName}, ???? {pageNumber}, Sampling No {samplingNo}",
+                        "???????",
                         CustomMsgBoxBase.MessageBoxIconType.Warning);
                     return false;
                 }
@@ -832,18 +847,18 @@ namespace RawMat.Views.DimensionCheck
                 if (string.IsNullOrWhiteSpace(pointJudge))
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(
-                        $"ยังไม่ได้คำนวณ Judge: Cavity {cavityName}, หน้า {pageNumber}, Sampling No {samplingNo}",
-                        "คำเตือน",
+                        $"?????????????? Judge: Cavity {cavityName}, ???? {pageNumber}, Sampling No {samplingNo}",
+                        "???????",
                         CustomMsgBoxBase.MessageBoxIconType.Warning);
                     return false;
                 }
 
-                // ถ้าไม่ใช่แถวสูตร ควรมี Equipment Serial
+                // ???????????????? ????? Equipment Serial
                 if (equipmentType != "0" && string.IsNullOrWhiteSpace(equipmentSerial))
                 {
                     CustomMsgBoxBase.ShowCustomMessageBox(
-                        $"พบ Equipment Serial ว่าง: Cavity {cavityName}, หน้า {pageNumber}, Sampling No {samplingNo}",
-                        "คำเตือน",
+                        $"?? Equipment Serial ????: Cavity {cavityName}, ???? {pageNumber}, Sampling No {samplingNo}",
+                        "???????",
                         CustomMsgBoxBase.MessageBoxIconType.Warning);
                     return false;
                 }
@@ -882,8 +897,22 @@ namespace RawMat.Views.DimensionCheck
                 }
             }
 
+            DataTable dimensionDataToSave = originalDataTable.Copy();
+
+            foreach (DataRow row in dimensionDataToSave.Rows)
+            {
+                propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
+                propQA.EQUIPMENT_TYPE_ID = row["EQUIPMENT_TYPE"]?.ToString();
+
+                if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
+                {
+                    int id = conQA.InsertEquipmentSerial(propQA);
+                    row["EQUIPMENT_SERIAL"] = id;
+                }
+            }
+
             propQA.dtgDimData = new DataGridView();
-            propQA.dtgDimData.DataSource = originalDataTable;
+            propQA.dtgDimData.DataSource = dimensionDataToSave;
 
             if (conQA.InsertDimensionData(propQA) == true)
             {
@@ -911,29 +940,29 @@ namespace RawMat.Views.DimensionCheck
                     {
                         case ProcStatus.OK:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record Dimension งาน OK เรียบร้อยแล้ว",
-                                "สำเร็จ",
+                                "Record Dimension ??? OK ?????????????",
+                                "??????",
                                 CustomMsgBoxBase.MessageBoxIconType.OK);
                             break;
 
                         case ProcStatus.Pending:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record Dimension พบงาน ถูก PENDING",
-                                "สำเร็จ",
+                                "Record Dimension ????? ??? PENDING",
+                                "??????",
                                 CustomMsgBoxBase.MessageBoxIconType.Pending);
                             break;
 
                         case ProcStatus.NG:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "Record Dimension พบงาน ถูก NG",
-                                "สำเร็จ",
+                                "Record Dimension ????? ??? NG",
+                                "??????",
                                 CustomMsgBoxBase.MessageBoxIconType.NG);
                             break;
 
                         default:
                             CustomMsgBoxBase.ShowCustomMessageBox(
-                                "สถานะไม่รู้จัก",
-                                "ข้อผิดพลาด",
+                                "??????????????",
+                                "??????????",
                                 CustomMsgBoxBase.MessageBoxIconType.Pending);
                             break;
                     }
@@ -944,15 +973,15 @@ namespace RawMat.Views.DimensionCheck
                 }
 
                 CustomMsgBoxBase.ShowCustomMessageBox(
-                    "Record Dimension ไม่ได้ กรุณากด record อีกครั้ง",
-                    "ข้อผิดพลาด",
+                    "Record Dimension ?????? ??????? record ????????",
+                    "??????????",
                     CustomMsgBoxBase.MessageBoxIconType.NG);
                 return;
             }
 
             CustomMsgBoxBase.ShowCustomMessageBox(
-                "Record Dimension ไม่ได้ กรุณากด record อีกครั้ง",
-                "ข้อผิดพลาด",
+                "Record Dimension ?????? ??????? record ????????",
+                "??????????",
                 CustomMsgBoxBase.MessageBoxIconType.NG);
         }
 
@@ -977,7 +1006,7 @@ namespace RawMat.Views.DimensionCheck
                 else
                 {
                     MessageBox.Show(
-                        "ไม่พบ หน้าจอหลัก panelMain",
+                        "????? ?????????? panelMain",
                         "Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);

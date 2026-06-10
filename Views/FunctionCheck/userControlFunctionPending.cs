@@ -1,4 +1,4 @@
-﻿using RawMat.Controllers;
+using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.CustomMsg;
@@ -47,6 +47,13 @@ namespace RawMat.Views.FunctionCheck
         public userControlFunctionPending()
         {
             InitializeComponent();
+            dtg_function.DataError += dtg_function_DataError;
+        }
+
+        private void dtg_function_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = false;
         }
 
         private async void userControlFunctionPending_Load(object sender, EventArgs e)
@@ -200,6 +207,7 @@ namespace RawMat.Views.FunctionCheck
                     DataPropertyName = "JUDGE", // เชื่อมโยงกับคอลัมน์ JUDGE ใน DataTable
                     DataSource = new List<KeyValuePair<string, string>>
             {
+                new KeyValuePair<string, string>("", ""),
                 new KeyValuePair<string, string>("0", "NG"),
                 new KeyValuePair<string, string>("1", "OK")
             },
