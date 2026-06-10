@@ -61,6 +61,7 @@ namespace RawMat.Views.RegularCheck
         private int currentRegularImageIndex = 0;
         private Image _defaultImage = null; // ถ้าไม่ต้องการ placeholder จริง
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
+        private Form recordLoadingForm;
 
         public userControlRegular()
         {
@@ -115,34 +116,35 @@ namespace RawMat.Views.RegularCheck
             //    return; // ไม่ทำต่อถ้ามีเซลล์ว่าง
             //}
 
-            propQA.TOTAL_STATUS = "1";
-            propQA.EMP_ID = employee.EMP_CODE;
-            propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? string.Empty;
-
-            DataTable regularDataToSave = originalDataTable.Copy();
-
-            // ใช้ DataTable สำเนาสำหรับบันทึก เพราะคอลัมน์ EQUIPMENT_SERIAL บนหน้าจอใช้ serial text
-            // แต่ db_regular_data ต้องเก็บ EQUIPMENT_SERIAL_ID
-            foreach (DataRow row in regularDataToSave.Rows)
+            ShowRecordLoading();
+            try
             {
-                propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
-                propQA.EQUIPMENT_TYPE_ID = row["EQUIPMENT_TYPE"]?.ToString();
+                propQA.TOTAL_STATUS = "1";
+                propQA.EMP_ID = employee.EMP_CODE;
+                propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? string.Empty;
 
-                if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
+                DataTable regularDataToSave = originalDataTable.Copy();
+
+                // ใช้ DataTable สำเนาสำหรับบันทึก เพราะคอลัมน์ EQUIPMENT_SERIAL บนหน้าจอใช้ serial text
+                // แต่ db_regular_data ต้องเก็บ EQUIPMENT_SERIAL_ID
+                foreach (DataRow row in regularDataToSave.Rows)
                 {
-                    int id = conQA.InsertEquipmentSerial(propQA);
-                    row["EQUIPMENT_SERIAL"] = id;
+                    propQA.EQUIPMENT_SERIAL = row["EQUIPMENT_SERIAL"]?.ToString();
+                    propQA.EQUIPMENT_TYPE_ID = row["EQUIPMENT_TYPE"]?.ToString();
+
+                    if (!string.IsNullOrEmpty(propQA.EQUIPMENT_SERIAL) && !string.IsNullOrEmpty(propQA.EQUIPMENT_TYPE_ID))
+                    {
+                        int id = conQA.InsertEquipmentSerial(propQA);
+                        row["EQUIPMENT_SERIAL"] = id;
+                    }
+
+                    propQA.TOTAL_STATUS = (Convert.ToInt32(row["TOTAL_JUDGE"]?.ToString()) * Convert.ToInt32(propQA.TOTAL_STATUS)).ToString();
                 }
 
-                propQA.TOTAL_STATUS = (Convert.ToInt32(row["TOTAL_JUDGE"]?.ToString()) * Convert.ToInt32(propQA.TOTAL_STATUS)).ToString();
-            }
+                propQA.dtgRegData = new DataGridView();
+                propQA.dtgRegData.DataSource = regularDataToSave;
 
-            propQA.dtgRegData = new DataGridView();
-            propQA.dtgRegData.DataSource = regularDataToSave;
-
-            //string mutexKey = $"Global\\ReportLock_{propQA.Report_No}_{propQA.process}";
-            try 
-            {
+                //string mutexKey = $"Global\\ReportLock_{propQA.Report_No}_{propQA.process}";
                 if (conQA.InsertRegularData(propQA) == true)
                 {
                     bool endAtRegularReport = IsEndAtRegularReport();
@@ -174,7 +176,9 @@ namespace RawMat.Views.RegularCheck
 
                             PrepareEndAtRegularExcel();
                         }
- 
+
+                        HideRecordLoading();
+
                         ProcStatus status;
 
                         bool parsed = int.TryParse(propQA.inProcStatus, out int statusId) && Enum.IsDefined(typeof(ProcStatus), statusId);
@@ -214,17 +218,20 @@ namespace RawMat.Views.RegularCheck
                     }
                     else
                     {
+                        HideRecordLoading();
                         CustomMsgBoxBase.ShowCustomMessageBox("ไม่สามารถ record data ลง database ได้", "ข้อผิดพลาด", CustomMsgBoxBase.MessageBoxIconType.NG);
 
                     }
                 }
                 else
                 {
+                    HideRecordLoading();
                     CustomMsgBoxBase.ShowCustomMessageBox("ไม่สามารถ record data ลง database ได้", "ข้อผิดพลาด", CustomMsgBoxBase.MessageBoxIconType.NG);
                 }
             }
             finally
             {
+                HideRecordLoading();
 
                 loadstatus();
 
@@ -236,6 +243,68 @@ namespace RawMat.Views.RegularCheck
                 //RequestReleaseMutex?.Invoke(mutexKey);
             }
             return;
+        }
+
+        private void ShowRecordLoading()
+        {
+            if (recordLoadingForm != null)
+            {
+                return;
+            }
+
+            tb_record.Enabled = false;
+            Enabled = false;
+            Cursor = Cursors.WaitCursor;
+
+            var messageLabel = new System.Windows.Forms.Label
+            {
+                Dock = DockStyle.Top,
+                Height = 62,
+                Text = "กำลังบันทึกข้อมูล Regular\nกรุณารอสักครู่...",
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new System.Drawing.Font("Tahoma", 12F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(35, 85, 60)
+            };
+
+            recordLoadingForm = new Form
+            {
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterScreen,
+                ClientSize = new Size(360, 62),
+                ControlBox = false,
+                ShowInTaskbar = false,
+                TopMost = true,
+                BackColor = Color.White,
+                Text = "กำลังบันทึกข้อมูล"
+            };
+            recordLoadingForm.Controls.Add(messageLabel);
+
+            Form owner = FindForm();
+            if (owner != null)
+            {
+                recordLoadingForm.Show(owner);
+            }
+            else
+            {
+                recordLoadingForm.Show();
+            }
+
+            recordLoadingForm.Refresh();
+            System.Windows.Forms.Application.DoEvents();
+        }
+
+        private void HideRecordLoading()
+        {
+            if (recordLoadingForm != null)
+            {
+                recordLoadingForm.Close();
+                recordLoadingForm.Dispose();
+                recordLoadingForm = null;
+            }
+
+            Enabled = true;
+            tb_record.Enabled = true;
+            Cursor = Cursors.Default;
         }
 
         private bool IsEndAtRegularReport()
@@ -354,6 +423,18 @@ namespace RawMat.Views.RegularCheck
                 ? $"Quantity {propQA.SAMPLING_QTY} Pcs."
                 : $"{propQA.SAMPLING_QTY} {propQA.SAMPLING_NAME}";
 
+            bool requiresCavityInput = RequiresCavityInput();
+            gb_cavity.Visible = requiresCavityInput;
+            lb_TotalCavity.Visible = requiresCavityInput;
+            bt_confirmCavity.Enabled = requiresCavityInput;
+            bt_confirmCavity.TabStop = requiresCavityInput;
+
+            if (!requiresCavityInput)
+            {
+                picbox_reg.Location = new System.Drawing.Point(17, 113);
+                picbox_reg.Size = new Size(1076, 556);
+            }
+
             regularImages = await imgCls.LoadImagesAsync("RegularPath", propQA.M_CODE);
             currentRegularImageIndex = 0;
 
@@ -367,7 +448,7 @@ namespace RawMat.Views.RegularCheck
                 picbox_reg.Image = _defaultImage; // หรือ null ถ้าไม่มี default
             }
 
-            if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
+            if (requiresCavityInput)
             {
                 lb_TotalCavity.Visible = true;
                 lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
@@ -537,6 +618,11 @@ namespace RawMat.Views.RegularCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
+            if (!RequiresCavityInput())
+            {
+                return;
+            }
+
             dtg_cavity.EndEdit();
 
             // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
@@ -574,6 +660,13 @@ namespace RawMat.Views.RegularCheck
             dtg_cavity.ReadOnly = true;
 
             GenerateDataTableRegular(dtg_cavity, 0);
+        }
+
+        private bool RequiresCavityInput()
+        {
+            int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
+            return propQA.SAMPLING_TYPE == "4"
+                || (propQA.SAMPLING_TYPE == "3" && cavityQty > 0);
         }
 
         // ฟังก์ชันแสดงเฉพาะแถวที่เป็น POINT_ORDER ของหน้าปัจจุบัน
