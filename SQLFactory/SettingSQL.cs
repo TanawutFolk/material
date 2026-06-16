@@ -78,6 +78,7 @@ namespace RawMat.SQLFactory
                 string pointOrder = GetSqlValue(row, "POINT_ORDER");
                 string equipmentType = GetSqlValue(row, "EQUIPMENT_TYPE");
                 string pointName = GetSqlValue(row, "POINT_NAME");
+                string pointCal = GetSqlValue(row, "POINT_CAL");
                 string criteriaMin = GetSqlValue(row, "CRITERIA_MIN");
                 string criteriaMax = GetSqlValue(row, "CRITERIA_MAX");
 
@@ -97,6 +98,7 @@ namespace RawMat.SQLFactory
                         POINT_ORDER,
                         EQUIPMENT_TYPE,
                         POINT_NAME,
+                        POINT_CAL,
                         CRITERIA_MIN,
                         CRITERIA_MAX
                     )
@@ -106,6 +108,7 @@ namespace RawMat.SQLFactory
                         {ToSqlTextOrNull(pointOrder)},
                         {ToSqlTextOrNull(equipmentType)},
                         {ToSqlTextOrNull(pointName)},
+                        {ToSqlTextOrNull(string.IsNullOrWhiteSpace(pointCal) ? "0" : pointCal)},
                         {ToSqlTextOrNull(criteriaMin)},
                         {ToSqlTextOrNull(criteriaMax)}
                     );");
@@ -250,8 +253,14 @@ namespace RawMat.SQLFactory
                 VALUES ('dataItem.M_CODE', dataItem.Reg_Cavity_Qty, dataItem.Reg_Sampling_Type, dataItem.Reg_Sampling_Qty, dataItem.Reg_Strictness_Type, dataItem.Reg_Strictness_Level, dataItem.Reg_Cavity_Name)
                 ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
 
+                DELETE FROM info_function_sampling
+                WHERE M_Code = 'dataItem.M_CODE'
+                  AND dataItem.Function_Check_Need = 0;
+
                 INSERT INTO info_function_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
-                VALUES ('dataItem.M_CODE', dataItem.Func_Cavity_Qty, dataItem.Func_Sampling_Type, dataItem.Func_Sampling_Qty, dataItem.Func_Strictness_Type, dataItem.Func_Strictness_Level, dataItem.Func_Cavity_Name)
+                SELECT 'dataItem.M_CODE', dataItem.Func_Cavity_Qty, dataItem.Func_Sampling_Type, dataItem.Func_Sampling_Qty, dataItem.Func_Strictness_Type, dataItem.Func_Strictness_Level, dataItem.Func_Cavity_Name
+                FROM DUAL
+                WHERE dataItem.Function_Check_Need = 1
                 ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
 
                 INSERT INTO info_dimension_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
@@ -330,8 +339,14 @@ namespace RawMat.SQLFactory
                 VALUES ('dataItem.M_CODE', dataItem.Reg_Cavity_Qty, dataItem.Reg_Sampling_Type, dataItem.Reg_Sampling_Qty, dataItem.Reg_Strictness_Type, dataItem.Reg_Strictness_Level, dataItem.Reg_Cavity_Name)
                 ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
 
+                DELETE FROM info_function_sampling
+                WHERE M_Code = 'dataItem.M_CODE'
+                  AND dataItem.Function_Check_Need = 0;
+
                 INSERT INTO info_function_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
-                VALUES ('dataItem.M_CODE', dataItem.Func_Cavity_Qty, dataItem.Func_Sampling_Type, dataItem.Func_Sampling_Qty, dataItem.Func_Strictness_Type, dataItem.Func_Strictness_Level, dataItem.Func_Cavity_Name)
+                SELECT 'dataItem.M_CODE', dataItem.Func_Cavity_Qty, dataItem.Func_Sampling_Type, dataItem.Func_Sampling_Qty, dataItem.Func_Strictness_Type, dataItem.Func_Strictness_Level, dataItem.Func_Cavity_Name
+                FROM DUAL
+                WHERE dataItem.Function_Check_Need = 1
                 ON DUPLICATE KEY UPDATE Cavity_Qty=VALUES(Cavity_Qty), Sampling_Type=VALUES(Sampling_Type), Sampling_Qty=VALUES(Sampling_Qty), Strictness_Type=VALUES(Strictness_Type), Strictness_Level=VALUES(Strictness_Level), Cavity_Name=VALUES(Cavity_Name);
 
                 INSERT INTO info_dimension_sampling (M_Code, Cavity_Qty, Sampling_Type, Sampling_Qty, Strictness_Type, Strictness_Level, Cavity_Name)
@@ -544,6 +559,7 @@ namespace RawMat.SQLFactory
                 a.EQUIPMENT_TYPE,
                 b.Equipment_Name,
                 a.POINT_NAME,
+                a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
             FROM info_regular_equipment a
@@ -567,6 +583,7 @@ namespace RawMat.SQLFactory
                 a.EQUIPMENT_TYPE,
                 b.Equipment_Name,
                 a.POINT_NAME,
+                a.POINT_CAL,
                 a.CRITERIA_MIN,
                 a.CRITERIA_MAX
             FROM info_dimension_equipment a

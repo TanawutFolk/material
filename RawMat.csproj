@@ -356,9 +356,7 @@
     <Compile Include="Views\PackingCheck\userControlPackingPrint.Designer.cs">
       <DependentUpon>userControlPackingPrint.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\FormRegularReportExcelFlow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Views\RegularCheck\ExportExcell.cs" />
     <Compile Include="Views\RegularCheck\FormRegularReportStamp.cs">
       <SubType>Form</SubType>
     </Compile>

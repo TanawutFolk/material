@@ -142,7 +142,7 @@ namespace RawMat.Views.RegularCheck
             try
             {
                 string stampPath = tb_programStamp.ForeColor == Color.Gray ? null : tb_programStamp.Text;
-                FormRegularReportExcelFlow.ApproveExcelReport(propQA, stampPath);
+                ExportExcell.ApproveExcelReport(propQA, stampPath);
             }
             catch (Exception ex)
             {

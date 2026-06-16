@@ -13,7 +13,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace RawMat.Views.RegularCheck
 {
-    public class FormRegularReportExcelFlow : Form
+    internal static class ExportExcell
     {
         private const string DefaultReportTitle = "FM-QA-B13-A Material Regular Inspection Record Sheet";
         private const bool ShowExcelDebugMessage = false;
@@ -22,16 +22,6 @@ namespace RawMat.Views.RegularCheck
         private const int AutoReportLastColumn = 31;
         private const int AutoReportPageRows = 42;
         private const int AutoReportTableBodyRows = 15;
-
-        private readonly QAdataProperty propQA;
-        private readonly string generatedExcelPath;
-
-        public FormRegularReportExcelFlow(QAdataProperty dataItem, string excelPath = null)
-        {
-            propQA = dataItem;
-            generatedExcelPath = excelPath;
-            InitializeComponent();
-        }
 
         public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData)
         {
@@ -50,7 +40,7 @@ namespace RawMat.Views.RegularCheck
                 dataItem.FORMAT_REPORT_NAME = reportTitle.Trim();
             }
 
-            string filePath = Path.Combine(GetWaitApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
+            string filePath = Path.Combine(GetWaitApprovedPath(dataItem), BuildExcelFileName(dataItem));
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             if (IsExcelDebugMessageEnabled())
@@ -106,18 +96,18 @@ namespace RawMat.Views.RegularCheck
 
         public static string GetWaitApprovedFilePath(QAdataProperty dataItem)
         {
-            return Path.Combine(GetWaitApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
+            return Path.Combine(GetWaitApprovedPath(dataItem), BuildExcelFileName(dataItem));
         }
 
         public static string GetApprovedFilePath(QAdataProperty dataItem)
         {
-            return Path.Combine(GetApprovedPathStatic(dataItem), BuildExcelFileName(dataItem));
+            return Path.Combine(GetApprovedPath(dataItem), BuildExcelFileName(dataItem));
         }
 
         public static string GetPdfFilePath(QAdataProperty dataItem)
         {
             string pdfName = $"{BuildReportFileBaseName(dataItem)}.pdf";
-            return Path.Combine(GetPdfSavePathStatic(dataItem), pdfName);
+            return Path.Combine(GetPdfSavePath(dataItem), pdfName);
         }
 
         public static void ApproveExcelReport(QAdataProperty dataItem, string stampImagePath)
@@ -190,114 +180,7 @@ namespace RawMat.Views.RegularCheck
             }
         }
 
-        private void InitializeComponent()
-        {
-            Text = "Regular Report Excel Flow";
-            StartPosition = FormStartPosition.CenterParent;
-            BackColor = Color.White;
-            Size = new Size(900, 430);
-            MinimumSize = new Size(760, 360);
-
-            var topLabel = new Label
-            {
-                Dock = DockStyle.Top,
-                Height = 46,
-                Text = "Regular Report Excel Test",
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Tahoma", 18F, FontStyle.Bold),
-                ForeColor = Color.DarkGreen
-            };
-
-            var content = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(18),
-                ColumnCount = 2,
-                RowCount = 7
-            };
-
-            content.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 170F));
-            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-
-            for (int i = 0; i < content.RowCount; i++)
-            {
-                content.RowStyles.Add(new RowStyle(SizeType.Absolute, i == 6 ? 58F : 40F));
-            }
-
-            AddRow(content, 0, "Report No.", propQA.Report_No);
-            AddRow(content, 1, "Regular No.", propQA.Regular_No);
-            AddRow(content, 2, "M-Code", propQA.M_CODE);
-            AddRow(content, 3, "Wait Approved", GetWaitApprovedPath());
-            AddRow(content, 4, "Save PDF", GetPdfSavePath());
-            AddRow(content, 5, "Approved", GetApprovedPath());
-
-            var note = new Label
-            {
-                Text = string.IsNullOrWhiteSpace(generatedExcelPath)
-                    ? "Regular report Excel file is ready for approval."
-                    : $"Created: {generatedExcelPath}",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Tahoma", 10F, FontStyle.Italic),
-                ForeColor = Color.DarkSlateGray
-            };
-            content.Controls.Add(note, 1, 6);
-
-            var closeButton = new Button
-            {
-                Text = "OK",
-                Width = 120,
-                Height = 34,
-                Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                Font = new Font("Tahoma", 11F)
-            };
-            closeButton.Click += (sender, e) => Close();
-            content.Controls.Add(closeButton, 0, 6);
-
-            Controls.Add(content);
-            Controls.Add(topLabel);
-        }
-
-        private void AddRow(TableLayoutPanel panel, int rowIndex, string title, string value)
-        {
-            var titleLabel = new Label
-            {
-                Text = title,
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleRight,
-                Font = new Font("Tahoma", 10F, FontStyle.Bold),
-                ForeColor = Color.Black,
-                Padding = new Padding(0, 0, 12, 0)
-            };
-
-            var valueBox = new TextBox
-            {
-                Text = value ?? string.Empty,
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                Font = new Font("Tahoma", 10F)
-            };
-
-            panel.Controls.Add(titleLabel, 0, rowIndex);
-            panel.Controls.Add(valueBox, 1, rowIndex);
-        }
-
-        private string GetWaitApprovedPath()
-        {
-            return GetWaitApprovedPathStatic(propQA);
-        }
-
-        private string GetApprovedPath()
-        {
-            return GetApprovedPathStatic(propQA);
-        }
-
-        private string GetPdfSavePath()
-        {
-            return GetPdfSavePathStatic(propQA);
-        }
-
-        private static string GetWaitApprovedPathStatic(QAdataProperty dataItem)
+        internal static string GetWaitApprovedPath(QAdataProperty dataItem)
         {
             // return ConfigurationManager.AppSettings["RegularReportWaitAppTest"]  // Test path
             string configuredPath = ConfigurationManager.AppSettings["RegularReportWaitApp"]
@@ -305,7 +188,7 @@ namespace RawMat.Views.RegularCheck
             return BuildYearFolderPath(configuredPath, GetReportYear(dataItem), "Wait Approved");
         }
 
-        private static string GetApprovedPathStatic(QAdataProperty dataItem)
+        internal static string GetApprovedPath(QAdataProperty dataItem)
         {
             // return ConfigurationManager.AppSettings["RegularReportAppTest"];  // Test path
             string configuredPath = ConfigurationManager.AppSettings["RegularReportApp"]
@@ -313,7 +196,7 @@ namespace RawMat.Views.RegularCheck
             return BuildYearFolderPath(configuredPath, GetReportYear(dataItem), "Approved");
         }
 
-        private static string GetPdfSavePathStatic(QAdataProperty dataItem)
+        internal static string GetPdfSavePath(QAdataProperty dataItem)
         {
             // string scanRoot = ConfigurationManager.AppSettings["RegularReportScanTest"];  // Test path
             string scanRoot = ConfigurationManager.AppSettings["RegularReportScan"]
@@ -1151,6 +1034,8 @@ namespace RawMat.Views.RegularCheck
             Excel.Range equipmentColumn = sheet.Range[sheet.Cells[tableTop, 9], sheet.Cells[tableTop + AutoReportTableBodyRows, 10]];
             equipmentColumn.Interior.Color = ColorTranslator.ToOle(Color.LightYellow);
             ReleaseCom(equipmentColumn);
+
+            ApplyAutoTableDataColors(sheet, tableTop);
         }
 
         private static void BuildTable(Excel.Worksheet sheet, DataTable data, System.Collections.Generic.List<string> sampleNos, int tableTop, int startCol = 1)
@@ -1223,6 +1108,98 @@ namespace RawMat.Views.RegularCheck
             Excel.Range equipmentColumn = sheet.Range[sheet.Cells[tableTop, startCol + 3], sheet.Cells[tableTop + 13, startCol + 3]];
             equipmentColumn.Interior.Color = ColorTranslator.ToOle(Color.LightYellow);
             ReleaseCom(equipmentColumn);
+
+            ApplyTableDataColors(sheet, tableTop, startCol);
+        }
+
+        private static void ApplyAutoTableDataColors(Excel.Worksheet sheet, int tableTop)
+        {
+            int firstBodyRow = tableTop + 1;
+            int lastBodyRow = tableTop + AutoReportTableBodyRows;
+
+            SetRangeBackground(sheet, firstBodyRow, 11, lastBodyRow, 31, Color.FromArgb(217, 217, 217));
+
+            for (int row = firstBodyRow; row <= lastBodyRow; row++)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    int column = 11 + (i * 4);
+                    SetRangeWhiteWhenHasValue(sheet, row, column, row, column + 1);
+                    SetRangeWhiteWhenHasValue(sheet, row, column + 2, row, column + 3);
+                }
+
+                SetRangeWhiteWhenHasValue(sheet, row, 31, row, 31);
+            }
+        }
+
+        private static void ApplyTableDataColors(Excel.Worksheet sheet, int tableTop, int startCol)
+        {
+            int firstBodyRow = tableTop + 1;
+            int lastBodyRow = tableTop + 13;
+            int firstDataColumn = startCol + 4;
+            int judgmentColumn = startCol + 14;
+
+            SetRangeBackground(
+                sheet,
+                firstBodyRow,
+                firstDataColumn,
+                lastBodyRow,
+                judgmentColumn,
+                Color.FromArgb(217, 217, 217));
+
+            for (int row = firstBodyRow; row <= lastBodyRow; row++)
+            {
+                for (int column = firstDataColumn; column <= judgmentColumn; column++)
+                {
+                    SetRangeWhiteWhenHasValue(sheet, row, column, row, column);
+                }
+            }
+        }
+
+        private static void SetRangeWhiteWhenHasValue(
+            Excel.Worksheet sheet,
+            int row1,
+            int col1,
+            int row2,
+            int col2)
+        {
+            Excel.Range range = null;
+            Excel.Range firstCell = null;
+            try
+            {
+                range = sheet.Range[sheet.Cells[row1, col1], sheet.Cells[row2, col2]];
+                firstCell = (Excel.Range)range.Cells[1, 1];
+                string value = firstCell.Value2?.ToString();
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    range.Interior.Color = ColorTranslator.ToOle(Color.White);
+                }
+            }
+            finally
+            {
+                ReleaseCom(firstCell);
+                ReleaseCom(range);
+            }
+        }
+
+        private static void SetRangeBackground(
+            Excel.Worksheet sheet,
+            int row1,
+            int col1,
+            int row2,
+            int col2,
+            Color color)
+        {
+            Excel.Range range = null;
+            try
+            {
+                range = sheet.Range[sheet.Cells[row1, col1], sheet.Cells[row2, col2]];
+                range.Interior.Color = ColorTranslator.ToOle(color);
+            }
+            finally
+            {
+                ReleaseCom(range);
+            }
         }
 
         private static string GetEquipmentText(System.Collections.Generic.IEnumerable<DataRow> rows)

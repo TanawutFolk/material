@@ -332,9 +332,27 @@ namespace RawMat.Views.Setting
             txtQtyCavityTab1.Text = GetFirstCavityValue(row, "Reg_Cavity_Qty", "Func_Cavity_Qty", "Dim_Cavity_Qty", "App_Cavity_Qty");
             txtCavityNameTab1.Text = GetFirstCavityValue(row, "Reg_Cavity_Name", "Func_Cavity_Name", "Dim_Cavity_Name", "App_Cavity_Name");
 
-            // 4 Tabs โดย loop
-            foreach (var tab in _tabs)
+            // Do not display stale detail rows for checks that are disabled.
+            var checkCombos = new[]
             {
+                cboRegularCheck,
+                cboFunctionCheck,
+                cboDimensionCheck,
+                cboAppearanceCheck
+            };
+
+            for (int i = 0; i < _tabs.Length; i++)
+            {
+                var tab = _tabs[i];
+                if (!IsYesComboValue(checkCombos[i]))
+                {
+                    tab.CboInspectionLevel.SelectedIndex = -1;
+                    tab.TxtInspectionQty.Text = DISPLAY_DASH;
+                    tab.CboNormalReduce.SelectedIndex = -1;
+                    tab.CboS1.SelectedIndex = -1;
+                    continue;
+                }
+
                 SetComboValue(tab.CboInspectionLevel, row[tab.SamplingTypeField].ToString());
                 tab.TxtInspectionQty.Text = DisplayDashIfZeroOrEmpty(row[tab.SamplingQtyField]);
                 SetComboValue(tab.CboNormalReduce, row[tab.StrictnessTypeField].ToString());
@@ -435,6 +453,7 @@ namespace RawMat.Views.Setting
             dt.Columns.Add("POINT_ORDER");
             dt.Columns.Add("EQUIPMENT_TYPE");
             dt.Columns.Add("POINT_NAME");
+            dt.Columns.Add("POINT_CAL");
             dt.Columns.Add("CRITERIA_MIN");
             dt.Columns.Add("CRITERIA_MAX");
             return dt;
@@ -462,6 +481,7 @@ namespace RawMat.Views.Setting
                 row["POINT_ORDER"] = GetGridCellText(gridRow, "POINT_ORDER");
                 row["EQUIPMENT_TYPE"] = GetGridCellText(gridRow, "EQUIPMENT_TYPE");
                 row["POINT_NAME"] = GetGridCellText(gridRow, "POINT_NAME");
+                row["POINT_CAL"] = GetGridCellText(gridRow, "POINT_CAL");
                 row["CRITERIA_MIN"] = GetGridCellText(gridRow, "CRITERIA_MIN");
                 row["CRITERIA_MAX"] = GetGridCellText(gridRow, "CRITERIA_MAX");
                 result.Rows.Add(row);
@@ -643,9 +663,17 @@ namespace RawMat.Views.Setting
                     DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
                 },
                 new DataGridViewTextBoxColumn { Name = "POINT_NAME", HeaderText = "Point Name", DataPropertyName = "POINT_NAME", Width = 160 },
+                new DataGridViewTextBoxColumn { Name = "POINT_CAL", HeaderText = "Point Cal", DataPropertyName = "POINT_CAL", Visible = false },
                 new DataGridViewTextBoxColumn { Name = "CRITERIA_MIN", HeaderText = "Min", DataPropertyName = "CRITERIA_MIN", Width = 80 },
                 new DataGridViewTextBoxColumn { Name = "CRITERIA_MAX", HeaderText = "Max", DataPropertyName = "CRITERIA_MAX", Width = 80 },
-                new DataGridViewButtonColumn { Name = "ROW_ACTION", HeaderText = "", Text = "Action", UseColumnTextForButtonValue = true, Width = 70 }
+                new DataGridViewButtonColumn
+                {
+                    Name = "ROW_ACTION",
+                    HeaderText = "Delete",
+                    Text = "Delete",
+                    UseColumnTextForButtonValue = true,
+                    Width = 70
+                }
             );
 
             if (dtg == dtgDimensionEquipment)
@@ -663,23 +691,7 @@ namespace RawMat.Views.Setting
             if (dtg == null || dtg.Columns[e.ColumnIndex].Name != "ROW_ACTION") return;
             if (dtg.Rows[e.RowIndex].IsNewRow) return;
 
-            SettingGridActionMenu.Show(
-                dtg,
-                e.ColumnIndex,
-                e.RowIndex,
-                () => EditEquipmentRow(dtg, e.RowIndex),
-                () => DeleteEquipmentRow(dtg, e.RowIndex));
-        }
-
-        private void EditEquipmentRow(DataGridView dtg, int rowIndex)
-        {
-            string[] editableColumns = { "POINT_ORDER", "EQUIPMENT_TYPE", "POINT_NAME", "CRITERIA_MIN", "CRITERIA_MAX" };
-            string firstEditableColumn = editableColumns.FirstOrDefault(name => dtg.Columns.Contains(name));
-            if (firstEditableColumn == null)
-                return;
-
-            dtg.CurrentCell = dtg.Rows[rowIndex].Cells[firstEditableColumn];
-            dtg.BeginEdit(true);
+            DeleteEquipmentRow(dtg, e.RowIndex);
         }
 
         private void DeleteEquipmentRow(DataGridView dtg, int rowIndex)

@@ -337,7 +337,7 @@ namespace RawMat.Views.RegularCheck
                 formatMap = conQA.SearchFormatReport(propQA);
             }
 
-            FormRegularReportExcelFlow.CreateWaitApprovedExcel(propQA, originalDataTable, propQA.FORMAT_REPORT_NAME, formatMap);
+            ExportExcell.CreateWaitApprovedExcel(propQA, originalDataTable, propQA.FORMAT_REPORT_NAME, formatMap);
         }
 
         //protected override void OnHandleDestroyed(EventArgs e)
