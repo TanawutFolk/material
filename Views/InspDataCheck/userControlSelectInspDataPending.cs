@@ -43,12 +43,14 @@ namespace RawMat.Views.InspDataCheck
             if (e.RowIndex >= 0 && e.RowIndex < dtg_InspDataPending.Rows.Count && e.ColumnIndex >= 0 && e.ColumnIndex < dtg_InspDataPending.Columns.Count)
             {
 
+                propQA.Regular_No = dtg_InspDataPending.Rows[e.RowIndex].Cells["Regular No"].Value.ToString();
                 propQA.Report_No = dtg_InspDataPending.Rows[e.RowIndex].Cells["Report No."].Value.ToString();
                 propQA.Invoice_No = dtg_InspDataPending.Rows[e.RowIndex].Cells["Invoice No."].Value.ToString();
                 propQA.M_CODE = dtg_InspDataPending.Rows[e.RowIndex].Cells["M-CODE"].Value.ToString();
                 propQA.Material_Name = dtg_InspDataPending.Rows[e.RowIndex].Cells["Material Name"].Value.ToString();
                 propQA.dtReceiveDate = DateTime.Parse(dtg_InspDataPending.Rows[e.RowIndex].Cells["Receive Date"].Value.ToString());
                 propQA.Qty = dtg_InspDataPending.Rows[e.RowIndex].Cells["Lot Size"].Value.ToString();
+                propQA.Vendor_Name = dtg_InspDataPending.Rows[e.RowIndex].Cells["Vendor"].Value.ToString();
 
                 try
                 {

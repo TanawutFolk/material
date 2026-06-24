@@ -412,7 +412,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForOpPackingCheck(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                     b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
                     
                     FROM `db_report_status` a
@@ -459,7 +459,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForOperatePending(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                     b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
                     
                     FROM `db_report_status` a
@@ -1091,6 +1091,25 @@ namespace RawMat.SQLFactory
 
         }
 
+        public string SearchRegularReportData(QAdataProperty dataItem)
+
+        {
+            sql = @"select a.SAMPLING_NO, a.CAVITY_NAME, c.POINT_CAL, c.POINT_ORDER, c.POINT_NAME,
+                    a.EQUIPMENT_SERIAL_ID, d.Equipment_Type, d.Equipment_Name, a.`VALUE`,
+                    c.CRITERIA_MIN, c.CRITERIA_MAX, a.JUDGE AS POINT_JUDGE
+                    from db_regular_data a
+                    join db_receive_mat b on (a.REGULAR_NO = b.Regular_No)
+                    join info_regular_equipment c on (b.M_Code = c.M_CODE and a.POINT_ORDER = c.POINT_ORDER)
+                    left join info_equipment_type d on (c.EQUIPMENT_TYPE = d.Equipment_Type)
+                    where a.REGULAR_NO = 'dataItem.Regular_No' and a.INUSE = 1
+                    order by a.SAMPLING_NO, c.POINT_ORDER, a.CAVITY_NAME
+            ";
+
+            sql = sql.Replace("dataItem.Regular_No", dataItem.Regular_No);
+
+            return sql;
+
+        }
         public string UpdateRegularRef(QAdataProperty dataItem)
         {
             sql = @"
@@ -1113,7 +1132,7 @@ namespace RawMat.SQLFactory
         //????? prevProcess ?????????????? skip = 3
         public string SearchForOpFunction(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
                
                FROM `db_report_status` a
@@ -1319,7 +1338,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForFunctionPending(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                      b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
     
                      FROM `db_report_status` a
@@ -1475,7 +1494,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForDimensionPending(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
 
                FROM `db_report_status` a
@@ -1516,7 +1535,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForOpDimension(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
           b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
           
           FROM `db_report_status` a
@@ -1699,7 +1718,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForOpData(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
              b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
          
              FROM `db_report_status` a
@@ -1753,7 +1772,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForInspDataPending(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
     
                FROM `db_report_status` a
@@ -1791,7 +1810,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForOpAppear(QAdataProperty dataItem)
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , b.Lot_Size as `Lot Size` ,
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , b.Lot_Size as `Lot Size` ,
                     b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
     
                     FROM `db_report_status` a
@@ -1878,68 +1897,45 @@ namespace RawMat.SQLFactory
 
         public string SearchAppearData(QAdataProperty dataItem)
         {
-            bool isAllAppearance = dataItem.SAMPLING_TYPE == "1"
-                || string.Equals(dataItem.SAMPLING_NAME?.Trim(), "All", StringComparison.OrdinalIgnoreCase);
-
-            if (isAllAppearance)
-            {
-                sql = @"SELECT MIN(`APPEARANCE_ID`) AS APPEARANCE_ID,
-                               COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
-                               `BATCH`,
-                               MIN(`COUNT`) AS `COUNT`,
-                               SUM(COALESCE(`QTY_SELECT`, 0)) AS QTY_SELECT,
-                               SUM(COALESCE(`QTY_OK`, 0)) AS QTY_OK,
-                               SUM(COALESCE(`QTY_NG`, 0)) AS QTY_NG,
-                               EMP_ID,
-                               CASE
-                                   WHEN SUM(COALESCE(`QTY_NG`, 0)) > 0 THEN 0
-                                   ELSE 1
-                               END AS JUDGE
-                        FROM `db_appearance_data`
-                        WHERE REPORT_NO = 'dataItem.Report_No'
-                          AND BATCH = 'dataItem.Batch'
-                          AND INUSE = 1
-                        GROUP BY
-                            COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)),
-                            `BATCH`,
-                            `EMP_ID`
-                        ORDER BY
-                            COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)),
-                            `EMP_ID`";
-            }
-            else
-            {
-                sql = @"SELECT `APPEARANCE_ID`,
-                               COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
-                               `BATCH`,
-                               `COUNT`,
-                               QTY_SELECT,
-                               QTY_OK,
-                               QTY_NG,
-                               EMP_ID,
-                               JUDGE
-                        FROM `db_appearance_data`
-                        WHERE REPORT_NO = 'dataItem.Report_No'
-                          AND BATCH = 'dataItem.Batch'
-                          AND INUSE = 1";
-            }
+            sql = @"SELECT `APPEARANCE_ID`,
+                           COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
+                           `BATCH`,
+                           `COUNT`,
+                           QTY_SELECT,
+                           QTY_OK,
+                           QTY_NG,
+                           EMP_ID,
+                           JUDGE
+                    FROM `db_appearance_data`
+                    WHERE REPORT_NO = 'dataItem.Report_No'
+                      AND BATCH = 'dataItem.Batch'
+                      AND INUSE = 1
+                    ORDER BY `COUNT`, `APPEARANCE_ID`";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
             sql = sql.Replace("dataItem.Batch", dataItem.BATCH);
             return sql;
 
         }
-
         public string SearchSampleSize(QAdataProperty dataItem)
         {
             sql = @"SELECT 
                         p.BATCH as `BATCH`,
                         p.PACK_COUNT as `PACK_COUNT`,
                         p.`VALUE` as `VALUE` ,
-                        p.packing_size - COALESCE(SUM(a.qty_select), 0) as `REMAIN_PACKING_SIZE`,
+                        CASE
+                            WHEN COALESCE(s.sampling_type, 0) = 1 THEN (p.`VALUE` * p.PACK_COUNT)
+                            ELSE p.packing_size
+                        END - COALESCE(SUM(a.qty_select), 0) as `REMAIN_PACKING_SIZE`,
                         p.`PACKING_SIZE` as `PACKING_SIZE`
                 FROM 
                     db_packing_size p
+                LEFT JOIN
+                    db_receive_mat r
+                    ON p.report_no = r.report_no
+                LEFT JOIN
+                    info_appearance_sampling s
+                    ON r.M_Code = s.M_CODE
                 LEFT JOIN 
                     db_appearance_data a 
                     ON p.report_no = a.report_no 
@@ -1949,14 +1945,17 @@ namespace RawMat.SQLFactory
 
                 GROUP BY 
                     p.report_no,
-                    p.BATCH;
+                    p.BATCH,
+                    p.PACK_COUNT,
+                    p.`VALUE`,
+                    p.PACKING_SIZE,
+                    s.sampling_type;
                     ";
 
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
 
             return sql;
         }
-
         public string InsertAppearData(QAdataProperty dataItem)
         {
 
@@ -2015,7 +2014,7 @@ namespace RawMat.SQLFactory
 
         public string SearchForAppearPending()
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
                b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.Appearance_Check as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
 
                FROM `db_report_status` a
@@ -2036,3 +2035,4 @@ namespace RawMat.SQLFactory
 
     }
 }
+

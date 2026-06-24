@@ -1,4 +1,4 @@
-﻿using RawMat.Controllers;
+using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.RegularCheck;
@@ -249,6 +249,13 @@ namespace RawMat.Views.Main
                     // ดึงค่า Regular No และ Report No
                     propQA.Regular_No = dtg_receiveMatSearch.Rows[e.RowIndex].Cells["Regular No"].Value?.ToString();
                     propQA.Report_No = dtg_receiveMatSearch.Rows[e.RowIndex].Cells["Report No"].Value?.ToString();
+                    propQA.M_CODE = dtg_receiveMatSearch.Rows[e.RowIndex].Cells["M-CODE"].Value?.ToString();
+
+                    var receiveDateValue = dtg_receiveMatSearch.Rows[e.RowIndex].Cells["Receive Date"].Value;
+                    if (receiveDateValue != null && DateTime.TryParse(receiveDateValue.ToString(), out DateTime parsedDate))
+                    {
+                        propQA.dtReceiveDate = parsedDate;
+                    }
 
                     // ดึง Regular_Check จาก DataBoundItem (วิธีนี้จะได้ข้อมูลที่ถูกต้องแม้จะมีการ Sort)
                     string regularCheck = "0";
@@ -286,6 +293,26 @@ namespace RawMat.Views.Main
                     if (regularCheck == ((int)QAdataProperty.ProcStatus.WaitingApprove).ToString()
                         || regularCheck == ((int)QAdataProperty.ProcStatus.OK).ToString())
                     {
+                        // ตรวจสอบว่าไฟล์ Excel ของรายงานนี้มีอยู่จริงในโฟลเดอร์ Wait Approved หรือ Approved หรือไม่ก่อนเปิดหน้าต่างปั๊มตรา
+                        try
+                        {
+                            string waitFilePath = ExportExcell.GetWaitApprovedFilePath(propQA);
+                            string approvedFilePath = ExportExcell.GetApprovedFilePath(propQA);
+
+                            if (!System.IO.File.Exists(waitFilePath) && !System.IO.File.Exists(approvedFilePath))
+                            {
+                                MessageBox.Show($"ไม่พบไฟล์ Regular Report สำหรับรหัส {propQA.Regular_No} ในระบบ\n\nตำแหน่งไฟล์ที่ระบบใช้ค้นหา:\n- {waitFilePath}\n- {approvedFilePath}\n\nกรุณาตรวจสอบว่ามีไฟล์นี้อยู่จริงก่อนทำการอนุมัติ",
+                                    "ไม่พบไฟล์รายงาน Excel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("เกิดข้อผิดพลาดในการตรวจสอบพาธไฟล์รายงาน: " + ex.Message,
+                                "ข้อผิดพลาด", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
                         using (FormRegularReportStamp stampForm = new FormRegularReportStamp(propQA))
                         {
                             if (stampForm.ShowDialog() == DialogResult.OK)

@@ -760,7 +760,7 @@ namespace RawMat.Views.AppearCheck
 
         private int GetLatestRemainingInspectionQty()
         {
-            DataTable latestPackingData = conQA.SearchSampleSize(propQA);
+            DataTable latestPackingData = BuildPackingSelectionTable(ConvertToSafeDataTable(conQA.SearchSampleSize(propQA)));
             if (latestPackingData == null || !latestPackingData.Columns.Contains("REMAIN_PACKING_SIZE"))
             {
                 return GetRemainingQtyFromPackingGrid();

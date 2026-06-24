@@ -1366,6 +1366,28 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable SearchRegularReportData(QAdataProperty dataItem)
+        {
+
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchRegularReportData(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
         public Boolean UpdateRegularRef(QAdataProperty dataItem)
         {
 

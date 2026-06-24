@@ -20,6 +20,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using Microsoft.Office.Core;
 using RawMat.Views.CustomMsg;
+using RawMat.Views.RegularCheck;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RawMat.Views.InspDataCheck
@@ -284,6 +285,14 @@ namespace RawMat.Views.InspDataCheck
             }
             else
             {
+                if (propQA.judge == ((int)ProcStatus.OK).ToString() && IsEndAtDataResultReport())
+                {
+                    if (!SetRegularWaitingApproveAndCreateExcel())
+                    {
+                        MessageBox.Show("ไม่สามารถสร้าง Regular Report Excel หลัง Data Result ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
 
                 ProcStatus status;
 
@@ -327,6 +336,62 @@ namespace RawMat.Views.InspDataCheck
         }
 
 
+        private bool IsEndAtDataResultReport()
+        {
+            try
+            {
+                return conQA.NeedKeepData(propQA) == 1
+                    && conQA.NeedFunctionCheck(propQA) != 1
+                    && conQA.NeedDimensionCheck(propQA) != 1
+                    && conQA.NeedAppearCheck(propQA) != 1;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool SetRegularWaitingApproveAndCreateExcel()
+        {
+            string currentProcess = propQA.process;
+            string currentInProcStatus = propQA.inProcStatus;
+            string currentReportStatus = propQA.reportStatus;
+
+            try
+            {
+                propQA.process = "Regular_Check";
+                propQA.inProcStatus = ((int)ProcStatus.WaitingApprove).ToString();
+                propQA.reportStatus = ((int)ProcStatus.WaitingApprove).ToString();
+
+                if (!conQA.UpdateReportStatus(propQA))
+                {
+                    return false;
+                }
+
+                PrepareRegularExcelAfterDataResult();
+                return true;
+            }
+            finally
+            {
+                propQA.process = currentProcess;
+                propQA.inProcStatus = currentInProcStatus;
+                propQA.reportStatus = currentReportStatus;
+            }
+        }
+
+        private void PrepareRegularExcelAfterDataResult()
+        {
+            DataTable regularData = conQA.SearchRegularReportData(propQA);
+            DataTable formatMap = null;
+            string regularFormatId = ConfigurationManager.AppSettings["RegularReportFormatId"];
+            if (!string.IsNullOrWhiteSpace(regularFormatId))
+            {
+                propQA.FORMAT_REPORT_ID = regularFormatId.Trim();
+                formatMap = conQA.SearchFormatReport(propQA);
+            }
+
+            ExportExcell.CreateWaitApprovedExcel(propQA, regularData, propQA.FORMAT_REPORT_NAME, formatMap);
+        }
         private void loadstatus()
         {
             if (this.ParentForm is frmMain mainForm)

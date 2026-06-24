@@ -340,6 +340,11 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchRegularReportData(QAdataProperty dataItem)
+        {
+            resultData = services.SearchRegularReportData(dataItem);
+            return resultData;
+        }
         public OutputOnDbProperty UpdateRegularRef(QAdataProperty dataItem)
         {
             resultData = services.UpdateRegularRef(dataItem);

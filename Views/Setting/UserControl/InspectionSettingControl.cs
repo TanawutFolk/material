@@ -15,7 +15,7 @@ namespace RawMat.Views.Setting
 
         private const string ColRevise = "Revise";
         private const string ColMCode = "M Code";
-        private const string ColKeepData = "Keep Data";
+        private const string ColKeepData = "Data Result";
         private const string ColPackingCheck = "Packing Check";
         private const string ColRegularCheck = "Regular Check";
         private const string ColRegularRef = "Regular Ref";

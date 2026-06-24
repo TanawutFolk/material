@@ -499,6 +499,13 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchRegularReportData(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchRegularReportData(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
         public OutputOnDbProperty UpdateRegularRef(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

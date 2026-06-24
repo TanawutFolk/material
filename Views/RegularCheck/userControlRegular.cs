@@ -176,6 +176,10 @@ namespace RawMat.Views.RegularCheck
 
                             PrepareEndAtRegularExcel();
                         }
+                        else if (propQA.TOTAL_STATUS != "0" && !OpenNextProcessAfterRegular())
+                        {
+                            MessageBox.Show("ไม่สามารถเปิด process ถัดไปหลัง Regular ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
 
                         HideRecordLoading();
 
@@ -324,6 +328,60 @@ namespace RawMat.Views.RegularCheck
             catch
             {
                 return false;
+            }
+        }
+
+        private bool OpenNextProcessAfterRegular()
+        {
+            try
+            {
+                if (conQA.NeedKeepData(propQA) == 1)
+                {
+                    return UpdateNextProcessStatus("Inspection_Data_Check", ProcStatus.Unfinished);
+                }
+
+                if (conQA.NeedFunctionCheck(propQA) == 1)
+                {
+                    return UpdateNextProcessStatus("Function_Check", ProcStatus.Unfinished);
+                }
+
+                if (conQA.NeedDimensionCheck(propQA) == 1)
+                {
+                    return UpdateNextProcessStatus("Dimension_Check", ProcStatus.Unfinished);
+                }
+
+                if (conQA.NeedAppearCheck(propQA) == 1)
+                {
+                    return UpdateNextProcessStatus("Appearance_Check", ProcStatus.Unfinished);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool UpdateNextProcessStatus(string process, ProcStatus status)
+        {
+            string currentProcess = propQA.process;
+            string currentInProcStatus = propQA.inProcStatus;
+            string currentReportStatus = propQA.reportStatus;
+
+            try
+            {
+                propQA.process = process;
+                propQA.inProcStatus = ((int)status).ToString();
+                propQA.reportStatus = ((int)status).ToString();
+
+                return conQA.UpdateStatus(propQA);
+            }
+            finally
+            {
+                propQA.process = currentProcess;
+                propQA.inProcStatus = currentInProcStatus;
+                propQA.reportStatus = currentReportStatus;
             }
         }
 

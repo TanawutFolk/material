@@ -315,7 +315,7 @@ namespace RawMat.Views.Setting
             txtMCode.Text = mCode;
 
             // Master
-            SetComboValue(cboKeepData, row["Keep Data"].ToString());
+            SetComboValue(cboKeepData, GetRowValue(row, "Data Result", "Keep Data"));
             SetComboValue(cboPackingCheck, row["Packing Check"].ToString());
             SetComboValue(cboRegularCheck, row["Regular Check"].ToString());
             SetComboValue(cboFunctionCheck, row["Function Check"].ToString());
@@ -361,6 +361,24 @@ namespace RawMat.Views.Setting
         }
 
         // ─── Get/Set Screen Values ────────────────────────────────────────────────
+        private static string GetRowValue(DataRow row, params string[] columnNames)
+        {
+            if (row == null || columnNames == null)
+            {
+                return string.Empty;
+            }
+
+            foreach (string columnName in columnNames)
+            {
+                if (row.Table.Columns.Contains(columnName))
+                {
+                    return row[columnName]?.ToString() ?? string.Empty;
+                }
+            }
+
+            return string.Empty;
+        }
+
         private static void SetComboValue(ComboBox cbo, string value)
         {
             if (cbo.DataSource == null)
