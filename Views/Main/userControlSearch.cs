@@ -1,7 +1,8 @@
-using RawMat.Controllers;
+﻿using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.RegularCheck;
+using RawMat.Views.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +24,7 @@ namespace RawMat.Views.Main
         EmployeeProperty employee = EmployeeManager.CurrentEmployee;
         private DateTime today;
         private bool isLoadingData;
+        private const string DeleteColumnName = "DeleteReport";
 
         // ตัวแปรนับจำนวนการคลิก
         private int clickCount = 0;
@@ -100,6 +102,7 @@ namespace RawMat.Views.Main
 
             dtg_receiveMatSearch.SuspendLayout();
             dtg_receiveMatSearch.DataSource = receiveMatData;
+            EnsureDeleteButtonColumn();
             dtg_receiveMatSearch.ResumeLayout();
 
             if (dtg_receiveMatSearch.Columns.Contains("Regular_Check"))
@@ -110,6 +113,34 @@ namespace RawMat.Views.Main
             UpdateComboBoxItems();
         }
 
+        private void EnsureDeleteButtonColumn()
+        {
+            if (employee?.EMP_LEVEL != "1" || dtg_receiveMatSearch.DataSource == null)
+            {
+                if (dtg_receiveMatSearch.Columns.Contains(DeleteColumnName))
+                {
+                    dtg_receiveMatSearch.Columns.Remove(DeleteColumnName);
+                }
+                return;
+            }
+
+            if (!dtg_receiveMatSearch.Columns.Contains(DeleteColumnName))
+            {
+                var deleteColumn = new DataGridViewButtonColumn
+                {
+                    Name = DeleteColumnName,
+                    HeaderText = "Delete",
+                    Text = "Delete",
+                    UseColumnTextForButtonValue = true,
+                    Width = 70,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                };
+
+                dtg_receiveMatSearch.Columns.Add(deleteColumn);
+            }
+
+            dtg_receiveMatSearch.Columns[DeleteColumnName].DisplayIndex = dtg_receiveMatSearch.Columns.Count - 1;
+        }
         private void WireGridEvents()
         {
             dtg_receiveMatSearch.CellFormatting -= dtg_receiveMatSearch_CellFormatting;
@@ -158,6 +189,7 @@ namespace RawMat.Views.Main
         {
             DataRow[] rows = filteredRows.ToArray();
             dtg_receiveMatSearch.DataSource = rows.Length > 0 ? rows.CopyToDataTable() : null;
+            EnsureDeleteButtonColumn();
         }
 
         private string GetRowText(DataRow row, string columnName)
@@ -231,6 +263,12 @@ namespace RawMat.Views.Main
                 if (string.IsNullOrEmpty(columnName))
                 {
                     columnName = dtg_receiveMatSearch.Columns[e.ColumnIndex].HeaderText;
+                }
+
+                if (columnName == DeleteColumnName)
+                {
+                    DeleteReportHistory(e.RowIndex);
+                    return;
                 }
 
                 if (columnName == "Regular No")
@@ -335,6 +373,55 @@ namespace RawMat.Views.Main
             }
         }
 
+        private void DeleteReportHistory(int rowIndex)
+        {
+            if (employee?.EMP_LEVEL != "1" || rowIndex < 0 || rowIndex >= dtg_receiveMatSearch.Rows.Count)
+            {
+                return;
+            }
+
+            DataGridViewRow row = dtg_receiveMatSearch.Rows[rowIndex];
+            string reportNo = GetGridCellText(row, "Report No");
+            string regularNo = GetGridCellText(row, "Regular No");
+            if (string.IsNullOrWhiteSpace(reportNo))
+            {
+                return;
+            }
+
+            using (var frm = new frmConfirm($"Delete report history '{reportNo}' ?"))
+            {
+                if (frm.ShowDialog(this) != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            var deleteItem = new QAdataProperty
+            {
+                Report_No = reportNo,
+                Regular_No = regularNo
+            };
+
+            if (!conQA.DeleteReportHistory(deleteItem))
+            {
+                MessageBox.Show("Delete report history failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show("Delete report history success", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            RefreshData();
+        }
+
+        private string GetGridCellText(DataGridViewRow row, string columnName)
+        {
+            if (row == null || !dtg_receiveMatSearch.Columns.Contains(columnName))
+            {
+                return string.Empty;
+            }
+
+            object value = row.Cells[columnName].Value;
+            return value == null || value == DBNull.Value ? string.Empty : value.ToString();
+        }
         private async void RefreshData()
         {
             await LoadReceiveMatDataAsync(rb_statusProcess.Checked);

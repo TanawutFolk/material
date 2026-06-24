@@ -1219,34 +1219,195 @@ namespace RawMat.Views.RegularCheck
         {
             if (string.IsNullOrWhiteSpace(stampImagePath) || !File.Exists(stampImagePath))
             {
+                throw new FileNotFoundException("ไม่พบไฟล์ E-Stamp", stampImagePath ?? string.Empty);
+            }
+
+            Excel.Range approveCell = null;
+            string tempStampPath = null;
+            try
+            {
+                string excelStampPath = PrepareStampImageForExcel(stampImagePath, out tempStampPath);
+                approveCell = GetApproveStampRange(sheet);
+                float left = Convert.ToSingle(approveCell.Left);
+                float top = Convert.ToSingle(approveCell.Top);
+                float width = Convert.ToSingle(approveCell.Width);
+                float height = Convert.ToSingle(approveCell.Height);
+                sheet.Shapes.AddPicture(
+                    excelStampPath,
+                    Microsoft.Office.Core.MsoTriState.msoFalse,
+                    Microsoft.Office.Core.MsoTriState.msoTrue,
+                    left + 4,
+                    top + 2,
+                    Math.Max(1, width - 8),
+                    Math.Max(1, height - 4));
+            }
+            finally
+            {
+                ReleaseCom(approveCell);
+                DeleteTempFile(tempStampPath);
+            }
+        }
+
+        private static string PrepareStampImageForExcel(string stampImagePath, out string tempStampPath)
+        {
+            tempStampPath = null;
+            string extension = Path.GetExtension(stampImagePath);
+            if (!string.Equals(extension, ".tif", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(extension, ".tiff", StringComparison.OrdinalIgnoreCase))
+            {
+                return stampImagePath;
+            }
+
+            tempStampPath = Path.Combine(Path.GetTempPath(), $"RawMat_EStamp_{Guid.NewGuid():N}.png");
+            using (Image stampImage = Image.FromFile(stampImagePath))
+            {
+                stampImage.Save(tempStampPath, System.Drawing.Imaging.ImageFormat.Png);
+            }
+
+            return tempStampPath;
+        }
+
+        private static void DeleteTempFile(string tempFilePath)
+        {
+            if (string.IsNullOrWhiteSpace(tempFilePath) || !File.Exists(tempFilePath))
+            {
                 return;
             }
 
-            string approveStartCell;
-            string approveEndCell;
-            if (IsCellText(sheet, "AB2", "Approve"))
+            try
             {
-                approveStartCell = "AB3";
-                approveEndCell = "AE4";
+                File.Delete(tempFilePath);
             }
-            else if (IsCellText(sheet, "AA1", "Approve"))
+            catch
             {
-                approveStartCell = "AA2";
-                approveEndCell = "AE3";
+                // The temporary stamp copy is only used while Excel embeds the image.
             }
-            else
+        }
+
+        private static Excel.Range GetApproveStampRange(Excel.Worksheet sheet)
+        {
+            if (TryGetApproveStampRangeFromCell(sheet, "AB2", out Excel.Range stampRange)
+                || TryGetApproveStampRangeFromCell(sheet, "AA1", out stampRange))
             {
-                approveStartCell = "N2";
-                approveEndCell = "P3";
+                return stampRange;
             }
 
-            Excel.Range approveCell = sheet.Range[approveStartCell, approveEndCell];
-            float left = Convert.ToSingle(approveCell.Left);
-            float top = Convert.ToSingle(approveCell.Top);
-            float width = Convert.ToSingle(approveCell.Width);
-            float height = Convert.ToSingle(approveCell.Height);
-            sheet.Shapes.AddPicture(stampImagePath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoTrue, left + 4, top + 2, width - 8, height - 4);
-            ReleaseCom(approveCell);
+            Excel.Range usedRange = null;
+            Excel.Range foundCell = null;
+            try
+            {
+                usedRange = sheet.UsedRange;
+                foundCell = usedRange.Find(
+                    What: "Approve",
+                    LookIn: Excel.XlFindLookIn.xlValues,
+                    LookAt: Excel.XlLookAt.xlWhole,
+                    MatchCase: false);
+
+                if (foundCell != null && TryBuildStampRangeBelowLabel(sheet, foundCell, out stampRange))
+                {
+                    return stampRange;
+                }
+            }
+            finally
+            {
+                ReleaseCom(foundCell);
+                ReleaseCom(usedRange);
+            }
+
+            return sheet.Range["AB3", "AE4"];
+        }
+
+        private static bool TryGetApproveStampRangeFromCell(Excel.Worksheet sheet, string cellAddress, out Excel.Range stampRange)
+        {
+            stampRange = null;
+            Excel.Range cell = null;
+            try
+            {
+                cell = sheet.Range[cellAddress];
+                if (!IsRangeText(cell, "Approve"))
+                {
+                    return false;
+                }
+
+                return TryBuildStampRangeBelowLabel(sheet, cell, out stampRange);
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                ReleaseCom(cell);
+            }
+        }
+
+        private static bool TryBuildStampRangeBelowLabel(Excel.Worksheet sheet, Excel.Range labelCell, out Excel.Range stampRange)
+        {
+            stampRange = null;
+            Excel.Range labelArea = null;
+            Excel.Range rows = null;
+            Excel.Range columns = null;
+            try
+            {
+                labelArea = Convert.ToBoolean(labelCell.MergeCells) ? labelCell.MergeArea : labelCell;
+                rows = labelArea.Rows;
+                columns = labelArea.Columns;
+
+                int row = Convert.ToInt32(labelArea.Row);
+                int column = Convert.ToInt32(labelArea.Column);
+                int rowCount = Convert.ToInt32(rows.Count);
+                int columnCount = Convert.ToInt32(columns.Count);
+                int stampStartRow = row + rowCount;
+                int stampEndRow = stampStartRow + 1;
+                int stampEndColumn = column + Math.Max(1, columnCount) - 1;
+
+                stampRange = sheet.Range[
+                    sheet.Cells[stampStartRow, column],
+                    sheet.Cells[stampEndRow, stampEndColumn]];
+                return true;
+            }
+            catch
+            {
+                ReleaseCom(stampRange);
+                stampRange = null;
+                return false;
+            }
+            finally
+            {
+                ReleaseCom(columns);
+                ReleaseCom(rows);
+                if (!ReferenceEquals(labelArea, labelCell))
+                {
+                    ReleaseCom(labelArea);
+                }
+            }
+        }
+
+        private static bool IsRangeText(Excel.Range range, string expectedText)
+        {
+            Excel.Range firstCell = null;
+            Excel.Range mergeArea = null;
+            try
+            {
+                firstCell = range;
+                if (Convert.ToBoolean(range.MergeCells))
+                {
+                    mergeArea = range.MergeArea;
+                    firstCell = (Excel.Range)mergeArea.Cells[1, 1];
+                }
+
+                string value = firstCell.Value2?.ToString() ?? string.Empty;
+                return string.Equals(value.Trim(), expectedText, StringComparison.OrdinalIgnoreCase);
+            }
+            finally
+            {
+                if (!ReferenceEquals(firstCell, range))
+                {
+                    ReleaseCom(firstCell);
+                }
+
+                ReleaseCom(mergeArea);
+            }
         }
 
         private static bool IsCellText(Excel.Worksheet sheet, string cellAddress, string expectedText)
@@ -1255,8 +1416,7 @@ namespace RawMat.Views.RegularCheck
             try
             {
                 cell = sheet.Range[cellAddress];
-                string value = cell.Value2?.ToString() ?? string.Empty;
-                return string.Equals(value.Trim(), expectedText, StringComparison.OrdinalIgnoreCase);
+                return IsRangeText(cell, expectedText);
             }
             finally
             {

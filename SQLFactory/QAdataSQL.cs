@@ -1,4 +1,4 @@
-using RawMat.Property;
+﻿using RawMat.Property;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -2033,6 +2033,29 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+
+        public List<string> DeleteReportHistory(QAdataProperty dataItem)
+        {
+            string reportNo = ToSqlTextValue(dataItem.Report_No);
+            string regularNo = ToSqlTextValue(dataItem.Regular_No);
+
+            return new List<string>
+            {
+                $"DELETE FROM `db_appearance_pending` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_appearance_data` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_inspection_data` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_dimension_data` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_function_data` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_regular_data` WHERE `REGULAR_NO` = {regularNo}",
+                $"DELETE rd FROM `db_regular_data` rd JOIN `db_receive_mat` rm ON rd.`REGULAR_NO` = rm.`Regular_No` WHERE rm.`Report_No` = {reportNo}",
+                $"DELETE FROM `db_packing_check` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_packing_size` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_report_lot_no` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `info_report_active` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_report_status` WHERE `Report_No` = {reportNo}",
+                $"DELETE FROM `db_receive_mat` WHERE `Report_No` = {reportNo}"
+            };
+        }
     }
 }
 

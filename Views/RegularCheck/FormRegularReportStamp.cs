@@ -128,20 +128,16 @@ namespace RawMat.Views.RegularCheck
         private void bt_ok_Click(object sender, EventArgs e)
         {
             //PDF After OK
-            // ตรวจสอบว่ามีการเลือกรูป stamp หรือไม่
-            if (stamp_pic == null)
+            string stampPath = GetSelectedStampPath();
+            if (string.IsNullOrWhiteSpace(stampPath) || !System.IO.File.Exists(stampPath))
             {
-                DialogResult result = MessageBox.Show("คุณยังไม่ได้เลือกไฟล์ Stamp ต้องการดำเนินการต่อหรือไม่?",
-                    "ยืนยัน", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result == DialogResult.No)
-                {
-                    return;
-                }
+                MessageBox.Show("กรุณาเลือกไฟล์ E-Stamp ก่อนกด OK", "แจ้งเตือน",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
             try
             {
-                string stampPath = tb_programStamp.ForeColor == Color.Gray ? null : tb_programStamp.Text;
                 ExportExcell.ApproveExcelReport(propQA, stampPath);
             }
             catch (Exception ex)
@@ -163,6 +159,16 @@ namespace RawMat.Views.RegularCheck
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private string GetSelectedStampPath()
+        {
+            if (tb_programStamp.ForeColor == Color.Gray)
+            {
+                return string.Empty;
+            }
+
+            return tb_programStamp.Text?.Trim() ?? string.Empty;
         }
 
         private void bt_cancel_Click(object sender, EventArgs e)

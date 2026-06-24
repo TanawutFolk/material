@@ -417,6 +417,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+
+        public OutputOnDbProperty DeleteReportHistory(QAdataProperty dataItem)
+        {
+            resultData = services.DeleteReportHistory(dataItem);
+            return resultData;
+        }
         public OutputOnDbProperty CheckReportStatus(QAdataProperty dataItem)
         {
             resultData = services.CheckReportStatus(dataItem);
