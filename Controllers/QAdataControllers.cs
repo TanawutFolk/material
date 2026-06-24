@@ -2304,6 +2304,28 @@ namespace RawMat.Controllers
             return bl;
         }
 
+        public DataTable SearchForAppearPending()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchForAppearPending();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
         public int GetTotalInspected(QAdataProperty dataItem)
         {
             try

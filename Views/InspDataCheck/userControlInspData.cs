@@ -20,7 +20,6 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using Microsoft.Office.Core;
 using RawMat.Views.CustomMsg;
-using RawMat.Views.RegularCheck;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RawMat.Views.InspDataCheck
@@ -287,9 +286,9 @@ namespace RawMat.Views.InspDataCheck
             {
                 if (propQA.judge == ((int)ProcStatus.OK).ToString() && IsEndAtDataResultReport())
                 {
-                    if (!SetRegularWaitingApproveAndCreateExcel())
+                    if (!SetRegularWaitingApprove())
                     {
-                        MessageBox.Show("ไม่สามารถสร้าง Regular Report Excel หลัง Data Result ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("ไม่สามารถ update Regular เป็น Waiting Approve หลัง Data Result ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
 
@@ -351,7 +350,7 @@ namespace RawMat.Views.InspDataCheck
             }
         }
 
-        private bool SetRegularWaitingApproveAndCreateExcel()
+        private bool SetRegularWaitingApprove()
         {
             string currentProcess = propQA.process;
             string currentInProcStatus = propQA.inProcStatus;
@@ -368,7 +367,6 @@ namespace RawMat.Views.InspDataCheck
                     return false;
                 }
 
-                PrepareRegularExcelAfterDataResult();
                 return true;
             }
             finally
@@ -379,19 +377,6 @@ namespace RawMat.Views.InspDataCheck
             }
         }
 
-        private void PrepareRegularExcelAfterDataResult()
-        {
-            DataTable regularData = conQA.SearchRegularReportData(propQA);
-            DataTable formatMap = null;
-            string regularFormatId = ConfigurationManager.AppSettings["RegularReportFormatId"];
-            if (!string.IsNullOrWhiteSpace(regularFormatId))
-            {
-                propQA.FORMAT_REPORT_ID = regularFormatId.Trim();
-                formatMap = conQA.SearchFormatReport(propQA);
-            }
-
-            ExportExcell.CreateWaitApprovedExcel(propQA, regularData, propQA.FORMAT_REPORT_NAME, formatMap);
-        }
         private void loadstatus()
         {
             if (this.ParentForm is frmMain mainForm)

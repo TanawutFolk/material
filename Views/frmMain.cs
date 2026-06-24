@@ -936,7 +936,11 @@ namespace RawMat
 
         private void bt_appear_pending_Click(object sender, EventArgs e)
         {
-
+            if (empProp.EMP_LEVEL == "1")
+            {
+                userControlSelectAppearPending usrSelectAppearPending = new userControlSelectAppearPending();
+                _navigationService.NavigateTo(usrSelectAppearPending);
+            }
         }
 
         private void bt_setting_Click(object sender, EventArgs e)

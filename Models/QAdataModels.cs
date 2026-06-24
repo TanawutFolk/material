@@ -562,6 +562,11 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchForAppearPending()
+        {
+            resultData = services.SearchForAppearPending();
+            return resultData;
+        }
         public OutputOnDbProperty GetTotalInspected(QAdataProperty dataItem)
         {
             resultData = services.GetTotalInspected(dataItem);

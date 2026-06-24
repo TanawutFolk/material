@@ -27,13 +27,18 @@ namespace RawMat.Views.AppearCheck
 
         private void userControlSelectAppearPending_Load(object sender, EventArgs e)
         {
-            DataTable dt = new DataTable();
-            //dt = conQA.SearchForAppearPending();
+            DataTable dt = conQA.SearchForAppearPending();
+            dtg_appearPending.DataSource = dt;
 
-            //dtg_appearPending.DataSource = dt;
+            if (dtg_appearPending.Columns.Contains("process_status_id"))
+            {
+                dtg_appearPending.Columns["process_status_id"].Visible = false;
+            }
 
-            //dtg_appearPending.Columns["process_id"].Visible = false;
-            //dtg_appearPending.Columns["Issue_Date"].Visible = false;
+            if (dtg_appearPending.Columns.Contains("Issue_Date"))
+            {
+                dtg_appearPending.Columns["Issue_Date"].Visible = false;
+            }
         }
     }
 }

@@ -121,7 +121,11 @@ namespace RawMat.Views.RegularCheck
             {
                 propQA.TOTAL_STATUS = "1";
                 propQA.EMP_ID = employee.EMP_CODE;
-                propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? string.Empty;
+                if (!TrySetSelectedLotNo())
+                {
+                    MessageBox.Show("กรุณาเลือก Lot No. ก่อนบันทึก Regular", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 DataTable regularDataToSave = originalDataTable.Copy();
 
@@ -167,18 +171,21 @@ namespace RawMat.Views.RegularCheck
 
                     if (conQA.UpdateReportStatusLotNo(propQA) == true)
                     {
-                        if (endAtRegularReport)
+                        if (propQA.TOTAL_STATUS != "0")
                         {
-                            if (!conQA.UpdateReportStatus(propQA))
+                            if (endAtRegularReport)
                             {
-                                MessageBox.Show("ไม่สามารถ update report status เป็น Waiting Approve ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                if (!conQA.UpdateReportStatus(propQA))
+                                {
+                                    MessageBox.Show("ไม่สามารถ update report status เป็น Waiting Approve ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            else if (!OpenNextProcessAfterRegular())
+                            {
+                                MessageBox.Show("ไม่สามารถเปิด process ถัดไปหลัง Regular ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
 
                             PrepareEndAtRegularExcel();
-                        }
-                        else if (propQA.TOTAL_STATUS != "0" && !OpenNextProcessAfterRegular())
-                        {
-                            MessageBox.Show("ไม่สามารถเปิด process ถัดไปหลัง Regular ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
 
                         HideRecordLoading();
@@ -387,6 +394,8 @@ namespace RawMat.Views.RegularCheck
 
         private void PrepareEndAtRegularExcel()
         {
+            EnsureRegularExcelHeaderData();
+
             DataTable formatMap = null;
             string regularFormatId = ConfigurationManager.AppSettings["RegularReportFormatId"];
             if (!string.IsNullOrWhiteSpace(regularFormatId))
@@ -396,6 +405,43 @@ namespace RawMat.Views.RegularCheck
             }
 
             ExportExcell.CreateWaitApprovedExcel(propQA, originalDataTable, propQA.FORMAT_REPORT_NAME, formatMap);
+        }
+
+        private bool TrySetSelectedLotNo()
+        {
+            if (cb_lotNo.SelectedItem == null && cb_lotNo.Items.Count == 1)
+            {
+                cb_lotNo.SelectedIndex = 0;
+            }
+
+            propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? propQA.Lot_No ?? string.Empty;
+            return !string.IsNullOrWhiteSpace(propQA.Lot_No);
+        }
+
+        private void EnsureRegularExcelHeaderData()
+        {
+            TrySetSelectedLotNo();
+
+            if (!string.IsNullOrWhiteSpace(propQA.SAMPLING_QTY))
+            {
+                return;
+            }
+
+            if (originalDataTable == null || !originalDataTable.Columns.Contains("SAMPLING_NO"))
+            {
+                return;
+            }
+
+            int samplingQty = originalDataTable.AsEnumerable()
+                .Select(row => row["SAMPLING_NO"]?.ToString())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct()
+                .Count();
+
+            if (samplingQty > 0)
+            {
+                propQA.SAMPLING_QTY = samplingQty.ToString();
+            }
         }
 
         //protected override void OnHandleDestroyed(EventArgs e)
