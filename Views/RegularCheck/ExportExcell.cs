@@ -1,4 +1,4 @@
-using RawMat.Property;
+﻿using RawMat.Property;
 using RawMat.Controllers;
 using System;
 using System.Configuration;
@@ -22,6 +22,8 @@ namespace RawMat.Views.RegularCheck
         private const int AutoReportLastColumn = 31;
         private const int AutoReportPageRows = 42;
         private const int AutoReportTableBodyRows = 15;
+        private const string StampShapeName = "RawMat_EStamp_Approve";
+        private const string StampProtectionPassword = "RawMatRegularStamp";
 
         public static string CreateWaitApprovedExcel(QAdataProperty dataItem, DataTable regularData)
         {
@@ -125,6 +127,8 @@ namespace RawMat.Views.RegularCheck
             {
                 throw new FileNotFoundException("ไม่พบไฟล์ Regular Report Excel ใน Wait Approved", waitPath);
             }
+
+            EnsureFileCanBeUpdated(waitPath);
 
             Directory.CreateDirectory(Path.GetDirectoryName(pdfPath));
             Directory.CreateDirectory(Path.GetDirectoryName(approvedPath));
@@ -144,7 +148,9 @@ namespace RawMat.Views.RegularCheck
                 workbook = excelApp.Workbooks.Open(waitPath);
                 sheet = (Excel.Worksheet)workbook.Worksheets[1];
 
+                UnprotectStampSheet(sheet);
                 AddStampImage(sheet, stampImagePath);
+                ProtectStampSheet(sheet);
 
                 workbook.Save();
                 if (File.Exists(pdfPath))
@@ -180,6 +186,28 @@ namespace RawMat.Views.RegularCheck
             }
         }
 
+        private static void EnsureFileCanBeUpdated(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
+            {
+                return;
+            }
+
+            try
+            {
+                using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                }
+            }
+            catch (IOException ex)
+            {
+                throw new IOException("ไฟล์ Regular Report Excel ถูกเปิดใช้งานอยู่ กรุณาปิดไฟล์ก่อนกด E-Stamp อีกครั้ง", ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new IOException("ไม่สามารถแก้ไขไฟล์ Regular Report Excel ได้ กรุณาตรวจสอบสิทธิ์หรือปิดไฟล์ที่เปิดอยู่", ex);
+            }
+        }
         internal static string GetWaitApprovedPath(QAdataProperty dataItem)
         {
             // return ConfigurationManager.AppSettings["RegularReportWaitAppTest"]  // Test path
@@ -1215,6 +1243,40 @@ namespace RawMat.Views.RegularCheck
                 .Distinct(StringComparer.OrdinalIgnoreCase));
         }
 
+        private static void UnprotectStampSheet(Excel.Worksheet sheet)
+        {
+            try
+            {
+                sheet.Unprotect(StampProtectionPassword);
+            }
+            catch
+            {
+                // If the sheet is protected with another password, Excel will raise a COM error.
+                // Let the later edit/save step surface the real failure to the user.
+            }
+        }
+
+        private static void ProtectStampSheet(Excel.Worksheet sheet)
+        {
+            sheet.Protect(
+                Password: StampProtectionPassword,
+                DrawingObjects: true,
+                Contents: true,
+                Scenarios: true,
+                UserInterfaceOnly: false,
+                AllowFormattingCells: false,
+                AllowFormattingColumns: false,
+                AllowFormattingRows: false,
+                AllowInsertingColumns: false,
+                AllowInsertingRows: false,
+                AllowInsertingHyperlinks: false,
+                AllowDeletingColumns: false,
+                AllowDeletingRows: false,
+                AllowSorting: false,
+                AllowFiltering: false,
+                AllowUsingPivotTables: false);
+            sheet.EnableSelection = Excel.XlEnableSelection.xlNoRestrictions;
+        }
         private static void AddStampImage(Excel.Worksheet sheet, string stampImagePath)
         {
             if (string.IsNullOrWhiteSpace(stampImagePath) || !File.Exists(stampImagePath))
@@ -1232,14 +1294,8 @@ namespace RawMat.Views.RegularCheck
                 float top = Convert.ToSingle(approveCell.Top);
                 float width = Convert.ToSingle(approveCell.Width);
                 float height = Convert.ToSingle(approveCell.Height);
-                sheet.Shapes.AddPicture(
-                    excelStampPath,
-                    Microsoft.Office.Core.MsoTriState.msoFalse,
-                    Microsoft.Office.Core.MsoTriState.msoTrue,
-                    left + 4,
-                    top + 2,
-                    Math.Max(1, width - 8),
-                    Math.Max(1, height - 4));
+                RemoveExistingStampPictures(sheet, left, top, width, height);
+                AddStampPictureInCell(sheet, excelStampPath, left, top, width, height);
             }
             finally
             {
@@ -1248,6 +1304,119 @@ namespace RawMat.Views.RegularCheck
             }
         }
 
+        private static void RemoveExistingStampPictures(
+            Excel.Worksheet sheet,
+            float cellLeft,
+            float cellTop,
+            float cellWidth,
+            float cellHeight)
+        {
+            Excel.Shapes shapes = null;
+            try
+            {
+                shapes = sheet.Shapes;
+                for (int index = shapes.Count; index >= 1; index--)
+                {
+                    Excel.Shape shape = null;
+                    try
+                    {
+                        shape = shapes.Item(index);
+                        if (IsExistingStampShape(shape, cellLeft, cellTop, cellWidth, cellHeight))
+                        {
+                            shape.Delete();
+                        }
+                    }
+                    finally
+                    {
+                        ReleaseCom(shape);
+                    }
+                }
+            }
+            finally
+            {
+                ReleaseCom(shapes);
+            }
+        }
+
+        private static bool IsExistingStampShape(
+            Excel.Shape shape,
+            float cellLeft,
+            float cellTop,
+            float cellWidth,
+            float cellHeight)
+        {
+            if (shape == null)
+            {
+                return false;
+            }
+
+            if (string.Equals(shape.Name, StampShapeName, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            float shapeCenterX = Convert.ToSingle(shape.Left + (shape.Width / 2));
+            float shapeCenterY = Convert.ToSingle(shape.Top + (shape.Height / 2));
+            return shapeCenterX >= cellLeft
+                && shapeCenterX <= cellLeft + cellWidth
+                && shapeCenterY >= cellTop
+                && shapeCenterY <= cellTop + cellHeight;
+        }
+        private static void AddStampPictureInCell(
+            Excel.Worksheet sheet,
+            string stampImagePath,
+            float cellLeft,
+            float cellTop,
+            float cellWidth,
+            float cellHeight)
+        {
+            Excel.Shape stampShape = null;
+            try
+            {
+                float paddingX = 4;
+                float paddingY = 2;
+                float maxWidth = Math.Max(1, cellWidth - (paddingX * 2));
+                float maxHeight = Math.Max(1, cellHeight - (paddingY * 2));
+                float pictureWidth = maxWidth;
+                float pictureHeight = maxHeight;
+
+                using (Image stampImage = Image.FromFile(stampImagePath))
+                {
+                    float ratio = stampImage.Width > 0 && stampImage.Height > 0
+                        ? (float)stampImage.Width / stampImage.Height
+                        : 1;
+
+                    if (maxWidth / maxHeight > ratio)
+                    {
+                        pictureHeight = maxHeight;
+                        pictureWidth = maxHeight * ratio;
+                    }
+                    else
+                    {
+                        pictureWidth = maxWidth;
+                        pictureHeight = maxWidth / ratio;
+                    }
+                }
+
+                float pictureLeft = cellLeft + paddingX + ((maxWidth - pictureWidth) / 2);
+                float pictureTop = cellTop + paddingY + ((maxHeight - pictureHeight) / 2);
+                stampShape = sheet.Shapes.AddPicture(
+                    stampImagePath,
+                    Microsoft.Office.Core.MsoTriState.msoFalse,
+                    Microsoft.Office.Core.MsoTriState.msoTrue,
+                    pictureLeft,
+                    pictureTop,
+                    pictureWidth,
+                    pictureHeight);
+                stampShape.Name = StampShapeName;
+                stampShape.Placement = Excel.XlPlacement.xlMoveAndSize;
+                stampShape.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+            }
+            finally
+            {
+                ReleaseCom(stampShape);
+            }
+        }
         private static string PrepareStampImageForExcel(string stampImagePath, out string tempStampPath)
         {
             tempStampPath = null;

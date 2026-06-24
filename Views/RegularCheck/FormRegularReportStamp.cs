@@ -18,6 +18,7 @@ namespace RawMat.Views.RegularCheck
         QAdataControllers conQA = new QAdataControllers();
         QAdataProperty propQA = new QAdataProperty();
         private Image stamp_pic;
+        private string selectedStampPath = string.Empty;
 
         public FormRegularReportStamp(QAdataProperty dataItem)
         {
@@ -100,7 +101,9 @@ namespace RawMat.Views.RegularCheck
                 {
                     // โหลดรูปภาพจากไฟล์
                     stamp_pic = Image.FromFile(openFileDialog.FileName);
-                    tb_programStamp.Text = openFileDialog.FileName;
+                    selectedStampPath = openFileDialog.FileName;
+                    tb_programStamp.Text = selectedStampPath;
+                    tb_programStamp.ForeColor = Color.Black;
                     // แสดงรูปภาพใน PictureBox (ถ้ามีในฟอร์ม)
                     if (pb_stamp != null)
                     {
@@ -163,6 +166,11 @@ namespace RawMat.Views.RegularCheck
 
         private string GetSelectedStampPath()
         {
+            if (!string.IsNullOrWhiteSpace(selectedStampPath))
+            {
+                return selectedStampPath;
+            }
+
             if (tb_programStamp.ForeColor == Color.Gray)
             {
                 return string.Empty;

@@ -1781,13 +1781,65 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
         // เพิ่ม method เพื่อ init DataTable สำหรับ dtg_ngMode (ว่างเปล่า)
         private void InitializeNgModeDataTable()
         {
+            dtg_ngMode.DataSource = CreateNgModeDataTable(0);
+            ConfigureNgModeGridColumns();
+            dtg_ngMode.AllowUserToAddRows = false; // ควบคุมด้วย code
+        }
+
+        private DataTable CreateNgModeDataTable(int requiredNgQty)
+        {
             DataTable ngDt = new DataTable();
             ngDt.Columns.Add("QTY_NG", typeof(int));
             ngDt.Columns.Add(NgModeHelper.ColumnName, typeof(string));
             ngDt.Columns.Add("NG_DETAIL", typeof(string));
-            dtg_ngMode.DataSource = ngDt;
-            ConfigureNgModeGridColumns();
-            dtg_ngMode.AllowUserToAddRows = false; // ควบคุมด้วย code
+            ngDt.Columns.Add("TOTAL_PENDING", typeof(string));
+            ngDt.Columns.Add("TOTAL_OK", typeof(string));
+            ngDt.Columns.Add("TOTAL_NG", typeof(string));
+
+            for (int i = 0; i < requiredNgQty; i++)
+            {
+                AddNgModeInputRow(ngDt);
+            }
+
+            return ngDt;
+        }
+
+        private void AddNgModeInputRow(DataTable ngDt)
+        {
+            DataRow newRow = ngDt.NewRow();
+            newRow["QTY_NG"] = 1;
+            newRow[NgModeHelper.ColumnName] = string.Empty;
+            newRow["NG_DETAIL"] = string.Empty;
+            newRow["TOTAL_PENDING"] = string.Empty;
+            newRow["TOTAL_OK"] = string.Empty;
+            newRow["TOTAL_NG"] = string.Empty;
+            ngDt.Rows.Add(newRow);
+        }
+
+        private int GetCurrentInputQty(string columnName)
+        {
+            DataRow inputRow = GetActiveInputDataRow();
+            if (inputRow == null || !inputRow.Table.Columns.Contains(columnName))
+            {
+                return 0;
+            }
+
+            return ParseInt(inputRow[columnName]);
+        }
+
+        private void AddReadonlyNgSummaryColumn(string name, string headerText, int width)
+        {
+            DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn
+            {
+                Name = name,
+                HeaderText = headerText,
+                DataPropertyName = name,
+                ReadOnly = true,
+                Width = width,
+                SortMode = DataGridViewColumnSortMode.NotSortable,
+                DefaultCellStyle = { BackColor = Color.WhiteSmoke, Alignment = DataGridViewContentAlignment.MiddleCenter }
+            };
+            dtg_ngMode.Columns.Add(column);
         }
 
         private void ConfigureNgModeGridColumns()
@@ -1798,25 +1850,30 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn
             {
                 Name = "QTY_NG",
-                HeaderText = "จำนวนเสีย",
+                HeaderText = "QTY NG",
                 DataPropertyName = "QTY_NG",
-                Width = 110
+                Visible = false
             };
             dtg_ngMode.Columns.Add(qtyColumn);
 
             DataGridViewComboBoxColumn ngModeColumn = new DataGridViewComboBoxColumn
             {
                 Name = NgModeHelper.ColumnName,
-                HeaderText = "อาการเสีย",
+                HeaderText = "Q'ty Pending",
                 DataPropertyName = NgModeHelper.ColumnName,
                 DataSource = ngModeList,
                 DisplayMember = "TEXT",
                 ValueMember = "VALUE",
                 DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
                 FlatStyle = FlatStyle.Flat,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                Width = 155,
+                DisplayIndex = 0
             };
             dtg_ngMode.Columns.Add(ngModeColumn);
+
+            AddReadonlyNgSummaryColumn("TOTAL_PENDING", $"{GetCurrentInputQty("QTY_NG")}\r\npending", 85);
+            AddReadonlyNgSummaryColumn("TOTAL_OK", $"{GetCurrentInputQty("QTY_OK")}\r\nOK", 80);
+            AddReadonlyNgSummaryColumn("TOTAL_NG", $"{GetCurrentInputQty("QTY_NG")}\r\nNG", 80);
 
             DataGridViewTextBoxColumn detailColumn = new DataGridViewTextBoxColumn
             {
@@ -1828,10 +1885,11 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             dtg_ngMode.Columns.Add(detailColumn);
 
             dtg_ngMode.AllowUserToAddRows = false;
-            dtg_ngMode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dtg_ngMode.ColumnHeadersHeight = 42;
+            dtg_ngMode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dtg_ngMode.ColumnHeadersHeight = 46;
+            dtg_ngMode.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtg_ngMode.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
         }
-
         private void tb_record_Click(object sender, EventArgs e)
         {
             SaveAppearData();
@@ -2016,7 +2074,6 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             DataTable latestData = conQA.SearchAppearData(propQA); // filter โดย REPORT_NO และ BATCH, INUSE=1
             int currentSumSelect = 0;
             int selectedPackSavedQty = 0;
-            bool hasExistingNG = false;
 
             if (latestData != null)
             {
@@ -2028,11 +2085,6 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     if (savedCount == newCount)
                     {
                         selectedPackSavedQty += savedQty;
-                    }
-
-                    if (row["JUDGE"].ToString() == "0") // ถ้ามี NG จากก่อนหน้า
-                    {
-                        hasExistingNG = true;
                     }
                 }
             }
@@ -2056,13 +2108,6 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             {
                 MessageBox.Show($"แพ็คที่ {newCount} ตรวจครบแล้ว กรุณาเลือกแพ็คอื่น", "Pack Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 PrepareForNextBatchSelection();
-                return;
-            }
-
-            // ถ้ามี NG จาก existing data ห้ามบันทึก
-            if (hasExistingNG)
-            {
-                MessageBox.Show("พบข้อมูล NG จากผู้ใช้อื่นแล้ว ห้ามบันทึกต่อ", "NG Detected", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
@@ -2595,91 +2640,39 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             gb_ngMode.Enabled = true;
             lb_Qty.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
 
-            // Suspend layout และ binding ก่อน reset
             dtg_ngMode.SuspendLayout();
-            if (dtg_ngMode.DataSource != null)
-            {
-                var cm = (CurrencyManager)this.BindingContext[dtg_ngMode.DataSource];
-                if (cm != null)
-                {
-                    cm.SuspendBinding();
-                }
-            }
-
-            // ย้าย DataSource = null ขึ้นก่อนเพื่อตัด binding ทันที
-            dtg_ngMode.DataSource = null;
-
-            // Force cancel edit ถ้ากำลัง edit (ใช้ CancelEdit เพื่อไม่ commit)
-            if (dtg_ngMode.IsCurrentCellInEditMode)
-            {
-                dtg_ngMode.CancelEdit();  // ยกเลิก edit โดยไม่ commit
-            }
-
-            // Clear rows/columns/selection ก่อน set CurrentCell
-            dtg_ngMode.Rows.Clear();
-            dtg_ngMode.Columns.Clear();
-            dtg_ngMode.ClearSelection();
-
-            // Set CurrentCell = null หลัง clear (wrap try-catch ถ้ายัง error)
             try
             {
+                if (dtg_ngMode.IsCurrentCellInEditMode)
+                {
+                    dtg_ngMode.CancelEdit();
+                }
+
+                dtg_ngMode.DataSource = null;
+                dtg_ngMode.Rows.Clear();
+                dtg_ngMode.Columns.Clear();
+                dtg_ngMode.ClearSelection();
                 dtg_ngMode.CurrentCell = null;
+
+                DataTable ngDt = CreateNgModeDataTable(requiredNgQty);
+                dtg_ngMode.AutoGenerateColumns = false;
+                dtg_ngMode.DataSource = ngDt;
+                ConfigureNgModeGridColumns();
+                dtg_ngMode.ReadOnly = false;
             }
-            catch (InvalidOperationException)
+            finally
             {
-                // Fallback: ถ้า error ยังเกิด, ignore และ refresh แทน (grid จะ reset เองหลัง DataSource = null)
-                dtg_ngMode.Refresh();
+                dtg_ngMode.ResumeLayout();
             }
 
-            // Refresh เพื่อ clean state
             dtg_ngMode.Refresh();
 
-            // Resume binding
-            if (dtg_ngMode.DataSource != null)
+            if (dtg_ngMode.Rows.Count > 0 && dtg_ngMode.Columns[NgModeHelper.ColumnName] != null)
             {
-                var cm = (CurrencyManager)this.BindingContext[dtg_ngMode.DataSource];
-                if (cm != null) cm.ResumeBinding();
-            }
-
-            // สร้าง DataTable ใหม่
-            DataTable ngDt = new DataTable();
-            ngDt.Columns.Add("QTY_NG", typeof(int));
-            ngDt.Columns.Add(NgModeHelper.ColumnName, typeof(string));
-            ngDt.Columns.Add("NG_DETAIL", typeof(string));
-
-            // เพิ่ม row ว่าง
-            for (int i = 0; i < 1; i++)
-            {
-                DataRow newRow = ngDt.NewRow();
-                newRow["QTY_NG"] = 0;
-                newRow[NgModeHelper.ColumnName] = string.Empty;
-                newRow["NG_DETAIL"] = string.Empty;
-                ngDt.Rows.Add(newRow);
-            }
-
-            dtg_ngMode.AutoGenerateColumns = false;
-            dtg_ngMode.DataSource = ngDt;
-            ConfigureNgModeGridColumns();
-
-            // Make editable
-            if (dtg_ngMode.Rows.Count > 0)
-            {
-                dtg_ngMode.Rows[0].ReadOnly = false;
-            }
-
-            // Resume layout
-            dtg_ngMode.ResumeLayout();
-
-            // Final refresh
-            dtg_ngMode.Refresh();
-
-            if (dtg_ngMode.Rows.Count > 0 && dtg_ngMode.Columns["QTY_NG"] != null)
-            {
-                dtg_ngMode.CurrentCell = dtg_ngMode.Rows[0].Cells["QTY_NG"];
+                dtg_ngMode.CurrentCell = dtg_ngMode.Rows[0].Cells[NgModeHelper.ColumnName];
                 dtg_ngMode.BeginEdit(true);
             }
         }
-
         private void CloseNgMode()
         {
             isNgModeActive = false;
@@ -2694,26 +2687,17 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
         {
             if (isNgModeActive && newQtyNg != totalNgRequired)
             {
-                // Clear dtg_ngMode แต่ keep open
-                DataTable currentNgDt = (DataTable)dtg_ngMode.DataSource;
-                if (currentNgDt != null)
-                {
-                    currentNgDt.Clear();
-                    // Re-add empty rows if needed
-                    for (int i = 0; i < 1; i++)
-                    {
-                        DataRow newRow = currentNgDt.NewRow();
-                        newRow["QTY_NG"] = DBNull.Value;
-                        newRow[NgModeHelper.ColumnName] = string.Empty;
-                        newRow["NG_DETAIL"] = string.Empty;
-                        currentNgDt.Rows.Add(newRow);
-                    }
-                }
                 totalNgRequired = newQtyNg;
+                dtg_ngMode.DataSource = CreateNgModeDataTable(newQtyNg);
+                ConfigureNgModeGridColumns();
                 lb_Qty.Text = $"ระบุอาการเสียแล้ว: 0 / {totalNgRequired} ชิ้น";
+
+                if (dtg_ngMode.Rows.Count > 0 && dtg_ngMode.Columns[NgModeHelper.ColumnName] != null)
+                {
+                    dtg_ngMode.CurrentCell = dtg_ngMode.Rows[0].Cells[NgModeHelper.ColumnName];
+                }
             }
         }
-
         private bool ValidateNgModeDetails(int requiredNgQty)
         {
             if (!isNgModeActive || dtg_ngMode.DataSource == null)
@@ -2724,59 +2708,34 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             }
 
             DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
-            int sumNg = 0;
-            int firstInvalidRowIndex = -1;
-            string invalidColumnName = "QTY_NG";
+            if (ngDt.Rows.Count != requiredNgQty)
+            {
+                dtg_ngMode.DataSource = CreateNgModeDataTable(requiredNgQty);
+                ConfigureNgModeGridColumns();
+                ngDt = (DataTable)dtg_ngMode.DataSource;
+            }
 
             for (int i = 0; i < ngDt.Rows.Count; i++)
             {
                 DataRow row = ngDt.Rows[i];
-                int qty = ParseInt(row["QTY_NG"]);
-                string detail = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
+                string mode = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
                     ? row[NgModeHelper.ColumnName].ToString().Trim()
                     : "";
 
-                if (qty <= 0 && string.IsNullOrEmpty(detail))
+                if (string.IsNullOrEmpty(mode))
                 {
-                    continue;
+                    MessageBox.Show("กรุณาเลือกอาการเสียให้ครบทุกแถว", "NG MODE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    FocusNgModeCell(i, NgModeHelper.ColumnName);
+                    return false;
                 }
 
-                if (qty <= 0)
-                {
-                    firstInvalidRowIndex = i;
-                    invalidColumnName = "QTY_NG";
-                    break;
-                }
-
-                if (string.IsNullOrEmpty(detail))
-                {
-                    firstInvalidRowIndex = i;
-                    invalidColumnName = NgModeHelper.ColumnName;
-                    break;
-                }
-
-                sumNg += qty;
+                row["QTY_NG"] = 1;
+                SyncNgDetailText(row);
             }
 
             UpdateNgSumDisplay();
-
-            if (firstInvalidRowIndex >= 0)
-            {
-                MessageBox.Show("กรุณากรอกจำนวนเสียและอาการเสียให้ครบทุกแถว", "NG MODE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                FocusNgModeCell(firstInvalidRowIndex, invalidColumnName);
-                return false;
-            }
-
-            if (sumNg != requiredNgQty)
-            {
-                MessageBox.Show($"ผลรวมจำนวนเสียใน NG MODE ({sumNg}) ต้องเท่ากับ Pending ({requiredNgQty}) ชิ้น", "NG MODE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                FocusNgModeCell(Math.Max(dtg_ngMode.Rows.Count - 1, 0), "QTY_NG");
-                return false;
-            }
-
             return true;
         }
-
         private void FocusNgModeCell(int rowIndex, string columnName)
         {
             if (dtg_ngMode.Columns[columnName] == null || rowIndex < 0 || rowIndex >= dtg_ngMode.Rows.Count)
@@ -2866,189 +2825,102 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
         // Optional: ปุ่ม Add Row ใน NG Mode
         private void bt_addNgRow_Click(object sender, EventArgs e)
         {
-            if (!isNgModeActive) return;
+            if (!isNgModeActive || !(dtg_ngMode.DataSource is DataTable ngDt)) return;
+            if (ngDt.Rows.Count >= totalNgRequired) return;
 
-            DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
-            DataRow newRow = ngDt.NewRow();
-            newRow["QTY_NG"] = 0;
-            newRow[NgModeHelper.ColumnName] = string.Empty;
-            newRow["NG_DETAIL"] = string.Empty;
-            ngDt.Rows.Add(newRow);
+            AddNgModeInputRow(ngDt);
+            UpdateNgSumDisplay();
+        }
+
+        private int GetCompletedNgModeQty()
+        {
+            if (!(dtg_ngMode.DataSource is DataTable ngDt)) return 0;
+
+            int completed = 0;
+            foreach (DataRow row in ngDt.Rows)
+            {
+                string mode = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
+                    ? row[NgModeHelper.ColumnName].ToString().Trim()
+                    : "";
+                if (!string.IsNullOrEmpty(mode))
+                {
+                    completed += ParseInt(row["QTY_NG"]);
+                }
+            }
+            return completed;
         }
 
         // Update sum display (สมมติมี Label lb_ngSum)
         private void UpdateNgSumDisplay()
         {
-            int sumNg = GetNgSum();  // คำนวณ sum ครั้งเดียวจาก GetNgSum
-
-            lb_Qty.Text = $"ระบุอาการเสียแล้ว: {sumNg} / {totalNgRequired} ชิ้น";
-
-            // Button logic ย้ายมาที่นี่เพื่อ consistency (enable ถ้า sum == total, disable ถ้า > หรือ < )
+            int completedNg = GetCompletedNgModeQty();
+            lb_Qty.Text = $"ระบุอาการเสียแล้ว: {completedNg} / {totalNgRequired} ชิ้น";
         }
 
         // Event for adding rows and focusing after edit ends (defer focus to avoid reentrancy)
         private void dtg_ngMode_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0 || _suppressNgEvents) return;
-
-            DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
-            if (ngDt == null || e.RowIndex >= ngDt.Rows.Count) return;
+            if (!(dtg_ngMode.DataSource is DataTable ngDt) || e.RowIndex >= ngDt.Rows.Count) return;
+            if (dtg_ngMode.Columns[e.ColumnIndex].Name != NgModeHelper.ColumnName) return;
 
             DataRow row = ngDt.Rows[e.RowIndex];
+            row["QTY_NG"] = 1;
+            SyncNgDetailText(row);
+            dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
+            ClearAllRedHighlights();
+            UpdateNgSum();
 
-            // Force end/cancel edit before proceeding
-            if (dtg_ngMode.IsCurrentCellInEditMode)
+            int nextEmptyRowIndex = -1;
+            for (int i = e.RowIndex + 1; i < ngDt.Rows.Count; i++)
             {
-                try
+                string mode = ngDt.Rows[i][NgModeHelper.ColumnName]?.ToString()?.Trim() ?? "";
+                if (string.IsNullOrEmpty(mode))
                 {
-                    dtg_ngMode.EndEdit();
-                }
-                catch
-                {
-                    dtg_ngMode.CancelEdit();
+                    nextEmptyRowIndex = i;
+                    break;
                 }
             }
 
-            _suppressNgEvents = true;
-            try
+            if (nextEmptyRowIndex >= 0)
             {
-                // If QTY_NG edited, focus to NG detail of same row
-                if (e.ColumnIndex == dtg_ngMode.Columns["QTY_NG"].Index && row["QTY_NG"] != DBNull.Value)
+                BeginInvoke(new Action(() =>
                 {
-                    // Clear red for NG detail
-                    dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
-
-                    // Defer focus to NG detail with timer to avoid reentrancy
-                    System.Windows.Forms.Timer focusTimer = new System.Windows.Forms.Timer();
-                    focusTimer.Interval = 50;
-                    focusTimer.Tick += (s, args) =>
+                    if (dtg_ngMode.Rows.Count > nextEmptyRowIndex)
                     {
-                        focusTimer.Stop();
-                        focusTimer.Dispose();
-
-                        if (dtg_ngMode.Rows.Count > e.RowIndex && dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName] != null)
-                        {
-                            try
-                            {
-                                dtg_ngMode.ClearSelection();
-                                dtg_ngMode.CurrentCell = dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName];
-                            }
-                            catch
-                            {
-                                // Ignore - user can click manually
-                            }
-                        }
-                    };
-                    focusTimer.Start();
-                }
-                // If NG detail edited, check if complete and add row if needed
-                else if (e.ColumnIndex == dtg_ngMode.Columns[NgModeHelper.ColumnName].Index)
-                {
-                    SyncNgDetailText(row);
-                    string mode = row[NgModeHelper.ColumnName]?.ToString()?.Trim() ?? "";
-                    object qtyObj = row["QTY_NG"];
-
-                    // Clear red if complete
-                    if (qtyObj != DBNull.Value && Convert.ToInt32(qtyObj) > 0 && !string.IsNullOrEmpty(mode))
-                    {
-                        dtg_ngMode.Rows[e.RowIndex].Cells[NgModeHelper.ColumnName].Style.BackColor = Color.White;
-                        ClearAllRedHighlights();
+                        dtg_ngMode.CurrentCell = dtg_ngMode.Rows[nextEmptyRowIndex].Cells[NgModeHelper.ColumnName];
+                        dtg_ngMode.BeginEdit(true);
                     }
-
-                    UpdateNgSum();  // Update sum
-
-                    // Add row only if current row complete and sum < total
-                    if (qtyObj != DBNull.Value && Convert.ToInt32(qtyObj) > 0 && !string.IsNullOrEmpty(mode) && GetNgSum() < totalNgRequired)
-                    {
-                        DataRow newRow = ngDt.NewRow();
-                        newRow["QTY_NG"] = DBNull.Value;
-                        newRow[NgModeHelper.ColumnName] = string.Empty;
-                        newRow["NG_DETAIL"] = string.Empty;
-                        ngDt.Rows.Add(newRow);
-
-                        // Scroll to new row
-                        dtg_ngMode.FirstDisplayedScrollingRowIndex = e.RowIndex + 1;
-                    }
-                }
-            }
-            finally
-            {
-                _suppressNgEvents = false;
+                }));
             }
 
-            UpdateNgSumDisplay();  // Update UI
+            UpdateNgSumDisplay();
         }
-
         // Updated UpdateNgSum (remove non-numeric validation, only calculate sum and check MODE for button enable)
         private void UpdateNgSum()
         {
             DataTable ngDt = (DataTable)dtg_ngMode.DataSource;
             if (ngDt == null || !isNgModeActive) return;
 
-            int totalNgSum = GetNgSum();  // ใช้ GetNgSum เพื่อ consistency
+            int totalNgSum = GetNgSum();
+            bool allModesFilled = ngDt.Rows.Count == totalNgRequired;
 
-            // Check if all MODE are filled for rows with QTY >0
-            bool allModesFilled = true;
-            for (int i = 0; i < ngDt.Rows.Count; i++)
+            foreach (DataRow row in ngDt.Rows)
             {
-                DataRow row = ngDt.Rows[i];
-                int qty = row["QTY_NG"] is DBNull ? 0 : Convert.ToInt32(row["QTY_NG"]);
+                row["QTY_NG"] = 1;
                 string mode = row.Table.Columns.Contains(NgModeHelper.ColumnName) && row[NgModeHelper.ColumnName] != DBNull.Value
                     ? row[NgModeHelper.ColumnName].ToString().Trim()
                     : "";
-                if (qty > 0 && string.IsNullOrEmpty(mode))
+                if (string.IsNullOrEmpty(mode))
                 {
                     allModesFilled = false;
                     break;
                 }
             }
 
-            // ถ้า total > required, warn และ remove last row (คล้าย packing_size)
-            if (totalNgSum > totalNgRequired)
-            {
-                MessageBox.Show($"ผลรวม QTY NG ({totalNgSum}) เกินจำนวนงานเสียที่กำหนด ({totalNgRequired})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                dtg_ngMode.BeginInvoke(new Action(() =>
-                {
-                    _suppressNgEvents = true;  // Suppress events during removal
-                    try
-                    {
-                        while (ngDt.Rows.Count > 0 && GetNgSum() > totalNgRequired)
-                        {
-                            DataRow lastRow = ngDt.Rows[ngDt.Rows.Count - 1];
-                            if (!lastRow.HasVersion(DataRowVersion.Original))  // Check if not new row
-                            {
-                                ngDt.Rows.Remove(lastRow);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        dtg_ngMode.AllowUserToAddRows = true;  // Re-enable
-                    }
-                    finally
-                    {
-                        _suppressNgEvents = false;
-                    }
-                    UpdateNgSumDisplay();  // Refresh sum after remove
-                }));
-                tb_record.Enabled = false;  // Disable when over
-            }
-            else if (totalNgSum == totalNgRequired && allModesFilled)
-            {
-                // พอดีและ MODE ครบ: ปิด add row และ enable record
-                dtg_ngMode.AllowUserToAddRows = false;
-                tb_record.Enabled = true;  // Enable record
-            }
-            else
-            {
-                // ยังไม่พอ หรือ MODE ไม่ครบ: เปิด add row และ disable record
-                dtg_ngMode.AllowUserToAddRows = true;
-                tb_record.Enabled = false;  // Disable จนกว่าจะพอดีและ MODE ครบ
-            }
+            tb_record.Enabled = totalNgSum == totalNgRequired && allModesFilled;
+            dtg_ngMode.AllowUserToAddRows = false;
         }
-
 
         // Updated GetNgSum เพื่อ accuracy (calculate from DataTable after validation)
         private int GetNgSum()
@@ -3059,15 +2931,10 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             int sum = 0;
             foreach (DataRow row in ngDt.Rows)
             {
-                if (row["QTY_NG"] != DBNull.Value)
-                {
-                    int qty = Convert.ToInt32(row["QTY_NG"]);
-                    if (qty > 0) sum += qty;  // Only add if >0
-                }
+                sum += ParseInt(row["QTY_NG"]);
             }
             return sum;
         }
-
         // Event สำหรับ RowValidating คล้าย packing_size (validate ก่อน leave row)
         private void dtg_ngMode_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
         {
