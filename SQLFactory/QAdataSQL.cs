@@ -2015,7 +2015,7 @@ namespace RawMat.SQLFactory
         public string SearchForAppearPending()
         {
             sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
-               b.Lot_Size as `Lot Size` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.Appearance_Check as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
+               b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.Appearance_Check as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
 
                FROM `db_report_status` a
 
@@ -2033,6 +2033,37 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+
+
+        public string SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            sql = $@"SELECT
+                        p.APPEARANCE_PENDING_ID,
+                        p.APPEARANCE_ID,
+                        p.REPORT_NO,
+                        p.BATCH,
+                        p.COUNT,
+                        p.NG_COUNT,
+                        p.QTY_NG,
+                        COALESCE(n.NG_Mode, p.NG_DETAIL, '') AS NG_MODE,
+                        p.NG_DETAIL AS NOTE,
+                        '' AS JUDGEMENT,
+                        '' AS RESULT,
+                        a.QTY_SELECT,
+                        a.QTY_OK,
+                        a.QTY_NG AS TOTAL_QTY_NG,
+                        a.EMP_ID,
+                        a.APPEARANCE_DATE
+                    FROM db_appearance_pending p
+                    LEFT JOIN db_appearance_data a
+                        ON p.APPEARANCE_ID = a.APPEARANCE_ID
+                    LEFT JOIN info_ngmode n
+                        ON p.NG_MODE_ID = n.ID
+                    WHERE p.REPORT_NO = {ToSqlTextValue(dataItem.Report_No)}
+                    ORDER BY p.BATCH, p.COUNT, p.NG_COUNT";
+
+            return sql;
+        }
 
         public List<string> DeleteReportHistory(QAdataProperty dataItem)
         {

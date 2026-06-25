@@ -843,6 +843,15 @@ namespace RawMat.Services
             return _resultData;
         }
 
+
+        public OutputOnDbProperty SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchAppearPendingData(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchForAppearPending()
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

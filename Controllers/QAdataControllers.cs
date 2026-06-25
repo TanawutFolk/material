@@ -263,7 +263,7 @@ namespace RawMat.Controllers
                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                throw;
             }
-            
+
         }
 
         public int NeedRegularCheck(QAdataProperty dataItem)
@@ -1165,7 +1165,7 @@ namespace RawMat.Controllers
                 else
                 {
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    result = null; 
+                    result = null;
                 }
             }
             catch (Exception ex)
@@ -1595,7 +1595,7 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return result;
-           
+
         }
 
         public DataTable SearchReportActive(QAdataProperty dataItem)
@@ -1713,7 +1713,7 @@ namespace RawMat.Controllers
                 {
                     result = _resultData.ResultOnDb;
 
-                    string report_status = string.IsNullOrEmpty(result.Rows[0]["report_status"].ToString()) ? "1" : result.Rows[0]["report_status"].ToString(); 
+                    string report_status = string.IsNullOrEmpty(result.Rows[0]["report_status"].ToString()) ? "1" : result.Rows[0]["report_status"].ToString();
 
                     // ตรวจสอบว่ามีค่าใดเป็น 6 (Pending) หรือ 0 (NG) หรือไม่
                     if (report_status == ((int)ProcStatus.Pending).ToString() || report_status == ((int)ProcStatus.NG).ToString())
@@ -2324,6 +2324,30 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return bl;
+        }
+
+
+        public DataTable SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchAppearPendingData(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
         }
 
         public DataTable SearchForAppearPending()

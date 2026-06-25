@@ -76,6 +76,7 @@
             this.dtg_appearPending.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dtg_appearPending.Size = new System.Drawing.Size(1012, 455);
             this.dtg_appearPending.TabIndex = 34;
+            this.dtg_appearPending.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_appearPending_CellClick);
             // 
             // userControlSelectAppearPending
             // 

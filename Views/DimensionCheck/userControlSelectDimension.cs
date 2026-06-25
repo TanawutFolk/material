@@ -438,8 +438,8 @@ namespace RawMat.Views.DimensionCheck
                         // มีคนอื่นใช้งานอยู่
                         string message = $"{propQA.COMPUTER_NAME} กำลังใช้งานอยู่ (IP: {propQA.reportIP})\n";
 
-                        // ตรวจสอบว่าเป็น Admin หรือไม่ (EMP_LEVEL == 1 หรือ 2)
-                        if (employee.EMP_LEVEL == "1" || employee.EMP_LEVEL == "2")
+                        // ตรวจสอบว่าเป็น Admin หรือไม่ (EMP_LEVEL == 1)
+                        if (employee.EMP_LEVEL == "1")
                         {
                             message = "ต้องการปลดล็อคหรือไม่?";
                             bool result = CustomMsgBoxBase.ShowCustomMessageBox(
@@ -499,6 +499,15 @@ namespace RawMat.Views.DimensionCheck
                                 // ผู้ใช้เลือกไม่ปลดล็อค
                                 return;
                             }
+                        }
+                        else
+                        {
+                            // ไม่ใช่ Admin แสดงเฉพาะแจ้งเตือน
+                            CustomMsgBoxBase.ShowCustomMessageBox(
+                                message + "ไม่สามารถเข้าใช้งานได้",
+                                "แจ้งเตือน",
+                                CustomMsgBoxBase.MessageBoxIconType.Warning);
+                            return;
                         }
                     }
 

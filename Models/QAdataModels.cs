@@ -568,6 +568,13 @@ namespace RawMat.Models
             return resultData;
         }
 
+
+        public OutputOnDbProperty SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            resultData = services.SearchAppearPendingData(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty SearchForAppearPending()
         {
             resultData = services.SearchForAppearPending();

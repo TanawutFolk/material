@@ -2175,11 +2175,8 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             // Step 4: Post-insert logic based on judge and Allow_Continue
             if (insertSuccess && ngDetailsSuccess)
             {
-                // Requery total inspected for this report (across all batches, INUSE=1)
-                int totalInspected = conQA.GetTotalInspected(propQA); // SUM(QTY_SELECT) WHERE REPORT_NO=..., INUSE=1
-                int targetInspectionQty = GetAppearanceAcceptanceTargetQty();
                 int latestRemainingQty = GetLatestRemainingInspectionQty();
-                bool isAllComplete = latestRemainingQty <= 0 || (targetInspectionQty > 0 && totalInspected >= targetInspectionQty);
+                bool isAllComplete = latestRemainingQty <= 0;
                 bool isBatchComplete = projectedSelectedPackQty >= samplePerPackQty;
 
                 if (judge == "0") // NG

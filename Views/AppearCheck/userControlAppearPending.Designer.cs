@@ -45,6 +45,7 @@
             this.NOTE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.JUDGEMENT = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.RESULT = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.bt_record = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Appear)).BeginInit();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
@@ -207,11 +208,25 @@
             this.RESULT.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.RESULT.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
+            //
+            // bt_record
+            //
+            this.bt_record.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_record.ForeColor = System.Drawing.Color.DarkGreen;
+            this.bt_record.Location = new System.Drawing.Point(482, 842);
+            this.bt_record.Name = "bt_record";
+            this.bt_record.Size = new System.Drawing.Size(172, 58);
+            this.bt_record.TabIndex = 88;
+            this.bt_record.Text = "Record Data";
+            this.bt_record.UseVisualStyleBackColor = true;
+            this.bt_record.Click += new System.EventHandler(this.bt_record_Click);
             // userControlAppearPending
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Bisque;
+            this.Controls.Add(this.bt_record);
             this.Controls.Add(this.dtg_ngMode);
             this.Controls.Add(this.picbox_Appear);
             this.Controls.Add(this.gb_cavity);
@@ -224,6 +239,7 @@
             this.Controls.Add(this.lb_top);
             this.Name = "userControlAppearPending";
             this.Size = new System.Drawing.Size(1115, 1182);
+            this.Load += new System.EventHandler(this.userControlAppearPending_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Appear)).EndInit();
             this.gb_cavity.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).EndInit();
@@ -251,5 +267,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn NOTE;
         private System.Windows.Forms.DataGridViewCheckBoxColumn JUDGEMENT;
         private System.Windows.Forms.DataGridViewComboBoxColumn RESULT;
+        private System.Windows.Forms.Button bt_record;
     }
 }
