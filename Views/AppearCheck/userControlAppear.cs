@@ -1917,12 +1917,12 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             DataGridViewTextBoxColumn qtyColumn = new DataGridViewTextBoxColumn
             {
                 Name = "QTY_NG",
-                HeaderText = "QTY NG",
+                HeaderText = totalNgRequired > 0 ? totalNgRequired.ToString() : string.Empty,
                 DataPropertyName = "QTY_NG",
                 Visible = true,
                 ReadOnly = false,
                 Width = 75,
-                DisplayIndex = 0,
+                DisplayIndex = 1,
                 SortMode = DataGridViewColumnSortMode.NotSortable,
                 DefaultCellStyle = { Alignment = DataGridViewContentAlignment.MiddleCenter }
             };
@@ -1931,7 +1931,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             DataGridViewComboBoxColumn ngModeColumn = new DataGridViewComboBoxColumn
             {
                 Name = NgModeHelper.ColumnName,
-                HeaderText = "NG MODE",
+                HeaderText = "Q'ty Pending",
                 DataPropertyName = NgModeHelper.ColumnName,
                 DataSource = ngModeList,
                 DisplayMember = "TEXT",
@@ -1939,7 +1939,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
                 FlatStyle = FlatStyle.Flat,
                 Width = 155,
-                DisplayIndex = 1
+                DisplayIndex = 0
             };
             dtg_ngMode.Columns.Add(ngModeColumn);
 
