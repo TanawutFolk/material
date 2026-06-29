@@ -2350,6 +2350,27 @@ namespace RawMat.Controllers
         }
 
 
+        public Boolean UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            Boolean bl = false;
+            try
+            {
+                _resultData = _model.UpdateAppearPendingReview(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return bl;
+        }
         public DataTable SearchAppearPendingData(QAdataProperty dataItem)
         {
             DataTable result = new DataTable();

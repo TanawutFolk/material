@@ -3,7 +3,6 @@ using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.CustomMsg;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -50,40 +49,44 @@ namespace RawMat.Views.AppearCheck
             dtg_ngMode.AllowUserToAddRows = false;
             dtg_ngMode.AllowUserToDeleteRows = false;
             dtg_ngMode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dtg_ngMode.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dtg_ngMode.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dtg_ngMode.MultiSelect = false;
+            dtg_ngMode.ReadOnly = true;
+            dtg_ngMode.EditMode = DataGridViewEditMode.EditProgrammatically;
+            dtg_ngMode.RowHeadersVisible = false;
+            dtg_ngMode.EnableHeadersVisualStyles = false;
+            dtg_ngMode.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dtg_ngMode.ColumnHeadersHeight = 54;
+            dtg_ngMode.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dtg_ngMode.ColumnHeadersDefaultCellStyle.Font = new Font("Tahoma", 11F, FontStyle.Bold);
+            dtg_ngMode.DefaultCellStyle.Font = new Font("Tahoma", 10F, FontStyle.Regular);
+            dtg_ngMode.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dtg_ngMode.DataError += dtg_ngMode_DataError;
-            dtg_ngMode.CurrentCellDirtyStateChanged += dtg_ngMode_CurrentCellDirtyStateChanged;
-            dtg_ngMode.CellValueChanged += dtg_ngMode_CellValueChanged;
+            dtg_ngMode.CellClick += dtg_ngMode_CellClick;
 
-            QTY_NG.DataPropertyName = "QTY_NG";
-            QTY_NG.ReadOnly = true;
-            QTY_NG.FillWeight = 65;
+            dtg_ngMode.Columns.Clear();
+            dtg_ngMode.Columns.Add(CreatePendingTextColumn("NG_MODE", "NG_MODE", "Q'ty Pending", 145, DataGridViewContentAlignment.MiddleLeft));
+            dtg_ngMode.Columns.Add(CreatePendingTextColumn("QTY_NG", "QTY_NG", string.Empty, 70, DataGridViewContentAlignment.MiddleCenter));
+            dtg_ngMode.Columns.Add(CreatePendingTextColumn("OK_QTY", "OK_QTY", "0\r\nOK", 70, DataGridViewContentAlignment.MiddleCenter));
+            dtg_ngMode.Columns.Add(CreatePendingTextColumn("NG_REVIEW_QTY", "NG_REVIEW_QTY", "0\r\nNG", 70, DataGridViewContentAlignment.MiddleCenter));
 
-            NG_MODE.DataPropertyName = "NG_MODE";
-            NG_MODE.ReadOnly = true;
-            NG_MODE.FillWeight = 150;
+            ApplyReviewColumnStyle();
+        }
 
-            NOTE.DataPropertyName = "NOTE";
-            NOTE.ReadOnly = true;
-            NOTE.FillWeight = 190;
-
-            JUDGEMENT.DataPropertyName = "JUDGEMENT";
-            JUDGEMENT.ReadOnly = true;
-            JUDGEMENT.FillWeight = 70;
-
-            RESULT.DataPropertyName = "RESULT";
-            RESULT.DataSource = new List<KeyValuePair<string, string>>
+        private DataGridViewTextBoxColumn CreatePendingTextColumn(string name, string dataPropertyName, string headerText, float fillWeight, DataGridViewContentAlignment alignment)
+        {
+            DataGridViewTextBoxColumn column = new DataGridViewTextBoxColumn
             {
-                new KeyValuePair<string, string>("", ""),
-                new KeyValuePair<string, string>("1", "OK"),
-                new KeyValuePair<string, string>("0", "NG")
+                Name = name,
+                DataPropertyName = dataPropertyName,
+                HeaderText = headerText,
+                FillWeight = fillWeight,
+                MinimumWidth = 60,
+                ReadOnly = true,
+                SortMode = DataGridViewColumnSortMode.NotSortable
             };
-            RESULT.ValueMember = "Key";
-            RESULT.DisplayMember = "Value";
-            RESULT.DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton;
-            RESULT.FlatStyle = FlatStyle.Flat;
-            RESULT.FillWeight = 80;
+            column.DefaultCellStyle.Alignment = alignment;
+            return column;
         }
 
         private void LoadInspectionImages()
@@ -115,6 +118,8 @@ namespace RawMat.Views.AppearCheck
 
             pendingData = BuildPendingReviewTable(rawPendingData);
             dtg_ngMode.DataSource = pendingData;
+            UpdateReviewTotals();
+            ApplyReviewGridStyle();
         }
 
         private DataTable BuildPendingReviewTable(DataTable source)
@@ -122,6 +127,8 @@ namespace RawMat.Views.AppearCheck
             DataTable table = new DataTable();
             table.Columns.Add("QTY_NG", typeof(int));
             table.Columns.Add("NG_MODE", typeof(string));
+            table.Columns.Add("OK_QTY", typeof(string));
+            table.Columns.Add("NG_REVIEW_QTY", typeof(string));
             table.Columns.Add("NOTE", typeof(string));
             table.Columns.Add("JUDGEMENT", typeof(bool));
             table.Columns.Add("RESULT", typeof(string));
@@ -140,6 +147,8 @@ namespace RawMat.Views.AppearCheck
                 DataRow row = table.NewRow();
                 row["QTY_NG"] = ParseInt(sourceRow["QTY_NG"]);
                 row["NG_MODE"] = GetString(sourceRow, "NG_MODE");
+                row["OK_QTY"] = "";
+                row["NG_REVIEW_QTY"] = "";
                 row["NOTE"] = BuildNoteText(batch, count, note);
                 row["JUDGEMENT"] = false;
                 row["RESULT"] = "";
@@ -162,6 +171,126 @@ namespace RawMat.Views.AppearCheck
             }
 
             return prefix + " - " + note;
+        }
+
+        private void dtg_ngMode_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || pendingData == null)
+            {
+                return;
+            }
+
+            string columnName = dtg_ngMode.Columns[e.ColumnIndex].Name;
+            if (columnName == "OK_QTY")
+            {
+                SetPendingReviewResult(e.RowIndex, "1");
+            }
+            else if (columnName == "NG_REVIEW_QTY")
+            {
+                SetPendingReviewResult(e.RowIndex, "0");
+            }
+        }
+
+        private void SetPendingReviewResult(int rowIndex, string result)
+        {
+            if (rowIndex < 0 || rowIndex >= pendingData.Rows.Count)
+            {
+                return;
+            }
+
+            ApplyPendingReviewResult(pendingData.Rows[rowIndex], result);
+            UpdateReviewTotals();
+            ApplyReviewGridStyle();
+        }
+
+        private void ApplyPendingReviewResult(DataRow row, string result)
+        {
+            int qtyPending = ParseInt(row["QTY_NG"]);
+            row["RESULT"] = result;
+            row["JUDGEMENT"] = result == "1";
+            row["OK_QTY"] = result == "1" ? qtyPending.ToString() : string.Empty;
+            row["NG_REVIEW_QTY"] = result == "0" ? qtyPending.ToString() : string.Empty;
+        }
+
+        private void UpdateReviewTotals()
+        {
+            int totalQty = 0;
+            int okQty = 0;
+            int ngQty = 0;
+
+            if (pendingData != null)
+            {
+                foreach (DataRow row in pendingData.Rows)
+                {
+                    int qtyPending = ParseInt(row["QTY_NG"]);
+                    totalQty += qtyPending;
+
+                    string result = row["RESULT"]?.ToString() ?? string.Empty;
+                    if (result == "1")
+                    {
+                        okQty += qtyPending;
+                    }
+                    else if (result == "0")
+                    {
+                        ngQty += qtyPending;
+                    }
+                }
+            }
+
+            if (dtg_ngMode.Columns.Contains("QTY_NG"))
+            {
+                dtg_ngMode.Columns["QTY_NG"].HeaderText = totalQty.ToString();
+            }
+            if (dtg_ngMode.Columns.Contains("OK_QTY"))
+            {
+                dtg_ngMode.Columns["OK_QTY"].HeaderText = okQty + "\r\nOK";
+            }
+            if (dtg_ngMode.Columns.Contains("NG_REVIEW_QTY"))
+            {
+                dtg_ngMode.Columns["NG_REVIEW_QTY"].HeaderText = ngQty + "\r\nNG";
+            }
+        }
+
+        private void ApplyReviewColumnStyle()
+        {
+            if (dtg_ngMode.Columns.Contains("NG_MODE"))
+            {
+                dtg_ngMode.Columns["NG_MODE"].HeaderCell.Style.BackColor = Color.FromArgb(255, 224, 192);
+                dtg_ngMode.Columns["NG_MODE"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            }
+            if (dtg_ngMode.Columns.Contains("QTY_NG"))
+            {
+                dtg_ngMode.Columns["QTY_NG"].HeaderCell.Style.BackColor = Color.White;
+                dtg_ngMode.Columns["QTY_NG"].DefaultCellStyle.BackColor = Color.FromArgb(235, 235, 235);
+            }
+            if (dtg_ngMode.Columns.Contains("OK_QTY"))
+            {
+                dtg_ngMode.Columns["OK_QTY"].HeaderCell.Style.ForeColor = Color.Blue;
+                dtg_ngMode.Columns["OK_QTY"].DefaultCellStyle.ForeColor = Color.Blue;
+            }
+            if (dtg_ngMode.Columns.Contains("NG_REVIEW_QTY"))
+            {
+                dtg_ngMode.Columns["NG_REVIEW_QTY"].HeaderCell.Style.ForeColor = Color.Red;
+                dtg_ngMode.Columns["NG_REVIEW_QTY"].DefaultCellStyle.ForeColor = Color.Red;
+            }
+        }
+
+        private void ApplyReviewGridStyle()
+        {
+            ApplyReviewColumnStyle();
+            if (pendingData == null)
+            {
+                return;
+            }
+
+            for (int rowIndex = 0; rowIndex < dtg_ngMode.Rows.Count && rowIndex < pendingData.Rows.Count; rowIndex++)
+            {
+                string result = pendingData.Rows[rowIndex]["RESULT"]?.ToString() ?? string.Empty;
+                DataGridViewRow gridRow = dtg_ngMode.Rows[rowIndex];
+
+                gridRow.Cells["OK_QTY"].Style.BackColor = result == "1" ? Color.FromArgb(255, 255, 192) : Color.White;
+                gridRow.Cells["NG_REVIEW_QTY"].Style.BackColor = result == "0" ? Color.FromArgb(255, 235, 235) : Color.White;
+            }
         }
 
         private void dtg_ngMode_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -211,18 +340,18 @@ namespace RawMat.Views.AppearCheck
             }
 
             bool hasNg = pendingData.AsEnumerable().Any(row => row["RESULT"].ToString() == "0");
+            bool isInspectionComplete = IsAppearanceInspectionComplete();
             propQA.process = "Appearance_Check";
             propQA.EMP_ID = employee.EMP_CODE;
-            propQA.inProcStatus = hasNg
-                ? ((int)QAdataProperty.ProcStatus.NG).ToString()
-                : ((int)QAdataProperty.ProcStatus.Finished).ToString();
+            propQA.dtg_ngMode = dtg_ngMode;
+            propQA.inProcStatus = GetReviewProcessStatus(hasNg, isInspectionComplete);
             propQA.reportStatus = propQA.inProcStatus;
             propQA.TOTAL_STATUS = propQA.inProcStatus;
 
-            if (!conQA.UpdateReportStatus(propQA))
+            if (!conQA.UpdateAppearPendingReview(propQA))
             {
                 CustomMsgBoxBase.ShowCustomMessageBox(
-                    "Record Appearance pending status failed.",
+                    "Record Appearance pending failed.",
                     "Error",
                     CustomMsgBoxBase.MessageBoxIconType.NG);
                 return;
@@ -237,8 +366,11 @@ namespace RawMat.Views.AppearCheck
             }
             else
             {
+                string successMessage = isInspectionComplete
+                    ? "Record Appearance pending as OK completed."
+                    : "Record Appearance pending as OK completed. Appearance inspection can continue.";
                 CustomMsgBoxBase.ShowCustomMessageBox(
-                    "Record Appearance pending as OK completed.",
+                    successMessage,
                     "Success",
                     CustomMsgBoxBase.MessageBoxIconType.OK);
             }
@@ -249,24 +381,61 @@ namespace RawMat.Views.AppearCheck
 
         private bool ValidateResultSelection()
         {
-            foreach (DataGridViewRow row in dtg_ngMode.Rows)
+            if (pendingData == null)
             {
-                if (row.IsNewRow)
-                {
-                    continue;
-                }
+                return false;
+            }
 
-                string result = row.Cells["RESULT"].Value?.ToString();
+            for (int rowIndex = 0; rowIndex < pendingData.Rows.Count; rowIndex++)
+            {
+                string result = pendingData.Rows[rowIndex]["RESULT"]?.ToString();
                 if (string.IsNullOrWhiteSpace(result))
                 {
-                    MessageBox.Show("Please select RESULT for every pending row.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    dtg_ngMode.CurrentCell = row.Cells["RESULT"];
-                    dtg_ngMode.BeginEdit(true);
+                    MessageBox.Show("Please select OK or NG for every pending row.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (rowIndex < dtg_ngMode.Rows.Count && dtg_ngMode.Columns.Contains("OK_QTY"))
+                    {
+                        dtg_ngMode.CurrentCell = dtg_ngMode.Rows[rowIndex].Cells["OK_QTY"];
+                    }
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private string GetReviewProcessStatus(bool hasNg, bool isInspectionComplete)
+        {
+            if (hasNg)
+            {
+                return ((int)QAdataProperty.ProcStatus.NG).ToString();
+            }
+
+            return isInspectionComplete
+                ? ((int)QAdataProperty.ProcStatus.Finished).ToString()
+                : ((int)QAdataProperty.ProcStatus.Unfinished).ToString();
+        }
+
+        private bool IsAppearanceInspectionComplete()
+        {
+            int targetQty = ParseInt(propQA.inspQty);
+            if (targetQty <= 0)
+            {
+                targetQty = ParseInt(propQA.Qty);
+            }
+
+            if (targetQty <= 0)
+            {
+                return false;
+            }
+
+            try
+            {
+                return conQA.GetTotalInspected(propQA) >= targetQty;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void bt_status_appear_pending_Click()

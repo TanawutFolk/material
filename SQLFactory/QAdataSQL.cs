@@ -374,6 +374,20 @@ namespace RawMat.SQLFactory
 
         public string CountProcessStatusPending(QAdataProperty dataItem)
         {
+            if (dataItem.process == "Appearance_Check")
+            {
+                sql = @"select count(distinct p.REPORT_NO) as `cnt`
+                        from db_appearance_pending p
+                        join db_report_status a on (p.REPORT_NO = a.Report_No)
+                        join db_receive_mat b on (a.Report_No = b.Report_No)
+                        join info_mat_inspection_list e on (b.M_Code = e.M_CODE)
+                        where p.RESULT IS NULL
+                          and e.Appearance_Check_Need = 1
+                        ";
+
+                return sql;
+            }
+
             sql = @"select count(*) as `cnt`
                     from db_report_status
                     where `dataItem.process` = 6
@@ -2017,6 +2031,35 @@ namespace RawMat.SQLFactory
 
         }
 
+        public List<string> UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            DataTable dt = (DataTable)dataItem.dtg_ngMode.DataSource;
+
+            foreach (DataRow row in dt.Rows)
+            {
+                string pendingId = ToSqlLongOrNull(row.Table.Columns.Contains("APPEARANCE_PENDING_ID") ? row["APPEARANCE_PENDING_ID"] : null);
+                string result = ToSqlIntOrNull(row.Table.Columns.Contains("RESULT") ? row["RESULT"] : null);
+
+                if (pendingId == "NULL" || result == "NULL")
+                {
+                    continue;
+                }
+
+                sql = $@"UPDATE `db_appearance_pending`
+                         SET `RESULT` = {result},
+                             `REVIEW_EMP_ID` = {ToSqlTextValue(dataItem.EMP_ID)},
+                             `REVIEW_DATE` = NOW(),
+                             `UPDATETIME` = NOW()
+                         WHERE `APPEARANCE_PENDING_ID` = {pendingId}
+                           AND `RESULT` IS NULL";
+                sqlList.Add(sql);
+            }
+
+            sqlList.Add(UpdateReportStatus(dataItem));
+
+            return sqlList;
+        }
         public string GetTotalInspected (QAdataProperty dataItem)
         {
             sql = $"SELECT sum(QTY_SELECT) FROM `db_appearance_data` WHERE REPORT_NO = '{dataItem.Report_No}' and inuse = 1";
@@ -2028,7 +2071,7 @@ namespace RawMat.SQLFactory
         public string SearchForAppearPending()
         {
             sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
-               b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.Appearance_Check as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
+               b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , 6 as `process_status_id` , 'Pending' as `Status` , b.Issue_Date
 
                FROM `db_report_status` a
 
@@ -2036,12 +2079,12 @@ namespace RawMat.SQLFactory
                join mes.item_manufacturing c on (b.M_Code = c.ITEM_CODE_FOR_SUPPORT_MES)
                join mes.vendor d on (c.VENDOR_ID = d.VENDOR_ID)
                join info_mat_inspection_list e on (b.M_Code = e.M_CODE)
-               LEFT JOIN info_status iStatus ON (a.Appearance_Check = iStatus.ID)
-
-               where (a.Appearance_Check = 6) 
+               join db_appearance_pending p on (a.Report_No = p.REPORT_NO and p.RESULT IS NULL)
+               where e.Appearance_Check_Need = 1
+               group by b.Receive_Date, b.Regular_No, a.Report_No, b.M_Code, b.Invoice_No,
+                        b.Lot_Size, b.Inspection_Qty, d.VENDOR_NAME, c.ITEM_EXTERNAL_SHORT_NAME,
+                        b.Issue_Date
                ";
-
-            //sql = sql.Replace("dataItem.process", dataItem.process);
 
             return sql;
         }
@@ -2061,7 +2104,7 @@ namespace RawMat.SQLFactory
                         COALESCE(n.NG_Mode, p.NG_DETAIL, '') AS NG_MODE,
                         p.NG_DETAIL AS NOTE,
                         '' AS JUDGEMENT,
-                        '' AS RESULT,
+                        COALESCE(CAST(p.RESULT AS CHAR), '') AS RESULT,
                         a.QTY_SELECT,
                         a.QTY_OK,
                         a.QTY_NG AS TOTAL_QTY_NG,
@@ -2073,6 +2116,7 @@ namespace RawMat.SQLFactory
                     LEFT JOIN info_ngmode n
                         ON p.NG_MODE_ID = n.ID
                     WHERE p.REPORT_NO = {ToSqlTextValue(dataItem.Report_No)}
+                      AND p.RESULT IS NULL
                     ORDER BY p.BATCH, p.COUNT, p.NG_COUNT";
 
             return sql;

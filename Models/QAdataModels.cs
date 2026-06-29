@@ -576,6 +576,11 @@ namespace RawMat.Models
         }
 
 
+        public OutputOnDbProperty UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            resultData = services.UpdateAppearPendingReview(dataItem);
+            return resultData;
+        }
         public OutputOnDbProperty SearchAppearPendingData(QAdataProperty dataItem)
         {
             resultData = services.SearchAppearPendingData(dataItem);

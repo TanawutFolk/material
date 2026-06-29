@@ -828,6 +828,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.UpdateAppearPendingReview(dataItem);
+            _resultData = base.UpdateBySqlList(sqlList);
+            return _resultData;
+        }
         public OutputOnDbProperty GetTotalInspected(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
