@@ -557,6 +557,15 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateReportProcessLotNo(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
+
         public OutputOnDbProperty InsertFunctionData(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();

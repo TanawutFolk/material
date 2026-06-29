@@ -375,6 +375,13 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            resultData = services.UpdateReportProcessLotNo(dataItem);
+            return resultData;
+        }
+
+
         public OutputOnDbProperty InsertReportLotNoList(QAdataProperty dataItem)
         {
             resultData = services.InsertReportLotNoList(dataItem);

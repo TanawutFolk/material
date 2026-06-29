@@ -1200,6 +1200,19 @@ namespace RawMat.SQLFactory
 
         }
 
+        public string UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            sql = @"UPDATE `db_report_status`
+                    SET `dataItem.process_Lot_No` = dataItem.LotNo
+                    WHERE `Report_No` = dataItem.Report_No";
+
+            sql = sql.Replace("dataItem.process", dataItem.process);
+            sql = sql.Replace("dataItem.LotNo", ToSqlTextValue(dataItem.Lot_No));
+            sql = sql.Replace("dataItem.Report_No", ToSqlTextValue(dataItem.Report_No));
+
+            return sql;
+        }
+
         public List<string> InsertReportLotNoList(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
@@ -1811,7 +1824,7 @@ namespace RawMat.SQLFactory
         public string SearchForOpAppear(QAdataProperty dataItem)
         {
             sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , b.Lot_Size as `Lot Size` ,
-                    b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
+                    a.Appearance_Check_Lot_No as `Lot No.`, b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , a.dataItem.process as `process_status_id` , iStatus.STATUS_NAME as `Status` , b.Issue_Date
     
                     FROM `db_report_status` a
                     join db_receive_mat b on (a.Report_No = b.Report_No)

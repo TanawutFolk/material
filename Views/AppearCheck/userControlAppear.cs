@@ -1,4 +1,4 @@
-using MySqlX.XDevAPI.Common;
+﻿using MySqlX.XDevAPI.Common;
 using Org.BouncyCastle.Asn1.Crmf;
 using RawMat.Controllers;
 using RawMat.Property;
@@ -126,6 +126,72 @@ namespace RawMat.Views.AppearCheck
         }
 
 
+        private void LoadLotNoSelection()
+        {
+            cb_lotNo.Items.Clear();
+
+            if (propQA.dtLotNo != null && propQA.dtLotNo.Rows.Count > 0)
+            {
+                foreach (DataRow row in propQA.dtLotNo.Rows)
+                {
+                    string lotNo = row["LOT_NO"]?.ToString()?.Trim();
+                    if (!string.IsNullOrWhiteSpace(lotNo) && !cb_lotNo.Items.Contains(lotNo))
+                    {
+                        cb_lotNo.Items.Add(lotNo);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(propQA.Lot_No))
+            {
+                int index = cb_lotNo.Items.IndexOf(propQA.Lot_No);
+                if (index >= 0)
+                {
+                    cb_lotNo.SelectedIndex = index;
+                }
+                else
+                {
+                    cb_lotNo.Items.Add(propQA.Lot_No);
+                    cb_lotNo.SelectedItem = propQA.Lot_No;
+                }
+
+                cb_lotNo.Enabled = false;
+                return;
+            }
+
+            cb_lotNo.SelectedIndex = cb_lotNo.Items.Count == 1 ? 0 : -1;
+        }
+
+        private bool TrySetSelectedLotNo()
+        {
+            if (cb_lotNo.SelectedItem == null && cb_lotNo.Items.Count == 1)
+            {
+                cb_lotNo.SelectedIndex = 0;
+            }
+
+            propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? propQA.Lot_No ?? string.Empty;
+            return !string.IsNullOrWhiteSpace(propQA.Lot_No);
+        }
+
+        private bool SaveAppearanceLotNo()
+        {
+            if (!TrySetSelectedLotNo())
+            {
+                MessageBox.Show("กรุณาเลือก Lot No. ก่อนบันทึก Appearance", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            propQA.process = "Appearance_Check";
+            if (!conQA.UpdateReportProcessLotNo(propQA))
+            {
+                MessageBox.Show("ไม่สามารถบันทึก Lot No. ของ Appearance ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            cb_lotNo.Enabled = false;
+            return true;
+        }
+
         private void userControlAppear_Load(object sender, EventArgs e)
         {
 
@@ -135,6 +201,7 @@ namespace RawMat.Views.AppearCheck
             lb_recDate.Text = "Receive Date : " + propQA.dtReceiveDate.ToString("dd-MMM-yyyy");
             lb_inspQty.Text = "Inspection Qty : " + propQA.inspQty;
             lb_lotSize.Text = "Lot Size : " + propQA.Qty;
+            LoadLotNoSelection();
             ConfigureAllInspectionCount();
             //lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
             propQA.EMP_ID = employee.EMP_CODE;
@@ -2061,6 +2128,11 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             string judge = (qtyNG > 0) ? "0" : "1"; // 0=NG, 1=OK
 
             if (qtyNG > 0 && !ValidateNgModeDetails(qtyNG))
+            {
+                return;
+            }
+
+            if (!SaveAppearanceLotNo())
             {
                 return;
             }

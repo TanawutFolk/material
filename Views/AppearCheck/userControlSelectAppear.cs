@@ -82,12 +82,18 @@ namespace RawMat.Views.AppearCheck
                 propQA.dtReceiveDate = DateTime.Parse(dtg_reportSelect.Rows[e.RowIndex].Cells["Receive Date"].Value.ToString());
                 propQA.inspQty = dtg_reportSelect.Rows[e.RowIndex].Cells["Inspection Qty"].Value.ToString();
                 propQA.Qty = dtg_reportSelect.Rows[e.RowIndex].Cells["Lot Size"].Value.ToString();
+                propQA.Lot_No = string.Empty;
+                if (dtg_reportSelect.Columns.Contains("Lot No.") && dtg_reportSelect.Rows[e.RowIndex].Cells["Lot No."].Value != null)
+                {
+                    propQA.Lot_No = dtg_reportSelect.Rows[e.RowIndex].Cells["Lot No."].Value.ToString();
+                }
 
 
                 try
                 {
 
                     //regular sampling type
+                    propQA.dtLotNo = conQA.ReportLot(propQA);
 
                     propQA.dtAppSamp = conQA.AppearSampling(propQA);
                     if (propQA.dtAppSamp == null || propQA.dtAppSamp.Rows.Count == 0)
