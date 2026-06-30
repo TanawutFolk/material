@@ -89,6 +89,8 @@ namespace RawMat.Views.AppearCheck
             dtg_packing_size_appear.DataBindingComplete += dtg_packing_size_appear_DataBindingComplete;  // Subscribe ถ้าต้องการ
             dtg_packing_size_appear.DataError += dtg_packing_size_appear_DataError;
             dtg_packing_size_appear.CellValidating += dtg_packing_size_appear_CellValidating;
+            dtg_packing_size_appear.CurrentCellDirtyStateChanged += dtg_packing_size_appear_CurrentCellDirtyStateChanged;
+            dtg_packing_size_appear.CellValueChanged += dtg_packing_size_appear_CellValueChanged;
 
             dtg_show_appear.CellValueChanged += dtg_show_appear_CellValueChanged;
             dtg_show_appear.CellFormatting += dtg_show_appear_CellFormatting;
@@ -126,56 +128,68 @@ namespace RawMat.Views.AppearCheck
         }
 
 
-        private void LoadLotNoSelection()
+        private List<string> GetReportLotNoList()
         {
-            cb_lotNo.Items.Clear();
-
-            if (propQA.dtLotNo != null && propQA.dtLotNo.Rows.Count > 0)
+            List<string> lotNoList = new List<string>();
+            if (propQA.dtLotNo != null && propQA.dtLotNo.Columns.Contains("LOT_NO"))
             {
                 foreach (DataRow row in propQA.dtLotNo.Rows)
                 {
                     string lotNo = row["LOT_NO"]?.ToString()?.Trim();
-                    if (!string.IsNullOrWhiteSpace(lotNo) && !cb_lotNo.Items.Contains(lotNo))
+                    if (!string.IsNullOrWhiteSpace(lotNo) && !lotNoList.Contains(lotNo))
                     {
-                        cb_lotNo.Items.Add(lotNo);
+                        lotNoList.Add(lotNo);
                     }
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(propQA.Lot_No))
-            {
-                int index = cb_lotNo.Items.IndexOf(propQA.Lot_No);
-                if (index >= 0)
-                {
-                    cb_lotNo.SelectedIndex = index;
-                }
-                else
-                {
-                    cb_lotNo.Items.Add(propQA.Lot_No);
-                    cb_lotNo.SelectedItem = propQA.Lot_No;
-                }
-
-                cb_lotNo.Enabled = false;
-                return;
-            }
-
-            cb_lotNo.SelectedIndex = cb_lotNo.Items.Count == 1 ? 0 : -1;
+            return lotNoList;
         }
 
-        private bool TrySetSelectedLotNo()
+        private List<string> GetReportLotNoOptions()
         {
-            if (cb_lotNo.SelectedItem == null && cb_lotNo.Items.Count == 1)
-            {
-                cb_lotNo.SelectedIndex = 0;
-            }
-
-            propQA.Lot_No = cb_lotNo.SelectedItem?.ToString() ?? cb_lotNo.Text?.Trim() ?? propQA.Lot_No ?? string.Empty;
-            return !string.IsNullOrWhiteSpace(propQA.Lot_No);
+            List<string> options = new List<string> { string.Empty };
+            options.AddRange(GetReportLotNoList());
+            return options;
         }
 
-        private bool SaveAppearanceLotNo()
+        private string GetDefaultLotNoForPackingRow()
         {
-            if (!TrySetSelectedLotNo())
+            List<string> lotNoList = GetReportLotNoList();
+            return lotNoList.Count == 1 ? lotNoList[0] : string.Empty;
+        }
+
+        private bool TrySetSelectedPackingLotNo(DataGridViewRow selectedRow)
+        {
+            if (selectedRow == null || !dtg_packing_size_appear.Columns.Contains("LOT_NO"))
+            {
+                MessageBox.Show("ไม่พบช่อง Lot No. ในรายการ Appearance", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            string lotNo = selectedRow.Cells["LOT_NO"].Value?.ToString()?.Trim() ?? string.Empty;
+            List<string> lotNoList = GetReportLotNoList();
+            if (lotNoList.Count == 0)
+            {
+                MessageBox.Show("ไม่พบ Lot No. จาก Packing สำหรับ Report นี้", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(lotNo) || !lotNoList.Contains(lotNo))
+            {
+                MessageBox.Show("กรุณาเลือก Lot No. ของ row ที่จะตรวจ", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtg_packing_size_appear.CurrentCell = selectedRow.Cells["LOT_NO"];
+                dtg_packing_size_appear.BeginEdit(true);
+                return false;
+            }
+
+            propQA.Lot_No = lotNo;
+            return true;
+        }
+
+        private bool SaveAppearanceProcessLotNo()
+        {
+            if (string.IsNullOrWhiteSpace(propQA.Lot_No))
             {
                 MessageBox.Show("กรุณาเลือก Lot No. ก่อนบันทึก Appearance", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -188,10 +202,8 @@ namespace RawMat.Views.AppearCheck
                 return false;
             }
 
-            cb_lotNo.Enabled = false;
             return true;
         }
-
         private void userControlAppear_Load(object sender, EventArgs e)
         {
 
@@ -201,7 +213,6 @@ namespace RawMat.Views.AppearCheck
             lb_recDate.Text = "Receive Date : " + propQA.dtReceiveDate.ToString("dd-MMM-yyyy");
             lb_inspQty.Text = "Inspection Qty : " + propQA.inspQty;
             lb_lotSize.Text = "Lot Size : " + propQA.Qty;
-            LoadLotNoSelection();
             ConfigureAllInspectionCount();
             //lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
             propQA.EMP_ID = employee.EMP_CODE;
@@ -391,7 +402,7 @@ namespace RawMat.Views.AppearCheck
             bool isAllAppearance = IsAllAppearanceMode();
             dtg_packing_size_appear.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dtg_packing_size_appear.AllowUserToAddRows = false;
-            dtg_packing_size_appear.ReadOnly = true;
+            dtg_packing_size_appear.ReadOnly = false;
 
             if (dtg_packing_size_appear.Columns["DISPLAY_NO"] != null)
             {
@@ -489,6 +500,8 @@ namespace RawMat.Views.AppearCheck
                 dtg_packing_size_appear.Columns["PACKING_SIZE"].Visible = false;
             }
 
+            ConfigurePackingLotNoColumn();
+
             string[] hiddenColumns = { "COUNT", "ORIGINAL_PACK_COUNT", "TOTAL_PACKING_SIZE", "LOT_SIZE", "IS_SELECTABLE" };
             foreach (string colName in hiddenColumns)
             {
@@ -504,27 +517,66 @@ namespace RawMat.Views.AppearCheck
             {
                 SetPackingColumnDisplay("DISPLAY_NO", 0, 55);
                 SetPackingColumnDisplay("PACKING_VALUE", 1, 90);
-                SetPackingColumnDisplay("QTY_SELECT", 2, 150);
-                SetPackingColumnDisplay("STATUS_TEXT", 3, 90);
+                SetPackingColumnDisplay("QTY_SELECT", 2, 135);
+                SetPackingColumnDisplay("LOT_NO", 3, 120);
+                SetPackingColumnDisplay("STATUS_TEXT", 4, 90);
             }
             else
             {
                 SetPackingColumnDisplay("PACKING_VALUE", 0, 90);
-                SetPackingColumnDisplay("QTY_SELECT", 1, 150);
-                SetPackingColumnDisplay("STATUS_TEXT", 2, 90);
+                SetPackingColumnDisplay("QTY_SELECT", 1, 135);
+                SetPackingColumnDisplay("LOT_NO", 2, 120);
+                SetPackingColumnDisplay("STATUS_TEXT", 3, 90);
             }
 
             foreach (DataGridViewColumn column in dtg_packing_size_appear.Columns)
             {
                 column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                column.ReadOnly = column.Name != "LOT_NO";
             }
 
+            UpdatePackingSelectButtonState();
             UpdatePackingCountLabel();
             dtg_packing_size_appear.Refresh(); // Force update UI
             //dtg_packing_size_appear.Columns["NUMBER"].Visible = false;
         }
 
+        private void ConfigurePackingLotNoColumn()
+        {
+            if (!dtg_packing_size_appear.Columns.Contains("LOT_NO"))
+            {
+                return;
+            }
+
+            DataGridViewColumn existingColumn = dtg_packing_size_appear.Columns["LOT_NO"];
+            DataGridViewComboBoxColumn lotColumn = existingColumn as DataGridViewComboBoxColumn;
+            if (lotColumn == null)
+            {
+                int displayIndex = existingColumn.DisplayIndex;
+                int columnIndex = existingColumn.Index;
+                dtg_packing_size_appear.Columns.Remove(existingColumn);
+
+                lotColumn = new DataGridViewComboBoxColumn
+                {
+                    Name = "LOT_NO",
+                    DataPropertyName = "LOT_NO",
+                    HeaderText = "Lot No.",
+                    FlatStyle = FlatStyle.Popup,
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton,
+                    DisplayStyleForCurrentCellOnly = false,
+                    ReadOnly = false
+                };
+                dtg_packing_size_appear.Columns.Insert(columnIndex, lotColumn);
+                lotColumn.DisplayIndex = displayIndex;
+            }
+
+            lotColumn.DataSource = GetReportLotNoOptions();
+            lotColumn.HeaderText = "Lot No.";
+            lotColumn.ReadOnly = false;
+            lotColumn.DefaultCellStyle.BackColor = Color.White;
+            lotColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+        }
         private void SetPackingColumnDisplay(string columnName, int displayIndex, float fillWeight)
         {
             if (!dtg_packing_size_appear.Columns.Contains(columnName))
@@ -868,6 +920,7 @@ namespace RawMat.Views.AppearCheck
             DataTable dataSource = new DataTable();
             dataSource.Columns.Add("DISPLAY_NO", typeof(int));
             dataSource.Columns.Add("PACKING_VALUE", typeof(int));
+            dataSource.Columns.Add("LOT_NO", typeof(string));
             dataSource.Columns.Add("CUMULATIVE_QTY", typeof(int));
             dataSource.Columns.Add("QTY_SELECT", typeof(string));
             dataSource.Columns.Add("QTY_OK", typeof(string));
@@ -909,7 +962,7 @@ namespace RawMat.Views.AppearCheck
                     savedRow["JUDGE"]?.ToString() ?? "",
                     "SAVED",
                     savedRow["APPEARANCE_DATE"]?.ToString() ?? "",
-                    ParseInt(savedRow["COUNT"]));
+                    ParseInt(savedRow["COUNT"]), savedData.Columns.Contains("LOT_NO") ? savedRow["LOT_NO"]?.ToString() ?? "" : "");
 
                 if (savedData.Columns.Contains("EMP_ID"))
                 {
@@ -975,11 +1028,12 @@ namespace RawMat.Views.AppearCheck
             return dataSource;
         }
 
-        private void AddAppearancePlanRow(DataTable dataSource, int rowNo, int cumulativeQty, int qtySelect, int qtyOk, int qtyNg, string judge, string rowState, string appearanceDate, int count)
+        private void AddAppearancePlanRow(DataTable dataSource, int rowNo, int cumulativeQty, int qtySelect, int qtyOk, int qtyNg, string judge, string rowState, string appearanceDate, int count, string lotNo = "")
         {
             DataRow row = dataSource.NewRow();
             row["DISPLAY_NO"] = rowNo;
             row["PACKING_VALUE"] = selectedPackingValue;
+            row["LOT_NO"] = string.IsNullOrWhiteSpace(lotNo) ? propQA.Lot_No ?? string.Empty : lotNo;
             row["CUMULATIVE_QTY"] = cumulativeQty;
             row["QTY_SELECT"] = qtySelect.ToString();
             row["QTY_OK"] = qtyOk > 0 ? qtyOk.ToString() : "";
@@ -1090,6 +1144,7 @@ namespace RawMat.Views.AppearCheck
             DataTable dt = new DataTable();
             dt.Columns.Add("DISPLAY_NO", typeof(int));
             dt.Columns.Add("PACKING_VALUE", typeof(int));
+            dt.Columns.Add("LOT_NO", typeof(string));
             dt.Columns.Add("CUMULATIVE_QTY", typeof(int));
             dt.Columns.Add("QTY_SELECT", typeof(int));
             dt.Columns.Add("QTY_OK", typeof(string));
@@ -1174,6 +1229,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     DataRow expandedRow = expandedDt.NewRow();
                     expandedRow["DISPLAY_NO"] = packSeq;
                     expandedRow["PACKING_VALUE"] = packingValue;
+                    expandedRow["LOT_NO"] = GetDefaultLotNoForPackingRow();
                     expandedRow["CUMULATIVE_QTY"] = savedQty > 0 ? (object)cumulativeQty : DBNull.Value;
                     expandedRow["QTY_SELECT"] = planQty;
                     expandedRow["QTY_OK"] = savedOk > 0 ? savedOk.ToString() : "";
@@ -1265,7 +1321,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     savedRow["JUDGE"]?.ToString() ?? "",
                     "SAVED",
                     savedRow["APPEARANCE_DATE"]?.ToString() ?? "",
-                    count);
+                    count, savedData.Columns.Contains("LOT_NO") ? savedRow["LOT_NO"]?.ToString() ?? "" : "");
 
                 if (savedData.Columns.Contains("EMP_ID"))
                 {
@@ -1328,17 +1384,22 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
 
         private void bt_Select_Click(object sender, EventArgs e)
         {
+            dtg_packing_size_appear.EndEdit();
+
             if (dtg_packing_size_appear.SelectedRows.Count == 0)
             {
-                return; // ไม่มีแถวที่เลือก ไม่อยากให้ทำต่อ
-            }
-            else
-            {
-                dtg_packing_size_appear.Enabled = false;
-                bt_select_packing_size_appear.Enabled = false;
+                return;
             }
 
             var selectedRow = dtg_packing_size_appear.SelectedRows[0];
+            if (!TrySetSelectedPackingLotNo(selectedRow))
+            {
+                UpdatePackingSelectButtonState();
+                return;
+            }
+
+            dtg_packing_size_appear.Enabled = false;
+            bt_select_packing_size_appear.Enabled = false;
             propQA.BATCH = selectedRow.Cells["BATCH"].Value.ToString();
 
             SetSelectedBatchSamplingContext(selectedRow);
@@ -1372,6 +1433,57 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
 
         }
 
+        private void dtg_packing_size_appear_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dtg_packing_size_appear.IsCurrentCellDirty)
+            {
+                dtg_packing_size_appear.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+
+        private void dtg_packing_size_appear_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || _suppressEvents)
+            {
+                return;
+            }
+
+            if (dtg_packing_size_appear.Columns[e.ColumnIndex].Name == "LOT_NO")
+            {
+                UpdatePackingSelectButtonState();
+            }
+        }
+
+        private void UpdatePackingSelectButtonState()
+        {
+            if (dtg_packing_size_appear == null || bt_select_packing_size_appear == null)
+            {
+                return;
+            }
+
+            if (dtg_packing_size_appear.SelectedRows.Count == 0)
+            {
+                bt_select_packing_size_appear.Enabled = false;
+                return;
+            }
+
+            DataGridViewRow selectedRow = dtg_packing_size_appear.SelectedRows[0];
+            int remainQty = 0;
+            if (dtg_packing_size_appear.Columns.Contains("REMAIN_PACKING_SIZE"))
+            {
+                object remainValue = selectedRow.Cells["REMAIN_PACKING_SIZE"].Value;
+                if (remainValue != null && remainValue != DBNull.Value)
+                {
+                    int.TryParse(remainValue.ToString(), out remainQty);
+                }
+            }
+
+            string lotNo = dtg_packing_size_appear.Columns.Contains("LOT_NO")
+                ? selectedRow.Cells["LOT_NO"].Value?.ToString()?.Trim() ?? string.Empty
+                : string.Empty;
+
+            bt_select_packing_size_appear.Enabled = remainQty > 0 && GetReportLotNoList().Contains(lotNo);
+        }
         private void dtg_packing_size_appear_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
@@ -1413,54 +1525,12 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
 
         private void dtg_packing_size_appear_SelectionChanged(object sender, EventArgs e)
         {
-            // ป้องกันการทำงานซ้อนกัน
-            if (_suppressEvents) return;
-
-            // ถ้าไม่มีการเลือกแถว ให้ปิดปุ่มและจบการทำงาน
-            if (dtg_packing_size_appear.SelectedRows.Count == 0)
+            if (_suppressEvents)
             {
-                bt_select_packing_size_appear.Enabled = false;
                 return;
             }
 
-            try
-            {
-                // 1. ดึงแถวที่เลือกมา
-                var selectedRow = dtg_packing_size_appear.SelectedRows[0];
-
-                // 2. ดึงค่าจากคอลัมน์ "REMAIN_PACKING_SIZE" (สุ่มตรวจ) โดยตรง
-                var cellValue = selectedRow.Cells["REMAIN_PACKING_SIZE"].Value;
-                int remainQty = 0;
-
-                // 3. แปลงค่าอย่างปลอดภัย (กัน Null/Error)
-                if (cellValue != null && cellValue != DBNull.Value)
-                {
-                    int.TryParse(cellValue.ToString(), out remainQty);
-                }
-
-                // 4. ตรรกะการเปิดปุ่ม: 
-                // ถ้าจำนวนที่เหลือ (remainQty) มากกว่า 0 -> ให้กดเลือกทำได้
-                if (remainQty > 0)
-                {
-                    bt_select_packing_size_appear.Enabled = true;
-                }
-                else
-                {
-                    // ถ้าเป็น 0 (ตรวจหมดแล้ว) -> ปิดปุ่ม ห้ามเลือกทำซ้ำ
-                    bt_select_packing_size_appear.Enabled = false;
-
-                    // (Optional) ถ้าอยากให้มันเด้งออกจากการเลือกด้วย ให้ใช้ ClearSelection
-                    // แต่ระวัง Loop นรก ถ้าใช้บรรทัดล่างนี้ ต้องมั่นใจว่าจัดการ Flag ดีๆ
-                    // _suppressEvents = true;
-                    // dtg_packing_size_appear.ClearSelection();
-                    // _suppressEvents = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Selection Error: " + ex.Message);
-                bt_select_packing_size_appear.Enabled = false;
-            }
+            UpdatePackingSelectButtonState();
         }
 
         // 4. เพิ่ม dtg_packing_size_appear_MouseDown - สำหรับ handle click/selection บน cell (e.g., REMAIN_PACKING_SIZE) เพื่อให้ focus/edit ได้ทันที
@@ -1471,7 +1541,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             {
                 DataGridView.HitTestInfo hit = dtg_packing_size_appear.HitTest(e.X, e.Y);
                 if (hit.ColumnIndex >= 0 && hit.RowIndex >= 0 &&
-                    dtg_packing_size_appear.Columns[hit.ColumnIndex].Name == "REMAIN_PACKING_SIZE")
+                    (dtg_packing_size_appear.Columns[hit.ColumnIndex].Name == "REMAIN_PACKING_SIZE" || dtg_packing_size_appear.Columns[hit.ColumnIndex].Name == "LOT_NO"))
                 {
                     dtg_packing_size_appear.CurrentCell = dtg_packing_size_appear.Rows[hit.RowIndex].Cells[hit.ColumnIndex];
                     dtg_packing_size_appear.BeginEdit(true); // Start edit ถ้า click column นี้
@@ -1535,6 +1605,16 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 dtg_show_appear.Columns["PACKING_VALUE"].Visible = false;
             }
 
+            
+            if (dtg_show_appear.Columns["LOT_NO"] != null)
+            {
+                dtg_show_appear.Columns["LOT_NO"].HeaderText = "Lot No.";
+                dtg_show_appear.Columns["LOT_NO"].ReadOnly = true;
+                dtg_show_appear.Columns["LOT_NO"].Visible = true;
+                dtg_show_appear.Columns["LOT_NO"].FillWeight = 105;
+                dtg_show_appear.Columns["LOT_NO"].DisplayIndex = 1;
+            }
+
             if (dtg_show_appear.Columns["CUMULATIVE_QTY"] != null)
             {
                 dtg_show_appear.Columns["CUMULATIVE_QTY"].HeaderText = "จำนวนรวม";
@@ -1575,7 +1655,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     : "จำนวนตรวจสอบ/Packing";
                 dtg_show_appear.Columns["QTY_SELECT"].ReadOnly = !isAllAppearance;
                 dtg_show_appear.Columns["QTY_SELECT"].FillWeight = 105;
-                dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 1;
+                dtg_show_appear.Columns["QTY_SELECT"].DisplayIndex = 2;
             }
 
             if (dtg_show_appear.Columns["QTY_OK"] != null)
@@ -1583,7 +1663,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 dtg_show_appear.Columns["QTY_OK"].HeaderText = "OK";
                 dtg_show_appear.Columns["QTY_OK"].ReadOnly = false;
                 dtg_show_appear.Columns["QTY_OK"].FillWeight = isAllAppearance ? 80 : 85;
-                dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 2;
+                dtg_show_appear.Columns["QTY_OK"].DisplayIndex = 3;
             }
 
             if (dtg_show_appear.Columns["QTY_NG"] != null)
@@ -1591,14 +1671,14 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 dtg_show_appear.Columns["QTY_NG"].HeaderText = "Pending";
                 dtg_show_appear.Columns["QTY_NG"].ReadOnly = false;
                 dtg_show_appear.Columns["QTY_NG"].FillWeight = isAllAppearance ? 80 : 85;
-                dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 3;
+                dtg_show_appear.Columns["QTY_NG"].DisplayIndex = 4;
             }
 
             if (dtg_show_appear.Columns["JUDGE"] != null)
             {
                 dtg_show_appear.Columns["JUDGE"].HeaderText = "ผล";
                 dtg_show_appear.Columns["JUDGE"].ReadOnly = true;  // Editable only in last row
-                dtg_show_appear.Columns["JUDGE"].DisplayIndex = 4;
+                dtg_show_appear.Columns["JUDGE"].DisplayIndex = 5;
                 dtg_show_appear.Columns["JUDGE"].Visible = isAllAppearance;
                 dtg_show_appear.Columns["JUDGE"].FillWeight = 90;
                 dtg_show_appear.Columns["JUDGE"].DefaultCellStyle.Alignment =
@@ -1613,7 +1693,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].ReadOnly = true;
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].Visible = !isAllAppearance;
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].FillWeight = 95;
-                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DisplayIndex = 4;
+                dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DisplayIndex = 5;
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DefaultCellStyle.Alignment =
                     DataGridViewContentAlignment.MiddleCenter;
                 dtg_show_appear.Columns["JUDGE_LOT_SIZE"].DefaultCellStyle.WrapMode =
@@ -2137,7 +2217,7 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 return;
             }
 
-            if (!SaveAppearanceLotNo())
+            if (!SaveAppearanceProcessLotNo())
             {
                 return;
             }

@@ -48,12 +48,15 @@ namespace RawMat.Views.AppearCheck
             dtg_ngMode.AutoGenerateColumns = false;
             dtg_ngMode.AllowUserToAddRows = false;
             dtg_ngMode.AllowUserToDeleteRows = false;
+            dtg_ngMode.AllowUserToResizeColumns = false;
+            dtg_ngMode.AllowUserToResizeRows = false;
             dtg_ngMode.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dtg_ngMode.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dtg_ngMode.MultiSelect = false;
             dtg_ngMode.ReadOnly = true;
             dtg_ngMode.EditMode = DataGridViewEditMode.EditProgrammatically;
             dtg_ngMode.RowHeadersVisible = false;
+            dtg_ngMode.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dtg_ngMode.EnableHeadersVisualStyles = false;
             dtg_ngMode.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dtg_ngMode.ColumnHeadersHeight = 54;
@@ -65,6 +68,7 @@ namespace RawMat.Views.AppearCheck
             dtg_ngMode.CellClick += dtg_ngMode_CellClick;
 
             dtg_ngMode.Columns.Clear();
+            dtg_ngMode.Columns.Add(CreatePendingTextColumn("LOT_NO", "LOT_NO", "Lot No.", 90, DataGridViewContentAlignment.MiddleCenter));
             dtg_ngMode.Columns.Add(CreatePendingTextColumn("NG_MODE", "NG_MODE", "Q'ty Pending", 145, DataGridViewContentAlignment.MiddleLeft));
             dtg_ngMode.Columns.Add(CreatePendingTextColumn("QTY_NG", "QTY_NG", string.Empty, 70, DataGridViewContentAlignment.MiddleCenter));
             dtg_ngMode.Columns.Add(CreatePendingTextColumn("OK_QTY", "OK_QTY", "0\r\nOK", 70, DataGridViewContentAlignment.MiddleCenter));
@@ -125,6 +129,7 @@ namespace RawMat.Views.AppearCheck
         private DataTable BuildPendingReviewTable(DataTable source)
         {
             DataTable table = new DataTable();
+            table.Columns.Add("LOT_NO", typeof(string));
             table.Columns.Add("QTY_NG", typeof(int));
             table.Columns.Add("NG_MODE", typeof(string));
             table.Columns.Add("OK_QTY", typeof(string));
@@ -143,13 +148,15 @@ namespace RawMat.Views.AppearCheck
                 string batch = GetString(sourceRow, "BATCH");
                 string count = GetString(sourceRow, "COUNT");
                 string note = GetString(sourceRow, "NOTE");
+                string lotNo = GetString(sourceRow, "LOT_NO");
 
                 DataRow row = table.NewRow();
+                row["LOT_NO"] = lotNo;
                 row["QTY_NG"] = ParseInt(sourceRow["QTY_NG"]);
                 row["NG_MODE"] = GetString(sourceRow, "NG_MODE");
                 row["OK_QTY"] = "";
                 row["NG_REVIEW_QTY"] = "";
-                row["NOTE"] = BuildNoteText(batch, count, note);
+                row["NOTE"] = BuildNoteText(batch, count, lotNo, note);
                 row["JUDGEMENT"] = false;
                 row["RESULT"] = "";
                 row["APPEARANCE_PENDING_ID"] = GetString(sourceRow, "APPEARANCE_PENDING_ID");
@@ -162,9 +169,9 @@ namespace RawMat.Views.AppearCheck
             return table;
         }
 
-        private string BuildNoteText(string batch, string count, string note)
+        private string BuildNoteText(string batch, string count, string lotNo, string note)
         {
-            string prefix = $"Batch {batch}, Count {count}";
+            string prefix = $"Batch {batch}, Count {count}, Lot {lotNo}";
             if (string.IsNullOrWhiteSpace(note))
             {
                 return prefix;
@@ -253,6 +260,11 @@ namespace RawMat.Views.AppearCheck
 
         private void ApplyReviewColumnStyle()
         {
+            if (dtg_ngMode.Columns.Contains("LOT_NO"))
+            {
+                dtg_ngMode.Columns["LOT_NO"].HeaderCell.Style.BackColor = Color.White;
+                dtg_ngMode.Columns["LOT_NO"].DefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            }
             if (dtg_ngMode.Columns.Contains("NG_MODE"))
             {
                 dtg_ngMode.Columns["NG_MODE"].HeaderCell.Style.BackColor = Color.FromArgb(255, 224, 192);

@@ -1,4 +1,4 @@
-﻿using RawMat.Controllers;
+using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
 using RawMat.Views.RegularCheck;
@@ -103,14 +103,28 @@ namespace RawMat.Views.Main
             dtg_receiveMatSearch.SuspendLayout();
             dtg_receiveMatSearch.DataSource = receiveMatData;
             EnsureDeleteButtonColumn();
+            ApplyColumnSettings();
             dtg_receiveMatSearch.ResumeLayout();
+
+            UpdateComboBoxItems();
+        }
+
+        private void ApplyColumnSettings()
+        {
+            if (dtg_receiveMatSearch.DataSource == null)
+            {
+                return;
+            }
 
             if (dtg_receiveMatSearch.Columns.Contains("Regular_Check"))
             {
                 dtg_receiveMatSearch.Columns["Regular_Check"].Visible = false;
             }
 
-            UpdateComboBoxItems();
+            if (dtg_receiveMatSearch.Columns.Contains("Report No"))
+            {
+                dtg_receiveMatSearch.Columns["Report No"].Frozen = true;
+            }
         }
 
         private void EnsureDeleteButtonColumn()
@@ -188,8 +202,11 @@ namespace RawMat.Views.Main
         private void ApplyFilteredRows(IEnumerable<DataRow> filteredRows)
         {
             DataRow[] rows = filteredRows.ToArray();
+            dtg_receiveMatSearch.SuspendLayout();
             dtg_receiveMatSearch.DataSource = rows.Length > 0 ? rows.CopyToDataTable() : null;
             EnsureDeleteButtonColumn();
+            ApplyColumnSettings();
+            dtg_receiveMatSearch.ResumeLayout();
         }
 
         private string GetRowText(DataRow row, string columnName)

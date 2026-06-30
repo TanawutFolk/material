@@ -1928,6 +1928,7 @@ namespace RawMat.SQLFactory
                            COALESCE(`APPEARANCE_DATE`, DATE(`UPDATETIME`)) AS APPEARANCE_DATE,
                            `BATCH`,
                            `COUNT`,
+                           LOT_NO,
                            QTY_SELECT,
                            QTY_OK,
                            QTY_NG,
@@ -1986,8 +1987,8 @@ namespace RawMat.SQLFactory
         public string InsertAppearData(QAdataProperty dataItem)
         {
 
-            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `QTY_SELECT`, `QTY_OK`, `QTY_NG`, `EMP_ID`, `JUDGE`, `APPEARANCE_DATE`, `UPDATETIME`, `INUSE`) " +
-            $"VALUES ({ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlIntOrNull(dataItem.QTY_SELECT)}, {ToSqlIntOrNull(dataItem.QTY_OK)}, {ToSqlIntOrNull(dataItem.QTY_NG)}, {ToSqlTextValue(dataItem.EMP_ID)}, {ToSqlIntOrNull(dataItem.judge)}, CURDATE(), NOW(), 1)";
+            sql = @"INSERT INTO `db_appearance_data` (`REPORT_NO`, `BATCH`, `COUNT`, `LOT_NO`, `QTY_SELECT`, `QTY_OK`, `QTY_NG`, `EMP_ID`, `JUDGE`, `APPEARANCE_DATE`, `UPDATETIME`, `INUSE`) " +
+            $"VALUES ({ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlTextValue(dataItem.Lot_No)}, {ToSqlIntOrNull(dataItem.QTY_SELECT)}, {ToSqlIntOrNull(dataItem.QTY_OK)}, {ToSqlIntOrNull(dataItem.QTY_NG)}, {ToSqlTextValue(dataItem.EMP_ID)}, {ToSqlIntOrNull(dataItem.judge)}, CURDATE(), NOW(), 1)";
 
             return sql;
 
@@ -2001,6 +2002,7 @@ namespace RawMat.SQLFactory
                       AND `BATCH` = {ToSqlIntOrNull(dataItem.BATCH)}
                       AND `COUNT` = {ToSqlIntOrNull(dataItem.COUNT)}
                       AND `EMP_ID` = {ToSqlTextValue(dataItem.EMP_ID)}
+                      AND COALESCE(LOT_NO, '') = {ToSqlTextValue(dataItem.Lot_No)}
                       AND `APPEARANCE_DATE` = CURDATE()
                       AND `INUSE` = 1
                     ORDER BY `APPEARANCE_ID` DESC
@@ -2021,8 +2023,8 @@ namespace RawMat.SQLFactory
                 string ngDetail = row.Table.Columns.Contains("NG_DETAIL") ? row["NG_DETAIL"].ToString().Replace("'", "''") : "";
                 string ngModeId = ToSqlIntOrNull(row.Table.Columns.Contains("NG_MODE_ID") ? row["NG_MODE_ID"] : null);
                 string appearanceId = ToSqlLongOrNull(dataItem.APPEARANCE_ID);
-                sql = $"INSERT INTO `db_appearance_pending`(`APPEARANCE_ID`, `REPORT_NO`, `BATCH`, `COUNT`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ngCount}, {ToSqlIntOrNull(row["QTY_NG"])}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
+                sql = $"INSERT INTO `db_appearance_pending`(`APPEARANCE_ID`, `REPORT_NO`, `BATCH`, `COUNT`, `LOT_NO`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
+                      $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlTextValue(dataItem.Lot_No)}, {ngCount}, {ToSqlIntOrNull(row["QTY_NG"])}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;
@@ -2100,6 +2102,7 @@ namespace RawMat.SQLFactory
                         p.BATCH,
                         p.COUNT,
                         p.NG_COUNT,
+                        COALESCE(p.LOT_NO, a.LOT_NO, '') AS LOT_NO,
                         p.QTY_NG,
                         COALESCE(n.NG_Mode, p.NG_DETAIL, '') AS NG_MODE,
                         p.NG_DETAIL AS NOTE,

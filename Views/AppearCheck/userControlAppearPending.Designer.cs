@@ -45,7 +45,7 @@
             this.NOTE = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.JUDGEMENT = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.RESULT = new System.Windows.Forms.DataGridViewComboBoxColumn();
-            this.bt_record = new System.Windows.Forms.Button();
+            this.tb_record = new Bunifu.Framework.UI.BunifuFlatButton();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Appear)).BeginInit();
             this.gb_cavity.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_cavity)).BeginInit();
@@ -58,8 +58,9 @@
             this.lb_top.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_top.ForeColor = System.Drawing.Color.DarkRed;
             this.lb_top.Location = new System.Drawing.Point(0, 0);
+            this.lb_top.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_top.Name = "lb_top";
-            this.lb_top.Size = new System.Drawing.Size(1115, 38);
+            this.lb_top.Size = new System.Drawing.Size(1487, 47);
             this.lb_top.TabIndex = 33;
             this.lb_top.Text = "Appearance Check Pending";
             this.lb_top.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -68,9 +69,10 @@
             // 
             this.lb_inspQty.AutoSize = true;
             this.lb_inspQty.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_inspQty.Location = new System.Drawing.Point(706, 82);
+            this.lb_inspQty.Location = new System.Drawing.Point(941, 101);
+            this.lb_inspQty.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_inspQty.Name = "lb_inspQty";
-            this.lb_inspQty.Size = new System.Drawing.Size(381, 19);
+            this.lb_inspQty.Size = new System.Drawing.Size(474, 24);
             this.lb_inspQty.TabIndex = 84;
             this.lb_inspQty.Text = "INSPECTION QTY/คำนวนจาก db_packing_size";
             // 
@@ -78,9 +80,10 @@
             // 
             this.lb_lotSize.AutoSize = true;
             this.lb_lotSize.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_lotSize.Location = new System.Drawing.Point(706, 47);
+            this.lb_lotSize.Location = new System.Drawing.Point(941, 58);
+            this.lb_lotSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_lotSize.Name = "lb_lotSize";
-            this.lb_lotSize.Size = new System.Drawing.Size(146, 19);
+            this.lb_lotSize.Size = new System.Drawing.Size(180, 24);
             this.lb_lotSize.TabIndex = 83;
             this.lb_lotSize.Text = "LOT SIZE/ทั้งหมด";
             // 
@@ -88,9 +91,10 @@
             // 
             this.lb_recDate.AutoSize = true;
             this.lb_recDate.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_recDate.Location = new System.Drawing.Point(69, 82);
+            this.lb_recDate.Location = new System.Drawing.Point(92, 101);
+            this.lb_recDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_recDate.Name = "lb_recDate";
-            this.lb_recDate.Size = new System.Drawing.Size(267, 19);
+            this.lb_recDate.Size = new System.Drawing.Size(330, 24);
             this.lb_recDate.TabIndex = 82;
             this.lb_recDate.Text = "RECIEVE DATE : XXXXXXXXXXX";
             // 
@@ -98,9 +102,10 @@
             // 
             this.lb_invoice.AutoSize = true;
             this.lb_invoice.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_invoice.Location = new System.Drawing.Point(342, 47);
+            this.lb_invoice.Location = new System.Drawing.Point(456, 58);
+            this.lb_invoice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_invoice.Name = "lb_invoice";
-            this.lb_invoice.Size = new System.Drawing.Size(216, 19);
+            this.lb_invoice.Size = new System.Drawing.Size(272, 24);
             this.lb_invoice.TabIndex = 81;
             this.lb_invoice.Text = "INVOICE : XXXXXXXXXXX";
             // 
@@ -108,9 +113,10 @@
             // 
             this.lb_mcode.AutoSize = true;
             this.lb_mcode.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_mcode.Location = new System.Drawing.Point(342, 82);
+            this.lb_mcode.Location = new System.Drawing.Point(456, 101);
+            this.lb_mcode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_mcode.Name = "lb_mcode";
-            this.lb_mcode.Size = new System.Drawing.Size(231, 19);
+            this.lb_mcode.Size = new System.Drawing.Size(282, 24);
             this.lb_mcode.TabIndex = 80;
             this.lb_mcode.Text = "M-CODE : MATERIAL NAME";
             // 
@@ -118,18 +124,20 @@
             // 
             this.lb_reportNo.AutoSize = true;
             this.lb_reportNo.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_reportNo.Location = new System.Drawing.Point(69, 47);
+            this.lb_reportNo.Location = new System.Drawing.Point(92, 58);
+            this.lb_reportNo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_reportNo.Name = "lb_reportNo";
-            this.lb_reportNo.Size = new System.Drawing.Size(216, 19);
+            this.lb_reportNo.Size = new System.Drawing.Size(265, 24);
             this.lb_reportNo.TabIndex = 79;
             this.lb_reportNo.Text = "Report No : QAYY-XXXXX";
             // 
             // picbox_Appear
             // 
             this.picbox_Appear.Image = global::RawMat.Properties.Resources.SHIN005;
-            this.picbox_Appear.Location = new System.Drawing.Point(72, 332);
+            this.picbox_Appear.Location = new System.Drawing.Point(96, 409);
+            this.picbox_Appear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.picbox_Appear.Name = "picbox_Appear";
-            this.picbox_Appear.Size = new System.Drawing.Size(997, 272);
+            this.picbox_Appear.Size = new System.Drawing.Size(1329, 335);
             this.picbox_Appear.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_Appear.TabIndex = 86;
             this.picbox_Appear.TabStop = false;
@@ -138,9 +146,11 @@
             // 
             this.gb_cavity.Controls.Add(this.picbox_cavity);
             this.gb_cavity.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_cavity.Location = new System.Drawing.Point(72, 115);
+            this.gb_cavity.Location = new System.Drawing.Point(96, 142);
+            this.gb_cavity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.gb_cavity.Name = "gb_cavity";
-            this.gb_cavity.Size = new System.Drawing.Size(1003, 211);
+            this.gb_cavity.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.gb_cavity.Size = new System.Drawing.Size(1337, 260);
             this.gb_cavity.TabIndex = 85;
             this.gb_cavity.TabStop = false;
             this.gb_cavity.Text = "Cavity";
@@ -148,9 +158,10 @@
             // picbox_cavity
             // 
             this.picbox_cavity.Image = global::RawMat.Properties.Resources.Cavity;
-            this.picbox_cavity.Location = new System.Drawing.Point(16, 29);
+            this.picbox_cavity.Location = new System.Drawing.Point(21, 36);
+            this.picbox_cavity.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.picbox_cavity.Name = "picbox_cavity";
-            this.picbox_cavity.Size = new System.Drawing.Size(981, 176);
+            this.picbox_cavity.Size = new System.Drawing.Size(1308, 217);
             this.picbox_cavity.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_cavity.TabIndex = 0;
             this.picbox_cavity.TabStop = false;
@@ -172,10 +183,11 @@
             this.NOTE,
             this.JUDGEMENT,
             this.RESULT});
-            this.dtg_ngMode.Location = new System.Drawing.Point(244, 624);
+            this.dtg_ngMode.Location = new System.Drawing.Point(325, 768);
+            this.dtg_ngMode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dtg_ngMode.Name = "dtg_ngMode";
             this.dtg_ngMode.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dtg_ngMode.Size = new System.Drawing.Size(644, 202);
+            this.dtg_ngMode.Size = new System.Drawing.Size(859, 249);
             this.dtg_ngMode.TabIndex = 87;
             // 
             // QTY_NG
@@ -208,25 +220,49 @@
             this.RESULT.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.RESULT.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
-            //
-            // bt_record
-            //
-            this.bt_record.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_record.ForeColor = System.Drawing.Color.DarkGreen;
-            this.bt_record.Location = new System.Drawing.Point(482, 842);
-            this.bt_record.Name = "bt_record";
-            this.bt_record.Size = new System.Drawing.Size(172, 58);
-            this.bt_record.TabIndex = 88;
-            this.bt_record.Text = "Record Data";
-            this.bt_record.UseVisualStyleBackColor = true;
-            this.bt_record.Click += new System.EventHandler(this.bt_record_Click);
+            // tb_record
+            // 
+            this.tb_record.Activecolor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(139)))), ((int)(((byte)(87)))));
+            this.tb_record.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
+            this.tb_record.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.tb_record.BorderRadius = 0;
+            this.tb_record.ButtonText = "Record Data";
+            this.tb_record.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.tb_record.DisabledColor = System.Drawing.Color.Gray;
+            this.tb_record.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_record.Iconcolor = System.Drawing.Color.Transparent;
+            this.tb_record.Iconimage = global::RawMat.Properties.Resources.bond;
+            this.tb_record.Iconimage_right = null;
+            this.tb_record.Iconimage_right_Selected = null;
+            this.tb_record.Iconimage_Selected = null;
+            this.tb_record.IconMarginLeft = 0;
+            this.tb_record.IconMarginRight = 0;
+            this.tb_record.IconRightVisible = true;
+            this.tb_record.IconRightZoom = 0D;
+            this.tb_record.IconVisible = true;
+            this.tb_record.IconZoom = 90D;
+            this.tb_record.IsTab = false;
+            this.tb_record.Location = new System.Drawing.Point(628, 1036);
+            this.tb_record.Margin = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.tb_record.Name = "tb_record";
+            this.tb_record.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
+            this.tb_record.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
+            this.tb_record.OnHoverTextColor = System.Drawing.Color.White;
+            this.tb_record.selected = false;
+            this.tb_record.Size = new System.Drawing.Size(249, 71);
+            this.tb_record.TabIndex = 88;
+            this.tb_record.Text = "Record Data";
+            this.tb_record.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tb_record.Textcolor = System.Drawing.Color.Lavender;
+            this.tb_record.TextFont = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            // 
             // userControlAppearPending
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Bisque;
-            this.Controls.Add(this.bt_record);
+            this.Controls.Add(this.tb_record);
             this.Controls.Add(this.dtg_ngMode);
             this.Controls.Add(this.picbox_Appear);
             this.Controls.Add(this.gb_cavity);
@@ -237,8 +273,9 @@
             this.Controls.Add(this.lb_mcode);
             this.Controls.Add(this.lb_reportNo);
             this.Controls.Add(this.lb_top);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "userControlAppearPending";
-            this.Size = new System.Drawing.Size(1115, 1182);
+            this.Size = new System.Drawing.Size(1487, 1455);
             this.Load += new System.EventHandler(this.userControlAppearPending_Load);
             ((System.ComponentModel.ISupportInitialize)(this.picbox_Appear)).EndInit();
             this.gb_cavity.ResumeLayout(false);
@@ -267,6 +304,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn NOTE;
         private System.Windows.Forms.DataGridViewCheckBoxColumn JUDGEMENT;
         private System.Windows.Forms.DataGridViewComboBoxColumn RESULT;
-        private System.Windows.Forms.Button bt_record;
+        private Bunifu.Framework.UI.BunifuFlatButton tb_record;
     }
 }
