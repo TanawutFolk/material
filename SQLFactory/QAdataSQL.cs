@@ -376,12 +376,13 @@ namespace RawMat.SQLFactory
         {
             if (dataItem.process == "Appearance_Check")
             {
-                sql = @"select count(distinct p.REPORT_NO) as `cnt`
+                sql = @"select count(distinct COALESCE(CAST(p.APPEARANCE_ID AS CHAR), CONCAT(p.REPORT_NO, '|', COALESCE(CAST(p.BATCH AS CHAR), ''), '|', COALESCE(CAST(p.COUNT AS CHAR), ''), '|', COALESCE(p.LOT_NO, '')))) as `cnt`
                         from db_appearance_pending p
                         join db_report_status a on (p.REPORT_NO = a.Report_No)
                         join db_receive_mat b on (a.Report_No = b.Report_No)
                         join info_mat_inspection_list e on (b.M_Code = e.M_CODE)
                         where p.RESULT IS NULL
+                          and COALESCE(p.QTY_NG, 0) > 0
                           and e.Appearance_Check_Need = 1
                         ";
 
@@ -2019,12 +2020,17 @@ namespace RawMat.SQLFactory
 
             foreach (DataRow row in dt.Rows)
             {
+                int qtyNg = 0;
+                if (!row.Table.Columns.Contains("QTY_NG") || !int.TryParse(row["QTY_NG"]?.ToString(), out qtyNg) || qtyNg <= 0)
+                {
+                    continue;
+                }
 
                 string ngDetail = row.Table.Columns.Contains("NG_DETAIL") ? row["NG_DETAIL"].ToString().Replace("'", "''") : "";
                 string ngModeId = ToSqlIntOrNull(row.Table.Columns.Contains("NG_MODE_ID") ? row["NG_MODE_ID"] : null);
                 string appearanceId = ToSqlLongOrNull(dataItem.APPEARANCE_ID);
                 sql = $"INSERT INTO `db_appearance_pending`(`APPEARANCE_ID`, `REPORT_NO`, `BATCH`, `COUNT`, `LOT_NO`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
-                      $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlTextValue(dataItem.Lot_No)}, {ngCount}, {ToSqlIntOrNull(row["QTY_NG"])}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
+                      $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlTextValue(dataItem.Lot_No)}, {ngCount}, {qtyNg}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
 
                 sqlList.Add(sql);
                 ngCount++;
@@ -2069,11 +2075,26 @@ namespace RawMat.SQLFactory
             return sql;
         }
 
+        // นับรายการ NG ที่ยังรอ admin ตัดสิน (ใช้กันไม่ให้ปิดงานทั้งที่ยังมี pending ค้าง)
+        public string CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            sql = $@"SELECT COUNT(*) AS `CNT`
+                     FROM `db_appearance_pending`
+                     WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                       AND `RESULT` IS NULL
+                       AND COALESCE(`QTY_NG`, 0) > 0";
+
+            return sql;
+        }
+
 
         public string SearchForAppearPending()
         {
-            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , 
-               b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` , d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , 6 as `process_status_id` , 'Pending' as `Status` , b.Issue_Date
+            sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,
+                      p.APPEARANCE_ID as `APPEARANCE_ID`, COALESCE(p.LOT_NO, '') as `Lot No.`, p.BATCH as `Batch`, p.COUNT as `Count`,
+                      SUM(COALESCE(p.QTY_NG, 0)) as `Pending Qty`, COUNT(*) as `Pending Items`,
+                      b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` ,
+                      d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , 6 as `process_status_id` , 'Pending' as `Status` , b.Issue_Date
 
                FROM `db_report_status` a
 
@@ -2083,9 +2104,12 @@ namespace RawMat.SQLFactory
                join info_mat_inspection_list e on (b.M_Code = e.M_CODE)
                join db_appearance_pending p on (a.Report_No = p.REPORT_NO and p.RESULT IS NULL)
                where e.Appearance_Check_Need = 1
-               group by b.Receive_Date, b.Regular_No, a.Report_No, b.M_Code, b.Invoice_No,
+                 and COALESCE(p.QTY_NG, 0) > 0
+               group by p.APPEARANCE_ID, COALESCE(p.LOT_NO, ''), p.BATCH, p.COUNT,
+                        b.Receive_Date, b.Regular_No, a.Report_No, b.M_Code, b.Invoice_No,
                         b.Lot_Size, b.Inspection_Qty, d.VENDOR_NAME, c.ITEM_EXTERNAL_SHORT_NAME,
                         b.Issue_Date
+               order by b.Receive_Date, a.Report_No, p.BATCH, p.COUNT, p.APPEARANCE_ID
                ";
 
             return sql;
@@ -2095,6 +2119,7 @@ namespace RawMat.SQLFactory
 
         public string SearchAppearPendingData(QAdataProperty dataItem)
         {
+            string appearanceId = ToSqlLongOrNull(dataItem.APPEARANCE_ID);
             sql = $@"SELECT
                         p.APPEARANCE_PENDING_ID,
                         p.APPEARANCE_ID,
@@ -2120,6 +2145,8 @@ namespace RawMat.SQLFactory
                         ON p.NG_MODE_ID = n.ID
                     WHERE p.REPORT_NO = {ToSqlTextValue(dataItem.Report_No)}
                       AND p.RESULT IS NULL
+                      AND COALESCE(p.QTY_NG, 0) > 0
+                      AND ({appearanceId} IS NULL OR p.APPEARANCE_ID = {appearanceId})
                     ORDER BY p.BATCH, p.COUNT, p.NG_COUNT";
 
             return sql;

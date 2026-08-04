@@ -46,6 +46,8 @@
             this.dtg_show_appear = new Bunifu.Framework.UI.BunifuCustomDataGrid();
             this.gb_ngMode = new System.Windows.Forms.GroupBox();
             this.lb_Qty = new System.Windows.Forms.Label();
+            this.bt_addNgRow = new System.Windows.Forms.Button();
+            this.bt_delNgRow = new System.Windows.Forms.Button();
             this.dtg_ngMode = new System.Windows.Forms.DataGridView();
             this.QTY_NG = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NG_MODE = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -224,6 +226,8 @@
             // gb_ngMode
             // 
             this.gb_ngMode.Controls.Add(this.lb_Qty);
+            this.gb_ngMode.Controls.Add(this.bt_addNgRow);
+            this.gb_ngMode.Controls.Add(this.bt_delNgRow);
             this.gb_ngMode.Controls.Add(this.dtg_ngMode);
             this.gb_ngMode.Enabled = false;
             this.gb_ngMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -246,9 +250,35 @@
             this.lb_Qty.Size = new System.Drawing.Size(45, 25);
             this.lb_Qty.TabIndex = 87;
             this.lb_Qty.Text = "Pcs";
-            // 
+            //
+            // bt_addNgRow
+            //
+            this.bt_addNgRow.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_addNgRow.ForeColor = System.Drawing.Color.Blue;
+            this.bt_addNgRow.Location = new System.Drawing.Point(13, 608);
+            this.bt_addNgRow.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_addNgRow.Name = "bt_addNgRow";
+            this.bt_addNgRow.Size = new System.Drawing.Size(238, 50);
+            this.bt_addNgRow.TabIndex = 88;
+            this.bt_addNgRow.Text = "+ เพิ่มอาการ";
+            this.bt_addNgRow.UseVisualStyleBackColor = true;
+            this.bt_addNgRow.Click += new System.EventHandler(this.bt_addNgRow_Click);
+            //
+            // bt_delNgRow
+            //
+            this.bt_delNgRow.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_delNgRow.ForeColor = System.Drawing.Color.Firebrick;
+            this.bt_delNgRow.Location = new System.Drawing.Point(262, 608);
+            this.bt_delNgRow.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_delNgRow.Name = "bt_delNgRow";
+            this.bt_delNgRow.Size = new System.Drawing.Size(238, 50);
+            this.bt_delNgRow.TabIndex = 89;
+            this.bt_delNgRow.Text = "- ลบแถวที่เลือก";
+            this.bt_delNgRow.UseVisualStyleBackColor = true;
+            this.bt_delNgRow.Click += new System.EventHandler(this.bt_delNgRow_Click);
+            //
             // dtg_ngMode
-            // 
+            //
             this.dtg_ngMode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_ngMode.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.QTY_NG,
@@ -257,7 +287,7 @@
             this.dtg_ngMode.Margin = new System.Windows.Forms.Padding(4);
             this.dtg_ngMode.Name = "dtg_ngMode";
             this.dtg_ngMode.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dtg_ngMode.Size = new System.Drawing.Size(487, 613);
+            this.dtg_ngMode.Size = new System.Drawing.Size(487, 553);
             this.dtg_ngMode.TabIndex = 85;
             // 
             // QTY_NG
@@ -525,6 +555,8 @@
         private Bunifu.Framework.UI.BunifuCustomDataGrid dtg_show_appear;
         private System.Windows.Forms.GroupBox gb_ngMode;
         private System.Windows.Forms.Label lb_Qty;
+        private System.Windows.Forms.Button bt_addNgRow;
+        private System.Windows.Forms.Button bt_delNgRow;
         private System.Windows.Forms.DataGridView dtg_ngMode;
         private System.Windows.Forms.GroupBox gb_input;
         private Bunifu.Framework.UI.BunifuFlatButton tb_record;

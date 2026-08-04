@@ -172,12 +172,6 @@ namespace RawMat.Views.Setting
             DataTable dtStrictnessType = _controller.GetStrictnessTypeList();
             DataTable dtStrictnessLevel = _controller.GetStrictnessLevelList();
 
-            // TODO: Remove debug MessageBox ก่อน deploy จริง
-            MessageBox.Show(
-                $"dtStrictnessType null = {dtStrictnessType == null}\n" +
-                $"Rows = {dtStrictnessType?.Rows.Count ?? 0}\n" +
-                $"Columns = {(dtStrictnessType == null ? "" : string.Join(", ", dtStrictnessType.Columns.Cast<DataColumn>().Select(c => c.ColumnName)))}");
-
             foreach (var tab in _tabs)
             {
                 BindMasterToCombo(tab.CboInspectionLevel, dtSamplingType);

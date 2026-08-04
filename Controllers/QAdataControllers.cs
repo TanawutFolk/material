@@ -2450,6 +2450,27 @@ namespace RawMat.Controllers
 
         }
 
+        // คืนจำนวนรายการ NG ที่ยังรอ admin ตัดสิน (0 = ไม่มีค้าง)
+        // ถ้าอ่านไม่สำเร็จจะคืน -1 เพื่อให้ผู้เรียกเลือกทางที่ปลอดภัยแทนการเข้าใจผิดว่าไม่มีค้าง
+        public int CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.CountAppearPendingUnreviewed(dataItem);
+
+                if (!_resultData.StatusOnDb || _resultData.ResultOnDb == null || _resultData.ResultOnDb.Rows.Count == 0)
+                {
+                    return -1;
+                }
+
+                return Convert.ToInt32(_resultData.ResultOnDb.Rows[0]["CNT"]);
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
         public Boolean InsertAppearData(QAdataProperty dataItem)
         {
 

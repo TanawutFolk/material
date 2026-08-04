@@ -844,6 +844,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.CountAppearPendingUnreviewed(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty InsertAppearData(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;

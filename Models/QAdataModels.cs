@@ -598,6 +598,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            resultData = services.CountAppearPendingUnreviewed(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty InsertAppearData(QAdataProperty dataItem)
         {
             resultData = services.InsertAppearData(dataItem);

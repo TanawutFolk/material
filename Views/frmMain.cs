@@ -48,12 +48,32 @@ namespace RawMat
         private Random random = new Random(); // สร้างออบเจกต์ Random
         private bool isTestMode = true; // กำหนดว่าจะเป็นโหมดทดสอบหรือโหมดจริง
         public Dictionary<string, Mutex> reportMutexes = new Dictionary<string, Mutex>();
-       
+
+        // Bunifu v1.52 วาดข้อความชิดซ้ายบนเมื่อ control ถูก disable โดยไม่สน TextAlign
+        // (ข้อความในปุ่มกระโดดไปซ้าย 23px บน 21px) จึงล็อก header ด้วย flag + เปลี่ยนสีเอง
+        // แทนการใช้ panelHeader2.Enabled = false
+        private static readonly Color HeaderLockedBackColor = Color.FromArgb(224, 224, 224);
+        private static readonly Color HeaderLockedTextColor = Color.FromArgb(128, 128, 128);
+        private bool headerNavLocked;
+        private readonly Dictionary<Control, HeaderButtonPalette> headerPalettes = new Dictionary<Control, HeaderButtonPalette>();
+
+        private struct HeaderButtonPalette
+        {
+            public Color BackColor;
+            public Color NormalColor;
+            public Color ActiveColor;
+            public Color OnHoverColor;
+            public Color TextColor;
+            public Color OnHoverTextColor;
+            public Cursor Cursor;
+        }
+
 
         public frmMain()
         {
             InitializeComponent();
             ConfigureHeaderStatusButtons();
+            CacheHeaderPalettes();
             _navigationService = new NavigationService(panelMain); // สร้าง NavigationService
             LoadLoginControl();
 
@@ -90,9 +110,9 @@ namespace RawMat
 
         }
 
-        private void ConfigureHeaderStatusButtons()
+        private BunifuFlatButton[] GetHeaderStatusButtons()
         {
-            BunifuFlatButton[] statusButtons =
+            return new BunifuFlatButton[]
             {
                 bt_status_rec_pending,
                 bt_status_packing_check_pending,
@@ -102,6 +122,91 @@ namespace RawMat
                 bt_status_dimension_pending,
                 bt_appear_pending
             };
+        }
+
+        // เก็บสีเดิมของปุ่ม header ไว้ครั้งเดียว เพื่อคืนค่าเมื่อปลดล็อก
+        private void CacheHeaderPalettes()
+        {
+            foreach (BunifuFlatButton button in GetHeaderStatusButtons())
+            {
+                if (button == null || headerPalettes.ContainsKey(button))
+                {
+                    continue;
+                }
+
+                headerPalettes[button] = new HeaderButtonPalette
+                {
+                    BackColor = button.BackColor,
+                    NormalColor = button.Normalcolor,
+                    ActiveColor = button.Activecolor,
+                    OnHoverColor = button.OnHovercolor,
+                    TextColor = button.Textcolor,
+                    OnHoverTextColor = button.OnHoverTextColor,
+                    Cursor = button.Cursor
+                };
+            }
+
+            foreach (BunifuTileButton button in new BunifuTileButton[] { bt_refresh, bt_setting })
+            {
+                if (button == null || headerPalettes.ContainsKey(button))
+                {
+                    continue;
+                }
+
+                headerPalettes[button] = new HeaderButtonPalette
+                {
+                    BackColor = button.BackColor,
+                    NormalColor = button.color,
+                    ActiveColor = button.colorActive,
+                    TextColor = button.ForeColor,
+                    Cursor = button.Cursor
+                };
+            }
+        }
+
+        // ล็อก/ปลดล็อกแถบ header โดยไม่แตะ Enabled (ดูคอมเมนต์ที่ประกาศ headerNavLocked)
+        private void SetHeaderNavLocked(bool locked)
+        {
+            headerNavLocked = locked;
+
+            foreach (BunifuFlatButton button in GetHeaderStatusButtons())
+            {
+                if (button == null || button.IsDisposed || !headerPalettes.ContainsKey(button))
+                {
+                    continue;
+                }
+
+                HeaderButtonPalette palette = headerPalettes[button];
+
+                button.BackColor = locked ? HeaderLockedBackColor : palette.BackColor;
+                button.Normalcolor = locked ? HeaderLockedBackColor : palette.NormalColor;
+                button.Activecolor = locked ? HeaderLockedBackColor : palette.ActiveColor;
+                button.OnHovercolor = locked ? HeaderLockedBackColor : palette.OnHoverColor;
+                button.Textcolor = locked ? HeaderLockedTextColor : palette.TextColor;
+                button.OnHoverTextColor = locked ? HeaderLockedTextColor : palette.OnHoverTextColor;
+                button.Cursor = locked ? Cursors.Default : palette.Cursor;
+            }
+
+            foreach (BunifuTileButton button in new BunifuTileButton[] { bt_refresh, bt_setting })
+            {
+                if (button == null || button.IsDisposed || !headerPalettes.ContainsKey(button))
+                {
+                    continue;
+                }
+
+                HeaderButtonPalette palette = headerPalettes[button];
+
+                button.BackColor = locked ? HeaderLockedBackColor : palette.BackColor;
+                button.color = locked ? HeaderLockedBackColor : palette.NormalColor;
+                button.colorActive = locked ? HeaderLockedBackColor : palette.ActiveColor;
+                button.ForeColor = locked ? HeaderLockedTextColor : palette.TextColor;
+                button.Cursor = locked ? Cursors.Default : palette.Cursor;
+            }
+        }
+
+        private void ConfigureHeaderStatusButtons()
+        {
+            BunifuFlatButton[] statusButtons = GetHeaderStatusButtons();
 
             const int leftMargin = 3;
             const int topMargin = 4;
@@ -476,7 +581,7 @@ namespace RawMat
 
         public void ControlLevel(EmployeeProperty empProp)
         {
-            panelHeader2.Enabled = true;
+            SetHeaderNavLocked(false);
             bt_home.Visible = true;
 
             if (empProp.EMP_LEVEL == "1")
@@ -509,7 +614,7 @@ namespace RawMat
         }
         public void ControlBackLevel(EmployeeProperty empProp)
         {
-            panelHeader2.Enabled = true;
+            SetHeaderNavLocked(false);
             bt_home.Visible = true;
 
             panelWH.Controls.Clear();
@@ -547,7 +652,7 @@ namespace RawMat
         {
             panelWH.Controls.Clear();
             panelMenu.Controls.Clear();
-            panelHeader2.Enabled = false;
+            SetHeaderNavLocked(true);
          
         }
 
@@ -736,11 +841,21 @@ namespace RawMat
 
         private void bt_refresh_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             LoadStatusAsync();
         }
 
         private void bt_status_rec_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlRecWHPending usrPend = new userControlRecWHPending();
@@ -754,6 +869,11 @@ namespace RawMat
 
         private void bt_status_packing_check_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlPackingCheckPending usrPackCheckPend = new userControlPackingCheckPending();
@@ -763,6 +883,11 @@ namespace RawMat
 
         private void bt_status_regular_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlSelectRegularPending usrSelectRegPending = new userControlSelectRegularPending();
@@ -772,6 +897,11 @@ namespace RawMat
 
         private void bt_status_function_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlSelectFunctionPending usrSelectFuncPending = new userControlSelectFunctionPending();
@@ -918,6 +1048,11 @@ namespace RawMat
 
         private void bt_status_dimension_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlSelectDimensionPending usrSelectDimPending = new userControlSelectDimensionPending();
@@ -927,6 +1062,11 @@ namespace RawMat
 
         private void bt_status_data_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlSelectInspDataPending usrSelectInspDataPending = new userControlSelectInspDataPending();
@@ -936,6 +1076,11 @@ namespace RawMat
 
         private void bt_appear_pending_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 userControlSelectAppearPending usrSelectAppearPending = new userControlSelectAppearPending();
@@ -945,6 +1090,11 @@ namespace RawMat
 
         private void bt_setting_Click(object sender, EventArgs e)
         {
+            if (headerNavLocked)
+            {
+                return;
+            }
+
             if (empProp.EMP_LEVEL == "1")
             {
                 // ถ้าเป็น Level 1 ให้เปิดหน้า Setting ได้
