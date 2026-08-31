@@ -531,6 +531,20 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty FunctionEquipment(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.FunctionEquipment(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            return base.SearchBySql(sqlFactory.FunctionCheckMethods(dataItem));
+        }
+
         public OutputOnDbProperty FunctionSampQtyLotSize(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -591,6 +605,12 @@ namespace RawMat.Services
             sql = sqlFactory.SearchFunctionDataPending(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
+        }
+
+        public OutputOnDbProperty SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            return base.SearchBySql(sqlFactory.SearchFunctionCheckResultPending(dataItem));
         }
 
         public OutputOnDbProperty SearchReportActive(QAdataProperty dataItem)
@@ -888,6 +908,81 @@ namespace RawMat.Services
         public override OutputOnDbProperty Update(QAdataProperty dataItem)
         {
             throw new NotImplementedException();
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+
+        public OutputOnDbProperty B08Header(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08Header(dataItem));
+        }
+
+        public OutputOnDbProperty B08PackingCheck(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08PackingCheck(dataItem));
+        }
+
+        public OutputOnDbProperty B08PackingSize(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08PackingSize(dataItem));
+        }
+
+        public OutputOnDbProperty B08LotNo(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08LotNo(dataItem));
+        }
+
+        public OutputOnDbProperty B08AppearanceData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08AppearanceData(dataItem));
+        }
+
+        public OutputOnDbProperty B08AppearancePending(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08AppearancePending(dataItem));
+        }
+
+        public OutputOnDbProperty B08Sampling(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08Sampling(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionPoints(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionPoints(dataItem));
+        }
+
+        public OutputOnDbProperty EquipmentSerialList()
+        {
+            return SearchOnQaDb(sqlFactory.EquipmentSerialList());
+        }
+
+        public OutputOnDbProperty B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionPieceJudge(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionData(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionEquipment(dataItem));
+        }
+
+        public OutputOnDbProperty B08FunctionData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08FunctionData(dataItem));
+        }
+
+        private OutputOnDbProperty SearchOnQaDb(string statement)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = statement;
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
         }
     }
 }

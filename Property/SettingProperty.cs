@@ -58,6 +58,8 @@ namespace RawMat.Property
 
         // --- Equipment Set ---
         public DataTable RegularEquipment { get; set; }
+        public DataTable FunctionEquipment { get; set; }
+        public DataTable FunctionChecks { get; set; }
         public DataTable DimensionEquipment { get; set; }
 
         // --- Employee Setting ---

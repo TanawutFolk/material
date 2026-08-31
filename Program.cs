@@ -1,4 +1,4 @@
-﻿using RawMat.Views.Setting;
+﻿using RawMat.ViewsMaterial.Setting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

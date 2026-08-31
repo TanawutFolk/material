@@ -806,7 +806,7 @@ namespace RawMat.SQLFactory
             }
             else
             {
-                sql = sql.Replace("dataItem.dim_check_status", $"'{dataItem.reg_check_status}'");
+                sql = sql.Replace("dataItem.dim_check_status", $"'{dataItem.dim_check_status}'");
             }
 
             // ?????????? data_check_status ????????????? NULL
@@ -912,7 +912,7 @@ namespace RawMat.SQLFactory
 
         public string RegularEquipment(QAdataProperty dataItem)
         {
-            sql = @"SELECT a.POINT_ORDER ,a.EQUIPMENT_TYPE , b.Equipment_Name , a.POINT_NAME , a.POINT_CAL , a.CRITERIA_MIN , a.CRITERIA_MAX 
+            sql = @"SELECT a.POINT_ORDER ,a.EQUIPMENT_TYPE , b.Equipment_Name , a.POINT_NAME , a.POINT_CAL , a.CRITERIA_MIN , a.CRITERIA_MAX , a.JUDGE_TYPE 
                     FROM `info_regular_equipment` a
                     JOIN info_equipment_type b on (a.EQUIPMENT_TYPE = b.Equipment_Type)
                     WHERE M_Code = 'dataItem.M_CODE'";
@@ -920,6 +920,16 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
 
             return sql;
+        }
+
+        // รายการ S/N ที่มีอยู่แล้ว ใช้เติม Dropdown ให้ช่อง EQ_SN เลือกแทนการพิมพ์เอง
+        public string EquipmentSerialList()
+        {
+            return @"SELECT s.`ID`, s.`EQUIPMENT_SERIAL`, s.`EQUIPMENT_TYPE_ID`
+                     FROM `info_equipment_serial` s
+                     WHERE s.`EQUIPMENT_SERIAL` IS NOT NULL
+                       AND TRIM(s.`EQUIPMENT_SERIAL`) <> ''
+                     ORDER BY s.`EQUIPMENT_TYPE_ID`, s.`EQUIPMENT_SERIAL`";
         }
 
         public string InsertEquipmentSerial(QAdataProperty dataItem)
@@ -1089,7 +1099,7 @@ namespace RawMat.SQLFactory
         public string SearchRegularDataPending(QAdataProperty dataItem)
 
         {
-            sql = @"select a.SAMPLING_NO  , a.CAVITY_NAME, c.POINT_CAL , c.POINT_ORDER , c.POINT_NAME ,a.EQUIPMENT_SERIAL_ID , d.Equipment_Type , d.Equipment_Name , a.`VALUE` , c.CRITERIA_MIN , c.CRITERIA_MAX
+            sql = @"select a.SAMPLING_NO  , a.CAVITY_NAME, c.POINT_CAL , c.POINT_ORDER , c.POINT_NAME ,a.EQUIPMENT_SERIAL_ID , d.Equipment_Type , d.Equipment_Name , a.`VALUE` , c.CRITERIA_MIN , c.CRITERIA_MAX , c.JUDGE_TYPE
                     
                     from db_regular_data a 
                     join db_receive_mat b on (a.REGULAR_NO = b.Regular_No)
@@ -1181,6 +1191,30 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE);
 
             return sql;
+        }
+
+        public string FunctionEquipment(QAdataProperty dataItem)
+        {
+            sql = @"SELECT a.POINT_ORDER, a.EQUIPMENT_TYPE, b.Equipment_Name,
+                           a.POINT_NAME, a.POINT_CAL, a.CRITERIA_MIN,
+                           a.CRITERIA_MAX, a.UNIT
+                    FROM info_function_equipment a
+                    LEFT JOIN info_equipment_type b
+                      ON a.EQUIPMENT_TYPE = b.Equipment_Type
+                    WHERE a.M_CODE = 'dataItem.M_CODE'
+                    ORDER BY a.POINT_ORDER ASC";
+
+            sql = sql.Replace("dataItem.M_CODE", dataItem.M_CODE.Replace("'", "''"));
+            return sql;
+        }
+
+        public string FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            return $@"SELECT ID, CHECK_ORDER, CHECK_DETAIL
+                      FROM info_function_check_method
+                      WHERE M_CODE = {ToSqlTextValue(dataItem.M_CODE)}
+                        AND INUSE = 1
+                      ORDER BY CHECK_ORDER";
         }
 
         public string FunctionSampQtyLotSize(QAdataProperty dataItem)
@@ -1335,6 +1369,10 @@ namespace RawMat.SQLFactory
                                   $"AND `SAMPLING_NO` = '{row["SAMPLING_NO"].ToString()}';";
                 sqlList.Add(updateQuery);
 
+                sqlList.Add($"UPDATE `db_function_check_result` SET `INUSE` = 0 " +
+                            $"WHERE `REPORT_NO` = '{dataItem.Report_No}' " +
+                            $"AND `SAMPLING_NO` = '{row["SAMPLING_NO"]}';");
+
                 // ??? Derived Table ???????? Error 1093
                 var countSubQuery = $"(SELECT COALESCE(MAX(tmp.`COUNT`), 0) + 1 FROM " +
                                     $"(SELECT `COUNT` FROM `db_function_data` WHERE `REPORT_NO` = '{dataItem.Report_No}' " +
@@ -1347,12 +1385,43 @@ namespace RawMat.SQLFactory
                 var remarkValue = row.Table.Columns.Contains("REMARK") && row["REMARK"] != DBNull.Value
                     ? $"'{row["REMARK"].ToString().Replace("'", "''")}'"
                     : "NULL";
+                object equipmentSerialId = row.Table.Columns.Contains("EQUIPMENT_SERIAL_ID")
+                    ? row["EQUIPMENT_SERIAL_ID"]
+                    : null;
+                var equipmentSerialIdValue = ToSqlIntOrNull(equipmentSerialId);
 
                 // ?????? INSERT ?????? Derived Table
-                var insertQuery = $"INSERT INTO `db_function_data` (`REPORT_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `LOT_NO`, `COUNT`, `JUDGE`, `REMARK`, `EMP_ID`, `FUNCTION_DATE`, `INUSE`) " +
+                var insertQuery = $"INSERT INTO `db_function_data` (`REPORT_NO`, `CAVITY_NAME`, `SAMPLING_NO`, `LOT_NO`, `EQUIPMENT_SERIAL_ID`, `COUNT`, `JUDGE`, `REMARK`, `EMP_ID`, `FUNCTION_DATE`, `INUSE`) " +
                                   $"VALUES ('{dataItem.Report_No}', {cavityNameValue}, '{row["SAMPLING_NO"].ToString()}', '{row["LOT_NO"].ToString()}', " +
-                                  $"{countSubQuery}, '{row["POINT_JUDGE"].ToString()}', {remarkValue}, '{dataItem.EMP_ID}', NOW(), 1);";
+                                  $"{equipmentSerialIdValue}, {countSubQuery}, '{row["POINT_JUDGE"].ToString()}', {remarkValue}, '{dataItem.EMP_ID}', NOW(), 1);";
                 sqlList.Add(insertQuery);
+
+                if (dataItem.dtFuncCheck != null && dataItem.dtFuncCheck.Rows.Count > 0)
+                {
+                    var insertedCount = $"(SELECT MAX(d.`COUNT`) FROM `db_function_data` d " +
+                                        $"WHERE d.`REPORT_NO` = '{dataItem.Report_No}' " +
+                                        $"AND d.`SAMPLING_NO` = '{row["SAMPLING_NO"]}')";
+
+                    foreach (DataRow check in dataItem.dtFuncCheck.Rows)
+                    {
+                        string checkId = check["ID"]?.ToString();
+                        string checkOrder = check["CHECK_ORDER"]?.ToString();
+                        string checkDetail = check["CHECK_DETAIL"]?.ToString();
+                        string resultColumn = "FUNCTION_CHECK_" + checkId;
+                        if (!row.Table.Columns.Contains(resultColumn)) continue;
+
+                        string detailJudge = ToSqlIntOrNull(row[resultColumn]);
+                        sqlList.Add($@"INSERT INTO `db_function_check_result`
+                            (`REPORT_NO`, `COUNT`, `SAMPLING_NO`, `CAVITY_NAME`, `LOT_NO`,
+                             `FUNCTION_CHECK_ID`, `CHECK_ORDER`, `CHECK_DETAIL`, `JUDGE`,
+                             `REMARK`, `EMP_ID`, `FUNCTION_DATE`, `INUSE`)
+                            VALUES ({ToSqlTextValue(dataItem.Report_No)}, {insertedCount},
+                                    {ToSqlIntOrNull(row["SAMPLING_NO"])}, {cavityNameValue},
+                                    {ToSqlTextValue(row["LOT_NO"])}, {ToSqlIntOrNull(checkId)},
+                                    {ToSqlIntOrNull(checkOrder)}, {ToSqlTextValue(checkDetail)},
+                                    {detailJudge}, {remarkValue}, {ToSqlTextValue(dataItem.EMP_ID)}, NOW(), 1);");
+                    }
+                }
             }
 
             // ??????????? Report
@@ -1387,10 +1456,19 @@ namespace RawMat.SQLFactory
         public string SearchFunctionDataPending(QAdataProperty dataItem)
 
         {
-            sql = @"select a.SAMPLING_NO  , a.CAVITY_NAME , a.`JUDGE` , a.`REMARK` , a.EMP_ID , a.FUNCTION_DATE
+            sql = @"select a.SAMPLING_NO, a.CAVITY_NAME, a.LOT_NO, a.JUDGE, a.REMARK,
+                           a.EMP_ID, a.FUNCTION_DATE, a.EQUIPMENT_SERIAL_ID,
+                           s.EQUIPMENT_SERIAL,
+                           COALESCE(s.EQUIPMENT_TYPE_ID, f.EQUIPMENT_TYPE) AS EQUIPMENT_TYPE,
+                           COALESCE(t.Equipment_Name, ft.Equipment_Name) AS EQUIPMENT_NAME
                
                    from db_function_data a 
                    join db_receive_mat b on (a.Report_No = b.Report_No)
+                   left join info_equipment_serial s on a.EQUIPMENT_SERIAL_ID = s.ID
+                   left join info_equipment_type t on s.EQUIPMENT_TYPE_ID = t.Equipment_Type
+                   left join info_function_equipment f
+                     on b.M_Code = f.M_CODE and f.POINT_ORDER = 1
+                   left join info_equipment_type ft on f.EQUIPMENT_TYPE = ft.Equipment_Type
               
                    where a.Report_No = 'dataItem.Report_No' and inuse = 1 and JUDGE= 0
    
@@ -1400,6 +1478,23 @@ namespace RawMat.SQLFactory
 
             return sql;
 
+        }
+
+        public string SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            return $@"SELECT r.REPORT_NO, r.`COUNT`, r.SAMPLING_NO, r.CAVITY_NAME,
+                             r.LOT_NO, r.FUNCTION_CHECK_ID, r.CHECK_ORDER,
+                             r.CHECK_DETAIL, r.JUDGE, r.REMARK
+                      FROM db_function_check_result r
+                      JOIN db_function_data f
+                        ON r.REPORT_NO = f.REPORT_NO
+                       AND r.`COUNT` = f.`COUNT`
+                       AND r.SAMPLING_NO = f.SAMPLING_NO
+                       AND r.INUSE = f.INUSE
+                      WHERE r.REPORT_NO = {ToSqlTextValue(dataItem.Report_No)}
+                        AND r.INUSE = 1
+                        AND f.JUDGE = 0
+                      ORDER BY r.SAMPLING_NO, r.CHECK_ORDER";
         }
 
         public string SearchReportActive(QAdataProperty dataItem)
@@ -1440,12 +1535,16 @@ namespace RawMat.SQLFactory
 
         }
 
+        // อ่านสถานะของ process ที่กำลังทำอยู่ (คอลัมน์ชื่อเดียวกับ dataItem.process เช่น `Appearance_Check`)
+        // เดิมอ่าน `report_status` ซึ่งเป็นคอลัมน์รวมทั้งใบที่ทุก process เขียนทับกันได้
+        // ทำให้ Appearance ถูกบล็อกเพราะ Function/Dimension ติด Pending ทั้งที่ยังไม่ได้เริ่มตรวจ
         public string CheckReportStatus(QAdataProperty dataItem)
         {
-            sql = @"SELECT report_status
+            sql = @"SELECT `dataItem.process` AS proc_status
             FROM `db_report_status`
             where Report_No = 'dataItem.Report_No'";
 
+            sql = sql.Replace("dataItem.process", dataItem.process);
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
 
             return sql;
@@ -1510,7 +1609,7 @@ namespace RawMat.SQLFactory
 
         public string DimensionEquipment(QAdataProperty dataItem)
         {
-            sql = @"SELECT a.POINT_ORDER ,a.EQUIPMENT_TYPE , b.Equipment_Name , a.POINT_NAME , a.POINT_CAL , a.CRITERIA_MIN , a.CRITERIA_MAX 
+            sql = @"SELECT a.POINT_ORDER ,a.EQUIPMENT_TYPE , b.Equipment_Name , a.POINT_NAME , a.POINT_CAL , a.CRITERIA_MIN , a.CRITERIA_MAX , a.JUDGE_TYPE 
                     FROM `info_dimension_equipment` a
                     JOIN info_equipment_type b on (a.EQUIPMENT_TYPE = b.Equipment_Type)
                     WHERE M_Code = 'dataItem.M_CODE'";
@@ -1544,17 +1643,25 @@ namespace RawMat.SQLFactory
         public string SearchDimensionDataPending(QAdataProperty dataItem)
 
         {
-            sql = @"select a.SAMPLING_NO  , a.CAVITY_NAME, c.POINT_CAL , c.POINT_ORDER , c.POINT_NAME ,a.EQUIPMENT_SERIAL_ID , d.Equipment_Type , d.Equipment_Name , a.`VALUE` , c.CRITERIA_MIN , c.CRITERIA_MAX
+            sql = @"select a.SAMPLING_NO  , a.CAVITY_NAME, c.POINT_CAL , c.POINT_ORDER , c.POINT_NAME ,a.EQUIPMENT_SERIAL_ID , d.Equipment_Type , d.Equipment_Name , a.`VALUE` , c.CRITERIA_MIN , c.CRITERIA_MAX , c.JUDGE_TYPE
               
               from db_dimension_data a 
               join db_receive_mat b on (a.Report_No = b.Report_No)
               join info_dimension_equipment c on (b.M_Code = c.M_CODE  and a.POINT_ORDER = c.POINT_ORDER)
               join info_equipment_type d on (c.EQUIPMENT_TYPE = d.Equipment_Type)
 
-              where a.Report_No = 'dataItem.Report_No' and inuse = 1 and JUDGE= 0
+              where a.Report_No = 'dataItem.Report_No' and inuse = 1 dataItem.judgeFilter
    
             ";
 
+            // ปกติหน้า Pending โชว์เฉพาะจุดที่ตก Admin จะได้แก้เฉพาะจุดนั้น
+            // แต่แบบ All ตัดสินจากผลต่างของทุกจุดในชิ้นเดียวกัน จึงต้องดึงมาทั้งชิ้น
+            //   1) ชิ้นที่ทุกจุดอยู่ในเกณฑ์ แต่ผลต่างกว้างเกิน จะไม่มีแถว JUDGE = 0 เลย
+            //      กรองไว้จะเปิดหน้ามาแล้วว่างเปล่า ทั้งที่ใบนั้นตกจริง
+            //   2) คิดผลต่างใหม่ต้องใช้ค่าทุกจุด ถ้าโหลดมาแค่จุดที่ตก ผลต่างจะผิด
+            string judgeFilter = dataItem.SAMPLING_TYPE == "1" ? "" : "and JUDGE = 0";
+
+            sql = sql.Replace("dataItem.judgeFilter", judgeFilter);
             sql = sql.Replace("dataItem.Report_No", dataItem.Report_No);
 
             return sql;
@@ -1730,7 +1837,101 @@ namespace RawMat.SQLFactory
                 sqlList.Add(sql);
             }
 
+            sqlList.AddRange(BuildDimensionPieceJudgeSql(dataItem, dt));
+
             return sqlList;
+        }
+
+        /// <summary>
+        /// ผลตัดสินราย "ชิ้น" ของแบบ All : ผลต่างของทุกจุดในชิ้นเดียวกันต้องไม่เกินเกณฑ์
+        /// เก็บ TOLERANCE ที่ใช้ตัดสินไว้ด้วย ไม่ให้ไปคำนวณใหม่ตอน export
+        /// ถ้าเกณฑ์ใน master ถูกแก้ทีหลัง ใบเก่าจะยังตัดสินด้วยเกณฑ์เดิม
+        /// </summary>
+        private List<string> BuildDimensionPieceJudgeSql(QAdataProperty dataItem, DataTable dt)
+        {
+            var sqlList = new List<string>();
+
+            // โหมดอื่นไม่มีเกณฑ์นี้ ตารางหน้าจอจึงไม่มีคอลัมน์พวกนี้
+            if (!dt.Columns.Contains("PIECE_JUDGE") || !dt.Columns.Contains("DIFFERENCE"))
+            {
+                return sqlList;
+            }
+
+            string reportNo = ToSqlTextValue(dataItem.Report_No);
+            string empId = ToSqlTextValue(dataItem.EMP_ID);
+            var done = new HashSet<string>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                string samplingNo = ToSqlTextValue(row["SAMPLING_NO"]);
+
+                // ทุกจุดในชิ้นเดียวกันถือค่าเดียวกัน เก็บแถวเดียวพอ
+                if (!done.Add(samplingNo))
+                {
+                    continue;
+                }
+
+                // ยังกรอกไม่ครบทุกจุด ยังไม่มีผลตัดสินให้บันทึก
+                if (row["PIECE_JUDGE"] == null || row["PIECE_JUDGE"] == DBNull.Value)
+                {
+                    continue;
+                }
+
+                string difference = ToSqlNumberValue(row["DIFFERENCE"]);
+                string tolerance = dt.Columns.Contains("TOLERANCE") ? ToSqlNumberValue(row["TOLERANCE"]) : "NULL";
+                string judge = ToSqlNumberValue(row["PIECE_JUDGE"]);
+                string cavityValue = dt.Columns.Contains("CAVITY_NAME") ? ToSqlValue(row["CAVITY_NAME"]) : "NULL";
+
+                sqlList.Add($@"
+            UPDATE `db_dimension_piece_judge`
+            SET `INUSE` = 0
+            WHERE `REPORT_NO` = {reportNo}
+              AND `SAMPLING_NO` = {samplingNo};");
+
+                sqlList.Add($@"
+            INSERT INTO `db_dimension_piece_judge`
+            (
+                `REPORT_NO`,
+                `SAMPLING_NO`,
+                `COUNT`,
+                `CAVITY_NAME`,
+                `DIFFERENCE`,
+                `TOLERANCE`,
+                `JUDGE`,
+                `EMP_ID`,
+                `JUDGE_DATE`,
+                `INUSE`
+            )
+            SELECT
+                {reportNo},
+                {samplingNo},
+                COALESCE(MAX(`COUNT`), 0) + 1,
+                {cavityValue},
+                {difference},
+                {tolerance},
+                {judge},
+                {empId},
+                NOW(),
+                1
+            FROM `db_dimension_piece_judge`
+            WHERE `REPORT_NO` = {reportNo}
+              AND `SAMPLING_NO` = {samplingNo};");
+            }
+
+            return sqlList;
+        }
+
+        // ตัวเลขที่ต้องลง DB เป็นชนิดตัวเลข ไม่ใช่ข้อความ ค่าว่างให้เป็น NULL
+        private static string ToSqlNumberValue(object value)
+        {
+            if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(value.ToString()))
+            {
+                return "NULL";
+            }
+
+            return decimal.TryParse(value.ToString(), out decimal number)
+                ? number.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                : "NULL";
         }
 
 
@@ -2044,29 +2245,88 @@ namespace RawMat.SQLFactory
             List<string> sqlList = new List<string>();
             DataTable dt = (DataTable)dataItem.dtg_ngMode.DataSource;
 
+            // APPEARANCE_ID ที่ถูกแตะในรอบนี้ ต้องคิดยอดใหม่กลับ db_appearance_data
+            List<string> appearanceIds = new List<string>();
+
             foreach (DataRow row in dt.Rows)
             {
                 string pendingId = ToSqlLongOrNull(row.Table.Columns.Contains("APPEARANCE_PENDING_ID") ? row["APPEARANCE_PENDING_ID"] : null);
-                string result = ToSqlIntOrNull(row.Table.Columns.Contains("RESULT") ? row["RESULT"] : null);
-
-                if (pendingId == "NULL" || result == "NULL")
+                if (pendingId == "NULL")
                 {
                     continue;
                 }
 
+                // ช่อง OK ว่าง = ยังไม่ตัดสิน (UI กันไว้อีกชั้นแล้ว แต่กันเผื่อไว้ตรงนี้ด้วย)
+                string okText = row.Table.Columns.Contains("OK_QTY") ? row["OK_QTY"]?.ToString() : null;
+                if (string.IsNullOrWhiteSpace(okText) || !int.TryParse(okText, out int okQty))
+                {
+                    continue;
+                }
+
+                int qtyNg = 0;
+                if (row.Table.Columns.Contains("QTY_NG"))
+                {
+                    int.TryParse(row["QTY_NG"]?.ToString(), out qtyNg);
+                }
+
+                if (okQty < 0) okQty = 0;
+                if (okQty > qtyNg) okQty = qtyNg;
+
+                // RESULT ยังเป็น "สรุปผล" เหมือนเดิม เพื่อให้ query ที่ใช้ `RESULT IS NULL`
+                // เป็นตัวชี้ว่ายังรอ admin ทำงานได้ต่อโดยไม่ต้องแก้
+                int result = okQty >= qtyNg ? 1 : 0;
+
                 sql = $@"UPDATE `db_appearance_pending`
                          SET `RESULT` = {result},
+                             `REVIEW_OK_QTY` = {okQty},
                              `REVIEW_EMP_ID` = {ToSqlTextValue(dataItem.EMP_ID)},
                              `REVIEW_DATE` = NOW(),
                              `UPDATETIME` = NOW()
                          WHERE `APPEARANCE_PENDING_ID` = {pendingId}
                            AND `RESULT` IS NULL";
                 sqlList.Add(sql);
+
+                string appearanceId = ToSqlLongOrNull(row.Table.Columns.Contains("APPEARANCE_ID") ? row["APPEARANCE_ID"] : null);
+                if (appearanceId != "NULL" && !appearanceIds.Contains(appearanceId))
+                {
+                    appearanceIds.Add(appearanceId);
+                }
+            }
+
+            // ต้องอยู่หลัง UPDATE ข้างบน — UpdateBySqlList รันเรียงกันใน transaction เดียว
+            // จึงเห็น REVIEW_OK_QTY ที่เพิ่งเขียน
+            foreach (string appearanceId in appearanceIds)
+            {
+                sqlList.Add(RecalcAppearDataFromPending(appearanceId));
             }
 
             sqlList.Add(UpdateReportStatus(dataItem));
 
             return sqlList;
+        }
+
+        // เขียนผลการ review กลับ db_appearance_data — ชิ้นที่ admin ตัดสินว่า OK จริง
+        // ต้องย้ายจากฝั่ง NG มาเป็น OK มิฉะนั้นยอดในใบตรวจจะค้างเป็น NG ตลอด
+        //
+        // คิดใหม่ทั้งก้อนจาก db_appearance_pending (ไม่ใช่บวกเพิ่มจากของเดิม) จึงรันซ้ำได้
+        // ยอดไม่บวกทบ — อาศัย invariant ที่ยืนยันกับข้อมูลจริงแล้วว่า
+        //   QTY_SELECT = QTY_OK + QTY_NG  และ  QTY_NG = SUM(pending.QTY_NG)
+        private string RecalcAppearDataFromPending(string appearanceId)
+        {
+            return $@"UPDATE `db_appearance_data` a
+                      JOIN (
+                            SELECT `APPEARANCE_ID`,
+                                   SUM(COALESCE(`QTY_NG`, 0)) - SUM(COALESCE(`REVIEW_OK_QTY`, 0)) AS REMAIN_NG
+                            FROM `db_appearance_pending`
+                            WHERE `APPEARANCE_ID` = {appearanceId}
+                            GROUP BY `APPEARANCE_ID`
+                           ) p ON a.`APPEARANCE_ID` = p.`APPEARANCE_ID`
+                      SET a.`QTY_NG`     = p.REMAIN_NG,
+                          a.`QTY_OK`     = a.`QTY_SELECT` - p.REMAIN_NG,
+                          a.`JUDGE`      = CASE WHEN p.REMAIN_NG = 0 THEN 1 ELSE 0 END,
+                          a.`UPDATETIME` = NOW()
+                      WHERE a.`APPEARANCE_ID` = {appearanceId}
+                        AND a.`INUSE` = 1";
         }
         public string GetTotalInspected (QAdataProperty dataItem)
         {
@@ -2090,8 +2350,10 @@ namespace RawMat.SQLFactory
 
         public string SearchForAppearPending()
         {
+            // รวมเป็น 1 แถวต่อ 1 Report — อาการเดียวกันจากคนละแพ็ค/คนละครั้งบันทึกจะถูกยุบรวมกัน
+            // รายละเอียดรายอาการไปดูที่หน้า Pending (SearchAppearPendingData ดึงทั้ง Report เมื่อไม่ส่ง APPEARANCE_ID)
             sql = @"SELECT b.Receive_Date as `Receive Date` , b.Regular_No as `Regular No`, a.Report_No as `Report No.` ,
-                      p.APPEARANCE_ID as `APPEARANCE_ID`, COALESCE(p.LOT_NO, '') as `Lot No.`, p.BATCH as `Batch`, p.COUNT as `Count`,
+                      COALESCE(GROUP_CONCAT(DISTINCT NULLIF(p.LOT_NO, '') ORDER BY p.LOT_NO SEPARATOR ', '), '') as `Lot No.`,
                       SUM(COALESCE(p.QTY_NG, 0)) as `Pending Qty`, COUNT(*) as `Pending Items`,
                       b.M_Code as `M-CODE` , b.Invoice_No as `Invoice No.` , b.Lot_Size as `Lot Size` , b.Inspection_Qty as `Inspection Qty` ,
                       d.VENDOR_NAME as `Vendor` , c.ITEM_EXTERNAL_SHORT_NAME as `Material Name` , 6 as `process_status_id` , 'Pending' as `Status` , b.Issue_Date
@@ -2105,11 +2367,10 @@ namespace RawMat.SQLFactory
                join db_appearance_pending p on (a.Report_No = p.REPORT_NO and p.RESULT IS NULL)
                where e.Appearance_Check_Need = 1
                  and COALESCE(p.QTY_NG, 0) > 0
-               group by p.APPEARANCE_ID, COALESCE(p.LOT_NO, ''), p.BATCH, p.COUNT,
-                        b.Receive_Date, b.Regular_No, a.Report_No, b.M_Code, b.Invoice_No,
+               group by b.Receive_Date, b.Regular_No, a.Report_No, b.M_Code, b.Invoice_No,
                         b.Lot_Size, b.Inspection_Qty, d.VENDOR_NAME, c.ITEM_EXTERNAL_SHORT_NAME,
                         b.Issue_Date
-               order by b.Receive_Date, a.Report_No, p.BATCH, p.COUNT, p.APPEARANCE_ID
+               order by b.Receive_Date, a.Report_No
                ";
 
             return sql;
@@ -2133,6 +2394,7 @@ namespace RawMat.SQLFactory
                         p.NG_DETAIL AS NOTE,
                         '' AS JUDGEMENT,
                         COALESCE(CAST(p.RESULT AS CHAR), '') AS RESULT,
+                        COALESCE(CAST(p.REVIEW_OK_QTY AS CHAR), '') AS REVIEW_OK_QTY,
                         a.QTY_SELECT,
                         a.QTY_OK,
                         a.QTY_NG AS TOTAL_QTY_NG,
@@ -2163,6 +2425,7 @@ namespace RawMat.SQLFactory
                 $"DELETE FROM `db_appearance_data` WHERE `REPORT_NO` = {reportNo}",
                 $"DELETE FROM `db_inspection_data` WHERE `REPORT_NO` = {reportNo}",
                 $"DELETE FROM `db_dimension_data` WHERE `REPORT_NO` = {reportNo}",
+                $"DELETE FROM `db_function_check_result` WHERE `REPORT_NO` = {reportNo}",
                 $"DELETE FROM `db_function_data` WHERE `REPORT_NO` = {reportNo}",
                 $"DELETE FROM `db_regular_data` WHERE `REGULAR_NO` = {regularNo}",
                 $"DELETE rd FROM `db_regular_data` rd JOIN `db_receive_mat` rm ON rd.`REGULAR_NO` = rm.`Regular_No` WHERE rm.`Report_No` = {reportNo}",
@@ -2174,6 +2437,201 @@ namespace RawMat.SQLFactory
                 $"DELETE FROM `db_receive_mat` WHERE `Report_No` = {reportNo}"
             };
         }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F Receiving Inspection Check Sheet ----------
+
+        // หัวเอกสาร + flag ว่าต้องตรวจอะไรบ้าง (ใช้ตัดสินว่าบล็อกไหนเทา บล็อกไหนขาว)
+        public string B08Header(QAdataProperty dataItem)
+        {
+            return $@"SELECT r.`Report_No`, r.`M_Code`, r.`Material_Name`, r.`Receive_Date`, r.`Invoice_No`,
+                             r.`Vendor_Name`, r.`Lot_Size`, r.`Inspection_Qty`, r.`Regular_No`,
+                             s.`Emp_Receive_WH`, s.`Receive_WH_Date`,
+                             COALESCE(e.`Keep_Data_Need`, 0)        AS `Keep_Data_Need`,
+                             COALESCE(e.`Regular_Check_Need`, 0)    AS `Regular_Check_Need`,
+                             COALESCE(e.`Function_Check_Need`, 0)   AS `Function_Check_Need`,
+                             COALESCE(e.`Dimension_Check_Need`, 0)  AS `Dimension_Check_Need`,
+                             COALESCE(e.`Appearance_Check_Need`, 0) AS `Appearance_Check_Need`,
+                             ref.`Reference`
+                      FROM `db_receive_mat` r
+                      LEFT JOIN `db_report_status` s ON r.`Report_No` = s.`Report_No`
+                      LEFT JOIN `info_mat_inspection_list` e ON r.`M_Code` = e.`M_CODE`
+                      LEFT JOIN `info_reference` ref ON r.`M_Code` = ref.`M_Code`
+                      WHERE r.`Report_No` = {ToSqlTextValue(dataItem.Report_No)}";
+        }
+
+        // บรรจุภัณฑ์ 3 บรรทัด : info_method ID 1-3 ตรงกับข้อความในฟอร์ม
+        // LEFT JOIN เพื่อให้ได้ครบ 3 บรรทัดเสมอ ถึงยังไม่ได้ตรวจ
+        public string B08PackingCheck(QAdataProperty dataItem)
+        {
+            return $@"SELECT m.`ID` AS `METHOD_ID`, m.`DETAIL_METHOD`,
+                             p.`JUDGMENT`, p.`DETAIL_JUDGE`, p.`EMP_PACKING_CHECK`, p.`UpdateTime`
+                      FROM `info_method` m
+                      LEFT JOIN `db_packing_check` p
+                             ON p.`METHOD_ID` = m.`ID`
+                            AND p.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                            AND p.`COUNT` = (SELECT MAX(x.`COUNT`) FROM `db_packing_check` x
+                                             WHERE x.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                                               AND x.`METHOD_ID` = m.`ID`)
+                      WHERE m.`ID` IN (1, 2, 3)
+                      ORDER BY m.`ID`";
+        }
+
+        // ขนาดบรรจุ : VALUE X PACK_COUNT
+        public string B08PackingSize(QAdataProperty dataItem)
+        {
+            return $@"SELECT `BATCH`, `VALUE`, `PACK_COUNT`, `PACKING_SIZE`
+                      FROM `db_packing_size`
+                      WHERE `Report_No` = {ToSqlTextValue(dataItem.Report_No)}
+                      ORDER BY `BATCH`";
+        }
+
+        public string B08LotNo(QAdataProperty dataItem)
+        {
+            return $@"SELECT `LOT_NO`
+                      FROM `db_report_lot_no`
+                      WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                      ORDER BY `LOT_NO`";
+        }
+
+        // 1 แถวต่อ 1 รอบตรวจ เรียงตามเวลาที่บันทึกจริง
+        public string B08AppearanceData(QAdataProperty dataItem)
+        {
+            return $@"SELECT a.`APPEARANCE_ID`, a.`BATCH`, a.`COUNT`, a.`LOT_NO`,
+                             a.`QTY_SELECT`, a.`QTY_OK`, a.`QTY_NG`, a.`JUDGE`,
+                             a.`EMP_ID`,
+                             TRIM(CONCAT(COALESCE(emp.`Employee_FirstName`, ''), ' ', COALESCE(emp.`Employee_LastName`, ''))) AS `EMP_NAME`,
+                             COALESCE(a.`APPEARANCE_DATE`, DATE(a.`UPDATETIME`)) AS `APPEARANCE_DATE`,
+                             a.`UPDATETIME`
+                      FROM `db_appearance_data` a
+                      LEFT JOIN `info_employee` emp ON a.`EMP_ID` = emp.`Employee_ID`
+                      WHERE a.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND a.`INUSE` = 1
+                      ORDER BY a.`APPEARANCE_ID`";
+        }
+
+        // ค่าที่ใช้ตัดสินว่า M-CODE นี้ต้องใช้ฟอร์ม B08 แบบไหน และโซนกลางต้องยืดแค่ไหน
+        // dataItem.Qty = Lot Size ใช้เปิดตาราง info_strictness หาจำนวนตัวอย่างที่ต้องตรวจ
+        public string B08Sampling(QAdataProperty dataItem)
+        {
+            string mCode = ToSqlTextValue(dataItem.M_CODE);
+            string lotSize = ToSqlIntOrNull(dataItem.Qty);
+
+            return $@"SELECT d.`Sampling_Type`      AS `DIM_SAMPLING_TYPE`,
+                             d.`Cavity_Qty`         AS `DIM_CAVITY_QTY`,
+                             d.`Sampling_Qty`       AS `DIM_SAMPLING_QTY`,
+                             d.`Strictness_Type`    AS `DIM_STRICTNESS_TYPE`,
+                             d.`Strictness_Level`   AS `DIM_STRICTNESS_LEVEL`,
+                             f.`Sampling_Type`      AS `FUNC_SAMPLING_TYPE`,
+                             f.`Cavity_Qty`         AS `FUNC_CAVITY_QTY`,
+                             f.`Sampling_Qty`       AS `FUNC_SAMPLING_QTY`,
+                             (SELECT s.`Sampling_Qty`
+                                FROM `info_strictness` s
+                               WHERE s.`Strictness_Type`  = d.`Strictness_Type`
+                                 AND s.`Strictness_Level` = d.`Strictness_Level`
+                                 AND COALESCE({lotSize}, 0) BETWEEN s.`Min_Qty` AND s.`Max_Qty`
+                               LIMIT 1)                AS `STRICTNESS_SAMPLING_QTY`,
+                             (SELECT COUNT(*)
+                                FROM `info_dimension_equipment` de
+                               WHERE de.`M_CODE` = {mCode}) AS `DIM_POINT_COUNT`
+                      FROM `info_dimension_sampling` d
+                      LEFT JOIN `info_function_sampling` f ON f.`M_Code` = d.`M_Code`
+                      WHERE d.`M_Code` = {mCode}";
+        }
+
+        // รายการ NG ที่ค้าง/ตัดสินแล้ว ใช้เติมตาราง Pending detail ท้ายเอกสาร
+        public string B08AppearancePending(QAdataProperty dataItem)
+        {
+            return $@"SELECT p.`APPEARANCE_PENDING_ID`, p.`APPEARANCE_ID`, p.`BATCH`, p.`COUNT`, p.`LOT_NO`,
+                             p.`NG_DETAIL`, p.`NG_MODE_ID`, n.`NG_Mode`,
+                             p.`QTY_NG`, p.`RESULT`, p.`REVIEW_OK_QTY`,
+                             (COALESCE(p.`QTY_NG`, 0) - COALESCE(p.`REVIEW_OK_QTY`, 0)) AS `REMAIN_NG`
+                      FROM `db_appearance_pending` p
+                      LEFT JOIN `info_ngmode` n ON p.`NG_MODE_ID` = n.`ID`
+                      WHERE p.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND COALESCE(p.`QTY_NG`, 0) > 0
+                      ORDER BY p.`APPEARANCE_PENDING_ID`";
+        }
+
+        // ---------- Function / Dimension สำหรับ FM-QA-B08-F ----------
+
+        // จุดวัด Dimension ของ M-CODE (master) : ชื่อจุด เกณฑ์ และเครื่องมือที่ใช้
+        public string B08DimensionPoints(QAdataProperty dataItem)
+        {
+            return $@"SELECT d.`POINT_ORDER`, d.`POINT_NAME`, d.`POINT_CAL`,
+                             d.`CRITERIA_MIN`, d.`CRITERIA_MAX`, d.`UNIT`, d.`JUDGE_TYPE`,
+                             d.`EQUIPMENT_TYPE`, t.`Equipment_Name`
+                      FROM `info_dimension_equipment` d
+                      LEFT JOIN `info_equipment_type` t ON d.`EQUIPMENT_TYPE` = t.`Equipment_Type`
+                      WHERE d.`M_CODE` = {ToSqlTextValue(dataItem.M_CODE)}
+                      ORDER BY d.`POINT_ORDER`";
+        }
+
+        // ค่าที่วัดได้จริง 1 แถวต่อ 1 จุด ต่อ 1 ตัวอย่าง
+        public string B08DimensionData(QAdataProperty dataItem)
+        {
+            return $@"SELECT v.`SAMPLING_NO`, v.`POINT_ORDER`, v.`CAVITY_NAME`,
+                             v.`VALUE`, v.`JUDGE`, v.`EQUIPMENT_SERIAL_ID`, s.`EQUIPMENT_SERIAL`
+                      FROM `db_dimension_data` v
+                      LEFT JOIN `info_equipment_serial` s ON v.`EQUIPMENT_SERIAL_ID` = s.`ID`
+                      WHERE v.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND v.`INUSE` = 1
+                      ORDER BY v.`SAMPLING_NO`, v.`POINT_ORDER`";
+        }
+
+        // เครื่องมือวัดที่ใช้จริงในใบนี้ ใช้เติมแถว Equipment S/N หัวบล็อก Dimension
+        public string B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            return $@"SELECT DISTINCT t.`Equipment_Name`, s.`EQUIPMENT_SERIAL`
+                      FROM `db_dimension_data` v
+                      JOIN `info_equipment_serial` s ON v.`EQUIPMENT_SERIAL_ID` = s.`ID`
+                      LEFT JOIN `info_equipment_type` t ON s.`EQUIPMENT_TYPE_ID` = t.`Equipment_Type`
+                      WHERE v.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND v.`INUSE` = 1
+                      ORDER BY t.`Equipment_Name`, s.`EQUIPMENT_SERIAL`";
+        }
+
+        // ผลตัดสินรายชิ้นของแบบ All : ผลต่างกับเกณฑ์ที่ใช้ตอนบันทึก
+        public string B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            return $@"SELECT p.`SAMPLING_NO`, p.`CAVITY_NAME`, p.`DIFFERENCE`, p.`TOLERANCE`, p.`JUDGE`
+                      FROM `db_dimension_piece_judge` p
+                      WHERE p.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND p.`INUSE` = 1
+                      ORDER BY p.`SAMPLING_NO`";
+        }
+
+        // ผลตรวจ Function พร้อม Equipment ที่ใช้จริง (ถ้า M-CODE นี้กำหนดไว้)
+        public string B08FunctionData(QAdataProperty dataItem)
+        {
+            return $@"SELECT v.`SAMPLING_NO`, v.`COUNT`, v.`CAVITY_NAME`, v.`LOT_NO`,
+                             v.`JUDGE`, v.`REMARK`, v.`EMP_ID`, v.`EQUIPMENT_SERIAL_ID`,
+                             s.`EQUIPMENT_SERIAL`,
+                             COALESCE(t.`Equipment_Name`, ft.`Equipment_Name`) AS `Equipment_Name`,
+                             COALESCE(
+                                 NULLIF((SELECT GROUP_CONCAT(DISTINCT cr.`CHECK_DETAIL`
+                                                             ORDER BY cr.`CHECK_ORDER` SEPARATOR '\n')
+                                         FROM `db_function_check_result` cr
+                                         WHERE cr.`REPORT_NO` = v.`REPORT_NO`
+                                           AND cr.`COUNT` = v.`COUNT`
+                                           AND cr.`SAMPLING_NO` = v.`SAMPLING_NO`
+                                           AND cr.`INUSE` = 1), ''),
+                                 NULLIF((SELECT GROUP_CONCAT(cm.`CHECK_DETAIL`
+                                                             ORDER BY cm.`CHECK_ORDER` SEPARATOR '\n')
+                                         FROM `info_function_check_method` cm
+                                         WHERE cm.`M_CODE` = {ToSqlTextValue(dataItem.M_CODE)}
+                                           AND cm.`INUSE` = 1), ''),
+                                 f.`POINT_NAME`
+                             ) AS `FUNCTION_METHOD`
+                      FROM `db_function_data` v
+                      LEFT JOIN `info_equipment_serial` s ON v.`EQUIPMENT_SERIAL_ID` = s.`ID`
+                      LEFT JOIN `info_equipment_type` t ON s.`EQUIPMENT_TYPE_ID` = t.`Equipment_Type`
+                      LEFT JOIN `info_function_equipment` f
+                             ON f.`M_CODE` = {ToSqlTextValue(dataItem.M_CODE)}
+                            AND f.`POINT_ORDER` = 1
+                      LEFT JOIN `info_equipment_type` ft ON f.`EQUIPMENT_TYPE` = ft.`Equipment_Type`
+                      WHERE v.`REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                        AND v.`INUSE` = 1
+                      ORDER BY v.`SAMPLING_NO`";
+        }
     }
 }
-

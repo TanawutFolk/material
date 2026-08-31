@@ -1458,6 +1458,46 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable FunctionEquipment(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.FunctionEquipment(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
+        public DataTable FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.FunctionCheckMethods(dataItem);
+                if (_resultData.StatusOnDb) return _resultData.ResultOnDb;
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
         public DataTable FunctionSampQtyLotSize(QAdataProperty dataItem)
         {
 
@@ -1723,40 +1763,63 @@ namespace RawMat.Controllers
             }
             return bl;
         }
-        public Boolean CheckReportStatus(QAdataProperty dataItem)
+        // แปลค่าสถานะเป็นคำตอบว่าบล็อกไหม แยกออกมาเป็น pure function
+        // เพื่อให้ผู้เรียกอ่านสถานะครั้งเดียวแล้วใช้ได้ทั้งการตัดสินใจและการสร้างข้อความ
+        public static bool IsProcessBlocked(string statusId)
         {
+            if (statusId == null)
+            {
+                return true; // อ่านสถานะไม่ได้ ถือว่าทำต่อไม่ได้เพื่อความปลอดภัย
+            }
 
-            Boolean bl = true;
-            DataTable result = new DataTable();
+            return statusId == ((int)ProcStatus.Pending).ToString()
+                || statusId == ((int)ProcStatus.NG).ToString();
+        }
 
+        // คืนค่าสถานะของ process ที่กำลังทำอยู่ เป็น string เช่น "6" / "0" / "8"
+        // คืน "" เมื่อยังไม่เริ่มทำ (NULL) หรือไม่พบ report , คืน null เมื่ออ่านไม่ได้จริง ๆ
+        public string GetProcessStatusId(QAdataProperty dataItem)
+        {
             try
             {
                 _resultData = _model.CheckReportStatus(dataItem);
-                if (_resultData.StatusOnDb == true)
-                {
-                    result = _resultData.ResultOnDb;
 
-                    string report_status = string.IsNullOrEmpty(result.Rows[0]["report_status"].ToString()) ? "1" : result.Rows[0]["report_status"].ToString();
-
-                    // ตรวจสอบว่ามีค่าใดเป็น 6 (Pending) หรือ 0 (NG) หรือไม่
-                    if (report_status == ((int)ProcStatus.Pending).ToString() || report_status == ((int)ProcStatus.NG).ToString())
-                    {
-                        bl = false;
-                    }
-                }
-                else
+                if (_resultData.StatusOnDb != true)
                 {
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    bl = false; // คืนค่า false หากเกิดข้อผิดพลาดจากฐานข้อมูล
+                    return null;
                 }
+
+                DataTable result = _resultData.ResultOnDb;
+
+                if (result == null || result.Rows.Count == 0)
+                {
+                    return string.Empty; // ไม่พบแถว ถือว่ายังไม่มีสถานะ ไม่ใช่เหตุให้บล็อก
+                }
+
+                return result.Rows[0]["proc_status"].ToString();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                bl = false; // คืนค่า false หากเกิด exception
+                return null;
+            }
+        }
+
+        // ข้อความอธิบายเหตุที่ถูกบล็อก รับ statusId ที่อ่านมาแล้วเพื่อไม่ต้องยิง query ซ้ำ
+        public static string BuildProcessBlockedMessage(string statusId, string reportNo, string processLabel)
+        {
+            if (statusId == ((int)ProcStatus.NG).ToString())
+            {
+                return $"งาน {processLabel} ของ Report No. {reportNo}\nถูกตัดสินเป็น NG แล้ว ไม่สามารถทำต่อได้";
             }
 
-            return bl;
+            if (statusId == ((int)ProcStatus.Pending).ToString())
+            {
+                return $"งาน {processLabel} ของ Report No. {reportNo}\nถูกตั้งเป็น Pending รออนุมัติ ไม่สามารถทำต่อได้";
+            }
+
+            return $"ไม่สามารถตรวจสอบสถานะงาน {processLabel} ของ Report No. {reportNo} ได้\nกรุณาลองใหม่อีกครั้ง";
         }
 
         public string ReportFDA_Status(QAdataProperty dataItem)
@@ -1827,6 +1890,22 @@ namespace RawMat.Controllers
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     result = null;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchFunctionCheckResultPending(dataItem);
+                if (_resultData.StatusOnDb) return _resultData.ResultOnDb;
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
@@ -2500,6 +2579,95 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return bl;
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+        // คืน DataTable ว่างเมื่ออ่านไม่ได้ เพื่อให้ตัว export วาดฟอร์มเปล่าต่อได้ ไม่ล้มทั้งใบ
+
+        public DataTable B08Header(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08Header(dataItem), "B08 : header");
+        }
+
+        public DataTable B08PackingCheck(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08PackingCheck(dataItem), "B08 : packing check");
+        }
+
+        public DataTable B08PackingSize(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08PackingSize(dataItem), "B08 : packing size");
+        }
+
+        public DataTable B08LotNo(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08LotNo(dataItem), "B08 : lot no");
+        }
+
+        public DataTable B08AppearanceData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08AppearanceData(dataItem), "B08 : appearance data");
+        }
+
+        public DataTable B08AppearancePending(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08AppearancePending(dataItem), "B08 : appearance pending");
+        }
+
+        public DataTable B08Sampling(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08Sampling(dataItem), "B08 : sampling");
+        }
+
+        public DataTable B08DimensionPoints(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionPoints(dataItem), "B08 : dimension points");
+        }
+
+        public DataTable EquipmentSerialList()
+        {
+            return SearchB08(() => _model.EquipmentSerialList(), "รายการ S/N เครื่องมือ");
+        }
+
+        public DataTable B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionPieceJudge(dataItem), "B08 : dimension piece judge");
+        }
+
+        public DataTable B08DimensionData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionData(dataItem), "B08 : dimension data");
+        }
+
+        public DataTable B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionEquipment(dataItem), "B08 : dimension equipment");
+        }
+
+        public DataTable B08FunctionData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08FunctionData(dataItem), "B08 : function data");
+        }
+
+        private DataTable SearchB08(Func<OutputOnDbProperty> query, string label)
+        {
+            try
+            {
+                OutputOnDbProperty result = query();
+
+                if (result.StatusOnDb && result.ResultOnDb != null)
+                {
+                    return result.ResultOnDb;
+                }
+
+                MessageBox.Show($"{label}\n{result.MessageOnDb}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{label}\n{ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return new DataTable();
         }
 
     }

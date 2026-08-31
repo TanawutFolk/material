@@ -81,6 +81,12 @@ namespace RawMat.SQLFactory
                 string pointCal = GetSqlValue(row, "POINT_CAL");
                 string criteriaMin = GetSqlValue(row, "CRITERIA_MIN");
                 string criteriaMax = GetSqlValue(row, "CRITERIA_MAX");
+                string unit = GetSqlValue(row, "UNIT");
+
+                // หน้า Function ไม่มีแนวคิดจุดตัดสิน OK/NG ตาราง info_function_equipment
+                // จึงไม่มีคอลัมน์ JUDGE_TYPE ต้องไม่ใส่เข้าไปใน INSERT
+                bool hasJudgeType = tableName != "info_function_equipment";
+                string judgeType = GetSqlValue(row, "JUDGE_TYPE");
 
                 if (string.IsNullOrWhiteSpace(pointOrder) &&
                     string.IsNullOrWhiteSpace(equipmentType) &&
@@ -100,7 +106,8 @@ namespace RawMat.SQLFactory
                         POINT_NAME,
                         POINT_CAL,
                         CRITERIA_MIN,
-                        CRITERIA_MAX
+                        CRITERIA_MAX,
+                        UNIT{(hasJudgeType ? "," + Environment.NewLine + "                        JUDGE_TYPE" : "")}
                     )
                     VALUES
                     (
@@ -110,7 +117,8 @@ namespace RawMat.SQLFactory
                         {ToSqlTextOrNull(pointName)},
                         {ToSqlTextOrNull(string.IsNullOrWhiteSpace(pointCal) ? "0" : pointCal)},
                         {ToSqlTextOrNull(criteriaMin)},
-                        {ToSqlTextOrNull(criteriaMax)}
+                        {ToSqlTextOrNull(criteriaMax)},
+                        {ToSqlTextOrNull(unit)}{(hasJudgeType ? "," + Environment.NewLine + "                        " + (string.IsNullOrWhiteSpace(judgeType) ? "1" : judgeType) : "")}
                     );");
             }
 
@@ -124,7 +132,7 @@ namespace RawMat.SQLFactory
             sql = @"
                 SELECT 
                     a.M_CODE AS `M Code`,
-                    CASE WHEN a.Keep_Data_Need = 1 THEN 'Check' ELSE 'No' END AS `Data Result`,
+                    CASE WHEN a.Keep_Data_Need = 1 THEN 'Check' ELSE 'No' END AS `Keep Data`,
                     CASE WHEN a.Packing_Check_Mode = 1 THEN 'Check' ELSE 'No' END AS `Packing Check`,
                     CASE WHEN a.Regular_Check_Need = 1 THEN 'Check' ELSE 'No' END AS `Regular Check`,
                 
@@ -561,7 +569,9 @@ namespace RawMat.SQLFactory
                 a.POINT_NAME,
                 a.POINT_CAL,
                 a.CRITERIA_MIN,
-                a.CRITERIA_MAX
+                a.CRITERIA_MAX,
+                a.UNIT,
+                a.JUDGE_TYPE
             FROM info_regular_equipment a
             LEFT JOIN info_equipment_type b 
                 ON a.EQUIPMENT_TYPE = b.Equipment_Type
@@ -585,7 +595,9 @@ namespace RawMat.SQLFactory
                 a.POINT_NAME,
                 a.POINT_CAL,
                 a.CRITERIA_MIN,
-                a.CRITERIA_MAX
+                a.CRITERIA_MAX,
+                a.UNIT,
+                a.JUDGE_TYPE
             FROM info_dimension_equipment a
             LEFT JOIN info_equipment_type b 
                 ON a.EQUIPMENT_TYPE = b.Equipment_Type
@@ -596,6 +608,47 @@ namespace RawMat.SQLFactory
             sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
 
             return sql;
+        }
+
+        public string SearchFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            sql = @"
+            SELECT
+                a.M_CODE,
+                a.POINT_ORDER,
+                a.EQUIPMENT_TYPE,
+                b.Equipment_Name,
+                a.POINT_NAME,
+                a.POINT_CAL,
+                a.CRITERIA_MIN,
+                a.CRITERIA_MAX,
+                a.UNIT
+            FROM info_function_equipment a
+            LEFT JOIN info_equipment_type b
+                ON a.EQUIPMENT_TYPE = b.Equipment_Type
+            WHERE a.M_CODE = 'dataItem.M_CODE'
+            ORDER BY a.POINT_ORDER ASC;
+          ";
+
+            sql = sql.Replace("dataItem.M_CODE", CleanSqlText(dataItem.M_CODE));
+            return sql;
+        }
+
+        public string SearchFunctionCheckSetting(SettingProperty dataItem)
+        {
+            return $@"SELECT ID, M_CODE, CHECK_ORDER, CHECK_DETAIL
+                      FROM info_function_check_method
+                      WHERE M_CODE = '{CleanSqlText(dataItem.M_CODE)}'
+                        AND INUSE = 1
+                      ORDER BY CHECK_ORDER";
+        }
+
+        // ตัวเลือกให้หน้า Setting : จุดนี้วัดเป็นตัวเลข หรือตัดสิน OK/NG
+        public string GetJudgeTypeList()
+        {
+            return @"SELECT `JUDGE_TYPE`, `JUDGE_TYPE_NAME`
+                     FROM `info_judge_type`
+                     ORDER BY `JUDGE_TYPE` ASC;";
         }
 
         public string GetEquipmentTypeList()
@@ -619,6 +672,41 @@ namespace RawMat.SQLFactory
         public List<string> SaveDimensionEquipmentSetting(SettingProperty dataItem)
         {
             return BuildSaveEquipmentSettingSql("info_dimension_equipment", dataItem.M_CODE, dataItem.DimensionEquipment);
+        }
+
+        public List<string> SaveFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            return BuildSaveEquipmentSettingSql("info_function_equipment", dataItem.M_CODE, dataItem.FunctionEquipment);
+        }
+
+        public List<string> SaveFunctionCheckSetting(SettingProperty dataItem)
+        {
+            var sqlList = new List<string>
+            {
+                $"DELETE FROM info_function_check_method WHERE M_CODE = '{CleanSqlText(dataItem.M_CODE)}';"
+            };
+
+            if (dataItem.FunctionChecks == null)
+            {
+                return sqlList;
+            }
+
+            foreach (DataRow row in dataItem.FunctionChecks.Rows)
+            {
+                if (row.RowState == DataRowState.Deleted) continue;
+
+                string order = GetSqlValue(row, "CHECK_ORDER");
+                string detail = GetSqlValue(row, "CHECK_DETAIL");
+                if (string.IsNullOrWhiteSpace(order) && string.IsNullOrWhiteSpace(detail)) continue;
+
+                sqlList.Add($@"INSERT INTO info_function_check_method
+                              (M_CODE, CHECK_ORDER, CHECK_DETAIL, INUSE)
+                              VALUES ('{CleanSqlText(dataItem.M_CODE)}',
+                                      {ToSqlTextOrNull(order)},
+                                      {ToSqlTextOrNull(detail)}, 1);");
+            }
+
+            return sqlList;
         }
         //--------------- Employee Setting ---------------------------
         public string SearchEmployeeSettingList(SettingProperty dataItem)

@@ -1,6 +1,6 @@
-﻿using RawMat.Views.PackingCheck;
-using RawMat.Views.ReceiveWH;
-using RawMat.Views.RegularCheck;
+﻿using RawMat.ViewsMaterial.PackingCheck;
+using RawMat.ViewsMaterial.ReceiveWH;
+using RawMat.ViewsMaterial.RegularCheck;
 using System;
 using System.Collections.Generic;
 using System.Linq;

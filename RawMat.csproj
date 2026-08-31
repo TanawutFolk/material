@@ -215,6 +215,9 @@
     <Compile Include="SQLFactory\QAdataSQL.cs" />
     <Compile Include="SQLFactory\SettingSQL.cs" />
     <Compile Include="Utilities\docCls.cs" />
+    <Compile Include="Utilities\EquipmentSerialColumn.cs" />
+    <Compile Include="Utilities\PointJudgeType.cs" />
+    <Compile Include="Utilities\NumberDisplay.cs" />
     <Compile Include="Utilities\imgCls.cs" />
     <Compile Include="Utilities\INavigationService.cs" />
     <Compile Include="Utilities\IParent.cs" />
@@ -224,167 +227,173 @@
     <Compile Include="Utilities\NetworkInfoCls.cs" />
     <Compile Include="Utilities\NgModeHelper.cs" />
     <Compile Include="Utilities\printerCls.cs" />
-    <Compile Include="Views\AppearCheck\frmAlert.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\frmAlert.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\AppearCheck\frmAlert.Designer.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\frmAlert.Designer.cs">
       <DependentUpon>frmAlert.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlAppear.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\frmAlertPending.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterial\AppearCheck\frmAlertPending.Designer.cs">
+      <DependentUpon>frmAlertPending.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterial\AppearCheck\userControlAppear.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlAppear.Designer.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlAppear.Designer.cs">
       <DependentUpon>userControlAppear.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlAppearPending.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlAppearPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlAppearPending.Designer.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlAppearPending.Designer.cs">
       <DependentUpon>userControlAppearPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlSelectAppear.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlSelectAppear.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlSelectAppear.Designer.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlSelectAppear.Designer.cs">
       <DependentUpon>userControlSelectAppear.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlSelectAppearPending.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlSelectAppearPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\AppearCheck\userControlSelectAppearPending.Designer.cs">
+    <Compile Include="ViewsMaterial\AppearCheck\userControlSelectAppearPending.Designer.cs">
       <DependentUpon>userControlSelectAppearPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBoxBase.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBoxBase.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBoxBase.Designer.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBoxBase.Designer.cs">
       <DependentUpon>CustomMsgBoxBase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlInspData.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlInspData.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlInspData.Designer.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlInspData.Designer.cs">
       <DependentUpon>userControlInspData.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlInspDataPending.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlInspDataPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlInspDataPending.Designer.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlInspDataPending.Designer.cs">
       <DependentUpon>userControlInspDataPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlSelectInspData.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlSelectInspData.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlSelectInspData.Designer.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlSelectInspData.Designer.cs">
       <DependentUpon>userControlSelectInspData.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlDimension.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlDimension.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlDimension.Designer.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlDimension.Designer.cs">
       <DependentUpon>userControlDimension.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlDimensionPending.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlDimensionPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlDimensionPending.Designer.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlDimensionPending.Designer.cs">
       <DependentUpon>userControlDimensionPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlSelectDimension.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlSelectDimension.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlSelectDimension.Designer.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlSelectDimension.Designer.cs">
       <DependentUpon>userControlSelectDimension.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlSelectDimensionPending.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlSelectDimensionPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\DimensionCheck\userControlSelectDimensionPending.Designer.cs">
+    <Compile Include="ViewsMaterial\DimensionCheck\userControlSelectDimensionPending.Designer.cs">
       <DependentUpon>userControlSelectDimensionPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlFunction.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlFunction.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlFunction.Designer.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlFunction.Designer.cs">
       <DependentUpon>userControlFunction.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlFunctionPending.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlFunctionPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlFunctionPending.Designer.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlFunctionPending.Designer.cs">
       <DependentUpon>userControlFunctionPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlSelectFunction.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlSelectFunction.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlSelectFunction.Designer.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlSelectFunction.Designer.cs">
       <DependentUpon>userControlSelectFunction.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlSelectFunctionPending.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlSelectFunctionPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\FunctionCheck\userControlSelectFunctionPending.Designer.cs">
+    <Compile Include="ViewsMaterial\FunctionCheck\userControlSelectFunctionPending.Designer.cs">
       <DependentUpon>userControlSelectFunctionPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBox.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBox.Designer.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBox.Designer.cs">
       <DependentUpon>CustomMsgBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBoxYesNo.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBoxYesNo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\CustomMsg\CustomMsgBoxYesNo.Designer.cs">
+    <Compile Include="ViewsMaterial\CustomMsg\CustomMsgBoxYesNo.Designer.cs">
       <DependentUpon>CustomMsgBoxYesNo.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlSelectInspDataPending.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlSelectInspDataPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\InspDataCheck\userControlSelectInspDataPending.Designer.cs">
+    <Compile Include="ViewsMaterial\InspDataCheck\userControlSelectInspDataPending.Designer.cs">
       <DependentUpon>userControlSelectInspDataPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingCheckPending.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingCheckPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingCheckPending.Designer.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingCheckPending.Designer.cs">
       <DependentUpon>userControlPackingCheckPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingPrint.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingPrint.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingPrint.Designer.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingPrint.Designer.cs">
       <DependentUpon>userControlPackingPrint.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\ExportExcell.cs" />
-    <Compile Include="Views\RegularCheck\FormRegularReportStamp.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\ExportExcell.cs" />
+    <Compile Include="ViewsMaterial\RegularCheck\FormRegularReportStamp.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\RegularCheck\FormRegularReportStamp.Designer.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\FormRegularReportStamp.Designer.cs">
       <DependentUpon>FormRegularReportStamp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlRegularPending.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlRegularPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlRegularPending.Designer.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlRegularPending.Designer.cs">
       <DependentUpon>userControlRegularPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlSelectRegularPending.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlSelectRegularPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlSelectRegularPending.Designer.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlSelectRegularPending.Designer.cs">
       <DependentUpon>userControlSelectRegularPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlSelectRegular.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlSelectRegular.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlSelectRegular.Designer.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlSelectRegular.Designer.cs">
       <DependentUpon>userControlSelectRegular.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\frmMain.cs">
+    <Compile Include="ViewsMaterial\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\frmMain.Designer.cs">
+    <Compile Include="ViewsMaterial\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Form1.cs">
@@ -393,235 +402,240 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Login\userControlLogin.cs">
+    <Compile Include="ViewsMaterial\Login\userControlLogin.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Login\userControlLogin.Designer.cs">
+    <Compile Include="ViewsMaterial\Login\userControlLogin.Designer.cs">
       <DependentUpon>userControlLogin.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Login\userControlProfile.cs">
+    <Compile Include="ViewsMaterial\Login\userControlProfile.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Login\userControlProfile.Designer.cs">
+    <Compile Include="ViewsMaterial\Login\userControlProfile.Designer.cs">
       <DependentUpon>userControlProfile.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Views\Main\userControlSearch.cs">
+    <Compile Include="ViewsMaterial\Main\userControlSearch.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Main\userControlSearch.Designer.cs">
+    <Compile Include="ViewsMaterial\Main\userControlSearch.Designer.cs">
       <DependentUpon>userControlSearch.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlSelectPackingCheck.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlSelectPackingCheck.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlSelectPackingCheck.Designer.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlSelectPackingCheck.Designer.cs">
       <DependentUpon>userControlSelectPackingCheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Menu\userControlMenu.cs">
+    <Compile Include="ViewsMaterial\Menu\userControlMenu.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Menu\userControlMenu.Designer.cs">
+    <Compile Include="ViewsMaterial\Menu\userControlMenu.Designer.cs">
       <DependentUpon>userControlMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Main\userControlRecMat.cs">
+    <Compile Include="ViewsMaterial\Main\userControlRecMat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Main\userControlRecMat.Designer.cs">
+    <Compile Include="ViewsMaterial\Main\userControlRecMat.Designer.cs">
       <DependentUpon>userControlRecMat.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Menu\userControlWH.cs">
+    <Compile Include="ViewsMaterial\Menu\userControlWH.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Menu\userControlWH.Designer.cs">
+    <Compile Include="ViewsMaterial\Menu\userControlWH.Designer.cs">
       <DependentUpon>userControlWH.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingCheck.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingCheck.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\PackingCheck\userControlPackingCheck.Designer.cs">
+    <Compile Include="ViewsMaterial\PackingCheck\userControlPackingCheck.Designer.cs">
       <DependentUpon>userControlPackingCheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlRegular.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlRegular.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\RegularCheck\userControlRegular.Designer.cs">
+    <Compile Include="ViewsMaterial\RegularCheck\userControlRegular.Designer.cs">
       <DependentUpon>userControlRegular.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlCheckSheet.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\B08CheckSheetContent.cs" />
+    <Compile Include="ViewsMaterial\ReceiveWH\ExportExcellB08.cs" />
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlCheckSheet.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlCheckSheet.Designer.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlCheckSheet.Designer.cs">
       <DependentUpon>userControlCheckSheet.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlRecWHPending.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlRecWHPending.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlRecWHPending.Designer.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlRecWHPending.Designer.cs">
       <DependentUpon>userControlRecWHPending.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlReplacement.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlReplacement.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\ReceiveWH\userControlReplacement.Designer.cs">
+    <Compile Include="ViewsMaterial\ReceiveWH\userControlReplacement.Designer.cs">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmConfirm.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmConfirm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmConfirm.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmConfirm.Designer.cs">
       <DependentUpon>frmConfirm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmSetting.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmSetting.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmSetting.Designer.cs">
       <DependentUpon>frmSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmMCodeInspectionSetting.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmMCodeInspectionSetting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmMCodeInspectionSetting.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmMCodeInspectionSetting.Designer.cs">
       <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmEditEmployee.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmEditEmployee.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmEditEmployee.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmEditEmployee.Designer.cs">
       <DependentUpon>frmEditEmployee.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmAddEquipment.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmAddEquipment.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmAddEquipment.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmAddEquipment.Designer.cs">
       <DependentUpon>frmAddEquipment.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\form\frmAddNewNgMode.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmAddNewNgMode.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Views\Setting\form\frmAddNewNgMode.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\form\frmAddNewNgMode.Designer.cs">
       <DependentUpon>frmAddNewNgMode.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\InspectionSettingControl.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\InspectionSettingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\InspectionSettingControl.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\InspectionSettingControl.Designer.cs">
       <DependentUpon>InspectionSettingControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\EmployeeSettingControl.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\EmployeeSettingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\EmployeeSettingControl.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\EmployeeSettingControl.Designer.cs">
       <DependentUpon>EmployeeSettingControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\EqupmentSetingControl.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\EqupmentSetingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\EqupmentSetingControl.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\EqupmentSetingControl.Designer.cs">
       <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Setting\UserControl\NgModeSettingControl.cs">
+    <Compile Include="ViewsMaterial\Setting\UserControl\NgModeSettingControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Views\Setting\SettingGridActionMenu.cs" />
-    <Compile Include="Views\Setting\UserControl\NgModeSettingControl.Designer.cs">
+    <Compile Include="ViewsMaterial\Setting\SettingGridActionMenu.cs" />
+    <Compile Include="ViewsMaterial\Setting\UserControl\NgModeSettingControl.Designer.cs">
       <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Views\AppearCheck\frmAlert.resx">
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\frmAlert.resx">
       <DependentUpon>frmAlert.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\AppearCheck\userControlAppear.resx">
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\frmAlertPending.resx">
+      <DependentUpon>frmAlertPending.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\userControlAppear.resx">
       <DependentUpon>userControlAppear.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\AppearCheck\userControlAppearPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\userControlAppearPending.resx">
       <DependentUpon>userControlAppearPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\AppearCheck\userControlSelectAppear.resx">
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\userControlSelectAppear.resx">
       <DependentUpon>userControlSelectAppear.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\AppearCheck\userControlSelectAppearPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\AppearCheck\userControlSelectAppearPending.resx">
       <DependentUpon>userControlSelectAppearPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBoxBase.resx">
+    <EmbeddedResource Include="ViewsMaterial\CustomMsg\CustomMsgBoxBase.resx">
       <DependentUpon>CustomMsgBoxBase.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\InspDataCheck\userControlInspData.resx">
+    <EmbeddedResource Include="ViewsMaterial\InspDataCheck\userControlInspData.resx">
       <DependentUpon>userControlInspData.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\InspDataCheck\userControlInspDataPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\InspDataCheck\userControlInspDataPending.resx">
       <DependentUpon>userControlInspDataPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\InspDataCheck\userControlSelectInspData.resx">
+    <EmbeddedResource Include="ViewsMaterial\InspDataCheck\userControlSelectInspData.resx">
       <DependentUpon>userControlSelectInspData.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\DimensionCheck\userControlDimension.resx">
+    <EmbeddedResource Include="ViewsMaterial\DimensionCheck\userControlDimension.resx">
       <DependentUpon>userControlDimension.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\DimensionCheck\userControlDimensionPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\DimensionCheck\userControlDimensionPending.resx">
       <DependentUpon>userControlDimensionPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\DimensionCheck\userControlSelectDimension.resx">
+    <EmbeddedResource Include="ViewsMaterial\DimensionCheck\userControlSelectDimension.resx">
       <DependentUpon>userControlSelectDimension.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\DimensionCheck\userControlSelectDimensionPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\DimensionCheck\userControlSelectDimensionPending.resx">
       <DependentUpon>userControlSelectDimensionPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\FunctionCheck\userControlFunction.resx">
+    <EmbeddedResource Include="ViewsMaterial\FunctionCheck\userControlFunction.resx">
       <DependentUpon>userControlFunction.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\FunctionCheck\userControlFunctionPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\FunctionCheck\userControlFunctionPending.resx">
       <DependentUpon>userControlFunctionPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\FunctionCheck\userControlSelectFunction.resx">
+    <EmbeddedResource Include="ViewsMaterial\FunctionCheck\userControlSelectFunction.resx">
       <DependentUpon>userControlSelectFunction.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\FunctionCheck\userControlSelectFunctionPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\FunctionCheck\userControlSelectFunctionPending.resx">
       <DependentUpon>userControlSelectFunctionPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBox.resx">
+    <EmbeddedResource Include="ViewsMaterial\CustomMsg\CustomMsgBox.resx">
       <DependentUpon>CustomMsgBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\CustomMsg\CustomMsgBoxYesNo.resx">
+    <EmbeddedResource Include="ViewsMaterial\CustomMsg\CustomMsgBoxYesNo.resx">
       <DependentUpon>CustomMsgBoxYesNo.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\InspDataCheck\userControlSelectInspDataPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\InspDataCheck\userControlSelectInspDataPending.resx">
       <DependentUpon>userControlSelectInspDataPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\PackingCheck\userControlPackingCheckPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\PackingCheck\userControlPackingCheckPending.resx">
       <DependentUpon>userControlPackingCheckPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\PackingCheck\userControlPackingPrint.resx">
+    <EmbeddedResource Include="ViewsMaterial\PackingCheck\userControlPackingPrint.resx">
       <DependentUpon>userControlPackingPrint.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\PackingCheck\userControlSelectPackingCheck.resx">
+    <EmbeddedResource Include="ViewsMaterial\PackingCheck\userControlSelectPackingCheck.resx">
       <DependentUpon>userControlSelectPackingCheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\RegularCheck\FormRegularReportStamp.resx">
+    <EmbeddedResource Include="ViewsMaterial\RegularCheck\FormRegularReportStamp.resx">
       <DependentUpon>FormRegularReportStamp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\RegularCheck\userControlRegularPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\RegularCheck\userControlRegularPending.resx">
       <DependentUpon>userControlRegularPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\RegularCheck\userControlSelectRegularPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\RegularCheck\userControlSelectRegularPending.resx">
       <DependentUpon>userControlSelectRegularPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\RegularCheck\userControlSelectRegular.resx">
+    <EmbeddedResource Include="ViewsMaterial\RegularCheck\userControlSelectRegular.resx">
       <DependentUpon>userControlSelectRegular.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\frmMain.resx">
+    <EmbeddedResource Include="ViewsMaterial\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Login\userControlLogin.resx">
+    <EmbeddedResource Include="ViewsMaterial\Login\userControlLogin.resx">
       <DependentUpon>userControlLogin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Login\userControlProfile.resx">
+    <EmbeddedResource Include="ViewsMaterial\Login\userControlProfile.resx">
       <DependentUpon>userControlProfile.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -629,63 +643,65 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Main\userControlRecMat.resx">
+    <EmbeddedResource Include="ViewsMaterial\Main\userControlRecMat.resx">
       <DependentUpon>userControlRecMat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Main\userControlSearch.resx">
+    <EmbeddedResource Include="ViewsMaterial\Main\userControlSearch.resx">
       <DependentUpon>userControlSearch.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Menu\userControlMenu.resx">
+    <EmbeddedResource Include="ViewsMaterial\Menu\userControlMenu.resx">
       <DependentUpon>userControlMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Menu\userControlWH.resx">
+    <EmbeddedResource Include="ViewsMaterial\Menu\userControlWH.resx">
       <DependentUpon>userControlWH.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\PackingCheck\userControlPackingCheck.resx">
+    <EmbeddedResource Include="ViewsMaterial\PackingCheck\userControlPackingCheck.resx">
       <DependentUpon>userControlPackingCheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\RegularCheck\userControlRegular.resx">
+    <EmbeddedResource Include="ViewsMaterial\RegularCheck\userControlRegular.resx">
       <DependentUpon>userControlRegular.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ReceiveWH\userControlCheckSheet.resx">
+    <EmbeddedResource Include="ViewsMaterial\ReceiveWH\userControlCheckSheet.resx">
       <DependentUpon>userControlCheckSheet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ReceiveWH\userControlRecWHPending.resx">
+    <EmbeddedResource Include="ViewsMaterial\ReceiveWH\userControlRecWHPending.resx">
       <DependentUpon>userControlRecWHPending.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\ReceiveWH\userControlReplacement.resx">
+    <EmbeddedResource Include="ViewsMaterial\ReceiveWH\userControlReplacement.resx">
       <DependentUpon>userControlReplacement.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmConfirm.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmConfirm.resx">
       <DependentUpon>frmConfirm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmSetting.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmSetting.resx">
       <DependentUpon>frmSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmMCodeInspectionSetting.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmMCodeInspectionSetting.resx">
       <DependentUpon>frmMCodeInspectionSetting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmEditEmployee.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmEditEmployee.resx">
       <DependentUpon>frmEditEmployee.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmAddEquipment.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmAddEquipment.resx">
       <DependentUpon>frmAddEquipment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\form\frmAddNewNgMode.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\form\frmAddNewNgMode.resx">
       <DependentUpon>frmAddNewNgMode.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\UserControl\EqupmentSetingControl.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\UserControl\EqupmentSetingControl.resx">
       <DependentUpon>EqupmentSetingControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\UserControl\InspectionSettingControl.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\UserControl\InspectionSettingControl.resx">
       <DependentUpon>InspectionSettingControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\UserControl\EmployeeSettingControl.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\UserControl\EmployeeSettingControl.resx">
       <DependentUpon>EmployeeSettingControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\Setting\UserControl\NgModeSettingControl.resx">
+    <EmbeddedResource Include="ViewsMaterial\Setting\UserControl\NgModeSettingControl.resx">
       <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="DatabaseScripts\20260825_add_function_check_method.sql" />
+    <None Include="DatabaseScripts\20260825_convert_measurement_to_decimal_12_6.sql" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -887,7 +903,10 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ViewsMaterialNCR\" />
+    <Folder Include="ViewsMaterial\Excell Check Sheet\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

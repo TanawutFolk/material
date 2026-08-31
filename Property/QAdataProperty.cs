@@ -81,6 +81,8 @@ namespace RawMat.Property
 
         //Function Check
         public DataTable dtFuncSamp { get; set; }
+        public DataTable dtFuncEq { get; set; }
+        public DataTable dtFuncCheck { get; set; }
         public DataTable dtFuncData { get; set; }
         public DataTable dtDimSamp { get; set; }
         public DataTable dtAppSamp { get; set; }

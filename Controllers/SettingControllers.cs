@@ -14,6 +14,7 @@ namespace RawMat.Controllers
 
         DataTable dtRegularEquipment = new DataTable();
         DataTable dtDimensionEquipment = new DataTable();
+        DataTable dtFunctionEquipment = new DataTable();
         DataTable dtEquipmentType = new DataTable();
 
         public DataTable SearchInspectionSettingList(SettingProperty dataItem)
@@ -512,6 +513,74 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable SearchFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.SearchFunctionEquipmentSetting(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
+        public DataTable SearchFunctionCheckSetting(SettingProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchFunctionCheckSetting(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
+        public DataTable GetJudgeTypeList()
+        {
+            DataTable result = new DataTable();
+
+            try
+            {
+                _resultData = _model.GetJudgeTypeList();
+                result = _resultData.StatusOnDb ? _resultData.ResultOnDb : null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+
+            return result;
+        }
+
         public DataTable GetEquipmentTypeList()
         {
             DataTable result = new DataTable();
@@ -586,6 +655,45 @@ namespace RawMat.Controllers
             }
 
             return bl;
+        }
+
+        public Boolean SaveFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            Boolean bl = false;
+
+            try
+            {
+                _resultData = _model.SaveFunctionEquipmentSetting(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    bl = true;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return bl;
+        }
+
+        public Boolean SaveFunctionCheckSetting(SettingProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.SaveFunctionCheckSetting(dataItem);
+                if (_resultData.StatusOnDb) return true;
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return false;
         }
 
         public DataTable SearchEmployeeSettingList(SettingProperty dataItem)

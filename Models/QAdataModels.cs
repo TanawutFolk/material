@@ -363,6 +363,17 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty FunctionEquipment(QAdataProperty dataItem)
+        {
+            resultData = services.FunctionEquipment(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            return services.FunctionCheckMethods(dataItem);
+        }
+
         public OutputOnDbProperty FunctionSampQtyLotSize(QAdataProperty dataItem)
         {
             resultData = services.FunctionSampQtyLotSize(dataItem);
@@ -404,6 +415,11 @@ namespace RawMat.Models
         {
             resultData = services.SearchFunctionDataPending(dataItem);
             return resultData;
+        }
+
+        public OutputOnDbProperty SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            return services.SearchFunctionCheckResultPending(dataItem);
         }
 
         public OutputOnDbProperty SearchReportActive(QAdataProperty dataItem)
@@ -613,6 +629,86 @@ namespace RawMat.Models
         public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
         {
             resultData = services.GetLatestAppearDataId(dataItem);
+            return resultData;
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+
+        public OutputOnDbProperty B08Header(QAdataProperty dataItem)
+        {
+            resultData = services.B08Header(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08PackingCheck(QAdataProperty dataItem)
+        {
+            resultData = services.B08PackingCheck(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08PackingSize(QAdataProperty dataItem)
+        {
+            resultData = services.B08PackingSize(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08LotNo(QAdataProperty dataItem)
+        {
+            resultData = services.B08LotNo(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08AppearanceData(QAdataProperty dataItem)
+        {
+            resultData = services.B08AppearanceData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08AppearancePending(QAdataProperty dataItem)
+        {
+            resultData = services.B08AppearancePending(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08Sampling(QAdataProperty dataItem)
+        {
+            resultData = services.B08Sampling(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionPoints(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionPoints(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty EquipmentSerialList()
+        {
+            resultData = services.EquipmentSerialList();
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionPieceJudge(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionData(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionEquipment(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08FunctionData(QAdataProperty dataItem)
+        {
+            resultData = services.B08FunctionData(dataItem);
             return resultData;
         }
 

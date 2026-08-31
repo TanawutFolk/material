@@ -1,4 +1,4 @@
-using RawMat.Views.CustomMsg;
+using RawMat.ViewsMaterial.CustomMsg;
 using System;
 using System.Collections.Generic;
 using System.IO;

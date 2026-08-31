@@ -176,6 +176,29 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchFunctionEquipmentSetting(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchFunctionCheckSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchFunctionCheckSetting(dataItem);
+            return base.SearchBySql(sql);
+        }
+
+        public OutputOnDbProperty GetJudgeTypeList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetJudgeTypeList();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty GetEquipmentTypeList()
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -200,6 +223,21 @@ namespace RawMat.Services
             sqlList = sqlFactory.SaveDimensionEquipmentSetting(dataItem);
             _resultData = base.InsertBySqlList(sqlList);
             return _resultData;
+        }
+
+        public OutputOnDbProperty SaveFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.SaveFunctionEquipmentSetting(dataItem);
+            _resultData = base.InsertBySqlList(sqlList);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SaveFunctionCheckSetting(SettingProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            return base.InsertBySqlList(sqlFactory.SaveFunctionCheckSetting(dataItem));
         }
 
         public OutputOnDbProperty SearchEmployeeSettingList(SettingProperty dataItem)

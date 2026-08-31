@@ -114,6 +114,23 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SearchFunctionEquipmentSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchFunctionCheckSetting(SettingProperty dataItem)
+        {
+            return services.SearchFunctionCheckSetting(dataItem);
+        }
+
+        public OutputOnDbProperty GetJudgeTypeList()
+        {
+            resultData = services.GetJudgeTypeList();
+            return resultData;
+        }
+
         public OutputOnDbProperty GetEquipmentTypeList()
         {
             resultData = services.GetEquipmentTypeList();
@@ -130,6 +147,17 @@ namespace RawMat.Models
         {
             resultData = services.SaveDimensionEquipmentSetting(dataItem);
             return resultData;
+        }
+
+        public OutputOnDbProperty SaveFunctionEquipmentSetting(SettingProperty dataItem)
+        {
+            resultData = services.SaveFunctionEquipmentSetting(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SaveFunctionCheckSetting(SettingProperty dataItem)
+        {
+            return services.SaveFunctionCheckSetting(dataItem);
         }
 
         public OutputOnDbProperty SearchEmployeeSettingList(SettingProperty dataItem)
