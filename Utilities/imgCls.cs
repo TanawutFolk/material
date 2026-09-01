@@ -527,8 +527,15 @@ namespace RawMat.Utilities
             }
         }
 
-        // Helper method ใหม่สำหรับ fallback (load single file) - ใช้แทน logic ซ้ำๆ ใน method เดิม
+        // เหมือน LoadSingleImageOrNull แต่ตกไปที่ภาพ default เมื่อไม่พบไฟล์
         public Image LoadSingleImage(string appSettingPath, string fileName)
+        {
+            return LoadSingleImageOrNull(appSettingPath, fileName) ?? _defaultImage;
+        }
+
+        // คืน null เมื่อไม่พบไฟล์ ให้ผู้เรียกตัดสินใจเองว่าจะวาด placeholder แบบไหน
+        // (หัวหน้า NCR วาดวงกลมสีพื้นเอง ภาพ default เป็นสี่เหลี่ยมยัดลงวงกลมแล้วไม่เข้า)
+        public Image LoadSingleImageOrNull(string appSettingPath, string fileName)
         {
 
             string folderPath = ConfigurationManager.AppSettings[appSettingPath];
@@ -555,7 +562,7 @@ namespace RawMat.Utilities
                 }
             }
 
-            return _defaultImage;
+            return null;
         }
 
         public Image LoadCavityImage(string fileName)

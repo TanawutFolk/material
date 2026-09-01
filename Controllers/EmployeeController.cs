@@ -33,6 +33,8 @@ namespace RawMat.Controllers
                             {
                                 EMP_CODE = _resultData.ResultOnDb.Rows[0]["EmpCode"].ToString(),
                                 EMP_FULL_NAME = _resultData.ResultOnDb.Rows[0]["EmpFullName"].ToString(),
+                                EMP_NAME = _resultData.ResultOnDb.Rows[0]["EmpName"].ToString(),
+                                EMP_SURNAME = _resultData.ResultOnDb.Rows[0]["EmpSurname"].ToString(),
                                 EMP_POSITION = _resultData.ResultOnDb.Rows[0]["EmpPosition"].ToString(),
                                 EMP_SECTION = _resultData.ResultOnDb.Rows[0]["EmpSection"].ToString()
                             };

@@ -17,6 +17,8 @@ namespace RawMat.SQLFactory
                     SELECT
 	                    EmpCode
 	                  , CONCAT(EmpName,' ',EmpSurname) AS EmpFullName
+	                  , EmpName
+	                  , EmpSurname
 	                  , EmpPosition
 	                  , EmpSection
                     FROM
