@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RawMat.Login;
+using RawMat.ViewsMaterial.Setting;
+using RawMat.ViewsMaterialNCR;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +23,6 @@ namespace RawMat
         // Win32 API สำหรับโฟกัสหน้าต่าง
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
-
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
@@ -54,7 +56,7 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmMain());
+                Application.Run(new frmLogin());
             }
             finally
             {

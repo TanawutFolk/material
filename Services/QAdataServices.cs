@@ -55,10 +55,34 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.InsertReceiveRefreshLog(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchLatestReceiveRefreshLog()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchLatestReceiveRefreshLog();
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty SearchInspectionList(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.SearchInspectionList(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchActiveInspectionList()
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchActiveInspectionList();
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
@@ -93,6 +117,14 @@ namespace RawMat.Services
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.CheckStatus(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchReceiveMatStatusByReceiveDate(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
@@ -435,6 +467,14 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchReferenceByMCode(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
         public OutputOnDbProperty CheckConditionRegularRef(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -459,6 +499,13 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchRegularReportData(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchRegularReportData(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
         public OutputOnDbProperty UpdateRegularRef(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -482,6 +529,20 @@ namespace RawMat.Services
             sql = sqlFactory.FunctionSampling(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
+        }
+
+        public OutputOnDbProperty FunctionEquipment(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.FunctionEquipment(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            return base.SearchBySql(sqlFactory.FunctionCheckMethods(dataItem));
         }
 
         public OutputOnDbProperty FunctionSampQtyLotSize(QAdataProperty dataItem)
@@ -510,6 +571,15 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.UpdateReportProcessLotNo(dataItem);
+            _resultData = base.UpdateBySql(sql);
+            return _resultData;
+        }
+
+
         public OutputOnDbProperty InsertFunctionData(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
@@ -537,6 +607,12 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            return base.SearchBySql(sqlFactory.SearchFunctionCheckResultPending(dataItem));
+        }
+
         public OutputOnDbProperty SearchReportActive(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -561,6 +637,15 @@ namespace RawMat.Services
             return _resultData;
         }
 
+
+        public OutputOnDbProperty DeleteReportHistory(QAdataProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.DeleteReportHistory(dataItem);
+            _resultData = base.UpdateBySqlList(sqlList);
+            return _resultData;
+        }
         public OutputOnDbProperty CheckReportStatus(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
@@ -763,10 +848,26 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            List<string> sqlList = new List<string>();
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sqlList = sqlFactory.UpdateAppearPendingReview(dataItem);
+            _resultData = base.UpdateBySqlList(sqlList);
+            return _resultData;
+        }
         public OutputOnDbProperty GetTotalInspected(QAdataProperty dataItem)
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.GetTotalInspected(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.CountAppearPendingUnreviewed(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }
@@ -776,6 +877,23 @@ namespace RawMat.Services
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.InsertAppearData(dataItem);
             _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.GetLatestAppearDataId(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+
+        public OutputOnDbProperty SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchAppearPendingData(dataItem);
+            _resultData = base.SearchBySql(sql);
             return _resultData;
         }
 
@@ -790,6 +908,81 @@ namespace RawMat.Services
         public override OutputOnDbProperty Update(QAdataProperty dataItem)
         {
             throw new NotImplementedException();
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+
+        public OutputOnDbProperty B08Header(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08Header(dataItem));
+        }
+
+        public OutputOnDbProperty B08PackingCheck(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08PackingCheck(dataItem));
+        }
+
+        public OutputOnDbProperty B08PackingSize(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08PackingSize(dataItem));
+        }
+
+        public OutputOnDbProperty B08LotNo(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08LotNo(dataItem));
+        }
+
+        public OutputOnDbProperty B08AppearanceData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08AppearanceData(dataItem));
+        }
+
+        public OutputOnDbProperty B08AppearancePending(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08AppearancePending(dataItem));
+        }
+
+        public OutputOnDbProperty B08Sampling(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08Sampling(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionPoints(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionPoints(dataItem));
+        }
+
+        public OutputOnDbProperty EquipmentSerialList()
+        {
+            return SearchOnQaDb(sqlFactory.EquipmentSerialList());
+        }
+
+        public OutputOnDbProperty B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionPieceJudge(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionData(dataItem));
+        }
+
+        public OutputOnDbProperty B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08DimensionEquipment(dataItem));
+        }
+
+        public OutputOnDbProperty B08FunctionData(QAdataProperty dataItem)
+        {
+            return SearchOnQaDb(sqlFactory.B08FunctionData(dataItem));
+        }
+
+        private OutputOnDbProperty SearchOnQaDb(string statement)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = statement;
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
         }
     }
 }

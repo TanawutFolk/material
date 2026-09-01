@@ -94,6 +94,29 @@ namespace RawMat.Utilities
             return resizedImage;
         }
 
+        public Image LoadAppImage(string fileName)
+        {
+            try
+            {
+                string fullPath = Path.Combine(Application.StartupPath, "img", fileName);
+                if (File.Exists(fullPath))
+                {
+                    using (FileStream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+                    {
+                        return Image.FromStream(stream);
+                    }
+                }
+
+                Console.WriteLine($"ไม่พบไฟล์ภาพโปรแกรม: {fullPath}");
+                return _defaultImage;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ข้อผิดพลาดในการโหลดภาพโปรแกรม {fileName}: {ex.Message}");
+                return _defaultImage;
+            }
+        }
+
         public Image LoadPackingImage(string fileName)
         {
             try
@@ -620,9 +643,9 @@ namespace RawMat.Utilities
             try
             {
                 // ดึงพาธโฟลเดอร์จาก app.config
-                string folderRegularPath = ConfigurationManager.AppSettings["AppearancePath"];
+                string folderAppearPath = ConfigurationManager.AppSettings["AppearancePath"];
 
-                if (string.IsNullOrEmpty(folderRegularPath))
+                if (string.IsNullOrEmpty(folderAppearPath))
                 {
                     Console.WriteLine("ข้อผิดพลาด: ไม่พบพาธโฟลเดอร์ AppearancePath ใน app.config");
                     return _defaultImage;
@@ -633,7 +656,7 @@ namespace RawMat.Utilities
 
                 foreach (string extension in allowedExtensions)
                 {
-                    string fullPath = Path.Combine(folderRegularPath, fileName + extension);
+                    string fullPath = Path.Combine(folderAppearPath, fileName + extension);
 
                     if (File.Exists(fullPath))
                     {

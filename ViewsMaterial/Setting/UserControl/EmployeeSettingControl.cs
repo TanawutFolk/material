@@ -1,0 +1,297 @@
+using RawMat.Controllers;
+using RawMat.Property;
+using RawMat.ViewsMaterial.Setting.form;
+using System;
+using System.Data;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace RawMat.ViewsMaterial.Setting
+{
+    public partial class EmployeeSettingControl : System.Windows.Forms.UserControl
+    {
+        private readonly SettingControllers _controller = new SettingControllers();
+
+        private const string ColAction = "Action";
+        private const string ColEmployeeId = "Employee ID";
+        private const string ColEmployeeFirstName = "Employee FirstName";
+        private const string ColEmployeeLastName = "Employee LastName";
+        private const string ColEmployeeLevelId = "Employee Level ID";
+        private const string ColEmployeeLevelName = "Employee Level Name";
+
+        private static readonly Color HeaderBackColor = Color.ForestGreen;
+        private static readonly Color HeaderForeColor = Color.White;
+        private static readonly Color SelectionBackColor = Color.Pink;
+        private static readonly Color AlternateRowBackColor = Color.FromArgb(245, 250, 245);
+
+        private bool _gridConfigured;
+        private bool _isLoadingData;
+
+        public EmployeeSettingControl()
+        {
+            InitializeComponent();
+
+            Load += EmployeeSettingControl_Load;
+            btnSearch.Click += btnSearch_Click;
+            btnClear.Click += btnClear_Click;
+            btnAddNewEmployee.Click += btnAddNewEmployee_Click;
+            dtgEmployeeSetting.CellContentClick += dtgEmployeeSetting_CellContentClick;
+        }
+
+        private void EmployeeSettingControl_Load(object sender, EventArgs e)
+        {
+            ConfigureGrid();
+            LoadData();
+        }
+
+        private void ConfigureGrid()
+        {
+            if (_gridConfigured) return;
+
+            var grid = dtgEmployeeSetting;
+            grid.ReadOnly = true;
+            grid.AllowUserToAddRows = false;
+            grid.AllowUserToDeleteRows = false;
+            grid.AllowUserToResizeRows = false;
+            grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            grid.MultiSelect = false;
+            grid.RowHeadersVisible = false;
+            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            grid.AutoGenerateColumns = true;
+
+            grid.EnableHeadersVisualStyles = false;
+            grid.ColumnHeadersDefaultCellStyle.BackColor = HeaderBackColor;
+            grid.ColumnHeadersDefaultCellStyle.ForeColor = HeaderForeColor;
+            grid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            grid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            grid.ColumnHeadersHeight = 35;
+            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+
+            grid.DefaultCellStyle.ForeColor = Color.Black;
+            grid.DefaultCellStyle.BackColor = Color.White;
+            grid.DefaultCellStyle.SelectionBackColor = SelectionBackColor;
+            grid.DefaultCellStyle.SelectionForeColor = Color.Black;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = AlternateRowBackColor;
+
+            grid.BackgroundColor = Color.White;
+            grid.BorderStyle = BorderStyle.FixedSingle;
+            grid.GridColor = Color.DarkGray;
+            grid.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+
+            _gridConfigured = true;
+        }
+
+        private void LoadData()
+        {
+            if (_isLoadingData) return;
+
+            _isLoadingData = true;
+            btnSearch.Enabled = false;
+            Cursor = Cursors.WaitCursor;
+
+            string searchEmployeeId = txtMCodeSearch.Text.Trim();
+
+            Task.Run(() => FetchData(searchEmployeeId))
+                .ContinueWith(task =>
+                {
+                    if (IsDisposed || Disposing) return;
+
+                    try
+                    {
+                        if (task.IsFaulted)
+                        {
+                            MessageBox.Show(
+                                task.Exception?.GetBaseException().Message ?? "Load employee setting failed.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        BindGrid(task.Result);
+                    }
+                    finally
+                    {
+                        _isLoadingData = false;
+                        btnSearch.Enabled = true;
+                        Cursor = Cursors.Default;
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private DataTable FetchData(string searchEmployeeId)
+        {
+            var filter = new SettingProperty
+            {
+                Search_Employee_ID = searchEmployeeId
+            };
+
+            return _controller.SearchEmployeeSettingList(filter);
+        }
+
+        private void BindGrid(DataTable dt)
+        {
+            var grid = dtgEmployeeSetting;
+            grid.SuspendLayout();
+            try
+            {
+                grid.DataSource = dt;
+                EnsureActionButtonColumn();
+                ApplyColumnFormat();
+            }
+            finally
+            {
+                grid.ResumeLayout();
+            }
+        }
+
+        private void EnsureActionButtonColumn()
+        {
+            if (dtgEmployeeSetting.Columns.Contains(ColAction))
+            {
+                dtgEmployeeSetting.Columns[ColAction].DisplayIndex = 0;
+                return;
+            }
+
+            var btn = new DataGridViewButtonColumn
+            {
+                Name = ColAction,
+                HeaderText = "",
+                Text = "Action",
+                UseColumnTextForButtonValue = true,
+                Width = 80
+            };
+
+            dtgEmployeeSetting.Columns.Insert(0, btn);
+        }
+
+        private void ApplyColumnFormat()
+        {
+            SetColumnWidth(ColAction, 80);
+            SetColumnVisible(ColEmployeeLevelId, false);
+
+            SetColumnFill(ColEmployeeId, 20);
+            SetColumnFill(ColEmployeeFirstName, 30);
+            SetColumnFill(ColEmployeeLastName, 30);
+            SetColumnFill(ColEmployeeLevelName, 20);
+
+            SetColumnAlignment(ColAction, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColEmployeeId, DataGridViewContentAlignment.MiddleCenter);
+            SetColumnAlignment(ColEmployeeLevelName, DataGridViewContentAlignment.MiddleCenter);
+        }
+
+        private DataGridViewColumn FindColumn(string name) =>
+            dtgEmployeeSetting.Columns.Contains(name)
+                ? dtgEmployeeSetting.Columns[name]
+                : null;
+
+        private void SetColumnWidth(string name, int width)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null)
+            {
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                col.Width = width;
+            }
+        }
+
+        private void SetColumnFill(string name, float fillWeight)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null)
+            {
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                col.FillWeight = fillWeight;
+            }
+        }
+
+        private void SetColumnVisible(string name, bool visible)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null) col.Visible = visible;
+        }
+
+        private void SetColumnAlignment(string name, DataGridViewContentAlignment alignment)
+        {
+            DataGridViewColumn col = FindColumn(name);
+            if (col != null) col.DefaultCellStyle.Alignment = alignment;
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e) => LoadData();
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtMCodeSearch.Text = "";
+            LoadData();
+        }
+
+        private void btnAddNewEmployee_Click(object sender, EventArgs e)
+        {
+            using (var frm = new frmEditEmployee())
+            {
+                if (frm.ShowDialog(this) == DialogResult.OK)
+                    LoadData();
+            }
+        }
+
+        private void dtgEmployeeSetting_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0)
+                return;
+
+            if (dtgEmployeeSetting.Columns[e.ColumnIndex].Name != ColAction)
+                return;
+
+            string employeeId = GetEmployeeIdFromRow(e.RowIndex);
+            if (string.IsNullOrWhiteSpace(employeeId))
+                return;
+
+            SettingGridActionMenu.Show(
+                dtgEmployeeSetting,
+                e.ColumnIndex,
+                e.RowIndex,
+                () => EditEmployee(employeeId),
+                () => DeleteEmployee(employeeId));
+        }
+
+        private void EditEmployee(string employeeId)
+        {
+            using (var frm = new frmEditEmployee(employeeId))
+            {
+                if (frm.ShowDialog(this) == DialogResult.OK)
+                    LoadData();
+            }
+        }
+
+        private void DeleteEmployee(string employeeId)
+        {
+            using (var frm = new frmConfirm($"Delete Employee '{employeeId}' ?"))
+            {
+                if (frm.ShowDialog(this) != DialogResult.Yes)
+                    return;
+            }
+
+            if (!_controller.DeleteEmployeeSetting(new SettingProperty { Employee_ID = employeeId }))
+            {
+                MessageBox.Show("Delete Employee Setting Failed", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MessageBox.Show("Delete Employee Setting", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LoadData();
+        }
+
+        private string GetEmployeeIdFromRow(int rowIndex)
+        {
+            if (!dtgEmployeeSetting.Columns.Contains(ColEmployeeId))
+                return string.Empty;
+
+            object value = dtgEmployeeSetting.Rows[rowIndex].Cells[ColEmployeeId].Value;
+            return value == null || value == DBNull.Value
+                ? string.Empty
+                : Convert.ToString(value).Trim();
+        }
+    }
+}

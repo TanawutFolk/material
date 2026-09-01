@@ -1,4 +1,4 @@
-﻿using RawMat.Views.CustomMsg;
+using RawMat.ViewsMaterial.CustomMsg;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +16,13 @@ namespace RawMat.Utilities
         {
             StringBuilder sb = new StringBuilder();
 
+            // 🔹 ดึงคอลัมน์ที่แสดงผลอยู่ (Visible = true) เท่านั้น
+            var visibleColumns = dgv.Columns.Cast<DataGridViewColumn>()
+                                            .Where(c => c.Visible)
+                                            .ToList();
+
             // 🔹 ดึง Header ของ DataGridView มาใส่เป็นบรรทัดแรก
-            string[] columnNames = dgv.Columns.Cast<DataGridViewColumn>()
-                                              .Select(column => "\"" + column.HeaderText + "\"") // ใส่ "" เพื่อป้องกัน comma
-                                              .ToArray();
+            string[] columnNames = visibleColumns.Select(column => "\"" + column.HeaderText + "\"").ToArray();
             sb.AppendLine(string.Join(",", columnNames));
 
             // 🔹 ดึงข้อมูลในแต่ละแถวไปใส่ใน CSV
@@ -27,9 +30,7 @@ namespace RawMat.Utilities
             {
                 if (!row.IsNewRow) // ข้ามแถวสุดท้ายที่ยังไม่ได้ใส่ข้อมูล
                 {
-                    string[] fields = row.Cells.Cast<DataGridViewCell>()
-                                               .Select(cell => "\"" + (cell.Value ?? "").ToString().Replace("\"", "\"\"") + "\"")
-                                               .ToArray();
+                    string[] fields = visibleColumns.Select(c => "\"" + (row.Cells[c.Index].Value ?? "").ToString().Replace("\"", "\"\"") + "\"").ToArray();
                     sb.AppendLine(string.Join(",", fields));
                 }
             }
@@ -47,18 +48,24 @@ namespace RawMat.Utilities
             Excel.Workbook workbook = excelApp.Workbooks.Add();
             Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Sheets[1];
 
+            var visibleColumns = dgv.Columns.Cast<DataGridViewColumn>()
+                                            .Where(c => c.Visible)
+                                            .ToList();
+
             // 🔹 ดึง Header ของ DataGridView ไปใส่ใน Excel
-            for (int i = 0; i < dgv.Columns.Count; i++)
+            for (int i = 0; i < visibleColumns.Count; i++)
             {
-                worksheet.Cells[1, i + 1] = dgv.Columns[i].HeaderText;
+                worksheet.Cells[1, i + 1] = visibleColumns[i].HeaderText;
             }
 
             // 🔹 ดึงข้อมูลไปใส่ใน Excel
             for (int i = 0; i < dgv.Rows.Count; i++)
             {
-                for (int j = 0; j < dgv.Columns.Count; j++)
+                if (dgv.Rows[i].IsNewRow) continue;
+
+                for (int j = 0; j < visibleColumns.Count; j++)
                 {
-                    worksheet.Cells[i + 2, j + 1] = dgv.Rows[i].Cells[j].Value?.ToString();
+                    worksheet.Cells[i + 2, j + 1] = dgv.Rows[i].Cells[visibleColumns[j].Index].Value?.ToString();
                 }
             }
 

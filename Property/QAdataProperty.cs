@@ -34,6 +34,7 @@ namespace RawMat.Property
         public DataTable dtPackingSize { get; set; }
         public string EMP_ID { get; set; }
         public string EMP_NAME { get; set; }
+        public string REFRESH_TYPE { get; set; }
         public string rec_wh_status { get; set; }
         public string keep_data_status { get; set; }
         public string reg_check_status { get; set; }
@@ -54,6 +55,7 @@ namespace RawMat.Property
         public string packing_check_mode { get; set; }
 
         public string FORMAT_REPORT_ID { get; set; }
+        public string FORMAT_REPORT_NAME { get; set; }
 
         // Regular Check
         public string CAVITY_QTY { get; set; }
@@ -79,6 +81,8 @@ namespace RawMat.Property
 
         //Function Check
         public DataTable dtFuncSamp { get; set; }
+        public DataTable dtFuncEq { get; set; }
+        public DataTable dtFuncCheck { get; set; }
         public DataTable dtFuncData { get; set; }
         public DataTable dtDimSamp { get; set; }
         public DataTable dtAppSamp { get; set; }
@@ -110,7 +114,9 @@ namespace RawMat.Property
         public string QTY_OK { get; set; }
         public string QTY_NG { get; set; }
         public string COUNT { get; set; }
+        public string APPEARANCE_ID { get; set; }
         public string NG_DETAIL { get; set; }
+        public string NG_MODE_ID { get; set; }
         public string PACKING_SIZE { get; set; }
         public string REMAIN_PACKING_SIZE { get; set; }
         public DataGridView dtg_ngMode {get;set;}

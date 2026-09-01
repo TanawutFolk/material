@@ -26,9 +26,27 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            resultData = services.InsertReceiveRefreshLog(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchLatestReceiveRefreshLog()
+        {
+            resultData = services.SearchLatestReceiveRefreshLog();
+            return resultData;
+        }
+
         public OutputOnDbProperty SearchInspectionList(QAdataProperty dataItem)
         {
             resultData = services.SearchInspectionList(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchActiveInspectionList()
+        {
+            resultData = services.SearchActiveInspectionList();
             return resultData;
         }
 
@@ -113,6 +131,12 @@ namespace RawMat.Models
         public OutputOnDbProperty CheckStatus(QAdataProperty dataItem)
         {
             resultData = services.CheckStatus(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+            resultData = services.SearchReceiveMatStatusByReceiveDate(dataItem);
             return resultData;
         }
 
@@ -291,6 +315,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            resultData = services.SearchReferenceByMCode(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty CheckConditionRegularRef(QAdataProperty dataItem)
         {
             resultData = services.CheckConditionRegularRef(dataItem);
@@ -310,6 +340,11 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchRegularReportData(QAdataProperty dataItem)
+        {
+            resultData = services.SearchRegularReportData(dataItem);
+            return resultData;
+        }
         public OutputOnDbProperty UpdateRegularRef(QAdataProperty dataItem)
         {
             resultData = services.UpdateRegularRef(dataItem);
@@ -328,6 +363,17 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty FunctionEquipment(QAdataProperty dataItem)
+        {
+            resultData = services.FunctionEquipment(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            return services.FunctionCheckMethods(dataItem);
+        }
+
         public OutputOnDbProperty FunctionSampQtyLotSize(QAdataProperty dataItem)
         {
             resultData = services.FunctionSampQtyLotSize(dataItem);
@@ -339,6 +385,13 @@ namespace RawMat.Models
             resultData = services.UpdateReportStatusLotNo(dataItem);
             return resultData;
         }
+
+        public OutputOnDbProperty UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            resultData = services.UpdateReportProcessLotNo(dataItem);
+            return resultData;
+        }
+
 
         public OutputOnDbProperty InsertReportLotNoList(QAdataProperty dataItem)
         {
@@ -364,6 +417,11 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            return services.SearchFunctionCheckResultPending(dataItem);
+        }
+
         public OutputOnDbProperty SearchReportActive(QAdataProperty dataItem)
         {
             resultData = services.SearchReportActive(dataItem);
@@ -382,6 +440,12 @@ namespace RawMat.Models
             return resultData;
         }
 
+
+        public OutputOnDbProperty DeleteReportHistory(QAdataProperty dataItem)
+        {
+            resultData = services.DeleteReportHistory(dataItem);
+            return resultData;
+        }
         public OutputOnDbProperty CheckReportStatus(QAdataProperty dataItem)
         {
             resultData = services.CheckReportStatus(dataItem);
@@ -527,15 +591,124 @@ namespace RawMat.Models
             return resultData;
         }
 
+
+        public OutputOnDbProperty UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            resultData = services.UpdateAppearPendingReview(dataItem);
+            return resultData;
+        }
+        public OutputOnDbProperty SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            resultData = services.SearchAppearPendingData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SearchForAppearPending()
+        {
+            resultData = services.SearchForAppearPending();
+            return resultData;
+        }
         public OutputOnDbProperty GetTotalInspected(QAdataProperty dataItem)
         {
             resultData = services.GetTotalInspected(dataItem);
             return resultData;
         }
 
+        public OutputOnDbProperty CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            resultData = services.CountAppearPendingUnreviewed(dataItem);
+            return resultData;
+        }
+
         public OutputOnDbProperty InsertAppearData(QAdataProperty dataItem)
         {
             resultData = services.InsertAppearData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
+        {
+            resultData = services.GetLatestAppearDataId(dataItem);
+            return resultData;
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+
+        public OutputOnDbProperty B08Header(QAdataProperty dataItem)
+        {
+            resultData = services.B08Header(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08PackingCheck(QAdataProperty dataItem)
+        {
+            resultData = services.B08PackingCheck(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08PackingSize(QAdataProperty dataItem)
+        {
+            resultData = services.B08PackingSize(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08LotNo(QAdataProperty dataItem)
+        {
+            resultData = services.B08LotNo(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08AppearanceData(QAdataProperty dataItem)
+        {
+            resultData = services.B08AppearanceData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08AppearancePending(QAdataProperty dataItem)
+        {
+            resultData = services.B08AppearancePending(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08Sampling(QAdataProperty dataItem)
+        {
+            resultData = services.B08Sampling(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionPoints(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionPoints(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty EquipmentSerialList()
+        {
+            resultData = services.EquipmentSerialList();
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionPieceJudge(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionData(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionData(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            resultData = services.B08DimensionEquipment(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty B08FunctionData(QAdataProperty dataItem)
+        {
+            resultData = services.B08FunctionData(dataItem);
             return resultData;
         }
 

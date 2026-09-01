@@ -69,6 +69,46 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public bool InsertReceiveRefreshLog(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.InsertReceiveRefreshLog(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    return true;
+                }
+
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return false;
+        }
+
+        public DataTable SearchLatestReceiveRefreshLog()
+        {
+            try
+            {
+                _resultData = _model.SearchLatestReceiveRefreshLog();
+                if (_resultData.StatusOnDb)
+                {
+                    return _resultData.ResultOnDb;
+                }
+
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return null;
+        }
+
         public int SearchInspectionList(QAdataProperty dataItem)
         {
 
@@ -90,6 +130,30 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return Convert.ToInt32(result.Rows[0]["CNT"]);
+        }
+
+        public DataTable SearchActiveInspectionList()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchActiveInspectionList();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
         }
 
         public DataTable SearchInspListxSmartFFT(QAdataProperty dataItem)
@@ -199,7 +263,7 @@ namespace RawMat.Controllers
                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                throw;
             }
-            
+
         }
 
         public int NeedRegularCheck(QAdataProperty dataItem)
@@ -412,6 +476,31 @@ namespace RawMat.Controllers
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable SearchReceiveMatStatusByReceiveDate(QAdataProperty dataItem)
+        {
+
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchReceiveMatStatusByReceiveDate(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
             }
             return result;
         }
@@ -1076,7 +1165,7 @@ namespace RawMat.Controllers
                 else
                 {
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    result = null; 
+                    result = null;
                 }
             }
             catch (Exception ex)
@@ -1179,6 +1268,34 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public string SearchReferenceByMCode(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchReferenceByMCode(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (result == null || result.Rows.Count == 0 || !result.Columns.Contains("REFERENCE"))
+            {
+                return string.Empty;
+            }
+
+            return result.Rows[0]["REFERENCE"]?.ToString() ?? string.Empty;
+        }
+
         public DataTable CheckConditionRegularRef(QAdataProperty dataItem)
         {
 
@@ -1249,6 +1366,28 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable SearchRegularReportData(QAdataProperty dataItem)
+        {
+
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchRegularReportData(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
         public Boolean UpdateRegularRef(QAdataProperty dataItem)
         {
 
@@ -1319,6 +1458,46 @@ namespace RawMat.Controllers
             return result;
         }
 
+        public DataTable FunctionEquipment(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.FunctionEquipment(dataItem);
+                if (_resultData.StatusOnDb)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = null;
+            }
+            return result;
+        }
+
+        public DataTable FunctionCheckMethods(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.FunctionCheckMethods(dataItem);
+                if (_resultData.StatusOnDb) return _resultData.ResultOnDb;
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
         public DataTable FunctionSampQtyLotSize(QAdataProperty dataItem)
         {
 
@@ -1365,6 +1544,29 @@ namespace RawMat.Controllers
             }
             return bl;
         }
+
+        public Boolean UpdateReportProcessLotNo(QAdataProperty dataItem)
+        {
+            Boolean bl = false;
+            try
+            {
+                _resultData = _model.UpdateReportProcessLotNo(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return bl;
+        }
+
 
         public Boolean InsertReportLotNoList(QAdataProperty dataItem)
         {
@@ -1456,7 +1658,7 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return result;
-           
+
         }
 
         public DataTable SearchReportActive(QAdataProperty dataItem)
@@ -1539,40 +1741,85 @@ namespace RawMat.Controllers
             return bl;
         }
 
-        public Boolean CheckReportStatus(QAdataProperty dataItem)
+
+        public Boolean DeleteReportHistory(QAdataProperty dataItem)
         {
-
-            Boolean bl = true;
-            DataTable result = new DataTable();
-
+            Boolean bl = false;
             try
             {
-                _resultData = _model.CheckReportStatus(dataItem);
+                _resultData = _model.DeleteReportHistory(dataItem);
                 if (_resultData.StatusOnDb == true)
                 {
-                    result = _resultData.ResultOnDb;
-
-                    string report_status = string.IsNullOrEmpty(result.Rows[0]["report_status"].ToString()) ? "1" : result.Rows[0]["report_status"].ToString(); 
-
-                    // ตรวจสอบว่ามีค่าใดเป็น 6 (Pending) หรือ 0 (NG) หรือไม่
-                    if (report_status == ((int)ProcStatus.Pending).ToString() || report_status == ((int)ProcStatus.NG).ToString())
-                    {
-                        bl = false;
-                    }
+                    bl = _resultData.StatusOnDb;
                 }
                 else
                 {
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    bl = false; // คืนค่า false หากเกิดข้อผิดพลาดจากฐานข้อมูล
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                bl = false; // คืนค่า false หากเกิด exception
+            }
+            return bl;
+        }
+        // แปลค่าสถานะเป็นคำตอบว่าบล็อกไหม แยกออกมาเป็น pure function
+        // เพื่อให้ผู้เรียกอ่านสถานะครั้งเดียวแล้วใช้ได้ทั้งการตัดสินใจและการสร้างข้อความ
+        public static bool IsProcessBlocked(string statusId)
+        {
+            if (statusId == null)
+            {
+                return true; // อ่านสถานะไม่ได้ ถือว่าทำต่อไม่ได้เพื่อความปลอดภัย
             }
 
-            return bl;
+            return statusId == ((int)ProcStatus.Pending).ToString()
+                || statusId == ((int)ProcStatus.NG).ToString();
+        }
+
+        // คืนค่าสถานะของ process ที่กำลังทำอยู่ เป็น string เช่น "6" / "0" / "8"
+        // คืน "" เมื่อยังไม่เริ่มทำ (NULL) หรือไม่พบ report , คืน null เมื่ออ่านไม่ได้จริง ๆ
+        public string GetProcessStatusId(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.CheckReportStatus(dataItem);
+
+                if (_resultData.StatusOnDb != true)
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+
+                DataTable result = _resultData.ResultOnDb;
+
+                if (result == null || result.Rows.Count == 0)
+                {
+                    return string.Empty; // ไม่พบแถว ถือว่ายังไม่มีสถานะ ไม่ใช่เหตุให้บล็อก
+                }
+
+                return result.Rows[0]["proc_status"].ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+        }
+
+        // ข้อความอธิบายเหตุที่ถูกบล็อก รับ statusId ที่อ่านมาแล้วเพื่อไม่ต้องยิง query ซ้ำ
+        public static string BuildProcessBlockedMessage(string statusId, string reportNo, string processLabel)
+        {
+            if (statusId == ((int)ProcStatus.NG).ToString())
+            {
+                return $"งาน {processLabel} ของ Report No. {reportNo}\nถูกตัดสินเป็น NG แล้ว ไม่สามารถทำต่อได้";
+            }
+
+            if (statusId == ((int)ProcStatus.Pending).ToString())
+            {
+                return $"งาน {processLabel} ของ Report No. {reportNo}\nถูกตั้งเป็น Pending รออนุมัติ ไม่สามารถทำต่อได้";
+            }
+
+            return $"ไม่สามารถตรวจสอบสถานะงาน {processLabel} ของ Report No. {reportNo} ได้\nกรุณาลองใหม่อีกครั้ง";
         }
 
         public string ReportFDA_Status(QAdataProperty dataItem)
@@ -1643,6 +1890,22 @@ namespace RawMat.Controllers
                     MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     result = null;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable SearchFunctionCheckResultPending(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchFunctionCheckResultPending(dataItem);
+                if (_resultData.StatusOnDb) return _resultData.ResultOnDb;
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
@@ -2165,6 +2428,73 @@ namespace RawMat.Controllers
             return bl;
         }
 
+
+        public Boolean UpdateAppearPendingReview(QAdataProperty dataItem)
+        {
+            Boolean bl = false;
+            try
+            {
+                _resultData = _model.UpdateAppearPendingReview(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return bl;
+        }
+        public DataTable SearchAppearPendingData(QAdataProperty dataItem)
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchAppearPendingData(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
+
+        public DataTable SearchForAppearPending()
+        {
+            DataTable result = new DataTable();
+            try
+            {
+                _resultData = _model.SearchForAppearPending();
+                if (_resultData.StatusOnDb == true)
+                {
+                    result = _resultData.ResultOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    result = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return result;
+        }
         public int GetTotalInspected(QAdataProperty dataItem)
         {
             try
@@ -2199,6 +2529,27 @@ namespace RawMat.Controllers
 
         }
 
+        // คืนจำนวนรายการ NG ที่ยังรอ admin ตัดสิน (0 = ไม่มีค้าง)
+        // ถ้าอ่านไม่สำเร็จจะคืน -1 เพื่อให้ผู้เรียกเลือกทางที่ปลอดภัยแทนการเข้าใจผิดว่าไม่มีค้าง
+        public int CountAppearPendingUnreviewed(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.CountAppearPendingUnreviewed(dataItem);
+
+                if (!_resultData.StatusOnDb || _resultData.ResultOnDb == null || _resultData.ResultOnDb.Rows.Count == 0)
+                {
+                    return -1;
+                }
+
+                return Convert.ToInt32(_resultData.ResultOnDb.Rows[0]["CNT"]);
+            }
+            catch
+            {
+                return -1;
+            }
+        }
+
         public Boolean InsertAppearData(QAdataProperty dataItem)
         {
 
@@ -2209,6 +2560,14 @@ namespace RawMat.Controllers
                 if (_resultData.StatusOnDb == true)
                 {
                     bl = _resultData.StatusOnDb;
+                    _resultData = _model.GetLatestAppearDataId(dataItem);
+                    if (_resultData.StatusOnDb == true
+                        && _resultData.ResultOnDb != null
+                        && _resultData.ResultOnDb.Rows.Count > 0
+                        && _resultData.ResultOnDb.Columns.Contains("APPEARANCE_ID"))
+                    {
+                        dataItem.APPEARANCE_ID = _resultData.ResultOnDb.Rows[0]["APPEARANCE_ID"].ToString();
+                    }
                 }
                 else
                 {
@@ -2220,6 +2579,95 @@ namespace RawMat.Controllers
                 MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return bl;
+        }
+
+        // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
+        // คืน DataTable ว่างเมื่ออ่านไม่ได้ เพื่อให้ตัว export วาดฟอร์มเปล่าต่อได้ ไม่ล้มทั้งใบ
+
+        public DataTable B08Header(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08Header(dataItem), "B08 : header");
+        }
+
+        public DataTable B08PackingCheck(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08PackingCheck(dataItem), "B08 : packing check");
+        }
+
+        public DataTable B08PackingSize(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08PackingSize(dataItem), "B08 : packing size");
+        }
+
+        public DataTable B08LotNo(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08LotNo(dataItem), "B08 : lot no");
+        }
+
+        public DataTable B08AppearanceData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08AppearanceData(dataItem), "B08 : appearance data");
+        }
+
+        public DataTable B08AppearancePending(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08AppearancePending(dataItem), "B08 : appearance pending");
+        }
+
+        public DataTable B08Sampling(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08Sampling(dataItem), "B08 : sampling");
+        }
+
+        public DataTable B08DimensionPoints(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionPoints(dataItem), "B08 : dimension points");
+        }
+
+        public DataTable EquipmentSerialList()
+        {
+            return SearchB08(() => _model.EquipmentSerialList(), "รายการ S/N เครื่องมือ");
+        }
+
+        public DataTable B08DimensionPieceJudge(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionPieceJudge(dataItem), "B08 : dimension piece judge");
+        }
+
+        public DataTable B08DimensionData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionData(dataItem), "B08 : dimension data");
+        }
+
+        public DataTable B08DimensionEquipment(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08DimensionEquipment(dataItem), "B08 : dimension equipment");
+        }
+
+        public DataTable B08FunctionData(QAdataProperty dataItem)
+        {
+            return SearchB08(() => _model.B08FunctionData(dataItem), "B08 : function data");
+        }
+
+        private DataTable SearchB08(Func<OutputOnDbProperty> query, string label)
+        {
+            try
+            {
+                OutputOnDbProperty result = query();
+
+                if (result.StatusOnDb && result.ResultOnDb != null)
+                {
+                    return result.ResultOnDb;
+                }
+
+                MessageBox.Show($"{label}\n{result.MessageOnDb}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{label}\n{ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return new DataTable();
         }
 
     }
