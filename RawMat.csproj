@@ -193,6 +193,12 @@
     <Compile Include="Controllers\PronesControllers.cs" />
     <Compile Include="Controllers\QAdataControllers.cs" />
     <Compile Include="Controllers\SettingControllers.cs" />
+    <Compile Include="ViewsLogin\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewsLogin\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\PronesModels.cs" />
     <Compile Include="Models\QAdataModels.cs" />
@@ -227,6 +233,62 @@
     <Compile Include="Utilities\NetworkInfoCls.cs" />
     <Compile Include="Utilities\NgModeHelper.cs" />
     <Compile Include="Utilities\printerCls.cs" />
+    <Compile Include="ViewsMaterialNCR\Controls\NcrTheme.cs" />
+    <Compile Include="ViewsMaterialNCR\Controls\RoundedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\Controls\StyledDataGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\Controls\ucPager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\Controls\ucPager.Designer.cs">
+      <DependentUpon>ucPager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\Controls\ucNcrTable.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\Controls\ucNcrTable.Designer.cs">
+      <DependentUpon>ucNcrTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\NcrSampleData.cs" />
+    <Compile Include="ViewsMaterialNCR\frmMainNCR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\frmMainNCR.Designer.cs">
+      <DependentUpon>frmMainNCR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucApproval.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucApproval.Designer.cs">
+      <DependentUpon>ucApproval.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucDashboard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucDashboard.Designer.cs">
+      <DependentUpon>ucDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucNCRRecords.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucNCRRecords.Designer.cs">
+      <DependentUpon>ucNCRRecords.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucReports.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucReports.Designer.cs">
+      <DependentUpon>ucReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucSetting.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsMaterialNCR\panelContent\ucSetting.Designer.cs">
+      <DependentUpon>ucSetting.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewsMaterial\AppearCheck\frmAlert.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -539,6 +601,36 @@
     <Compile Include="ViewsMaterial\Setting\UserControl\NgModeSettingControl.Designer.cs">
       <DependentUpon>NgModeSettingControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ViewsLogin\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\Controls\RoundedPanel.resx">
+      <DependentUpon>RoundedPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\Controls\ucPager.resx">
+      <DependentUpon>ucPager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\Controls\ucNcrTable.resx">
+      <DependentUpon>ucNcrTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\frmMainNCR.resx">
+      <DependentUpon>frmMainNCR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\panelContent\ucApproval.resx">
+      <DependentUpon>ucApproval.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\panelContent\ucDashboard.resx">
+      <DependentUpon>ucDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\panelContent\ucNCRRecords.resx">
+      <DependentUpon>ucNCRRecords.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\panelContent\ucReports.resx">
+      <DependentUpon>ucReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsMaterialNCR\panelContent\ucSetting.resx">
+      <DependentUpon>ucSetting.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ViewsMaterial\AppearCheck\frmAlert.resx">
       <DependentUpon>frmAlert.cs</DependentUpon>
     </EmbeddedResource>
@@ -904,7 +996,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewsMaterialNCR\" />
     <Folder Include="ViewsMaterial\Excell Check Sheet\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

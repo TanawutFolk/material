@@ -1,4 +1,6 @@
-﻿using RawMat.ViewsMaterial.Setting;
+﻿using RawMat.Login;
+using RawMat.ViewsMaterial.Setting;
+using RawMat.ViewsMaterialNCR;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -54,7 +56,7 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmMain());
+                Application.Run(new frmLogin());
             }
             finally
             {
