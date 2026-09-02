@@ -555,7 +555,7 @@ namespace RawMat.ViewsMaterial.RegularCheck
             if (requiresCavityInput)
             {
                 lb_TotalCavity.Visible = true;
-                lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
+                lb_TotalCavity.Text = "Total Cavity : " + GetTotalCavitySamplingQty();
 
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE);
                 //picbox_reg.Image = imgCls.LoadRegularImage(propQA.M_CODE);
@@ -745,7 +745,7 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 }
             }
 
-            int expectedQty = Convert.ToInt32(propQA.SAMPLING_QTY);
+            int expectedQty = GetTotalCavitySamplingQty();
 
             // ตรวจสอบว่าผลรวมตรงกับที่ต้องการ
             if (totalQty != expectedQty)
@@ -770,6 +770,23 @@ namespace RawMat.ViewsMaterial.RegularCheck
             int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
             return propQA.SAMPLING_TYPE == "4"
                 || (propQA.SAMPLING_TYPE == "3" && cavityQty > 0);
+        }
+
+        // ยอดรวมที่ต้องเก็บทั้งใบ = ผลรวมของ SAMPLING_QTY ทุก cavity
+        // Type 4 : Sampling_Qty ใน master เป็นจำนวน "ต่อ cavity" ต้องคูณจำนวน cavity เอง
+        // Type 3 : ยกพื้นเป็น cavityQty x qtyPerCavity ไปแล้วตอนเลือกใบ (userControlSelectRegular.cs:327) ห้ามคูณซ้ำ
+        private int GetTotalCavitySamplingQty()
+        {
+            int.TryParse(propQA.SAMPLING_QTY?.Trim(), out int samplingQty);
+
+            if (propQA.SAMPLING_TYPE != "4")
+            {
+                return samplingQty;
+            }
+
+            int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
+
+            return cavityQty > 0 ? samplingQty * cavityQty : samplingQty;
         }
 
         // ฟังก์ชันแสดงเฉพาะแถวที่เป็น POINT_ORDER ของหน้าปัจจุบัน

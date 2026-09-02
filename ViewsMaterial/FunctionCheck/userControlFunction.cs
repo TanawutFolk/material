@@ -161,7 +161,7 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             if (propQA.SAMPLING_TYPE == "4" || (propQA.SAMPLING_TYPE == "3" && Convert.ToInt32(propQA.CAVITY_QTY) != 0))
             {
                 lb_TotalCavity.Visible = true;
-                lb_TotalCavity.Text = "Total Cavity : " + propQA.SAMPLING_QTY;
+                lb_TotalCavity.Text = "Total Cavity : " + GetTotalCavitySamplingQty();
 
                 // โหลดรูป Cavity (สมมติ refactor แล้ว ใช้ LoadImages แทน LoadCavityImage)
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE); // สมมติมี key "CavityPath" ใน app.config
@@ -460,6 +460,23 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             dtg_function.CellEndEdit += dtg_function_CellEndEdit;
         }
 
+        // ยอดรวมที่ต้องเก็บทั้งใบ = ผลรวมของ SAMPLING_QTY ทุก cavity
+        // Type 4 : Sampling_Qty ใน master เป็นจำนวน "ต่อ cavity" ต้องคูณจำนวน cavity เอง
+        // Type 3 : ยกพื้นเป็น cavityQty x qtyPerCavity ไปแล้วตอนเลือกใบ (userControlSelectFunction.cs:260) ห้ามคูณซ้ำ
+        private int GetTotalCavitySamplingQty()
+        {
+            int.TryParse(propQA.SAMPLING_QTY?.Trim(), out int samplingQty);
+
+            if (propQA.SAMPLING_TYPE != "4")
+            {
+                return samplingQty;
+            }
+
+            int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
+
+            return cavityQty > 0 ? samplingQty * cavityQty : samplingQty;
+        }
+
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
             dtg_cavity.EndEdit();
@@ -485,9 +502,11 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 totalQty += qty;
             }
 
-            if (totalQty != Convert.ToInt32(propQA.SAMPLING_QTY))
+            int expectedQty = GetTotalCavitySamplingQty();
+
+            if (totalQty != expectedQty)
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {expectedQty}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
