@@ -154,6 +154,9 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                         propQA.SAMPLING_NAME = propQA.dtFuncSamp.Rows[0]["sampling_type_name"].ToString().Trim();
                         propQA.CAVITY_QTY = propQA.dtFuncSamp.Rows[0]["Cavity_Qty"].ToString();
                         propQA.SAMPLING_QTY = propQA.dtFuncSamp.Rows[0]["Sampling_Qty"].ToString();
+
+                        // เก็บค่าต่อ cavity ไว้ก่อน เพราะ type 3 จะเขียนทับ SAMPLING_QTY ด้วยยอดรวมข้างล่าง
+                        propQA.SAMPLING_QTY_PER_CAVITY = propQA.SAMPLING_QTY;
                         propQA.Cavity_Name_List = new List<string>();
 
                         propQA.CAVITY_NAME = propQA.dtFuncSamp.Rows[0]["Cavity_Name"].ToString();
