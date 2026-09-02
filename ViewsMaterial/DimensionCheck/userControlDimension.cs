@@ -268,6 +268,8 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
             if (propQA.SAMPLING_TYPE == "4")
             {
+                lb_TotalCavity.Visible = true;
+                lb_TotalCavity.Text = "Total Cavity : " + GetTotalCavitySamplingQty();
 
                 picbox_cavity.Image = imgCls.LoadCavityImage(propQA.M_CODE);
                 picbox_dim.Image = imgCls.LoadDimensionImage(propQA.M_CODE);
@@ -295,6 +297,7 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             else
             {
                 gb_cavity.Visible = false;
+                lb_TotalCavity.Visible = false;
                 picbox_dim.Image = imgCls.LoadDimensionImage(propQA.M_CODE);
 
                 GenerateDataTableDimension(null, Convert.ToInt32(propQA.SAMPLING_QTY));
@@ -646,6 +649,23 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             }
         }
 
+        // ยอดรวมที่ต้องเก็บทั้งใบ = ผลรวมของ SAMPLING_QTY ทุก cavity
+        // Type 4 : Sampling_Qty ใน master เป็นจำนวน "ต่อ cavity" ต้องคูณจำนวน cavity เอง
+        // Type 3 : ยกพื้นเป็น cavityQty x qtyPerCavity ไปแล้วตอนเลือกใบ (userControlSelectDimension.cs:334) ห้ามคูณซ้ำ
+        private int GetTotalCavitySamplingQty()
+        {
+            int.TryParse(propQA.SAMPLING_QTY?.Trim(), out int samplingQty);
+
+            if (propQA.SAMPLING_TYPE != "4")
+            {
+                return samplingQty;
+            }
+
+            int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
+
+            return cavityQty > 0 ? samplingQty * cavityQty : samplingQty;
+        }
+
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
             // ตรวจสอบว่าไม่มี Cell ว่าง
@@ -674,10 +694,12 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
             }
 
-            // ตรวจสอบว่าผลรวมไม่เกิน 10
-            if (totalQty != (Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)))
+            int expectedQty = GetTotalCavitySamplingQty();
+
+            // ตรวจสอบว่าผลรวมตรงกับที่ต้องการ
+            if (totalQty != expectedQty)
             {
-                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {Convert.ToInt32(propQA.SAMPLING_QTY) * Convert.ToInt32(propQA.CAVITY_QTY)}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"ผลรวมของ QTY ต้องได้ {expectedQty}  (ปัจจุบัน: {totalQty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

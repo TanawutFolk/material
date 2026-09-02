@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmLogin));
-            this.pn_left = new System.Windows.Forms.Panel();
+            this.pn_Mat = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.bunifuMetroTextbox2 = new Bunifu.Framework.UI.BunifuMetroTextbox();
             this.bunifuMetroTextbox1 = new Bunifu.Framework.UI.BunifuMetroTextbox();
@@ -43,22 +43,22 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pn_right = new System.Windows.Forms.Panel();
-            this.pn_left.SuspendLayout();
+            this.pn_ncr = new System.Windows.Forms.Panel();
+            this.pn_Mat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
-            // pn_left
+            // pn_Mat
             // 
-            this.pn_left.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
-            this.pn_left.Controls.Add(this.pictureBox1);
-            this.pn_left.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pn_left.Location = new System.Drawing.Point(0, 0);
-            this.pn_left.Name = "pn_left";
-            this.pn_left.Size = new System.Drawing.Size(415, 476);
-            this.pn_left.TabIndex = 0;
+            this.pn_Mat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(1)))), ((int)(((byte)(1)))));
+            this.pn_Mat.Controls.Add(this.pictureBox1);
+            this.pn_Mat.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pn_Mat.Location = new System.Drawing.Point(0, 0);
+            this.pn_Mat.Name = "pn_Mat";
+            this.pn_Mat.Size = new System.Drawing.Size(415, 476);
+            this.pn_Mat.TabIndex = 0;
             // 
             // pictureBox1
             // 
@@ -227,13 +227,13 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Password";
             // 
-            // pn_right
+            // pn_ncr
             // 
-            this.pn_right.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pn_right.Location = new System.Drawing.Point(414, 0);
-            this.pn_right.Name = "pn_right";
-            this.pn_right.Size = new System.Drawing.Size(420, 476);
-            this.pn_right.TabIndex = 16;
+            this.pn_ncr.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pn_ncr.Location = new System.Drawing.Point(414, 0);
+            this.pn_ncr.Name = "pn_ncr";
+            this.pn_ncr.Size = new System.Drawing.Size(420, 476);
+            this.pn_ncr.TabIndex = 16;
             // 
             // frmLogin
             // 
@@ -253,13 +253,13 @@
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.bunifuMetroTextbox1);
             this.Controls.Add(this.bunifuMetroTextbox2);
-            this.Controls.Add(this.pn_left);
-            this.Controls.Add(this.pn_right);
+            this.Controls.Add(this.pn_Mat);
+            this.Controls.Add(this.pn_ncr);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "frmLogin";
             this.Text = "MATERIAL RECEIVING INSPECTION SYSTEM";
-            this.pn_left.ResumeLayout(false);
+            this.pn_Mat.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
@@ -270,7 +270,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel pn_left;
+        private System.Windows.Forms.Panel pn_Mat;
         private System.Windows.Forms.PictureBox pictureBox1;
         private Bunifu.Framework.UI.BunifuMetroTextbox bunifuMetroTextbox2;
         private Bunifu.Framework.UI.BunifuMetroTextbox bunifuMetroTextbox1;
@@ -284,6 +284,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel pn_right;
+        private System.Windows.Forms.Panel pn_ncr;
     }
 }

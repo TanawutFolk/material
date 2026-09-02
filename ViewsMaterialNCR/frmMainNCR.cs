@@ -1,4 +1,6 @@
 ﻿using RawMat.ViewsMaterialNCR.panelContent;
+using RawMat.Property;
+using RawMat.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,6 +36,7 @@ namespace RawMat.ViewsMaterialNCR
             InitializeComponent();
             lb_version.Text =
                 ConfigurationManager.AppSettings["programNCRVersion"] ?? "Error Label";
+            ShowEmployee();
             _menuItems = new Dictionary<Button, MenuItem>
             {
                 { btn_Dashboard,  new MenuItem { Icon = pictureBox_Dashboard,  CreatePage = () => new ucDashboard() } },
@@ -158,6 +161,42 @@ namespace RawMat.ViewsMaterialNCR
             }
 
             return null;
+        }
+
+        // ป้ายมุมขวาบน บอกว่าใครกำลังใช้งานอยู่ frmLogin เซ็ต EmployeeManager ไว้ให้แล้วก่อนเปิดหน้านี้
+        private void ShowEmployee()
+        {
+            EmployeeProperty employee = EmployeeManager.CurrentEmployee ?? new EmployeeProperty();
+
+            lb_empCode.Text = employee.EMP_CODE ?? string.Empty;
+            lb_empName.Text = (employee.EMP_NAME + " " + employee.EMP_SURNAME).Trim();
+
+            ShowEmployeePicture(employee.EMP_CODE);
+        }
+
+        // รูปอยู่บนแชร์ตาม EmpImgPath ใน App.config ต่อไม่ติดหรือไม่มีไฟล์ก็ห้ามทำให้เปิดหน้าไม่ได้
+        // ไม่พบรูปก็ปล่อย Image เป็น null ไว้ ให้ picb_empPicture_Paint วาดวงกลมสีพื้นแทน
+        private void ShowEmployeePicture(string empCode)
+        {
+            if (string.IsNullOrEmpty(empCode)) return;
+
+            try
+            {
+                Image photo = new imgCls().LoadSingleImageOrNull("EmpImgPath", empCode);
+                if (photo == null) return;
+
+                // คัดลอกลง Bitmap ใหม่ทันที เพราะ LoadSingleImageOrNull ปิด FileStream ไปแล้วก่อน return
+                // ถ้าถือตัวที่ยังผูกกับ stream ที่ปิดแล้วไว้ มันจะไปพังตอน TextureBrush วาด ซึ่งอยู่ใน Paint
+                using (photo)
+                {
+                    picb_empPicture.Image = new Bitmap(photo);
+                }
+            }
+            catch (Exception ex)
+            {
+                // รูปไม่ขึ้นไม่ใช่เรื่องที่ต้องหยุดคนทำงาน วงกลมสีพื้นยังอยู่เหมือนเดิม
+                Console.WriteLine("โหลดรูปพนักงานไม่สำเร็จ: " + ex.Message);
+            }
         }
 
         // the avatar is filled as an anti-aliased ellipse instead of being clipped by a

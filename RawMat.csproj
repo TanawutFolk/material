@@ -199,6 +199,18 @@
     <Compile Include="ViewsLogin\frmLogin.Designer.cs">
       <DependentUpon>frmLogin.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewsLogin\ucMaterial.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsLogin\ucMaterial.Designer.cs">
+      <DependentUpon>ucMaterial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewsLogin\ucNCR.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewsLogin\ucNCR.Designer.cs">
+      <DependentUpon>ucNCR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\EmployeeModel.cs" />
     <Compile Include="Models\PronesModels.cs" />
     <Compile Include="Models\QAdataModels.cs" />
@@ -603,6 +615,12 @@
     </Compile>
     <EmbeddedResource Include="ViewsLogin\frmLogin.resx">
       <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsLogin\ucMaterial.resx">
+      <DependentUpon>ucMaterial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewsLogin\ucNCR.resx">
+      <DependentUpon>ucNCR.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ViewsMaterialNCR\Controls\RoundedPanel.resx">
       <DependentUpon>RoundedPanel.cs</DependentUpon>

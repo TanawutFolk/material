@@ -33,6 +33,7 @@
             this.lb_version = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pn_MenuNavbar = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.pictureBox_Setting = new System.Windows.Forms.PictureBox();
             this.button5 = new System.Windows.Forms.Button();
             this.pictureBox_Report = new System.Windows.Forms.PictureBox();
@@ -48,11 +49,8 @@
             this.picb_empPicture = new System.Windows.Forms.PictureBox();
             this.lb_Namepage = new System.Windows.Forms.Label();
             this.lb_empCode = new System.Windows.Forms.Label();
-            this.lb_empSurName = new System.Windows.Forms.Label();
             this.lb_empName = new System.Windows.Forms.Label();
             this.pn_Page = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.pn_Menu.SuspendLayout();
             this.pn_MenuNavbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Setting)).BeginInit();
@@ -67,7 +65,6 @@
             // pn_Menu
             // 
             this.pn_Menu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
-            this.pn_Menu.Controls.Add(this.button2);
             this.pn_Menu.Controls.Add(this.lb_version);
             this.pn_Menu.Controls.Add(this.label2);
             this.pn_Menu.Controls.Add(this.pn_MenuNavbar);
@@ -118,6 +115,24 @@
             this.pn_MenuNavbar.Name = "pn_MenuNavbar";
             this.pn_MenuNavbar.Size = new System.Drawing.Size(191, 292);
             this.pn_MenuNavbar.TabIndex = 6;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
+            this.button1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(0, 290);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Padding = new System.Windows.Forms.Padding(0, 0, 30, 0);
+            this.button1.Size = new System.Drawing.Size(191, 58);
+            this.button1.TabIndex = 16;
+            this.button1.Text = "Setting";
+            this.button1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button1.UseVisualStyleBackColor = false;
             // 
             // pictureBox_Setting
             // 
@@ -283,7 +298,6 @@
             this.panel2.Controls.Add(this.picb_empPicture);
             this.panel2.Controls.Add(this.lb_Namepage);
             this.panel2.Controls.Add(this.lb_empCode);
-            this.panel2.Controls.Add(this.lb_empSurName);
             this.panel2.Controls.Add(this.lb_empName);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(191, 0);
@@ -294,7 +308,7 @@
             // picb_empPicture
             // 
             this.picb_empPicture.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
-            this.picb_empPicture.Location = new System.Drawing.Point(787, 5);
+            this.picb_empPicture.Location = new System.Drawing.Point(745, 5);
             this.picb_empPicture.Name = "picb_empPicture";
             this.picb_empPicture.Size = new System.Drawing.Size(58, 58);
             this.picb_empPicture.TabIndex = 11;
@@ -304,7 +318,7 @@
             // 
             this.lb_Namepage.AutoSize = true;
             this.lb_Namepage.Font = new System.Drawing.Font("Microsoft YaHei UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_Namepage.ForeColor = System.Drawing.Color.Black;
+            this.lb_Namepage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
             this.lb_Namepage.Location = new System.Drawing.Point(31, 24);
             this.lb_Namepage.Name = "lb_Namepage";
             this.lb_Namepage.Size = new System.Drawing.Size(207, 28);
@@ -315,30 +329,19 @@
             // 
             this.lb_empCode.AutoSize = true;
             this.lb_empCode.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.lb_empCode.ForeColor = System.Drawing.Color.Black;
-            this.lb_empCode.Location = new System.Drawing.Point(922, 12);
+            this.lb_empCode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
+            this.lb_empCode.Location = new System.Drawing.Point(889, 12);
             this.lb_empCode.Name = "lb_empCode";
             this.lb_empCode.Size = new System.Drawing.Size(74, 19);
             this.lb_empCode.TabIndex = 9;
             this.lb_empCode.Text = "empCode";
             // 
-            // lb_empSurName
-            // 
-            this.lb_empSurName.AutoSize = true;
-            this.lb_empSurName.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_empSurName.ForeColor = System.Drawing.Color.Black;
-            this.lb_empSurName.Location = new System.Drawing.Point(963, 34);
-            this.lb_empSurName.Name = "lb_empSurName";
-            this.lb_empSurName.Size = new System.Drawing.Size(101, 19);
-            this.lb_empSurName.TabIndex = 8;
-            this.lb_empSurName.Text = "empSurName";
-            // 
             // lb_empName
             // 
             this.lb_empName.AutoSize = true;
             this.lb_empName.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.lb_empName.ForeColor = System.Drawing.Color.Black;
-            this.lb_empName.Location = new System.Drawing.Point(859, 34);
+            this.lb_empName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
+            this.lb_empName.Location = new System.Drawing.Point(818, 38);
             this.lb_empName.Name = "lb_empName";
             this.lb_empName.Size = new System.Drawing.Size(79, 19);
             this.lb_empName.TabIndex = 7;
@@ -352,39 +355,6 @@
             this.pn_Page.Name = "pn_Page";
             this.pn_Page.Size = new System.Drawing.Size(1077, 852);
             this.pn_Page.TabIndex = 2;
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(94)))), ((int)(((byte)(184)))));
-            this.button1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(0, 290);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Padding = new System.Windows.Forms.Padding(0, 0, 30, 0);
-            this.button1.Size = new System.Drawing.Size(191, 58);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "Setting";
-            this.button1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button1.UseVisualStyleBackColor = false;
-            // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.Color.Pink;
-            this.button2.FlatAppearance.BorderSize = 0;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Microsoft YaHei", 12F);
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(0, 837);
-            this.button2.Margin = new System.Windows.Forms.Padding(4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(191, 58);
-            this.button2.TabIndex = 15;
-            this.button2.Text = "Material Inspection";
-            this.button2.UseVisualStyleBackColor = false;
             // 
             // frmMainNCR
             // 
@@ -423,7 +393,6 @@
         private System.Windows.Forms.Panel pn_MenuNavbar;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lb_empCode;
-        private System.Windows.Forms.Label lb_empSurName;
         private System.Windows.Forms.Label lb_empName;
         private System.Windows.Forms.Label lb_Namepage;
         private System.Windows.Forms.PictureBox picb_empPicture;
@@ -439,7 +408,6 @@
         private System.Windows.Forms.PictureBox pictureBox_ncrRecords;
         private System.Windows.Forms.Button btn_NCRRecords;
         private System.Windows.Forms.Label lb_version;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
     }
 }

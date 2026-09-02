@@ -15,6 +15,8 @@ namespace RawMat.Property
     {
         public string EMP_CODE { get; set; }
         public string EMP_FULL_NAME { get; set; }
+        public string EMP_NAME { get; set; }
+        public string EMP_SURNAME { get; set; }
         public string EMP_POSITION { get; set; }
         public string EMP_SECTION { get; set; }
         public string EMP_LEVEL { get; set; }
