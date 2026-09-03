@@ -125,7 +125,7 @@
             this.gb_cavity.Size = new System.Drawing.Size(509, 211);
             this.gb_cavity.TabIndex = 61;
             this.gb_cavity.TabStop = false;
-            this.gb_cavity.Text = "Cavity";
+            this.gb_cavity.Text = "Cavity : xxxx";
             // 
             // bt_confirmCavity
             // 

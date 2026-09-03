@@ -162,6 +162,7 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             {
                 lb_TotalCavity.Visible = true;
                 lb_TotalCavity.Text = "Total Cavity : " + GetTotalCavitySamplingQty();
+                gb_cavity.Text = GetCavityRuleText();
 
                 // โหลดรูป Cavity (สมมติ refactor แล้ว ใช้ LoadImages แทน LoadCavityImage)
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE); // สมมติมี key "CavityPath" ใน app.config
@@ -416,13 +417,13 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn
                 {
                     Name = "JUDGE",
-                    HeaderText = "YES / NO",
+                    HeaderText = "OK / NG",
                     DataPropertyName = "JUDGE", // เชื่อมโยงกับคอลัมน์ใน DataTable
                     DataSource = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("", ""), // ช่องว่าง
-                new KeyValuePair<string, string>("0", "NO"),
-                new KeyValuePair<string, string>("1", "YES")
+                new KeyValuePair<string, string>("0", "NG"),
+                new KeyValuePair<string, string>("1", "OK")
             },
                     ValueMember = "Key",
                     DisplayMember = "Value" ,
@@ -475,6 +476,23 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
 
             return cavityQty > 0 ? samplingQty * cavityQty : samplingQty;
+        }
+
+        // ข้อความหัวกรอบ Cavity : บอก user ว่าต้องเก็บ cavity ละกี่ตัว
+        // อ้างอิง readout ชุดเดียวกับ DatabaseScripts/20260826_fix_shin005_01_sampling.sql:68-74
+        // type 4 = cavity ละเท่านี้เป๊ะ , type 3 = cavity ละอย่างน้อยเท่านี้ (ยอดรวมอาจถูกยกขึ้นตามตาราง AQL)
+        private string GetCavityRuleText()
+        {
+            if (!int.TryParse(propQA.SAMPLING_QTY_PER_CAVITY?.Trim(), out int perCavity) || perCavity <= 0)
+            {
+                return "Cavity";
+            }
+
+            string unit = perCavity == 1 ? "Pc." : "Pcs.";
+
+            return propQA.SAMPLING_TYPE == "4"
+                ? $"Cavity : {perCavity} {unit}/Cavity"
+                : $"Cavity : >= {perCavity} {unit}/Cavity";
         }
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
@@ -621,12 +639,12 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             {
                 Name = columnName,
                 DataPropertyName = columnName,
-                HeaderText = string.IsNullOrWhiteSpace(headerText) ? "YES / NO" : headerText,
+                HeaderText = string.IsNullOrWhiteSpace(headerText) ? "OK / NG" : headerText,
                 DataSource = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("", ""),
-                    new KeyValuePair<string, string>("0", "NO"),
-                    new KeyValuePair<string, string>("1", "YES")
+                    new KeyValuePair<string, string>("0", "NG"),
+                    new KeyValuePair<string, string>("1", "OK")
                 },
                 ValueMember = "Key",
                 DisplayMember = "Value",

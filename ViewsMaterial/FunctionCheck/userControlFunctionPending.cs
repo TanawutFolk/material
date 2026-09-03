@@ -261,13 +261,13 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 DataGridViewComboBoxColumn comboBoxColumn = new DataGridViewComboBoxColumn
                 {
                     Name = "JUDGE",
-                    HeaderText = "YES / NO",
+                    HeaderText = "OK / NG",
                     DataPropertyName = "JUDGE", // เชื่อมโยงกับคอลัมน์ JUDGE ใน DataTable
                     DataSource = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("", ""),
-                new KeyValuePair<string, string>("0", "NO"),
-                new KeyValuePair<string, string>("1", "YES")
+                new KeyValuePair<string, string>("0", "NG"),
+                new KeyValuePair<string, string>("1", "OK")
             },
                     ValueMember = "Key",
                     DisplayMember = "Value"
@@ -378,8 +378,8 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 DataSource = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("", ""),
-                    new KeyValuePair<string, string>("0", "NO"),
-                    new KeyValuePair<string, string>("1", "YES")
+                    new KeyValuePair<string, string>("0", "NG"),
+                    new KeyValuePair<string, string>("1", "OK")
                 },
                 ValueMember = "Key",
                 DisplayMember = "Value",

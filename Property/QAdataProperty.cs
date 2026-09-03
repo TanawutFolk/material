@@ -62,6 +62,9 @@ namespace RawMat.Property
         public string SAMPLING_TYPE { get; set; }
         public string SAMPLING_NAME { get; set; }
         public string SAMPLING_QTY { get; set; }
+
+        // ค่า Sampling_Qty ต่อ cavity ที่อ่านมาจาก master ก่อนถูก type 3 เขียนทับด้วยยอดรวม
+        public string SAMPLING_QTY_PER_CAVITY { get; set; }
         public List<string> Cavity_Name_List { get; set; }
         public string CAVITY_NAME { get; set; }
         public DataTable dtRegSamp { get; set; }
