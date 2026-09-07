@@ -111,33 +111,54 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             tb_data_detail.Text = dtInspDataPending.Rows[0]["REMARK"].ToString();
             tb_data_qa_detail.Text = dtInspDataPending.Rows[0]["REMARK"].ToString();
 
-            try
+            string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
+            string baseFilePath = Path.Combine(keepDataFolderPath, propQA.dtReceiveDate.ToString("yyyy"), propQA.dtReceiveDate.ToString("yyyyMMdd") + "_" + propQA.M_CODE);
+
+            LoadPreviewDocument(baseFilePath);
+
+        }
+
+        // หาเอกสารของรายการนี้แล้วโชว์ใน panel_pdf : เจอ PDF เปิดตรง ๆ เจอ Excel แปลงเป็น PDF ก่อน
+        private async void LoadPreviewDocument(string baseFilePath)
+        {
+            string sourceFile = DocPreviewCls.FindDocument(baseFilePath);
+
+            if (sourceFile == null)
             {
-                string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
-                string file = Path.Combine(keepDataFolderPath, propQA.dtReceiveDate.ToString("yyyy"), propQA.dtReceiveDate.ToString("yyyyMMdd") + "_" + propQA.M_CODE + ".pdf");
-
-                //pdf_data_check.CreateControl(); // Ensure the control is initialized
-                panel_pdf.Visible = true;
-                panel_pdf.Controls.Add(pdf_data_check);
-                pdf_data_check.Dock = DockStyle.Fill;
-                pdf_data_check.Visible = true; // Set visible before loading
-
-
-                pdf_data_check.src = file;
-                pdf_data_check.LoadFile(file);
-                pdf_data_check.setShowToolbar(false);
-                pdf_data_check.BringToFront(); // Bring to front for visibility
-                pdf_data_check.Show();
-                //panel_pdf.Refresh();
-                pdf_data_check.Focus();
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading PDF: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DocPreviewCls.ShowMessage(panel_pdf, "ไม่พบไฟล์เอกสารของรายการนี้");
                 return;
             }
 
+            string pdfPath;
+
+            try
+            {
+                // แปลง Excel ใช้เวลาหลายวินาที ทำใน background ไม่ให้หน้าจอค้าง
+                DocPreviewCls.ShowMessage(panel_pdf, "กำลังเตรียมเอกสาร...");
+                pdfPath = await Task.Run(() => DocPreviewCls.ToPdf(sourceFile));
+            }
+            catch (Exception ex)
+            {
+                if (IsDisposed) return;
+
+                DocPreviewCls.ShowMessage(panel_pdf, "เปิดเอกสารไม่สำเร็จ : " + ex.Message);
+                return;
+            }
+
+            // ผู้ใช้อาจกดออกจากหน้านี้ไปแล้วระหว่างรอแปลงไฟล์
+            if (IsDisposed || pdf_data_check == null)
+            {
+                return;
+            }
+
+            try
+            {
+                DocPreviewCls.LoadPdf(panel_pdf, pdf_data_check, pdfPath);
+            }
+            catch (Exception ex)
+            {
+                DocPreviewCls.ShowMessage(panel_pdf, "แสดงเอกสารไม่สำเร็จ : " + ex.Message);
+            }
         }
 
         private void bt_confirm_Click(object sender, EventArgs e)

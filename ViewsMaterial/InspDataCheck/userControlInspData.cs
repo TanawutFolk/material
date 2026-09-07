@@ -71,33 +71,9 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             lb_lotSize.Text = "Lot Size : " + propQA.Qty;
 
             string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
-            string file = System.IO.Path.Combine(keepDataFolderPath, propQA.dtReceiveDate.ToString("yyyy"), propQA.dtReceiveDate.ToString("yyyyMMdd") + "_" + propQA.M_CODE + ".pdf");
+            string baseFilePath = System.IO.Path.Combine(keepDataFolderPath, propQA.dtReceiveDate.ToString("yyyy"), propQA.dtReceiveDate.ToString("yyyyMMdd") + "_" + propQA.M_CODE);
 
-            try
-            {
-              
-                
-                //pdf_data_check.CreateControl(); // Ensure the control is initialized
-                panel_pdf.Visible = true;
-                panel_pdf.Controls.Add(pdf_data_check);
-                pdf_data_check.Dock = DockStyle.Fill;
-                pdf_data_check.Visible = true; // Set visible before loading
-
-                
-                 
-                pdf_data_check.src = file ;
-                pdf_data_check.LoadFile(file);
-                pdf_data_check.setShowToolbar(false);
-                pdf_data_check.BringToFront(); // Bring to front for visibility
-                pdf_data_check.Show();
-                //panel_pdf.Refresh();
-                pdf_data_check.Focus();
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading PDF: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            LoadPreviewDocument(baseFilePath);
 
 
             // test find data
@@ -114,17 +90,6 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             //{
             //    MessageBox.Show("ไม่พบคำที่ต้องการใน PDF");
             //}  
-
-            List<int> resultPages = SearchPdf(file, propQA.M_CODE);
-
-            if (resultPages.Count > 0)
-            {
-                Console.WriteLine($"พบคำว่า '{propQA.M_CODE}' ในหน้าที่: {string.Join(", ", resultPages)}");
-            }
-            else
-            {
-                Console.WriteLine($"ไม่พบคำว่า '{propQA.M_CODE}'");
-            }
 
         }
     
@@ -162,6 +127,68 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             return text.ToString();
         }
 
+
+        // หาเอกสารของรายการนี้แล้วโชว์ใน panel_pdf : เจอ PDF เปิดตรง ๆ เจอ Excel แปลงเป็น PDF ก่อน
+        private async void LoadPreviewDocument(string baseFilePath)
+        {
+            string sourceFile = DocPreviewCls.FindDocument(baseFilePath);
+
+            if (sourceFile == null)
+            {
+                DocPreviewCls.ShowMessage(panel_pdf, "ไม่พบไฟล์เอกสารของรายการนี้");
+                return;
+            }
+
+            string pdfPath;
+
+            try
+            {
+                // แปลง Excel ใช้เวลาหลายวินาที ทำใน background ไม่ให้หน้าจอค้าง
+                DocPreviewCls.ShowMessage(panel_pdf, "กำลังเตรียมเอกสาร...");
+                pdfPath = await Task.Run(() => DocPreviewCls.ToPdf(sourceFile));
+            }
+            catch (Exception ex)
+            {
+                if (IsDisposed) return;
+
+                DocPreviewCls.ShowMessage(panel_pdf, "เปิดเอกสารไม่สำเร็จ : " + ex.Message);
+                return;
+            }
+
+            // ผู้ใช้อาจกดออกจากหน้านี้ไปแล้วระหว่างรอแปลงไฟล์
+            if (IsDisposed || pdf_data_check == null)
+            {
+                return;
+            }
+
+            // debug : ดูว่า M_CODE ปรากฏในเอกสารหน้าไหนบ้าง (ทำก่อนเปิด viewer เพราะ viewer จะล็อกไฟล์ไว้)
+            try
+            {
+                List<int> resultPages = SearchPdf(pdfPath, propQA.M_CODE);
+
+                if (resultPages.Count > 0)
+                {
+                    Console.WriteLine($"พบคำว่า '{propQA.M_CODE}' ในหน้าที่: {string.Join(", ", resultPages)}");
+                }
+                else
+                {
+                    Console.WriteLine($"ไม่พบคำว่า '{propQA.M_CODE}'");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("อ่านข้อความจากเอกสารไม่สำเร็จ : " + ex.Message);
+            }
+
+            try
+            {
+                DocPreviewCls.LoadPdf(panel_pdf, pdf_data_check, pdfPath);
+            }
+            catch (Exception ex)
+            {
+                DocPreviewCls.ShowMessage(panel_pdf, "แสดงเอกสารไม่สำเร็จ : " + ex.Message);
+            }
+        }
 
         private void bt_back_Click(object sender, EventArgs e)
         {

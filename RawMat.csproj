@@ -233,6 +233,8 @@
     <Compile Include="SQLFactory\QAdataSQL.cs" />
     <Compile Include="SQLFactory\SettingSQL.cs" />
     <Compile Include="Utilities\docCls.cs" />
+    <Compile Include="Utilities\DocPreviewCls.cs" />
+    <Compile Include="Utilities\ExcelPreviewCls.cs" />
     <Compile Include="Utilities\EquipmentSerialColumn.cs" />
     <Compile Include="Utilities\PointJudgeType.cs" />
     <Compile Include="Utilities\NumberDisplay.cs" />
