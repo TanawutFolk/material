@@ -47,6 +47,23 @@ namespace RawMat.Utilities
         }
 
         /// <summary>
+        /// มีเอกสารของชื่อฐานนี้อยู่ไหม รองรับทั้ง PDF และ Excel
+        /// ใช้แทน File.Exists(...+".pdf") ที่เดิมมองไม่เห็นไฟล์ Excel
+        /// </summary>
+        public static bool Exists(string basePathWithoutExtension)
+        {
+            return FindDocument(basePathWithoutExtension) != null;
+        }
+
+        /// <summary>
+        /// นามสกุลที่รองรับ ใช้ประกอบข้อความตอนแจ้งผู้ใช้ว่าหาไฟล์ไม่เจอ
+        /// </summary>
+        public static string SupportedExtensionsText
+        {
+            get { return string.Join(" / ", previewExtensions); }
+        }
+
+        /// <summary>
         /// คืน path ของ PDF ที่พร้อมโชว์ ถ้าต้นทางเป็น Excel จะแปลงให้ก่อน (ใช้เวลา เรียกใน background)
         /// </summary>
         public static string ToPdf(string sourcePath)
@@ -87,9 +104,31 @@ namespace RawMat.Utilities
             viewer.src = pdfPath;
             viewer.LoadFile(pdfPath);
             viewer.setShowToolbar(false);
+            ApplyViewMode(viewer);
             viewer.BringToFront();
             viewer.Show();
             viewer.Focus();
+        }
+
+        /// <summary>
+        /// ตั้งโหมดแสดงผลให้เอกสารเต็มความกว้างของ panel
+        /// </summary>
+        /// <remarks>
+        /// ถ้าไม่สั่ง viewer จะใช้ค่า default ของ Adobe Reader ในเครื่องนั้น ซึ่งมักเป็น Fit Page
+        /// คือย่อทั้งหน้าให้พอดีกรอบ ความสูงจึงเป็นตัวบีบ เอกสารแนวนอนอย่าง check sheet ของ SANWA
+        /// (Letter แนวนอน สูง 816 px) ถูกย่อเหลือ 77% ในกรอบสูง 631 px จนอ่านไม่ออก
+        /// FitH ใช้ความกว้างเป็นตัวกำหนดแทน แล้วให้เลื่อนลงอ่านส่วนที่เหลือ
+        /// OneColumn ทำให้เลื่อนข้ามหน้าต่อกันไปได้ เพราะซ่อน toolbar ไว้ ผู้ใช้จึงไม่มีปุ่มเปลี่ยนหน้า
+        /// </remarks>
+        private static void ApplyViewMode(AxAcroPDF viewer)
+        {
+            // เอกสารเสียหรือ Adobe เวอร์ชันเก่าอาจไม่รองรับ ถือว่าไม่เป็นไร ใช้ค่า default แทน
+            try
+            {
+                viewer.setLayoutMode("OneColumn");
+                viewer.setView("FitH");
+            }
+            catch (Exception) { }
         }
 
         /// <summary>

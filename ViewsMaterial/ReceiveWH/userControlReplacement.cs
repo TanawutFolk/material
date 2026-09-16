@@ -137,8 +137,8 @@ namespace RawMat.ViewsMaterial.ReceiveMat
                 if (keep == 1)
                 {
                     string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
-                    string fileKeepData = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE + "_Replacement" + ".pdf");
-                    if (File.Exists(fileKeepData))
+                    string fileKeepData = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE + "_Replacement");
+                    if (DocPreviewCls.Exists(fileKeepData))
                     {
                         dataItem.inProcStatus = "8";
                         dataItem.keep_data_status = "1";
@@ -216,9 +216,9 @@ namespace RawMat.ViewsMaterial.ReceiveMat
                 // เป็น temp => เป็น monitor 
                 string TempFolderPath = ConfigurationManager.AppSettings["MonitorPath"];
                 //string fileTemp = Path.Combine(TempFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.Vendor_Name, dataItem.dtReceiveDate.ToString("yyyyMMdd") + "-" + dataItem.M_CODE + "_Replacement" + ".pdf");
-                string fileTemp = Path.Combine(TempFolderPath, dataItem.M_CODE + ".pdf");
+                string fileTemp = Path.Combine(TempFolderPath, dataItem.M_CODE);
 
-                if (File.Exists(fileTemp))
+                if (DocPreviewCls.Exists(fileTemp))
                 {
                     dataItem.inProcStatus = "8";
                     dataItem.reportStatus = "8";

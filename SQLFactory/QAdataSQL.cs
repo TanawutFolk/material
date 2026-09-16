@@ -2196,28 +2196,45 @@ namespace RawMat.SQLFactory
 
         }
 
-        public string GetLatestAppearDataId(QAdataProperty dataItem)
+        // บันทึกแถวหลัก + รายละเอียด NG ในทรานแซกชันเดียว
+        //
+        // ผูก APPEARANCE_ID ด้วย LAST_INSERT_ID() แทนการ query หาย้อนหลัง — วิธีเดิม
+        // (GetLatestAppearDataId) match ด้วย EMP_ID + CURDATE() + LOT_NO ซึ่งพลาดได้เงียบ ๆ
+        // แล้ว dataItem.APPEARANCE_ID จะค้างค่าจากรอบก่อน NG จึงไปแขวนผิดแถว
+        //
+        // ต้องจับค่าใส่ @appear_id ก่อน เพราะ INSERT ลง db_appearance_pending จะเปลี่ยน
+        // LAST_INSERT_ID() ไปเป็น id ของแถว pending เอง แถว NG ที่ 2 เป็นต้นไปจะผูกผิดทันที
+        //
+        // ต้องยิงผ่าน InsertBySqlList เท่านั้น ทุก statement จึงอยู่คอนเนกชันเดียวกัน
+        // ตัวแปร @appear_id ถึงจะข้าม statement ได้ (ConnectionStrMysqlQA เปิด Allow User Variables ไว้แล้ว)
+        public List<string> InsertAppearDataWithPending(QAdataProperty dataItem)
         {
-            sql = $@"SELECT `APPEARANCE_ID`
-                    FROM `db_appearance_data`
-                    WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
-                      AND `BATCH` = {ToSqlIntOrNull(dataItem.BATCH)}
-                      AND `COUNT` = {ToSqlIntOrNull(dataItem.COUNT)}
-                      AND `EMP_ID` = {ToSqlTextValue(dataItem.EMP_ID)}
-                      AND COALESCE(LOT_NO, '') = {ToSqlTextValue(dataItem.Lot_No)}
-                      AND `APPEARANCE_DATE` = CURDATE()
-                      AND `INUSE` = 1
-                    ORDER BY `APPEARANCE_ID` DESC
-                    LIMIT 1";
+            List<string> sqlList = new List<string>();
 
-            return sql;
+            sqlList.Add(InsertAppearData(dataItem));
+            sqlList.Add("SET @appear_id = LAST_INSERT_ID()");
+            sqlList.AddRange(InsertAppearPendingDetail(dataItem, "@appear_id"));
+
+            return sqlList;
         }
 
-        public List<string> InsertAppearPendingDetail(QAdataProperty dataItem)
+        // appearanceIdExpr : นิพจน์ SQL ที่ใช้เป็นค่า APPEARANCE_ID ปกติคือ "@appear_id"
+        // ที่ InsertAppearDataWithPending ตั้งไว้ให้ในทรานแซกชันเดียวกัน
+        public List<string> InsertAppearPendingDetail(QAdataProperty dataItem, string appearanceIdExpr = null)
         {
             int ngCount = 0;
             List<string> sqlList = new List<string>();
-            DataTable dt = (DataTable)dataItem.dtg_ngMode.DataSource;
+
+            // ตอนนี้ถูกเรียกทุกครั้งที่บันทึก รวมกรณี OK ล้วนที่ไม่มีแถว NG เลย
+            DataTable dt = dataItem.dtg_ngMode?.DataSource as DataTable;
+            if (dt == null)
+            {
+                return sqlList;
+            }
+
+            string appearanceId = string.IsNullOrWhiteSpace(appearanceIdExpr)
+                ? ToSqlLongOrNull(dataItem.APPEARANCE_ID)
+                : appearanceIdExpr;
 
             foreach (DataRow row in dt.Rows)
             {
@@ -2229,7 +2246,6 @@ namespace RawMat.SQLFactory
 
                 string ngDetail = row.Table.Columns.Contains("NG_DETAIL") ? row["NG_DETAIL"].ToString().Replace("'", "''") : "";
                 string ngModeId = ToSqlIntOrNull(row.Table.Columns.Contains("NG_MODE_ID") ? row["NG_MODE_ID"] : null);
-                string appearanceId = ToSqlLongOrNull(dataItem.APPEARANCE_ID);
                 sql = $"INSERT INTO `db_appearance_pending`(`APPEARANCE_ID`, `REPORT_NO`, `BATCH`, `COUNT`, `LOT_NO`, `NG_COUNT`, `QTY_NG`, `NG_DETAIL`, `NG_MODE_ID`, `APPEARANCE_DATE`, `UPDATETIME`) " +
                       $"VALUES({appearanceId}, {ToSqlTextValue(dataItem.Report_No)}, {ToSqlIntOrNull(dataItem.BATCH)}, {ToSqlIntOrNull(dataItem.COUNT)}, {ToSqlTextValue(dataItem.Lot_No)}, {ngCount}, {qtyNg}, '{ngDetail}', {ngModeId}, NOW(), NOW())";
 

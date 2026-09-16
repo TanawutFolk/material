@@ -837,12 +837,15 @@ namespace RawMat.Services
         }
 
 
-        public OutputOnDbProperty InsertAppearPendingDetail(QAdataProperty dataItem)
+        // ต้องเป็น InsertBySqlList เท่านั้น — ทุก statement วิ่งบน conTrans เดียวกัน
+        // ตัวแปร @appear_id ที่ผูก APPEARANCE_ID จึงข้าม statement ได้ และแถวหลักกับ NG
+        // commit/rollback พร้อมกัน ไม่มีทางเหลือแถวหลักค้างโดยไม่มีรายละเอียด NG
+        public OutputOnDbProperty InsertAppearDataWithPending(QAdataProperty dataItem)
         {
             List<string> sqlList = new List<string>();
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
 
-            sqlList = sqlFactory.InsertAppearPendingDetail(dataItem);
+            sqlList = sqlFactory.InsertAppearDataWithPending(dataItem);
 
             _resultData = base.InsertBySqlList(sqlList);
             return _resultData;
@@ -868,22 +871,6 @@ namespace RawMat.Services
         {
             strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
             sql = sqlFactory.CountAppearPendingUnreviewed(dataItem);
-            _resultData = base.SearchBySql(sql);
-            return _resultData;
-        }
-
-        public OutputOnDbProperty InsertAppearData(QAdataProperty dataItem)
-        {
-            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
-            sql = sqlFactory.InsertAppearData(dataItem);
-            _resultData = base.InsertBySql(sql);
-            return _resultData;
-        }
-
-        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
-        {
-            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
-            sql = sqlFactory.GetLatestAppearDataId(dataItem);
             _resultData = base.SearchBySql(sql);
             return _resultData;
         }

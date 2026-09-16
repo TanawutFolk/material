@@ -585,9 +585,9 @@ namespace RawMat.Models
         }
 
 
-        public OutputOnDbProperty InsertAppearPendingDetail(QAdataProperty dataItem)
+        public OutputOnDbProperty InsertAppearDataWithPending(QAdataProperty dataItem)
         {
-            resultData = services.InsertAppearPendingDetail(dataItem);
+            resultData = services.InsertAppearDataWithPending(dataItem);
             return resultData;
         }
 
@@ -617,18 +617,6 @@ namespace RawMat.Models
         public OutputOnDbProperty CountAppearPendingUnreviewed(QAdataProperty dataItem)
         {
             resultData = services.CountAppearPendingUnreviewed(dataItem);
-            return resultData;
-        }
-
-        public OutputOnDbProperty InsertAppearData(QAdataProperty dataItem)
-        {
-            resultData = services.InsertAppearData(dataItem);
-            return resultData;
-        }
-
-        public OutputOnDbProperty GetLatestAppearDataId(QAdataProperty dataItem)
-        {
-            resultData = services.GetLatestAppearDataId(dataItem);
             return resultData;
         }
 

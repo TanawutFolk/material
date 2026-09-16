@@ -564,6 +564,14 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
                 dtg_cavity.DataSource = propQA.dtCavity;
 
+                // ห้าม sort : ลำดับ cavity มาจาก master (Cavity_Name เช่น "M,N,O,P") และมีความหมายในตัว
+                // ตอนสร้างแถวตัวอย่างโค้ดวน dtg_cavity.Rows ตามลำดับที่แสดงบนจอ ถ้าผู้ใช้เผลอคลิกหัวคอลัมน์
+                // SAMPLING_NO จะถูกจับคู่กับ cavity ผิดตัวแล้วบันทึกลงฐานข้อมูลแบบนั้นเลย
+                foreach (DataGridViewColumn cavityColumn in dtg_cavity.Columns)
+                {
+                    cavityColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+
 
                 // ตรวจสอบว่ามีคอลัมน์ "DATA_NO" หรือยัง
                 if (dtg_cavity.Columns["CAVITY_NAME"] != null)
@@ -795,9 +803,10 @@ namespace RawMat.ViewsMaterial.RegularCheck
         // type 4 = cavity ละเท่านี้เป๊ะ , type 3 = cavity ละอย่างน้อยเท่านี้ (ยอดรวมอาจถูกยกขึ้นตามตาราง AQL)
         private string GetCavityRuleText()
         {
+            // ไม่ได้ตั้งจำนวนต่อ cavity ไว้ ก็ไม่มีกฎอะไรจะบอก ปล่อยหัวกรอบว่างดีกว่าโชว์คำว่า Cavity ลอย ๆ
             if (!int.TryParse(propQA.SAMPLING_QTY_PER_CAVITY?.Trim(), out int perCavity) || perCavity <= 0)
             {
-                return "Cavity";
+                return string.Empty;
             }
 
             string unit = perCavity == 1 ? "Pc." : "Pcs.";

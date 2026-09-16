@@ -116,9 +116,9 @@
             this.gb_data_judge.Controls.Add(this.rb_ng);
             this.gb_data_judge.Controls.Add(this.rb_ok);
             this.gb_data_judge.Controls.Add(this.lb_data_judge);
-            this.gb_data_judge.Location = new System.Drawing.Point(80, 801);
+            this.gb_data_judge.Location = new System.Drawing.Point(16, 801);
             this.gb_data_judge.Name = "gb_data_judge";
-            this.gb_data_judge.Size = new System.Drawing.Size(973, 69);
+            this.gb_data_judge.Size = new System.Drawing.Size(1066, 69);
             this.gb_data_judge.TabIndex = 79;
             this.gb_data_judge.TabStop = false;
             // 
@@ -178,7 +178,7 @@
             // bt_confirm
             // 
             this.bt_confirm.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold);
-            this.bt_confirm.Location = new System.Drawing.Point(911, 900);
+            this.bt_confirm.Location = new System.Drawing.Point(940, 900);
             this.bt_confirm.Name = "bt_confirm";
             this.bt_confirm.Size = new System.Drawing.Size(142, 47);
             this.bt_confirm.TabIndex = 80;
@@ -188,9 +188,9 @@
             // 
             // panel_pdf
             // 
-            this.panel_pdf.Location = new System.Drawing.Point(78, 134);
+            this.panel_pdf.Location = new System.Drawing.Point(16, 124);
             this.panel_pdf.Name = "panel_pdf";
-            this.panel_pdf.Size = new System.Drawing.Size(975, 631);
+            this.panel_pdf.Size = new System.Drawing.Size(1066, 665);
             this.panel_pdf.TabIndex = 81;
             // 
             // bt_back

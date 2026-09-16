@@ -266,9 +266,14 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             //tb_pageCount.Text = ""; // 1 record 2 record จนถึง pageMax
             lb_sampName.Text = propQA.SAMPLING_QTY + " " + propQA.SAMPLING_NAME;
 
-            if (propQA.SAMPLING_TYPE == "4")
+            bool requiresCavityInput = RequiresCavityInput();
+            gb_cavity.Visible = requiresCavityInput;
+            lb_TotalCavity.Visible = requiresCavityInput;
+            bt_confirmCavity.Enabled = requiresCavityInput;
+            bt_confirmCavity.TabStop = requiresCavityInput;
+
+            if (requiresCavityInput)
             {
-                lb_TotalCavity.Visible = true;
                 lb_TotalCavity.Text = "Total Cavity : " + GetTotalCavitySamplingQty();
                 gb_cavity.Text = GetCavityRuleText();
 
@@ -277,6 +282,14 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
 
                 dtg_cavity.DataSource = propQA.dtCavity;
+
+                // ห้าม sort : ลำดับ cavity มาจาก master (Cavity_Name เช่น "M,N,O,P") และมีความหมายในตัว
+                // ตอนสร้างแถวตัวอย่างโค้ดวน dtg_cavity.Rows ตามลำดับที่แสดงบนจอ ถ้าผู้ใช้เผลอคลิกหัวคอลัมน์
+                // SAMPLING_NO จะถูกจับคู่กับ cavity ผิดตัวแล้วบันทึกลงฐานข้อมูลแบบนั้นเลย
+                foreach (DataGridViewColumn cavityColumn in dtg_cavity.Columns)
+                {
+                    cavityColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
 
 
                 // ตรวจสอบว่ามีคอลัมน์ "DATA_NO" หรือยัง
@@ -297,12 +310,15 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             }
             else
             {
-                gb_cavity.Visible = false;
-                lb_TotalCavity.Visible = false;
+                // ไม่ต้อง confirm cavity ก็ไม่ต้องเว้นที่ว่างไว้ให้กรอบ ดันรูปขึ้นมาเต็มพื้นที่แทน
+                // Designer ตั้ง default เป็น layout แบบมี cavity ไว้ (userControlDimension.Designer.cs:298)
+                picbox_dim.Location = new System.Drawing.Point(17, 113);
+                picbox_dim.Size = new System.Drawing.Size(1076, 556);
+
                 picbox_dim.Image = imgCls.LoadDimensionImage(propQA.M_CODE);
 
                 GenerateDataTableDimension(null, Convert.ToInt32(propQA.SAMPLING_QTY));
-              
+
             }
 
         }
@@ -407,6 +423,9 @@ namespace RawMat.ViewsMaterial.DimensionCheck
                     // คำนวณ Total_Judge
                     CalculateTotalJudge();
                 }
+
+                // แสดงผล NG ให้ผู้ตรวจเห็นทันทีหลังจบการกรอก แม้เซลล์นั้นยังถูกเลือกอยู่
+                UpdateDimensionRowColor(row);
             }
 
             // ตรวจสอบว่ากำลังแก้ไข COLUMN "EQUIPMENT_SERIAL" หรือไม่
@@ -441,6 +460,95 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
            
 
+        }
+
+        private static void UpdateDimensionRowColor(DataGridViewRow row)
+        {
+            bool hasValue = row.Cells["VALUE"].Value != null &&
+                !DBNull.Value.Equals(row.Cells["VALUE"].Value) &&
+                !string.IsNullOrWhiteSpace(row.Cells["VALUE"].Value.ToString());
+            bool isNg = hasValue && row.Cells["POINT_JUDGE"].Value?.ToString() == "0";
+
+            // ใช้ Color.Empty ตอนคืนค่า เพื่อให้แถวกลับไปรับสีปกติ/สีสลับแถวจาก DataGridView
+            row.DefaultCellStyle.BackColor = isNg ? Color.Red : Color.Empty;
+            row.DefaultCellStyle.SelectionBackColor = isNg ? Color.Red : Color.Empty;
+            row.DefaultCellStyle.SelectionForeColor = isNg ? Color.Black : Color.Empty;
+        }
+
+        private void dtg_dimension_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            if (!dtg_dimension.Columns.Contains("VALUE") ||
+                !dtg_dimension.Columns.Contains("POINT_JUDGE"))
+            {
+                return;
+            }
+
+            foreach (DataGridViewRow row in dtg_dimension.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    ConfigureDimensionValueCell(row);
+                    UpdateDimensionRowColor(row);
+                }
+            }
+        }
+
+        private static void ConfigureDimensionValueCell(DataGridViewRow row)
+        {
+            if (row?.DataGridView == null ||
+                !row.DataGridView.Columns.Contains("VALUE") ||
+                !row.DataGridView.Columns.Contains("CRITERIA_MIN"))
+            {
+                return;
+            }
+
+            DataGridViewCell currentCell = row.Cells["VALUE"];
+            object currentValue = currentCell.Value;
+
+            if (Utilities.PointJudgeType.IsPassFail(row))
+            {
+                if (currentCell is DataGridViewComboBoxCell ||
+                    !TryParseDecimal(row.Cells["CRITERIA_MIN"].Value, out decimal minValue))
+                {
+                    return;
+                }
+
+                string okValue = minValue.ToString(CultureInfo.InvariantCulture);
+                string ngValue = (minValue - 1m).ToString(CultureInfo.InvariantCulture);
+                var choices = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>(string.Empty, string.Empty),
+                    new KeyValuePair<string, string>(ngValue, "NG"),
+                    new KeyValuePair<string, string>(okValue, "OK")
+                };
+
+                string existingValue = currentValue == null || currentValue == DBNull.Value
+                    ? string.Empty
+                    : currentValue.ToString();
+
+                if (!string.IsNullOrWhiteSpace(existingValue) &&
+                    !choices.Any(choice => choice.Key == existingValue))
+                {
+                    choices.Add(new KeyValuePair<string, string>(existingValue, existingValue));
+                }
+
+                var comboBoxCell = new DataGridViewComboBoxCell
+                {
+                    DataSource = choices,
+                    ValueMember = "Key",
+                    DisplayMember = "Value",
+                    Value = existingValue
+                };
+
+                // อ้างด้วยชื่อคอลัมน์เสมอ ป้องกัน index เคลื่อนเมื่อ EQ_SN ถูกเปลี่ยนเป็น ComboBoxColumn
+                row.Cells["VALUE"] = comboBoxCell;
+                return;
+            }
+
+            if (currentCell is DataGridViewComboBoxCell)
+            {
+                row.Cells["VALUE"] = new DataGridViewTextBoxCell { Value = currentValue };
+            }
         }
 
         /// <summary>
@@ -650,6 +758,16 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             }
         }
 
+        // ใบที่ต้องให้ผู้ตรวจกระจายจำนวนลงแต่ละ cavity ก่อน ถึงจะสร้างตารางกรอกค่าได้
+        // เกณฑ์เดียวกับ Regular (userControlRegular.cs:777) และ Function (userControlFunction.cs:191)
+        // type 4 = แบ่งตาม cavity เสมอ , type 3 = แบ่งเมื่อ master ตั้ง Cavity_Qty ไว้
+        private bool RequiresCavityInput()
+        {
+            int.TryParse(propQA.CAVITY_QTY?.Trim(), out int cavityQty);
+            return propQA.SAMPLING_TYPE == "4"
+                || (propQA.SAMPLING_TYPE == "3" && cavityQty > 0);
+        }
+
         // ยอดรวมที่ต้องเก็บทั้งใบ = ผลรวมของ SAMPLING_QTY ทุก cavity
         // Type 4 : Sampling_Qty ใน master เป็นจำนวน "ต่อ cavity" ต้องคูณจำนวน cavity เอง
         // Type 3 : ยกพื้นเป็น cavityQty x qtyPerCavity ไปแล้วตอนเลือกใบ (userControlSelectDimension.cs:334) ห้ามคูณซ้ำ
@@ -672,9 +790,10 @@ namespace RawMat.ViewsMaterial.DimensionCheck
         // type 4 = cavity ละเท่านี้เป๊ะ , type 3 = cavity ละอย่างน้อยเท่านี้ (ยอดรวมอาจถูกยกขึ้นตามตาราง AQL)
         private string GetCavityRuleText()
         {
+            // ไม่ได้ตั้งจำนวนต่อ cavity ไว้ ก็ไม่มีกฎอะไรจะบอก ปล่อยหัวกรอบว่างดีกว่าโชว์คำว่า Cavity ลอย ๆ
             if (!int.TryParse(propQA.SAMPLING_QTY_PER_CAVITY?.Trim(), out int perCavity) || perCavity <= 0)
             {
-                return "Cavity";
+                return string.Empty;
             }
 
             string unit = perCavity == 1 ? "Pc." : "Pcs.";
@@ -686,6 +805,15 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
         private void bt_confirmCavity_Click(object sender, EventArgs e)
         {
+            if (!RequiresCavityInput())
+            {
+                return;
+            }
+
+            // ค่าที่ยังค้างอยู่ในช่องที่กำลังพิมพ์ยังไม่ถูก commit ลง cell ถ้าไม่ปิด edit ก่อน
+            // จะถูกนับเป็นช่องว่างแล้วเด้ง warning ทั้งที่ผู้ใช้กรอกครบแล้ว (เหมือน userControlRegular.cs:738)
+            dtg_cavity.EndEdit();
+
             // ตรวจสอบว่าไม่มี Cell ว่าง
             foreach (DataGridViewRow row in dtg_cavity.Rows)
             {
@@ -827,8 +955,8 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             dtg_dimension.CellEndEdit -= dtg_dimension_CellEndEdit;
             dtg_dimension.CellValidating -= dtg_dimension_CellValidating;
            
-            dtg_dimension.CellFormatting -= dtg_dimension_CellFormatting;
-            dtg_dimension.CellFormatting += dtg_dimension_CellFormatting;
+            dtg_dimension.DataBindingComplete -= dtg_dimension_DataBindingComplete;
+            dtg_dimension.DataBindingComplete += dtg_dimension_DataBindingComplete;
 
             DataTable dtAllSum = new DataTable();
 
@@ -970,6 +1098,16 @@ namespace RawMat.ViewsMaterial.DimensionCheck
             }
 
             ApplyEquipmentSerialDropdown();
+
+            // DataBindingComplete อาจเกิดก่อนที่ EQ_SN จะถูกแทนด้วย ComboBoxColumn
+            // ย้ำชนิดเซลล์ VALUE หลังจัดคอลัมน์เสร็จ โดยอ้างชื่อคอลัมน์ ไม่ใช้ index
+            foreach (DataGridViewRow row in dtg_dimension.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    ConfigureDimensionValueCell(row);
+                }
+            }
 
             // ตรวจสอบว่า VALUE ควรเป็น ComboBox หรือไม่
             //dtg_regular.CellFormatting += (sender, e) =>
@@ -1203,7 +1341,10 @@ namespace RawMat.ViewsMaterial.DimensionCheck
 
             usrConSelectDim.propQA.labelProcess = "Select Report for : Dimension Check";
             usrConSelectDim.propQA.process = "Dimension_Check";
-            usrConSelectDim.propQA.prevProcess = "Regular_Check";
+            // ต้องเป็น Inspection_Data_Check ให้ตรงกับตอนเข้าจากเมนู (userControlMenu.cs:182)
+            // และตอนรีเฟรชในหน้า select (userControlSelectDimension.cs:725)
+            // SearchForOpDimension เอาค่านี้ไปแทนเป็นชื่อคอลัมน์ใน where ใส่ผิดคอลัมน์ = ได้รายการคนละชุด
+            usrConSelectDim.propQA.prevProcess = "Inspection_Data_Check";
 
             DataTable dt = new DataTable();
 
@@ -1314,68 +1455,6 @@ namespace RawMat.ViewsMaterial.DimensionCheck
         //        }
         //    }
         //}
-
-        private void dtg_dimension_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (dtg_dimension.Columns[e.ColumnIndex].Name == "VALUE")
-            {
-                // ตรวจสอบว่าข้อมูลใน CRITERIA_MIN และ CRITERIA_MAX มีค่า
-                if (dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value != null &&
-                    dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MAX"].Value != null)
-                {
-                    decimal minValue = Convert.ToDecimal(dtg_dimension.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value);
-
-                    // อ่านจากค่าที่ตั้งไว้ ไม่เดาจากเกณฑ์ ดู Utilities/PointJudgeType.cs
-                    if (Utilities.PointJudgeType.IsPassFail(dtg_dimension.Rows[e.RowIndex]))
-                    {
-                        // ตรวจสอบว่าเซลล์ VALUE ยังไม่ใช่ ComboBoxCell
-                        if (!(dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewComboBoxCell))
-                        {
-                            DataGridViewComboBoxCell comboBoxCell = new DataGridViewComboBoxCell();
-                            // OK เก็บค่าที่อยู่ในเกณฑ์พอดี NG เก็บค่าที่ต่ำกว่าเกณฑ์ 1 หน่วย
-                            // ทำแบบนี้เพื่อให้ POINT_JUDGE (value >= min && value <= max) ตัดสินถูก
-                            // ไม่ว่าเกณฑ์จะตั้งไว้ที่ 1/1 หรือเลขอื่น
-                            string okValue = minValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                            string ngValue = (minValue - 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
-
-                            comboBoxCell.DataSource = new List<KeyValuePair<string, string>>()
-                    {
-                        new KeyValuePair<string, string>("", ""),  // ช่องว่าง
-                        new KeyValuePair<string, string>(ngValue, "NG"),
-                        new KeyValuePair<string, string>(okValue, "OK")
-                    };
-                            comboBoxCell.ValueMember = "Key";
-                            comboBoxCell.DisplayMember = "Value";
-
-                            // ใช้ BeginInvoke เพื่อหลีกเลี่ยงการเรียก CellFormatting ซ้ำ
-                            this.BeginInvoke((MethodInvoker)delegate
-                            {
-                                // ตรวจสอบว่า RowIndex และ ColumnIndex ไม่เกินขอบเขตของ DataGridView
-                                if (e.RowIndex >= 0 && e.RowIndex < dtg_dimension.Rows.Count &&
-                                    e.ColumnIndex >= 0 && e.ColumnIndex < dtg_dimension.Columns.Count)
-                                {
-                                    dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] = comboBoxCell;
-                                }
-                            });
-                        }
-                    }
-                    else
-                    {
-                        // ถ้าไม่ตรงเงื่อนไข ให้ใช้ TextBoxCell
-                        if (!(dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewTextBoxCell))
-                        {
-                            DataGridViewTextBoxCell textBoxCell = new DataGridViewTextBoxCell();
-                            textBoxCell.Value = dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-                            this.BeginInvoke((MethodInvoker)delegate
-                            {
-                                dtg_dimension.Rows[e.RowIndex].Cells[e.ColumnIndex] = textBoxCell;
-                            });
-                        }
-                    }
-                }
-            }
-
-        }
 
         //private void userControlRegular_ParentChanged(object sender, EventArgs e)
         //{

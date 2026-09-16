@@ -1,4 +1,4 @@
-using RawMat.ViewsMaterial.CustomMsg;
+﻿using RawMat.ViewsMaterial.CustomMsg;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,10 +16,8 @@ namespace RawMat.Utilities
         {
             StringBuilder sb = new StringBuilder();
 
-            // 🔹 ดึงคอลัมน์ที่แสดงผลอยู่ (Visible = true) เท่านั้น
-            var visibleColumns = dgv.Columns.Cast<DataGridViewColumn>()
-                                            .Where(c => c.Visible)
-                                            .ToList();
+            // 🔹 ดึงคอลัมน์ที่แสดงผลอยู่ (Visible = true) เท่านั้น และข้ามคอลัมน์ปุ่ม (เช่น Delete) ที่ไม่ใช่ข้อมูล
+            var visibleColumns = GetExportableColumns(dgv);
 
             // 🔹 ดึง Header ของ DataGridView มาใส่เป็นบรรทัดแรก
             string[] columnNames = visibleColumns.Select(column => "\"" + column.HeaderText + "\"").ToArray();
@@ -48,9 +46,7 @@ namespace RawMat.Utilities
             Excel.Workbook workbook = excelApp.Workbooks.Add();
             Excel.Worksheet worksheet = (Excel.Worksheet)workbook.Sheets[1];
 
-            var visibleColumns = dgv.Columns.Cast<DataGridViewColumn>()
-                                            .Where(c => c.Visible)
-                                            .ToList();
+            var visibleColumns = GetExportableColumns(dgv);
 
             // 🔹 ดึง Header ของ DataGridView ไปใส่ใน Excel
             for (int i = 0; i < visibleColumns.Count; i++)
@@ -75,6 +71,14 @@ namespace RawMat.Utilities
             excelApp.Quit();
 
             CustomMsgBoxBase.ShowCustomMessageBox("Export Excel สำเร็จ!", "สำเร็จ", CustomMsgBoxBase.MessageBoxIconType.OK);
+        }
+
+        // 🔹 คอลัมน์ที่ export ได้ = แสดงผลอยู่ และไม่ใช่คอลัมน์ปุ่ม (ปุ่ม Delete ฯลฯ เป็น action ไม่ใช่ข้อมูล)
+        private static List<DataGridViewColumn> GetExportableColumns(DataGridView dgv)
+        {
+            return dgv.Columns.Cast<DataGridViewColumn>()
+                              .Where(c => c.Visible && !(c is DataGridViewButtonColumn))
+                              .ToList();
         }
 
     }

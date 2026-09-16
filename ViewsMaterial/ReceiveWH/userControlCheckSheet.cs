@@ -518,9 +518,9 @@ namespace RawMat.ViewsMaterial.ReceiveWH
 
                             string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
                             //check data
-                            string file = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE + ".pdf");
+                            string file = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE);
                             //string file = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.Vendor_Name, dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE + ".pdf");
-                            if (File.Exists(file))
+                            if (DocPreviewCls.Exists(file))
                             {
 
                                 dataItem.inProcStatus = "1";
@@ -632,8 +632,8 @@ namespace RawMat.ViewsMaterial.ReceiveWH
                         //    subfolderVendor = subfolderVendor.Substring(0, subfolderVendor.Length - 1); //vendor ที่มีจุดท้าย
                         //}
 
-                        string file = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE + ".pdf");
-                        if (File.Exists(file))
+                        string file = Path.Combine(keepDataFolderPath, dataItem.dtReceiveDate.ToString("yyyy"), dataItem.dtReceiveDate.ToString("yyyyMMdd") + "_" + dataItem.M_CODE);
+                        if (DocPreviewCls.Exists(file))
                         {
                             dataItem.inProcStatus = "1";
                             dataItem.reportStatus = "1";

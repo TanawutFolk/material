@@ -2358,8 +2358,15 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
             propQA.judge = judge;
 
 
-            // Step 2: Insert ข้อมูลหลักลง DB
-            bool insertSuccess = conQA.InsertAppearData(propQA);
+            // Step 2: บันทึกแถวหลัก + รายละเอียด NG ในทรานแซกชันเดียว
+            // ต้อง sync ข้อความ NG ก่อนเรียก เพราะ SQL factory อ่านจาก dtg_ngMode โดยตรง
+            if (qtyNG > 0)
+            {
+                SyncAllNgDetailText();
+            }
+            propQA.dtg_ngMode = dtg_ngMode; // Set for controller
+
+            bool insertSuccess = conQA.InsertAppearDataWithPending(propQA);
 
             if (!insertSuccess)
             {
@@ -2367,21 +2374,8 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 return;
             }
 
-            // Step 3: ถ้า QTY_NG > 0, Insert รายละเอียด NG
-            bool ngDetailsSuccess = true;
-            if (qtyNG > 0)
-            {
-                SyncAllNgDetailText();
-                propQA.dtg_ngMode = dtg_ngMode; // Set for controller
-                ngDetailsSuccess = conQA.InsertAppearPendingDetail(propQA);
-                if (!ngDetailsSuccess)
-                {
-                    //MessageBox.Show("บันทึกข้อมูลหลักสำเร็จ แต่รายละเอียด NG ล้มเหลว กรุณาตรวจสอบ", "Partial Success", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
-            // Step 4: Post-insert logic based on judge and Allow_Continue
-            if (insertSuccess && ngDetailsSuccess)
+            // Step 3: Post-insert logic based on judge and Allow_Continue
+            if (insertSuccess)
             {
                 int latestRemainingQty = GetLatestRemainingInspectionQty();
                 bool isAllComplete = latestRemainingQty <= 0;

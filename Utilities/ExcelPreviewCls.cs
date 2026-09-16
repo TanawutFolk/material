@@ -47,6 +47,7 @@ namespace RawMat.Utilities
                 }
 
                 Convert(excelPath, pdfPath);
+                RemoveOtherVersions(excelPath, pdfPath);
             }
 
             return pdfPath;
@@ -97,6 +98,8 @@ namespace RawMat.Utilities
                 // ReadOnly + Notify:false กัน dialog "File in use" เด้งค้างตอนคนอื่นเปิดไฟล์นี้อยู่
                 workbook = books.Open(excelPath, UpdateLinks: 0, ReadOnly: true, Notify: false);
 
+                FitColumnsToPageWidth(workbook);
+
                 if (File.Exists(pdfPath))
                 {
                     File.Delete(pdfPath);
@@ -123,6 +126,56 @@ namespace RawMat.Utilities
                 // Excel มักไม่ยอมดับเองแม้ปล่อย COM ครบแล้ว ถ้ายังค้างต้องปิด process ที่เราเปิดเองทิ้ง
                 // ไม่งั้น EXCEL.EXE จะสะสมทุกครั้งที่ preview
                 KillIfStillAlive(excelProcess);
+            }
+        }
+
+        /// <summary>
+        /// บังคับให้ทุกคอลัมน์อยู่ในความกว้างหน้าเดียว
+        /// </summary>
+        /// <remarks>
+        /// ถ้า PageSetup.Zoom ถูกตั้งเป็นตัวเลข Excel จะไม่สนใจ FitToPagesWide เลย
+        /// ผลคือชีตที่กว้างเกินหน้ากระดาษจะถูกตัดคอลัมน์ท้าย ๆ ไปพิมพ์เป็นชุดหน้าแยกต่อท้าย
+        /// เช่นเอกสารตรวจของ vendor ที่ Zoom=74 คอลัมน์สุดท้ายไปโผล่หน้า 18-34 แทนที่จะอยู่ในตาราง
+        /// เอกสาร QA ห้ามมีคอลัมน์หายจากสายตา จึงปิด Zoom แล้วให้ fit ความกว้างแทน
+        /// ส่วนความสูงปล่อยเป็นอัตโนมัติ ไม่งั้นข้อมูลนับพันแถวจะถูกยัดลงหน้าเดียวจนอ่านไม่ออก
+        ///
+        /// อย่าใส่ Application.PrintCommunication = false ครอบ วัดแล้วช้ากว่าเดิม (458ms เทียบกับ 11ms)
+        /// เพราะตอนเปิดกลับเป็น true Excel จะ repaginate ทั้งชีตรวดเดียว
+        /// </remarks>
+        private static void FitColumnsToPageWidth(Excel.Workbook workbook)
+        {
+            Excel.Sheets sheets = null;
+
+            try
+            {
+                sheets = workbook.Worksheets;
+
+                foreach (Excel.Worksheet sheet in sheets)
+                {
+                    Excel.PageSetup pageSetup = null;
+
+                    try
+                    {
+                        pageSetup = sheet.PageSetup;
+                        pageSetup.Zoom = false;
+                        pageSetup.FitToPagesWide = 1;
+                        pageSetup.FitToPagesTall = false;
+                    }
+                    catch (COMException)
+                    {
+                        // ชีตที่ถูกป้องกันไว้หรือไม่มีเครื่องพิมพ์ ปล่อยให้ใช้ค่าเดิมของไฟล์
+                    }
+                    finally
+                    {
+                        ReleaseCom(pageSetup);
+                        ReleaseCom(sheet);
+                    }
+                }
+            }
+            catch (COMException) { }
+            finally
+            {
+                ReleaseCom(sheets);
             }
         }
 
@@ -190,33 +243,119 @@ namespace RawMat.Utilities
             }
 
             cacheCleaned = true;
+            CleanupCache();
+        }
 
+        /// <summary>
+        /// ล้าง cache ทิ้ง ตามอายุก่อน แล้วตามด้วยเพดานขนาด
+        /// </summary>
+        /// <remarks>
+        /// public เพราะต้องเรียกตอนเปิดโปรแกรมด้วย ดู Program.Main
+        /// ถ้าล้างเฉพาะตอนแปลงไฟล์ เครื่องที่นาน ๆ เปิดเอกสาร Excel ทีจะแทบไม่เคยล้างเลย
+        /// (บน share มี PDF สองหมื่นกว่าไฟล์ แต่ Excel ทั้งปีมีไม่กี่ไฟล์)
+        /// </remarks>
+        public static void CleanupCache()
+        {
             try
             {
-                int days;
-                if (!int.TryParse(ConfigurationManager.AppSettings["ExcelPreviewCacheDays"], out days) || days <= 0)
+                string dir = GetCacheDirectory();
+
+                // ตามอายุ
+                DateTime limit = DateTime.UtcNow.AddDays(-GetSetting("ExcelPreviewCacheDays", 7));
+
+                foreach (FileInfo file in new DirectoryInfo(dir).GetFiles("*.pdf"))
                 {
-                    days = 7;
+                    if (file.LastWriteTimeUtc < limit)
+                    {
+                        TryDelete(file);
+                    }
                 }
 
-                DateTime limit = DateTime.UtcNow.AddDays(-days);
+                // ตามเพดานขนาด กันกรณีเปิดเอกสารหนัก ๆ หลายใบรวดเดียวจนยังไม่ถึงกำหนดลบ
+                FileInfo[] remaining = new DirectoryInfo(dir).GetFiles("*.pdf");
 
-                foreach (string file in Directory.GetFiles(GetCacheDirectory(), "*.pdf"))
+                long total = 0;
+                foreach (FileInfo file in remaining)
                 {
-                    // ไฟล์ที่ยังเปิดค้างใน viewer จะลบไม่ได้ ข้ามไปลบรอบหน้า
-                    try
+                    total += file.Length;
+                }
+
+                long cap = (long)GetSetting("ExcelPreviewCacheMaxMB", 200) * 1024L * 1024L;
+
+                if (total <= cap)
+                {
+                    return;
+                }
+
+                // เก่าสุดไปก่อน
+                Array.Sort(remaining, delegate (FileInfo a, FileInfo b)
+                {
+                    return a.LastWriteTimeUtc.CompareTo(b.LastWriteTimeUtc);
+                });
+
+                foreach (FileInfo file in remaining)
+                {
+                    if (total <= cap)
                     {
-                        if (File.GetLastWriteTimeUtc(file) < limit)
-                        {
-                            File.Delete(file);
-                        }
+                        break;
                     }
-                    catch (IOException) { }
-                    catch (UnauthorizedAccessException) { }
+
+                    long size = file.Length;
+
+                    if (TryDelete(file))
+                    {
+                        total -= size;
+                    }
                 }
             }
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
+        }
+
+        /// <summary>
+        /// ลบ cache เวอร์ชันเก่าของเอกสารเดียวกัน เหลือไว้เฉพาะไฟล์ที่เพิ่งแปลง
+        /// </summary>
+        /// <remarks>
+        /// ชื่อ cache ผูกกับเวลาแก้ไขของไฟล์ต้นทาง vendor แก้ไฟล์ทีก็ได้ cache เพิ่มอีกไฟล์
+        /// ของเก่าไม่มีวันถูกใช้แล้วแต่จะค้างจนกว่าจะครบอายุ จึงเก็บกวาดตั้งแต่ตอนนี้เลย
+        /// </remarks>
+        private static void RemoveOtherVersions(string excelPath, string keepPdfPath)
+        {
+            try
+            {
+                string prefix = MakeSafeFileName(Path.GetFileNameWithoutExtension(excelPath))
+                    + "_" + Hash(excelPath.ToLowerInvariant()) + "_";
+
+                foreach (FileInfo file in new DirectoryInfo(GetCacheDirectory()).GetFiles(prefix + "*.pdf"))
+                {
+                    if (!string.Equals(file.FullName, keepPdfPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        TryDelete(file);
+                    }
+                }
+            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        private static bool TryDelete(FileInfo file)
+        {
+            // ไฟล์ที่กำลังเปิดค้างใน viewer จะถูก Adobe ล็อกไว้ ลบไม่ได้ก็ข้าม ไว้รอบหน้า
+            try
+            {
+                file.Delete();
+                return true;
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+        }
+
+        private static int GetSetting(string key, int fallback)
+        {
+            int value;
+            return int.TryParse(ConfigurationManager.AppSettings[key], out value) && value > 0
+                ? value
+                : fallback;
         }
 
         private static string MakeSafeFileName(string name)

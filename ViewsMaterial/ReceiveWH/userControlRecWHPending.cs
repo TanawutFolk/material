@@ -141,16 +141,16 @@ namespace RawMat.ViewsMaterial.ReceiveWH
                     {
                         if (dtg_recWHPending.Rows[e.RowIndex].Cells["Invoice_No"].Value.ToString() == "Replacement")
                         {
-                            file = Path.Combine(keepDataFolderPath, qaProp.dtReceiveDate.ToString("yyyy"), qaProp.dtReceiveDate.ToString("yyyyMMdd") + "_" + qaProp.M_CODE + "_Replacement" + ".pdf");
+                            file = Path.Combine(keepDataFolderPath, qaProp.dtReceiveDate.ToString("yyyy"), qaProp.dtReceiveDate.ToString("yyyyMMdd") + "_" + qaProp.M_CODE + "_Replacement");
                         }
                         else
                         {
-                            file = Path.Combine(keepDataFolderPath, qaProp.dtReceiveDate.ToString("yyyy"), qaProp.dtReceiveDate.ToString("yyyyMMdd") + "_" + qaProp.M_CODE + ".pdf");
+                            file = Path.Combine(keepDataFolderPath, qaProp.dtReceiveDate.ToString("yyyy"), qaProp.dtReceiveDate.ToString("yyyyMMdd") + "_" + qaProp.M_CODE);
                         }
                     }
                     else if (qaProp.Report_Type == "2")
                     {
-                        file = Path.Combine(monitorFolderPath, qaProp.M_CODE + ".pdf");
+                        file = Path.Combine(monitorFolderPath, qaProp.M_CODE);
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace RawMat.ViewsMaterial.ReceiveWH
                         return;
                     }
 
-                    if (File.Exists(file))
+                    if (DocPreviewCls.Exists(file))
                     {
                         qaProp.process = "keep_data";
                         qaProp.inProcStatus = "1";
@@ -192,7 +192,7 @@ namespace RawMat.ViewsMaterial.ReceiveWH
                     else
                     {
                         CustomMsgBoxBase.ShowCustomMessageBox(
-                            $"Report No. : {qaProp.Report_No} นี้" + "\n" + "path ที่ไม่พบ : " + file,
+                            $"Report No. : {qaProp.Report_No} นี้" + "\n" + "path ที่ไม่พบ : " + file + " (" + DocPreviewCls.SupportedExtensionsText + ")",
                             "กรุณาตรวจสอบ!", CustomMsgBoxBase.MessageBoxIconType.NG,fontSize: 12f, backColor: Color.Red);
                     }
 

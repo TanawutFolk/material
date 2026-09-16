@@ -1,4 +1,4 @@
-using MySqlX.XDevAPI.Common;
+﻿using MySqlX.XDevAPI.Common;
 using RawMat.Controllers;
 using RawMat.Property;
 using RawMat.Utilities;
@@ -21,6 +21,8 @@ namespace RawMat.ViewsMaterial.FunctionCheck
     public partial class userControlFunction : UserControl
     {
         private const string FunctionCheckColumnPrefix = "FUNCTION_CHECK_";
+        private const int FunctionGridHeightFull = 351;
+        private const int FunctionCheckColumnWidth = 260;
         public event Action<UserControl> AddUserControlRequested;
         public event Action OnReleaseMutex;
         public event EventHandler BackToARequested;
@@ -57,6 +59,7 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             dtg_cavity.EditingControlShowing += dtg_cavity_EditingControlShowing;
             dtg_function.EditingControlShowing += dtg_function_EditingControlShowing;
             dtg_function.DataError += dtg_function_DataError;
+            dtg_function.CellMouseDown += OpenComboBoxOnSingleMouseClick;
 
             // กันเคสที่ออกจากหน้านี้โดยไม่ผ่าน bt_function_Click (เช่น กด Home / logout
             // ซึ่ง NavigationService จะ dispose control ทิ้งเลย) ให้หยุด timer เสมอ
@@ -95,6 +98,33 @@ namespace RawMat.ViewsMaterial.FunctionCheck
         private void dtg_function_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             EquipmentSerialColumn.HandleEditingControlShowing(dtg_function, e);
+        }
+
+        private void OpenComboBoxOnSingleMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left || e.RowIndex < 0 || e.ColumnIndex < 0)
+            {
+                return;
+            }
+
+            DataGridView grid = sender as DataGridView;
+            DataGridViewCell cell = grid?.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            if (cell == null || cell.ReadOnly || !(cell is DataGridViewComboBoxCell))
+            {
+                return;
+            }
+
+            grid.CurrentCell = cell;
+            grid.BeginEdit(true);
+
+            grid.BeginInvoke((MethodInvoker)(() =>
+            {
+                if (!grid.IsDisposed && grid.CurrentCell == cell &&
+                    grid.EditingControl is System.Windows.Forms.ComboBox comboBox)
+                {
+                    comboBox.DroppedDown = true;
+                }
+            }));
         }
 
         //private void ReleaseReportMutex(string mutexKey)
@@ -167,6 +197,14 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 // โหลดรูป Cavity (สมมติ refactor แล้ว ใช้ LoadImages แทน LoadCavityImage)
                 picbox_cavity.Image = imgCls.LoadSingleImage("CavityPath", propQA.M_CODE); // สมมติมี key "CavityPath" ใน app.config
                 dtg_cavity.DataSource = propQA.dtCavity;
+
+                // ห้าม sort : ลำดับ cavity มาจาก master (Cavity_Name เช่น "M,N,O,P") และมีความหมายในตัว
+                // ตอนสร้างแถวตัวอย่างโค้ดวน dtg_cavity.Rows ตามลำดับที่แสดงบนจอ ถ้าผู้ใช้เผลอคลิกหัวคอลัมน์
+                // SAMPLING_NO จะถูกจับคู่กับ cavity ผิดตัวแล้วบันทึกลงฐานข้อมูลแบบนั้นเลย
+                foreach (DataGridViewColumn cavityColumn in dtg_cavity.Columns)
+                {
+                    cavityColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
 
                 // ตรวจสอบว่ามีคอลัมน์ "CAVITY_NAME" หรือยัง
                 if (dtg_cavity.Columns["CAVITY_NAME"] != null)
@@ -359,6 +397,7 @@ namespace RawMat.ViewsMaterial.FunctionCheck
             // เปลี่ยนคอลัมน์ LOT_NO เป็น ComboBox
             if (dtg_function.Columns.Contains("LOT_NO"))
             {
+                int lotNoColumnIndex = dtg_function.Columns["LOT_NO"].Index;
                 // สร้าง List เพื่อเก็บข้อมูลจากคอลัมน์ LOT_NO
                 List<string> lotNoList = new List<string>();
 
@@ -389,7 +428,7 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                     FlatStyle = FlatStyle.Flat // ปรับสไตล์เพื่อให้สีพื้นหลังมีผลมากขึ้น
 
                 };
-                dtg_function.Columns.Add(comboBoxColumn);
+                dtg_function.Columns.Insert(lotNoColumnIndex, comboBoxColumn);
 
                 // ตั้งค่าการเลือกอัตโนมัติถ้ามีข้อมูลเพียง 1 รายการ
                 if (propQA.dtLotNo.Rows.Count == 1)
@@ -458,6 +497,8 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 dtg_function.Columns.Add(textColumn);
             }
 
+            ConfigureFunctionGridColumns();
+
             dtg_function.CellEndEdit += dtg_function_CellEndEdit;
         }
 
@@ -483,9 +524,10 @@ namespace RawMat.ViewsMaterial.FunctionCheck
         // type 4 = cavity ละเท่านี้เป๊ะ , type 3 = cavity ละอย่างน้อยเท่านี้ (ยอดรวมอาจถูกยกขึ้นตามตาราง AQL)
         private string GetCavityRuleText()
         {
+            // ไม่ได้ตั้งจำนวนต่อ cavity ไว้ ก็ไม่มีกฎอะไรจะบอก ปล่อยหัวกรอบว่างดีกว่าโชว์คำว่า Cavity ลอย ๆ
             if (!int.TryParse(propQA.SAMPLING_QTY_PER_CAVITY?.Trim(), out int perCavity) || perCavity <= 0)
             {
-                return "Cavity";
+                return string.Empty;
             }
 
             string unit = perCavity == 1 ? "Pc." : "Pcs.";
@@ -652,6 +694,47 @@ namespace RawMat.ViewsMaterial.FunctionCheck
                 MinimumWidth = 150
             };
             dtg_function.Columns.Insert(index, combo);
+        }
+
+        private void ConfigureFunctionGridColumns()
+        {
+            dtg_function.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dtg_function.ScrollBars = ScrollBars.Both;
+            dtg_function.Height = FunctionGridHeightFull;
+
+            SetFunctionGridColumnWidth("CAVITY_NAME", 110, true);
+            SetFunctionGridColumnWidth("SAMPLING_NO", 110, true);
+            SetFunctionGridColumnWidth("LOT_NO", 180, true);
+            SetFunctionGridColumnWidth("EQUIPMENT_SERIAL", 180);
+            SetFunctionGridColumnWidth("EQUIPMENT_NAME", 220);
+            SetFunctionGridColumnWidth("JUDGE", 150);
+
+            if (propQA.dtFuncCheck != null)
+            {
+                foreach (DataRow check in propQA.dtFuncCheck.Rows)
+                {
+                    SetFunctionGridColumnWidth(GetFunctionCheckColumnName(check), FunctionCheckColumnWidth);
+                }
+            }
+
+            if (dtg_function.Columns.Contains("REMARK"))
+            {
+                DataGridViewColumn remarkColumn = dtg_function.Columns["REMARK"];
+                remarkColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                remarkColumn.MinimumWidth = 240;
+                remarkColumn.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+        }
+
+        private void SetFunctionGridColumnWidth(string columnName, int width, bool frozen = false)
+        {
+            if (!dtg_function.Columns.Contains(columnName)) return;
+
+            DataGridViewColumn column = dtg_function.Columns[columnName];
+            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            column.Width = width;
+            column.SortMode = DataGridViewColumnSortMode.NotSortable;
+            column.Frozen = frozen;
         }
 
         private void CalculateSampleFunctionJudge(DataGridViewRow row)

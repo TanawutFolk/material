@@ -1,4 +1,5 @@
 ﻿using RawMat.Login;
+using RawMat.Utilities;
 using RawMat.ViewsMaterial.Setting;
 using RawMat.ViewsMaterialNCR;
 using System;
@@ -56,6 +57,11 @@ namespace RawMat
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
+                // ล้าง cache เอกสารที่แปลงจาก Excel ทุกครั้งที่เปิดโปรแกรม
+                // ทำใน background เพราะถ้ามีคนย้าย cache ไปไว้บน network share จะได้ไม่หน่วงตอนเปิด
+                Task.Run(() => ExcelPreviewCls.CleanupCache());
+
                 Application.Run(new frmMain());
             }
             finally

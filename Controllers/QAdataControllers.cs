@@ -2405,13 +2405,17 @@ namespace RawMat.Controllers
         }
 
 
-        public Boolean InsertAppearPendingDetail(QAdataProperty dataItem)
+        // บันทึกแถวหลักของ Appearance พร้อมรายละเอียด NG ในทรานแซกชันเดียว
+        // APPEARANCE_ID ผูกกันในฝั่ง SQL ด้วย @appear_id ไม่ต้องส่งกลับมาที่นี่อีก
+        // จึงเคลียร์ทิ้งก่อน กันไม่ให้ค่าจากรอบก่อนหลุดไปใช้ที่อื่น
+        public Boolean InsertAppearDataWithPending(QAdataProperty dataItem)
         {
 
             Boolean bl = false;
+            dataItem.APPEARANCE_ID = null;
             try
             {
-                _resultData = _model.InsertAppearPendingDetail(dataItem);
+                _resultData = _model.InsertAppearDataWithPending(dataItem);
                 if (_resultData.StatusOnDb == true)
                 {
                     bl = _resultData.StatusOnDb;
@@ -2548,37 +2552,6 @@ namespace RawMat.Controllers
             {
                 return -1;
             }
-        }
-
-        public Boolean InsertAppearData(QAdataProperty dataItem)
-        {
-
-            Boolean bl = false;
-            try
-            {
-                _resultData = _model.InsertAppearData(dataItem);
-                if (_resultData.StatusOnDb == true)
-                {
-                    bl = _resultData.StatusOnDb;
-                    _resultData = _model.GetLatestAppearDataId(dataItem);
-                    if (_resultData.StatusOnDb == true
-                        && _resultData.ResultOnDb != null
-                        && _resultData.ResultOnDb.Rows.Count > 0
-                        && _resultData.ResultOnDb.Columns.Contains("APPEARANCE_ID"))
-                    {
-                        dataItem.APPEARANCE_ID = _resultData.ResultOnDb.Rows[0]["APPEARANCE_ID"].ToString();
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return bl;
         }
 
         // ---------- ชุด query สำหรับ FM-QA-B08-F ----------
