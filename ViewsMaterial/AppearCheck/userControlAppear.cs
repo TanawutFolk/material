@@ -2594,20 +2594,10 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
 
                 if (judge == "0") // NG
                 {
-                    
-
-                    if (propQA.Allow_Continue == "0")
-                    {
-                        // No continue: Immediate pending
-
-                        // Set status to Pending for NG
-                        propQA.TOTAL_STATUS = "6"; // Pending
-                        conQA.UpdateReportStatus(propQA); // Update report status
-
-                        MessageBox.Show("พบสิ่งผิดปกติ งานถูกตั้งเป็น Pending", "พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        bt_Appear_Click(); // Back to select
-                    }
-                    else if (isAllComplete)
+                    // NG ที่ยังไม่ครบทุก pack ให้ตรวจ pack อื่นต่อได้เสมอ ไม่ว่า Allow_Continue ของ sampling type จะเป็นอะไร
+                    // (เดิม Allow_Continue = 0 ตั้ง Pending ทันทีแล้วเตะกลับหน้าเลือก ทำต่อไม่ได้จนกว่า Admin จะตัดสิน)
+                    // NG ที่ค้างไว้ยังรอ Admin ตัดสินที่หน้า Appearance Pending เหมือนเดิม และพอตรวจครบจะถูกตั้ง Pending ด้านล่าง
+                    if (isAllComplete)
                     {
                         // pack นี้เป็นชุดสุดท้าย ตรวจครบจำนวนแล้ว ผู้ตรวจไม่มีอะไรให้ทำต่อ เหลือรอ Admin ตัดสิน NG อย่างเดียว
                         // ต้องตั้ง Pending แบบเดียวกับสาขา OK ที่ตรวจครบแต่ยังมี NG ค้าง
@@ -2680,6 +2670,11 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     else
                     {
                         // Not complete: Continue normally
+                        // บันทึกไปแล้วอย่างน้อย 1 pack ต้องตั้ง Not Finished yet
+                        // ไม่งั้นสถานะยังเป็น NULL หน้าเลือก report จะโชว์ READY เหมือนยังไม่เคยตรวจ
+                        propQA.TOTAL_STATUS = "8"; // Not Finished yet
+                        conQA.UpdateReportStatus(propQA);
+
                         MessageBox.Show(isBatchComplete ? "ชุดนี้ตรวจครบแล้ว กรุณาเลือกทำชุดอื่นต่อ" : "ทำต่อได้ปกติ", "ทำต่อได้ปกติ", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         if (isBatchComplete)
