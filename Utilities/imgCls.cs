@@ -685,25 +685,6 @@ namespace RawMat.Utilities
             }
         }
 
-        // ปรับขนาด PictureBox ให้ใหญ่ที่สุดเท่าที่ใส่ในกรอบ area ได้ โดยคงสัดส่วนรูป
-        // (คล้าย CSS max-width/max-height + height:auto) แล้ววางกึ่งกลางแนวนอน
-        public static void FitPictureBoxToImage(PictureBox pictureBox, Rectangle area)
-        {
-            Image img = pictureBox.Image;
-            if (img == null || img.Width <= 0 || img.Height <= 0)
-            {
-                pictureBox.Bounds = area;
-                return;
-            }
-
-            double scale = Math.Min((double)area.Width / img.Width, (double)area.Height / img.Height);
-            int width = Math.Max(1, (int)(img.Width * scale));
-            int height = Math.Max(1, (int)(img.Height * scale));
-
-            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox.Bounds = new Rectangle(area.X + (area.Width - width) / 2, area.Y, width, height);
-        }
-
         // คลิกที่รูปเพื่อเปิดดูแบบเต็มจอ (คลิกซ้ำหรือกด Esc เพื่อปิด)
         public static void EnableClickToPreview(PictureBox pictureBox, string title)
         {

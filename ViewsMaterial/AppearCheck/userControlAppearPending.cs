@@ -104,26 +104,17 @@ namespace RawMat.ViewsMaterial.AppearCheck
 
         private void LoadInspectionImages()
         {
-            bool hasCavity = int.TryParse(propQA.CAVITY_QTY, out int cavityQty) && cavityQty > 0;
-            if (hasCavity)
+            if (int.TryParse(propQA.CAVITY_QTY, out int cavityQty) && cavityQty > 0)
             {
                 picbox_cavity.Image = imgCls.LoadCavityImage(propQA.M_CODE);
             }
             else
             {
                 gb_cavity.Visible = false;
+                picbox_Appear.Location = new Point(72, 115);
             }
 
             picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
-
-            // คำนวณพื้นที่จากตำแหน่งจริงของ control รอบข้าง (ตำแหน่งจาก Designer ถูก scale ตาม DPI)
-            // ไม่มีรูป Cavity ให้รูป Appearance ใช้พื้นที่ของ Cavity ด้วย, ขอบล่างหยุดก่อน dtg_ngMode
-            const int gap = 6;
-            int top = hasCavity ? gb_cavity.Bottom + gap : gb_cavity.Top;
-            int bottom = dtg_ngMode.Top - gap;
-
-            Rectangle area = new Rectangle(gb_cavity.Left, top, gb_cavity.Width, Math.Max(1, bottom - top));
-            imgCls.FitPictureBoxToImage(picbox_Appear, area);
         }
 
         private void LoadPendingData()
