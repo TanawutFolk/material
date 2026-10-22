@@ -30,8 +30,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(userControlAppear));
             this.lb_top = new System.Windows.Forms.Label();
             this.lb_lotSize = new System.Windows.Forms.Label();
@@ -79,9 +79,8 @@
             this.lb_top.Font = new System.Drawing.Font("Tahoma", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lb_top.ForeColor = System.Drawing.Color.DarkRed;
             this.lb_top.Location = new System.Drawing.Point(0, 0);
-            this.lb_top.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lb_top.Name = "lb_top";
-            this.lb_top.Size = new System.Drawing.Size(1487, 47);
+            this.lb_top.Size = new System.Drawing.Size(1102, 38);
             this.lb_top.TabIndex = 32;
             this.lb_top.Text = "Appearance Check";
             this.lb_top.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -90,10 +89,9 @@
             // 
             this.lb_lotSize.AutoSize = true;
             this.lb_lotSize.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_lotSize.Location = new System.Drawing.Point(905, 58);
-            this.lb_lotSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_lotSize.Location = new System.Drawing.Point(679, 47);
             this.lb_lotSize.Name = "lb_lotSize";
-            this.lb_lotSize.Size = new System.Drawing.Size(180, 24);
+            this.lb_lotSize.Size = new System.Drawing.Size(146, 19);
             this.lb_lotSize.TabIndex = 77;
             this.lb_lotSize.Text = "LOT SIZE/ทั้งหมด";
             // 
@@ -101,10 +99,9 @@
             // 
             this.lb_recDate.AutoSize = true;
             this.lb_recDate.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_recDate.Location = new System.Drawing.Point(91, 101);
-            this.lb_recDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_recDate.Location = new System.Drawing.Point(68, 82);
             this.lb_recDate.Name = "lb_recDate";
-            this.lb_recDate.Size = new System.Drawing.Size(330, 24);
+            this.lb_recDate.Size = new System.Drawing.Size(267, 19);
             this.lb_recDate.TabIndex = 76;
             this.lb_recDate.Text = "RECIEVE DATE : XXXXXXXXXXX";
             // 
@@ -112,10 +109,9 @@
             // 
             this.lb_invoice.AutoSize = true;
             this.lb_invoice.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_invoice.Location = new System.Drawing.Point(455, 58);
-            this.lb_invoice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_invoice.Location = new System.Drawing.Point(341, 47);
             this.lb_invoice.Name = "lb_invoice";
-            this.lb_invoice.Size = new System.Drawing.Size(272, 24);
+            this.lb_invoice.Size = new System.Drawing.Size(216, 19);
             this.lb_invoice.TabIndex = 75;
             this.lb_invoice.Text = "INVOICE : XXXXXXXXXXX";
             // 
@@ -123,10 +119,9 @@
             // 
             this.lb_mcode.AutoSize = true;
             this.lb_mcode.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_mcode.Location = new System.Drawing.Point(455, 101);
-            this.lb_mcode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_mcode.Location = new System.Drawing.Point(341, 82);
             this.lb_mcode.Name = "lb_mcode";
-            this.lb_mcode.Size = new System.Drawing.Size(282, 24);
+            this.lb_mcode.Size = new System.Drawing.Size(231, 19);
             this.lb_mcode.TabIndex = 74;
             this.lb_mcode.Text = "M-CODE : MATERIAL NAME";
             // 
@@ -134,10 +129,9 @@
             // 
             this.lb_reportNo.AutoSize = true;
             this.lb_reportNo.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_reportNo.Location = new System.Drawing.Point(91, 58);
-            this.lb_reportNo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_reportNo.Location = new System.Drawing.Point(68, 47);
             this.lb_reportNo.Name = "lb_reportNo";
-            this.lb_reportNo.Size = new System.Drawing.Size(265, 24);
+            this.lb_reportNo.Size = new System.Drawing.Size(216, 19);
             this.lb_reportNo.TabIndex = 73;
             this.lb_reportNo.Text = "Report No : QAYY-XXXXX";
             // 
@@ -145,10 +139,9 @@
             // 
             this.lb_inspQty.AutoSize = true;
             this.lb_inspQty.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_inspQty.Location = new System.Drawing.Point(905, 101);
-            this.lb_inspQty.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_inspQty.Location = new System.Drawing.Point(679, 82);
             this.lb_inspQty.Name = "lb_inspQty";
-            this.lb_inspQty.Size = new System.Drawing.Size(474, 24);
+            this.lb_inspQty.Size = new System.Drawing.Size(381, 19);
             this.lb_inspQty.TabIndex = 78;
             this.lb_inspQty.Text = "INSPECTION QTY/คำนวนจาก db_packing_size";
             // 
@@ -156,11 +149,9 @@
             // 
             this.gb_cavity.Controls.Add(this.picbox_cavity);
             this.gb_cavity.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_cavity.Location = new System.Drawing.Point(96, 142);
-            this.gb_cavity.Margin = new System.Windows.Forms.Padding(4);
+            this.gb_cavity.Location = new System.Drawing.Point(72, 115);
             this.gb_cavity.Name = "gb_cavity";
-            this.gb_cavity.Padding = new System.Windows.Forms.Padding(4);
-            this.gb_cavity.Size = new System.Drawing.Size(1337, 260);
+            this.gb_cavity.Size = new System.Drawing.Size(1003, 211);
             this.gb_cavity.TabIndex = 79;
             this.gb_cavity.TabStop = false;
             this.gb_cavity.Text = "Cavity";
@@ -168,10 +159,9 @@
             // picbox_cavity
             // 
             this.picbox_cavity.Image = global::RawMat.Properties.Resources.Cavity;
-            this.picbox_cavity.Location = new System.Drawing.Point(21, 36);
-            this.picbox_cavity.Margin = new System.Windows.Forms.Padding(4);
+            this.picbox_cavity.Location = new System.Drawing.Point(16, 29);
             this.picbox_cavity.Name = "picbox_cavity";
-            this.picbox_cavity.Size = new System.Drawing.Size(1308, 244);
+            this.picbox_cavity.Size = new System.Drawing.Size(981, 198);
             this.picbox_cavity.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_cavity.TabIndex = 0;
             this.picbox_cavity.TabStop = false;
@@ -179,10 +169,9 @@
             // picbox_Appear
             // 
             this.picbox_Appear.Image = global::RawMat.Properties.Resources.SHIN005;
-            this.picbox_Appear.Location = new System.Drawing.Point(96, 428);
-            this.picbox_Appear.Margin = new System.Windows.Forms.Padding(4);
+            this.picbox_Appear.Location = new System.Drawing.Point(72, 332);
             this.picbox_Appear.Name = "picbox_Appear";
-            this.picbox_Appear.Size = new System.Drawing.Size(1329, 446);
+            this.picbox_Appear.Size = new System.Drawing.Size(997, 688);
             this.picbox_Appear.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_Appear.TabIndex = 80;
             this.picbox_Appear.TabStop = false;
@@ -191,35 +180,34 @@
             // 
             this.dtg_show_appear.AllowUserToAddRows = false;
             this.dtg_show_appear.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.dtg_show_appear.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dtg_show_appear.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dtg_show_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dtg_show_appear.BackgroundColor = System.Drawing.Color.Gainsboro;
             this.dtg_show_appear.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dtg_show_appear.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Blue;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.Blue;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dtg_show_appear.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dtg_show_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_show_appear.DoubleBuffered = true;
             this.dtg_show_appear.EnableHeadersVisualStyles = false;
             this.dtg_show_appear.HeaderBgColor = System.Drawing.Color.White;
             this.dtg_show_appear.HeaderForeColor = System.Drawing.Color.Blue;
-            this.dtg_show_appear.Location = new System.Drawing.Point(8, 59);
-            this.dtg_show_appear.Margin = new System.Windows.Forms.Padding(4);
+            this.dtg_show_appear.Location = new System.Drawing.Point(6, 48);
             this.dtg_show_appear.Name = "dtg_show_appear";
             this.dtg_show_appear.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dtg_show_appear.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dtg_show_appear.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Tahoma", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dtg_show_appear.RowTemplate.Height = 41;
             this.dtg_show_appear.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dtg_show_appear.Size = new System.Drawing.Size(912, 486);
+            this.dtg_show_appear.Size = new System.Drawing.Size(684, 395);
             this.dtg_show_appear.TabIndex = 81;
             this.dtg_show_appear.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dtg_show_appear_DataBindingComplete);
             // 
@@ -231,11 +219,9 @@
             this.gb_ngMode.Controls.Add(this.dtg_ngMode);
             this.gb_ngMode.Enabled = false;
             this.gb_ngMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_ngMode.Location = new System.Drawing.Point(961, 902);
-            this.gb_ngMode.Margin = new System.Windows.Forms.Padding(4);
+            this.gb_ngMode.Location = new System.Drawing.Point(721, 1058);
             this.gb_ngMode.Name = "gb_ngMode";
-            this.gb_ngMode.Padding = new System.Windows.Forms.Padding(4);
-            this.gb_ngMode.Size = new System.Drawing.Size(508, 668);
+            this.gb_ngMode.Size = new System.Drawing.Size(381, 543);
             this.gb_ngMode.TabIndex = 85;
             this.gb_ngMode.TabStop = false;
             this.gb_ngMode.Text = "Q\'ty Pending";
@@ -244,50 +230,46 @@
             // 
             this.lb_Qty.AutoSize = true;
             this.lb_Qty.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_Qty.Location = new System.Drawing.Point(148, 0);
-            this.lb_Qty.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_Qty.Location = new System.Drawing.Point(111, 0);
             this.lb_Qty.Name = "lb_Qty";
-            this.lb_Qty.Size = new System.Drawing.Size(45, 25);
+            this.lb_Qty.Size = new System.Drawing.Size(35, 20);
             this.lb_Qty.TabIndex = 87;
             this.lb_Qty.Text = "Pcs";
-            //
+            // 
             // bt_addNgRow
-            //
+            // 
             this.bt_addNgRow.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_addNgRow.ForeColor = System.Drawing.Color.Blue;
-            this.bt_addNgRow.Location = new System.Drawing.Point(13, 608);
-            this.bt_addNgRow.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_addNgRow.Location = new System.Drawing.Point(10, 494);
             this.bt_addNgRow.Name = "bt_addNgRow";
-            this.bt_addNgRow.Size = new System.Drawing.Size(238, 50);
+            this.bt_addNgRow.Size = new System.Drawing.Size(178, 41);
             this.bt_addNgRow.TabIndex = 88;
             this.bt_addNgRow.Text = "+ เพิ่มอาการ";
             this.bt_addNgRow.UseVisualStyleBackColor = true;
             this.bt_addNgRow.Click += new System.EventHandler(this.bt_addNgRow_Click);
-            //
+            // 
             // bt_delNgRow
-            //
+            // 
             this.bt_delNgRow.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_delNgRow.ForeColor = System.Drawing.Color.Firebrick;
-            this.bt_delNgRow.Location = new System.Drawing.Point(262, 608);
-            this.bt_delNgRow.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_delNgRow.Location = new System.Drawing.Point(196, 494);
             this.bt_delNgRow.Name = "bt_delNgRow";
-            this.bt_delNgRow.Size = new System.Drawing.Size(238, 50);
+            this.bt_delNgRow.Size = new System.Drawing.Size(178, 41);
             this.bt_delNgRow.TabIndex = 89;
             this.bt_delNgRow.Text = "- ลบแถวที่เลือก";
             this.bt_delNgRow.UseVisualStyleBackColor = true;
             this.bt_delNgRow.Click += new System.EventHandler(this.bt_delNgRow_Click);
-            //
+            // 
             // dtg_ngMode
-            //
+            // 
             this.dtg_ngMode.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtg_ngMode.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.QTY_NG,
             this.NG_MODE});
-            this.dtg_ngMode.Location = new System.Drawing.Point(13, 48);
-            this.dtg_ngMode.Margin = new System.Windows.Forms.Padding(4);
+            this.dtg_ngMode.Location = new System.Drawing.Point(10, 39);
             this.dtg_ngMode.Name = "dtg_ngMode";
             this.dtg_ngMode.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.dtg_ngMode.Size = new System.Drawing.Size(487, 553);
+            this.dtg_ngMode.Size = new System.Drawing.Size(365, 449);
             this.dtg_ngMode.TabIndex = 85;
             // 
             // QTY_NG
@@ -310,11 +292,9 @@
             this.gb_input.Enabled = false;
             this.gb_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gb_input.ForeColor = System.Drawing.Color.Blue;
-            this.gb_input.Location = new System.Drawing.Point(8, 1287);
-            this.gb_input.Margin = new System.Windows.Forms.Padding(4);
+            this.gb_input.Location = new System.Drawing.Point(6, 1371);
             this.gb_input.Name = "gb_input";
-            this.gb_input.Padding = new System.Windows.Forms.Padding(4);
-            this.gb_input.Size = new System.Drawing.Size(945, 673);
+            this.gb_input.Size = new System.Drawing.Size(709, 547);
             this.gb_input.TabIndex = 87;
             this.gb_input.TabStop = false;
             this.gb_input.Text = "Result Appearance Inspection";
@@ -323,10 +303,9 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.Blue;
-            this.label3.Location = new System.Drawing.Point(320, 0);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(240, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(128, 25);
+            this.label3.Size = new System.Drawing.Size(105, 20);
             this.label3.TabIndex = 90;
             this.label3.Text = "จำนวนตรวจสอบ";
             // 
@@ -334,10 +313,9 @@
             // 
             this.lb_CountAll.AutoSize = true;
             this.lb_CountAll.ForeColor = System.Drawing.Color.Blue;
-            this.lb_CountAll.Location = new System.Drawing.Point(463, 0);
-            this.lb_CountAll.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lb_CountAll.Location = new System.Drawing.Point(347, 0);
             this.lb_CountAll.Name = "lb_CountAll";
-            this.lb_CountAll.Size = new System.Drawing.Size(116, 25);
+            this.lb_CountAll.Size = new System.Drawing.Size(93, 20);
             this.lb_CountAll.TabIndex = 89;
             this.lb_CountAll.Text = "1000 / 1000";
             // 
@@ -364,14 +342,14 @@
             this.tb_record.IconVisible = true;
             this.tb_record.IconZoom = 90D;
             this.tb_record.IsTab = false;
-            this.tb_record.Location = new System.Drawing.Point(328, 582);
-            this.tb_record.Margin = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.tb_record.Location = new System.Drawing.Point(246, 473);
+            this.tb_record.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.tb_record.Name = "tb_record";
             this.tb_record.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(87)))), ((int)(((byte)(103)))), ((int)(((byte)(92)))));
             this.tb_record.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
             this.tb_record.OnHoverTextColor = System.Drawing.Color.White;
             this.tb_record.selected = false;
-            this.tb_record.Size = new System.Drawing.Size(229, 71);
+            this.tb_record.Size = new System.Drawing.Size(172, 58);
             this.tb_record.TabIndex = 82;
             this.tb_record.Text = "Record Data";
             this.tb_record.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -387,11 +365,10 @@
             this.dtg_packing_size_appear.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dtg_packing_size_appear.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dtg_packing_size_appear.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dtg_packing_size_appear.Location = new System.Drawing.Point(8, 50);
-            this.dtg_packing_size_appear.Margin = new System.Windows.Forms.Padding(4);
+            this.dtg_packing_size_appear.Location = new System.Drawing.Point(6, 41);
             this.dtg_packing_size_appear.Name = "dtg_packing_size_appear";
             this.dtg_packing_size_appear.ReadOnly = true;
-            this.dtg_packing_size_appear.Size = new System.Drawing.Size(917, 255);
+            this.dtg_packing_size_appear.Size = new System.Drawing.Size(688, 207);
             this.dtg_packing_size_appear.TabIndex = 0;
             this.dtg_packing_size_appear.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dtg_packing_size_appear_CellFormatting);
             this.dtg_packing_size_appear.SelectionChanged += new System.EventHandler(this.dtg_packing_size_appear_SelectionChanged);
@@ -401,10 +378,9 @@
             // 
             this.bt_select_packing_size_appear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_select_packing_size_appear.ForeColor = System.Drawing.Color.Blue;
-            this.bt_select_packing_size_appear.Location = new System.Drawing.Point(307, 313);
-            this.bt_select_packing_size_appear.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_select_packing_size_appear.Location = new System.Drawing.Point(230, 254);
             this.bt_select_packing_size_appear.Name = "bt_select_packing_size_appear";
-            this.bt_select_packing_size_appear.Size = new System.Drawing.Size(168, 60);
+            this.bt_select_packing_size_appear.Size = new System.Drawing.Size(126, 49);
             this.bt_select_packing_size_appear.TabIndex = 1;
             this.bt_select_packing_size_appear.Text = "เริ่มตรวจสอบ";
             this.bt_select_packing_size_appear.UseVisualStyleBackColor = true;
@@ -414,10 +390,9 @@
             // 
             this.bt_Clear.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bt_Clear.ForeColor = System.Drawing.Color.Blue;
-            this.bt_Clear.Location = new System.Drawing.Point(483, 313);
-            this.bt_Clear.Margin = new System.Windows.Forms.Padding(4);
+            this.bt_Clear.Location = new System.Drawing.Point(362, 254);
             this.bt_Clear.Name = "bt_Clear";
-            this.bt_Clear.Size = new System.Drawing.Size(168, 60);
+            this.bt_Clear.Size = new System.Drawing.Size(126, 49);
             this.bt_Clear.TabIndex = 89;
             this.bt_Clear.Text = "เลือกลำดับ";
             this.bt_Clear.UseVisualStyleBackColor = true;
@@ -427,10 +402,9 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Blue;
-            this.label1.Location = new System.Drawing.Point(292, 2);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(219, 2);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 25);
+            this.label1.Size = new System.Drawing.Size(77, 20);
             this.label1.TabIndex = 90;
             this.label1.Text = "จำนวนรวม ";
             // 
@@ -438,10 +412,9 @@
             // 
             this.lbCount.AutoSize = true;
             this.lbCount.ForeColor = System.Drawing.Color.Blue;
-            this.lbCount.Location = new System.Drawing.Point(388, 2);
-            this.lbCount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lbCount.Location = new System.Drawing.Point(291, 2);
             this.lbCount.Name = "lbCount";
-            this.lbCount.Size = new System.Drawing.Size(72, 25);
+            this.lbCount.Size = new System.Drawing.Size(57, 20);
             this.lbCount.TabIndex = 91;
             this.lbCount.Text = "50 / 50";
             // 
@@ -453,11 +426,9 @@
             this.gb_pack.Controls.Add(this.bt_select_packing_size_appear);
             this.gb_pack.Controls.Add(this.dtg_packing_size_appear);
             this.gb_pack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_pack.Location = new System.Drawing.Point(16, 900);
-            this.gb_pack.Margin = new System.Windows.Forms.Padding(4);
+            this.gb_pack.Location = new System.Drawing.Point(12, 1056);
             this.gb_pack.Name = "gb_pack";
-            this.gb_pack.Padding = new System.Windows.Forms.Padding(4);
-            this.gb_pack.Size = new System.Drawing.Size(937, 380);
+            this.gb_pack.Size = new System.Drawing.Size(703, 309);
             this.gb_pack.TabIndex = 86;
             this.gb_pack.TabStop = false;
             this.gb_pack.Text = "Appearance Inspection Q\'ty";
@@ -483,14 +454,14 @@
             this.bt_back.IconVisible = true;
             this.bt_back.IconZoom = 56D;
             this.bt_back.IsTab = false;
-            this.bt_back.Location = new System.Drawing.Point(24, 9);
-            this.bt_back.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.bt_back.Location = new System.Drawing.Point(18, 7);
+            this.bt_back.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.bt_back.Name = "bt_back";
             this.bt_back.Normalcolor = System.Drawing.Color.Goldenrod;
             this.bt_back.OnHovercolor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(129)))), ((int)(((byte)(77)))));
             this.bt_back.OnHoverTextColor = System.Drawing.Color.White;
             this.bt_back.selected = false;
-            this.bt_back.Size = new System.Drawing.Size(191, 38);
+            this.bt_back.Size = new System.Drawing.Size(143, 31);
             this.bt_back.TabIndex = 88;
             this.bt_back.Text = "ย้อนกลับ";
             this.bt_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -500,7 +471,7 @@
             // 
             // userControlAppear
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Bisque;
@@ -517,9 +488,8 @@
             this.Controls.Add(this.lb_reportNo);
             this.Controls.Add(this.lb_top);
             this.Controls.Add(this.gb_input);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "userControlAppear";
-            this.Size = new System.Drawing.Size(1487, 1970);
+            this.Size = new System.Drawing.Size(1098, 1806);
             this.Load += new System.EventHandler(this.userControlAppear_Load);
             this.VisibleChanged += new System.EventHandler(this.userControlAppear_VisibleChanged);
             this.Leave += new System.EventHandler(this.userControlAppear_Leave);

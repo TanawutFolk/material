@@ -129,7 +129,7 @@
             this.picbox_Appear.Image = global::RawMat.Properties.Resources.SHIN005;
             this.picbox_Appear.Location = new System.Drawing.Point(72, 332);
             this.picbox_Appear.Name = "picbox_Appear";
-            this.picbox_Appear.Size = new System.Drawing.Size(997, 272);
+            this.picbox_Appear.Size = new System.Drawing.Size(997, 528);
             this.picbox_Appear.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_Appear.TabIndex = 86;
             this.picbox_Appear.TabStop = false;
@@ -172,7 +172,7 @@
             this.NOTE,
             this.JUDGEMENT,
             this.RESULT});
-            this.dtg_ngMode.Location = new System.Drawing.Point(244, 624);
+            this.dtg_ngMode.Location = new System.Drawing.Point(244, 882);
             this.dtg_ngMode.Name = "dtg_ngMode";
             this.dtg_ngMode.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dtg_ngMode.Size = new System.Drawing.Size(644, 202);
@@ -230,7 +230,7 @@
             this.bt_record.IconVisible = true;
             this.bt_record.IconZoom = 90D;
             this.bt_record.IsTab = false;
-            this.bt_record.Location = new System.Drawing.Point(471, 842);
+            this.bt_record.Location = new System.Drawing.Point(471, 1100);
             this.bt_record.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.bt_record.Name = "bt_record";
             this.bt_record.Normalcolor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
