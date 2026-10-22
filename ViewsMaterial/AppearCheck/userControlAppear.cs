@@ -71,6 +71,13 @@ namespace RawMat.ViewsMaterial.AppearCheck
         private bool isNgModeActive = false;
         private DataTable ngModeList;
 
+        // ไม่มีรูป Cavity: ขยายรูป Appearance ขึ้นไปใช้พื้นที่ของ gb_cavity ด้วย
+        // อ้างจากตำแหน่ง control จริง (ถูก scale ตาม DPI แล้ว) แทนตัวเลขตายตัว จึงไม่ทับ control อื่นและอยู่กลางหน้า
+        private void ExpandAppearImageToCavityArea()
+        {
+            picbox_Appear.Bounds = Rectangle.Union(gb_cavity.Bounds, picbox_Appear.Bounds);
+        }
+
         public userControlAppear()
         {
 
@@ -349,9 +356,7 @@ namespace RawMat.ViewsMaterial.AppearCheck
                 else
                 {
                     gb_cavity.Visible = false;
-
-                    picbox_Appear.Location = new System.Drawing.Point(286, 113);
-                    picbox_Appear.Size = new Size(807, 442);
+                    ExpandAppearImageToCavityArea();
                 }
 
                 picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
@@ -365,9 +370,8 @@ namespace RawMat.ViewsMaterial.AppearCheck
             else if (propQA.SAMPLING_TYPE == "1" || propQA.SAMPLING_TYPE == "5")
             {
                 gb_cavity.Visible = false;
+                ExpandAppearImageToCavityArea();
 
-                picbox_Appear.Location = new System.Drawing.Point(286, 113);
-                picbox_Appear.Size = new Size(807, 442);
                 picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
 
                 gb_pack.Enabled = true;

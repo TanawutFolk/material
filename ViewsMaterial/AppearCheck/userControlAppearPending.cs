@@ -111,7 +111,10 @@ namespace RawMat.ViewsMaterial.AppearCheck
             else
             {
                 gb_cavity.Visible = false;
-                picbox_Appear.Location = new Point(72, 115);
+
+                // ไม่มีรูป Cavity: ขยายรูป Appearance ขึ้นไปใช้พื้นที่ของ gb_cavity ด้วย
+                // อ้างจากตำแหน่ง control จริง (ถูก scale ตาม DPI แล้ว) แทนตัวเลขตายตัว
+                picbox_Appear.Bounds = Rectangle.Union(gb_cavity.Bounds, picbox_Appear.Bounds);
             }
 
             picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
