@@ -116,10 +116,13 @@ namespace RawMat.ViewsMaterial.AppearCheck
 
             picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
 
-            // ไม่มีรูป Cavity ให้รูป Appearance ใช้พื้นที่ของ Cavity ด้วย (ถึงก่อน dtg_ngMode)
-            Rectangle area = hasCavity
-                ? new Rectangle(72, 332, 997, 272)
-                : new Rectangle(72, 115, 1003, 489);
+            // คำนวณพื้นที่จากตำแหน่งจริงของ control รอบข้าง (ตำแหน่งจาก Designer ถูก scale ตาม DPI)
+            // ไม่มีรูป Cavity ให้รูป Appearance ใช้พื้นที่ของ Cavity ด้วย, ขอบล่างหยุดก่อน dtg_ngMode
+            const int gap = 6;
+            int top = hasCavity ? gb_cavity.Bottom + gap : gb_cavity.Top;
+            int bottom = dtg_ngMode.Top - gap;
+
+            Rectangle area = new Rectangle(gb_cavity.Left, top, gb_cavity.Width, Math.Max(1, bottom - top));
             imgCls.FitPictureBoxToImage(picbox_Appear, area);
         }
 

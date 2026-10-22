@@ -71,13 +71,18 @@ namespace RawMat.ViewsMaterial.AppearCheck
         private bool isNgModeActive = false;
         private DataTable ngModeList;
 
-        // พื้นที่แสดงรูป Appearance: ถ้ามีรูป Cavity ใช้ช่องล่าง, ถ้าไม่มีใช้ตั้งแต่ใต้หัวข้อจนถึงก่อน gb_pack
-        private static readonly Rectangle AppearAreaWithCavity = new Rectangle(96, 428, 1329, 446);
-        private static readonly Rectangle AppearAreaNoCavity = new Rectangle(96, 142, 1337, 732);
-
+        // พื้นที่แสดงรูป Appearance คำนวณจากตำแหน่งจริงของ control รอบข้าง (ไม่ใช้ตัวเลขตายตัว)
+        // เพราะ WinForms จะ scale ตำแหน่งจาก Designer ตาม DPI ของแต่ละเครื่อง
+        // - มีรูป Cavity: ใต้ gb_cavity ลงมา, ไม่มี: เริ่มที่ตำแหน่ง gb_cavity
+        // - ขอบล่างหยุดก่อน gb_pack / gb_ngMode, ความกว้างเท่า gb_cavity
         private void FitAppearImage(bool hasCavity)
         {
-            imgCls.FitPictureBoxToImage(picbox_Appear, hasCavity ? AppearAreaWithCavity : AppearAreaNoCavity);
+            const int gap = 8;
+            int top = hasCavity ? gb_cavity.Bottom + gap : gb_cavity.Top;
+            int bottom = Math.Min(gb_pack.Top, gb_ngMode.Top) - gap;
+
+            Rectangle area = new Rectangle(gb_cavity.Left, top, gb_cavity.Width, Math.Max(1, bottom - top));
+            imgCls.FitPictureBoxToImage(picbox_Appear, area);
         }
 
         public userControlAppear()
