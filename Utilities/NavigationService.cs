@@ -18,12 +18,60 @@ namespace RawMat.Utilities
         public NavigationService(Panel panel)
         {
             _panel = panel ?? throw new ArgumentNullException(nameof(panel));
-            
+
+        }
+
+        // หน้าตรวจที่เปิดค้างอยู่ (อยู่ข้างในหน้าเลือกใบอีกชั้น) ต้องออกให้เรียบร้อยก่อนถูก Dispose
+        // ไม่งั้นใบค้างสถานะ Working และล็อกค้าง เหมือนไม่มีใครกดย้อนกลับ ดู IInspectionScreen
+        private static void LeaveInspectionScreens(Control root)
+        {
+            foreach (Control child in root.Controls)
+            {
+                if (child is IInspectionScreen screen)
+                {
+                    try
+                    {
+                        screen.LeaveScreen();
+                    }
+                    catch (Exception ex)
+                    {
+                        // ห้ามทำให้กดเมนูไม่ไป แจ้งแล้วให้ไปต่อ ใบที่ค้าง Admin ปลดล็อกเองได้จากหน้าเลือกใบ
+                        MessageBox.Show("ปลดสถานะใบที่เปิดค้างไว้ไม่สำเร็จ : " + ex.Message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
+                    continue;
+                }
+
+                LeaveInspectionScreens(child);
+            }
+        }
+
+        public bool ConfirmLeaveInspectionScreens()
+        {
+            return ConfirmLeaveInspectionScreens(_panel);
+        }
+
+        private static bool ConfirmLeaveInspectionScreens(Control root)
+        {
+            foreach (Control child in root.Controls)
+            {
+                if (child is IInspectionScreen screen)
+                {
+                    if (!screen.ConfirmLeave()) return false;
+                    continue;
+                }
+
+                if (!ConfirmLeaveInspectionScreens(child)) return false;
+            }
+
+            return true;
         }
 
         public void NavigateTo(UserControl userControl)
         {
             if (userControl == null) throw new ArgumentNullException(nameof(userControl));
+
+            LeaveInspectionScreens(_panel);
 
             foreach (Control ctrl in _panel.Controls)
             {
@@ -56,6 +104,8 @@ namespace RawMat.Utilities
 
         public void Clear()
         {
+            LeaveInspectionScreens(_panel);
+
             foreach (Control ctrl in _panel.Controls)
             {
                 //if (ctrl is userControlRegular regularControl)

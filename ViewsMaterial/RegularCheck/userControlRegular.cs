@@ -29,7 +29,7 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace RawMat.ViewsMaterial.RegularCheck
 {
-    public partial class userControlRegular : UserControl
+    public partial class userControlRegular : UserControl, IInspectionScreen
     {
 
         public event Action<UserControl> AddUserControlRequested;
@@ -63,6 +63,17 @@ namespace RawMat.ViewsMaterial.RegularCheck
         private readonly Dictionary<string, DataTable> equipmentSerialSourceByType = new Dictionary<string, DataTable>();
         private Form recordLoadingForm;
 
+        // ร่าง : ปุ่ม tb_record เป็น Record Data ตอนยังกรอกไม่ครบ และเป็น Save and Continue เมื่อครบ (Utilities/InspectionDraft.cs)
+        private const string DraftDataTable = "REGULAR";
+        private const string DraftCavityTable = "CAVITY";
+        private const string DraftLotNoField = "LOT_NO";
+        // SAMPLING_NO + POINT_ORDER คือ key ที่ InsertRegularData ใช้แยกแถวใน db_regular_data
+        private static readonly string[] DraftKeyColumns = { "CAVITY_NAME", "SAMPLING_NO", "POINT_ORDER" };
+        private static readonly string[] DraftValueColumns = { "VALUE", "EQUIPMENT_SERIAL" };
+        private DataSet _loadedDraft;
+        // ค่าบนจอตอนที่ถือว่าเก็บแล้ว (เปิดหน้าเสร็จ / กด Record Data) ใช้เทียบตอนออกว่ามีค่าที่ยังไม่ได้ Record ไหม
+        private string _recordedDraft;
+
         public userControlRegular()
         {
             InitializeComponent();
@@ -93,28 +104,39 @@ namespace RawMat.ViewsMaterial.RegularCheck
         {
 
             // บันทึกค่าที่กำลังแก้ไขใน DataGridView
-            if (dtg_regular.IsCurrentCellDirty || dtg_regular.IsCurrentRowDirty)
-            {
-                dtg_regular.EndEdit(); // จบการแก้ไขเซลล์ปัจจุบัน
-                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit); // บันทึกค่าลง DataSource
-                bindingSource.EndEdit(); // บันทึกค่าลงใน BindingSource (ถ้าใช้)
-            }
+            CommitGridEdits();
 
-            if (dtg_regular.Rows.Count == 0)
+            // ใบที่ต้อง confirm cavity ก่อนจะยังไม่มีตาราง แต่จำนวนต่อ cavity ที่กรอกไว้ก็ Save เก็บได้
+            if (originalDataTable == null || originalDataTable.Rows.Count == 0)
             {
+                if (RequiresCavityInput())
+                {
+                    SaveDraft(true);
+                    return;
+                }
+
                 MessageBox.Show("ยังไม่พบ data ที่จะทำการ Regular");
                 return;
             }
 
-            if (!IsDataTableValid(originalDataTable)) // ตรวจสอบจาก DataTable แทน
+            // ยังกรอกไม่ครบ ปุ่มเป็น Record Data : เก็บร่างไว้ อยู่หน้าเดิม ไม่ตัดสินผล
+            if (!IsInputComplete())
             {
-                return; // ไม่ทำต่อถ้ามีเซลล์ว่าง
+                SaveDraft(true);
+                return;
             }
 
-            //if (!IsDataGridViewValid(dtg_regular))
-            //{
-            //    return; // ไม่ทำต่อถ้ามีเซลล์ว่าง
-            //}
+            // ครบแล้ว ปุ่มเป็น Save and Continue : ถามก่อน เพราะข้อความบนปุ่มเปลี่ยนเองทันทีที่กรอกช่องสุดท้าย
+            // ผู้ตรวจที่ตั้งใจแค่เก็บไว้ก่อนแล้วค่อยกลับมาทวนจะได้ไม่ส่งผลไปโดยไม่รู้ตัว
+            // Cancel = ยังไม่ส่งผล เก็บเป็นร่างไว้ก่อน เหมือนกด Record Data
+            if (!InspectionDraft.ConfirmContinue(this, "Regular"))
+            {
+                SaveDraft(true);
+                return;
+            }
+
+            // เก็บร่างล่าสุดไว้ก่อนส่งผล ถ้าบันทึกพังกลางทางค่าที่กรอกยังอยู่
+            SaveDraft(false);
 
             ShowRecordLoading();
             try
@@ -151,6 +173,10 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 //string mutexKey = $"Global\\ReportLock_{propQA.Report_No}_{propQA.process}";
                 if (conQA.InsertRegularData(propQA) == true)
                 {
+                    // ผลจริงลง db_regular_data แล้ว ร่างไม่ต้องใช้อีก
+                    // ถ้าค้างไว้ ใบที่ถูกส่งกลับมาตรวจซ้ำจะโหลดค่ารอบเก่ากลับมาให้
+                    conQA.DeleteInspectionDraft(propQA);
+
                     bool endAtRegularReport = IsEndAtRegularReport();
 
                     if (propQA.TOTAL_STATUS == "0")
@@ -598,8 +624,25 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 picbox_reg.Size = new Size(1076, 556);
 
                 GenerateDataTableRegular(null, Convert.ToInt32(propQA.SAMPLING_QTY));
-              
+
             }
+
+            // ค่าที่เคย Save ไว้ตอนยังกรอกไม่ครบ ดึงกลับมาเติมให้ทำต่อได้
+            // ต้องอยู่หลัง await ข้างบน เพราะตารางถูกสร้างหลังโหลดรูปเสร็จ
+            LoadDraft();
+
+            cb_lotNo.SelectedIndexChanged -= cb_lotNo_SelectedIndexChanged;
+            cb_lotNo.SelectedIndexChanged += cb_lotNo_SelectedIndexChanged;
+            dtg_regular.CellBeginEdit -= RequireLotNo_CellBeginEdit;
+            dtg_regular.CellBeginEdit += RequireLotNo_CellBeginEdit;
+            dtg_cavity.CellBeginEdit -= RequireLotNo_CellBeginEdit;
+            dtg_cavity.CellBeginEdit += RequireLotNo_CellBeginEdit;
+            InspectionDraft.HighlightLotNo(cb_lotNo);
+            dtg_regular.EditingControlShowing -= dtg_regular_WatchEditingValue;
+            dtg_regular.EditingControlShowing += dtg_regular_WatchEditingValue;
+
+            UpdateRecordButtonMode();
+            _recordedDraft = InspectionDraft.Serialize(BuildDraft());
 
             // หลังจากโหลดข้อมูลเสร็จ
             this.AutoScroll = true;
@@ -611,6 +654,235 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
             this.AutoScrollPosition = new System.Drawing.Point(0, 0);
             this.VerticalScroll.Value = 0;
+        }
+
+        private void cb_lotNo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            InspectionDraft.HighlightLotNo(cb_lotNo);
+            UpdateRecordButtonMode();
+        }
+
+        // ต้องเลือก Lot No. ก่อนเริ่มกรอกช่องใด ๆ ทั้งตารางค่าวัดและกรอบ Cavity (user ขอ 2026-09-29)
+        private void RequireLotNo_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if (!InspectionDraft.EnsureLotNoSelected(cb_lotNo))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void dtg_regular_WatchEditingValue(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            InspectionDraft.WatchEditingControl(e, EditingValue_Changed);
+        }
+
+        // พิมพ์หรือเลือกค่าในตาราง : เปลี่ยนปุ่มทันที ไม่ต้องรอกด Enter
+        private void EditingValue_Changed(object sender, EventArgs e)
+        {
+            UpdateRecordButtonMode();
+        }
+
+        private void LoadDraft()
+        {
+            _loadedDraft = InspectionDraft.Load(conQA, propQA);
+            if (_loadedDraft == null)
+            {
+                return;
+            }
+
+            string lotNo = InspectionDraft.GetField(_loadedDraft, DraftLotNoField);
+            if (!string.IsNullOrWhiteSpace(lotNo) && cb_lotNo.Items.Contains(lotNo))
+            {
+                cb_lotNo.SelectedItem = lotNo;
+            }
+
+            if (RequiresCavityInput() && propQA.dtCavity != null && _loadedDraft.Tables.Contains(DraftCavityTable))
+            {
+                InspectionDraft.Restore(propQA.dtCavity, _loadedDraft.Tables[DraftCavityTable],
+                    new[] { "CAVITY_NAME" }, new[] { "SAMPLING_QTY" });
+
+                // มีตารางค่าวัดในร่างแปลว่าเคย confirm cavity ไปแล้ว ทำให้เหมือนกด confirm อีกครั้ง
+                // ถ้ายอดรวมไม่ตรงแล้ว (master เปลี่ยน) ปล่อยให้ผู้ตรวจแก้แล้วกด confirm เอง ค่าวัดจะเติมให้ตอนนั้น
+                bool hadDataTable = _loadedDraft.Tables.Contains(DraftDataTable)
+                    && _loadedDraft.Tables[DraftDataTable].Rows.Count > 0;
+
+                if (hadDataTable && IsCavityInputComplete())
+                {
+                    dtg_cavity.ReadOnly = true;
+                    GenerateDataTableRegular(dtg_cavity, 0);
+                }
+            }
+
+            ApplyDraftValues();
+        }
+
+        private void ApplyDraftValues()
+        {
+            if (_loadedDraft == null || originalDataTable == null || !_loadedDraft.Tables.Contains(DraftDataTable))
+            {
+                return;
+            }
+
+            // เขียนทีละแถวแล้วให้ตารางวาดใหม่ทุกครั้งจะช้าและเคอร์เซอร์เด้ง ปิด event แล้ววาดทีเดียวตอนจบ
+            bool raiseEvents = bindingSource.RaiseListChangedEvents;
+            bindingSource.RaiseListChangedEvents = false;
+
+            try
+            {
+                InspectionDraft.Restore(originalDataTable, _loadedDraft.Tables[DraftDataTable], DraftKeyColumns, DraftValueColumns);
+                RecalculateJudges();
+                EquipmentSerialColumn.AddMissingItems(dtg_regular);
+            }
+            finally
+            {
+                bindingSource.RaiseListChangedEvents = raiseEvents;
+            }
+
+            // DataBindingComplete จะทาสีแถว NG ให้ใหม่
+            bindingSource.ResetBindings(false);
+
+            // เติมครั้งเดียวพอ ถ้ากด confirm cavity ซ้ำไม่ควรได้ค่าจากร่างเก่ากลับมาทับ
+            _loadedDraft = null;
+        }
+
+        // ค่าที่เติมจากร่างไม่ได้ผ่าน dtg_regular_CellValueChanged จึงต้องคิดผลตัดสินเองด้วยเกณฑ์เดียวกัน
+        private void RecalculateJudges()
+        {
+            foreach (DataRow row in originalDataTable.Rows)
+            {
+                if (row["CRITERIA_MIN"] == DBNull.Value || row["CRITERIA_MAX"] == DBNull.Value
+                    || !decimal.TryParse(row["VALUE"]?.ToString(), out decimal value))
+                {
+                    continue;
+                }
+
+                decimal min = Convert.ToDecimal(row["CRITERIA_MIN"]);
+                decimal max = Convert.ToDecimal(row["CRITERIA_MAX"]);
+                row["POINT_JUDGE"] = (value >= min && value <= max) ? "1" : "0";
+            }
+
+            CalculateTotalJudge();
+        }
+
+        private DataSet BuildDraft()
+        {
+            var draft = new DataSet("DRAFT");
+
+            if (originalDataTable != null)
+            {
+                draft.Tables.Add(InspectionDraft.Snapshot(originalDataTable, DraftDataTable,
+                    "CAVITY_NAME", "SAMPLING_NO", "POINT_ORDER", "VALUE", "EQUIPMENT_SERIAL"));
+            }
+
+            if (RequiresCavityInput() && propQA.dtCavity != null)
+            {
+                draft.Tables.Add(InspectionDraft.Snapshot(propQA.dtCavity, DraftCavityTable, "CAVITY_NAME", "SAMPLING_QTY"));
+            }
+
+            InspectionDraft.SetField(draft, DraftLotNoField, cb_lotNo.SelectedItem?.ToString());
+
+            return draft;
+        }
+
+        private bool SaveDraft(bool showMessage)
+        {
+            DataSet draft = BuildDraft();
+
+            if (!InspectionDraft.Save(conQA, propQA, draft, employee.EMP_CODE))
+            {
+                return false;
+            }
+
+            _recordedDraft = propQA.DRAFT_DATA;
+            UpdateRecordButtonMode();
+
+            if (showMessage)
+            {
+                string emptyCell = DescribeEmptyInput();
+
+                CustomMsgBoxBase.ShowCustomMessageBox(
+                    "Save ข้อมูลที่กรอกไว้แล้ว กลับมาทำต่อได้" + (emptyCell == null ? string.Empty : "\n" + emptyCell),
+                    "Save",
+                    CustomMsgBoxBase.MessageBoxIconType.OK);
+            }
+
+            return true;
+        }
+
+        // กดเมนูอื่น / Logout โดยไม่ผ่านปุ่มย้อนกลับ : NavigationService เรียกก่อน Dispose หน้านี้ (IInspectionScreen)
+        // ทำแบบเดียวกับปุ่มย้อนกลับ คือตั้ง Not Finished yet + ปลดล็อกใบ
+        // ไม่เก็บร่างให้ ค่าที่ยังไม่ได้กด Record Data จะทิ้งไป (user เลือกให้เก็บเฉพาะตอนกด Record Data)
+        public void LeaveScreen()
+        {
+            InspectionDraft.ReleaseReport(conQA, propQA);
+        }
+
+        // ออกจากหน้า (ย้อนกลับ / Home / Logout) : ค่าบนจอไม่ตรงกับตอนเปิดหน้าหรือตอนกด Record Data ครั้งล่าสุด = ถามก่อน
+        // false = ผู้ตรวจกด Cancel อยู่หน้าเดิม ค่าที่กรอกยังอยู่บนจอ
+        public bool ConfirmLeave()
+        {
+            if (_recordedDraft == null) return true; // หน้ายังเปิดไม่เสร็จ ยังไม่มีอะไรให้เสีย
+
+            CommitGridEdits();
+
+            // ช่องที่ยัง commit ไม่ได้ (ค่าไม่ผ่าน CellValidating) ก็คือพิมพ์ค้างไว้
+            bool unrecorded = dtg_regular.IsCurrentCellDirty || dtg_cavity.IsCurrentCellDirty
+                || InspectionDraft.Serialize(BuildDraft()) != _recordedDraft;
+
+            return !unrecorded || InspectionDraft.ConfirmLeaveUnrecorded(this, "Regular");
+        }
+
+        private void CommitGridEdits()
+        {
+            if (dtg_regular.IsCurrentCellDirty || dtg_regular.IsCurrentRowDirty)
+            {
+                dtg_regular.EndEdit(); // จบการแก้ไขเซลล์ปัจจุบัน
+                dtg_regular.CommitEdit(DataGridViewDataErrorContexts.Commit); // บันทึกค่าลง DataSource
+                bindingSource.EndEdit(); // บันทึกค่าลงใน BindingSource (ถ้าใช้)
+            }
+
+            if (dtg_cavity.IsCurrentCellDirty)
+            {
+                dtg_cavity.EndEdit();
+            }
+        }
+
+        // ครบ = สร้างตารางแล้ว ทุกช่องมีค่า และรู้ Lot No. แล้ว (เงื่อนไขเดียวกับตอนบันทึกผล)
+        private bool IsInputComplete()
+        {
+            return originalDataTable != null
+                && originalDataTable.Rows.Count > 0
+                && !TryFindEmptyInputCell(originalDataTable, out _, out _)
+                && HasLotNo();
+        }
+
+        // เหมือน TrySetSelectedLotNo แต่ไม่ไปเปลี่ยนค่าที่เลือก : มีรายการเดียวถือว่าเลือกแล้ว
+        private bool HasLotNo()
+        {
+            return InspectionDraft.HasLotNo(cb_lotNo);
+        }
+
+        private void UpdateRecordButtonMode()
+        {
+            InspectionDraft.ApplyButtonMode(tb_record, IsInputComplete());
+        }
+
+        // เงื่อนไขเดียวกับ bt_confirmCavity_Click แต่ไม่เด้งข้อความ ใช้ตอนเติมจากร่าง
+        private bool IsCavityInputComplete()
+        {
+            int totalQty = 0;
+
+            foreach (DataRow row in propQA.dtCavity.Rows)
+            {
+                if (!int.TryParse(row["SAMPLING_QTY"]?.ToString(), out int qty) || qty < 0)
+                {
+                    return false;
+                }
+
+                totalQty += qty;
+            }
+
+            return totalQty == GetTotalCavitySamplingQty();
         }
 
         private void dtg_regular_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -692,6 +964,8 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 }
             }
 
+            UpdateRecordButtonMode();
+
             // รีเซ็ตสถานะ
             //LowLevelKeyboardHook.IsEditingValue = false;
             //_hasTextChanged = false;
@@ -735,6 +1009,11 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 return;
             }
 
+            if (!InspectionDraft.EnsureLotNoSelected(cb_lotNo))
+            {
+                return;
+            }
+
             dtg_cavity.EndEdit();
 
             // ตรวจสอบว่าจำนวนเป็นเลขตั้งแต่ 0 ขึ้นไปทุกแถว
@@ -772,6 +1051,11 @@ namespace RawMat.ViewsMaterial.RegularCheck
             dtg_cavity.ReadOnly = true;
 
             GenerateDataTableRegular(dtg_cavity, 0);
+
+            // ร่างที่ยอดรวม cavity ไม่ตรงตอนเปิดหน้า จะเติมค่าวัดให้ตอนนี้แทน
+            ApplyDraftValues();
+
+            UpdateRecordButtonMode();
         }
 
         private bool RequiresCavityInput()
@@ -1055,9 +1339,21 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
 
 
-        private bool IsDataTableValid(DataTable table)
+        // บอกผู้ตรวจตอน Save ว่ายังขาดอะไร จะได้กลับมาทำต่อถูกจุด คืน null ถ้าครบแล้ว
+        private string DescribeEmptyInput()
         {
-            foreach (DataRow row in table.Rows)
+            // ต้องเลือก Lot ก่อนถึงจะกรอกช่องอื่นได้ จึงบอกเรื่อง Lot ก่อน
+            if (!HasLotNo())
+            {
+                return InspectionDraft.MissingLotNoText;
+            }
+
+            if (originalDataTable == null)
+            {
+                return "ยังไม่ได้ Confirm Cavity";
+            }
+
+            if (TryFindEmptyInputCell(originalDataTable, out DataRow row, out DataColumn column))
             {
                 // ดึงหมายเลขหน้า (POINT_ORDER)
                 int pageNumber = row["POINT_ORDER"] != DBNull.Value ? Convert.ToInt32(row["POINT_ORDER"]) : 0;
@@ -1065,28 +1361,55 @@ namespace RawMat.ViewsMaterial.RegularCheck
                 // ดึงค่า Sampling No (อ้างอิงแทน Row Index)
                 string samplingNo = row["SAMPLING_NO"] != DBNull.Value ? row["SAMPLING_NO"].ToString() : "N/A";
 
+                string columnName = column.ColumnName == "EQUIPMENT_SERIAL" ? "EQ_SN" : column.ColumnName;
+
+                return $"ช่องว่างถัดไป : หน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ {columnName}";
+            }
+
+            return null;
+        }
+
+        // หาช่องแรกที่ยังว่าง ใช้ทั้งตอนบอกผู้ตรวจ และตอนตัดสินว่าปุ่มเป็น Record Data หรือ Save and Continue
+        // เช็คทุกคอลัมน์เหมือนเดิม รวม POINT_JUDGE ด้วย เพราะค่าที่พิมพ์ผิดรูปแบบจะทำให้ POINT_JUDGE ว่าง
+        // ช่องที่กำลังพิมพ์อยู่ใช้ค่าที่พิมพ์ (GetValueAfterEdit) ปุ่มจะได้เปลี่ยนทันทีโดยไม่ต้องกด Enter
+        private bool TryFindEmptyInputCell(DataTable table, out DataRow emptyRow, out DataColumn emptyColumn)
+        {
+            DataRow editingRow = null;
+            bool editingValidNumber = false;
+
+            if (InspectionDraft.TryGetPendingEdit(dtg_regular, out DataGridViewCell editingCell, out string editingValue)
+                && dtg_regular.Columns[editingCell.ColumnIndex].Name == "VALUE")
+            {
+                editingRow = (editingCell.OwningRow?.DataBoundItem as DataRowView)?.Row;
+                editingValidNumber = decimal.TryParse(editingValue, out _);
+            }
+
+            foreach (DataRow row in table.Rows)
+            {
                 foreach (DataColumn column in table.Columns)
                 {
-                    if (row[column] == DBNull.Value || string.IsNullOrWhiteSpace(row[column].ToString()))
+                    object value = InspectionDraft.GetValueAfterEdit(dtg_regular, row, column.ColumnName);
+
+                    // ผลตัดสินจะถูกคิดตอนกด Enter (dtg_regular_CellValueChanged) ถ้าค่าที่กำลังพิมพ์เป็นตัวเลข ถือว่ามีผลแล้ว
+                    // TOTAL_JUDGE ถูกเขียนทุกแถวพร้อมกัน (CalculateTotalJudge) จึงนับทุกแถว
+                    if (editingValidNumber
+                        && ((column.ColumnName == "POINT_JUDGE" && row == editingRow) || column.ColumnName == "TOTAL_JUDGE"))
                     {
-                        string columnName = column.ColumnName; // ชื่อคอลัมน์
+                        continue;
+                    }
 
-                        if (columnName == "EQUIPMENT_SERIAL")
-                        {
-                            CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในหน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ EQ_SN",
-                                "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
-                        }
-                        else
-                        {
-
-                            CustomMsgBoxBase.ShowCustomMessageBox($"พบเซลล์ว่างในหน้า {pageNumber}, Sample {samplingNo}, คอลัมน์ {columnName}",
-                                "คำเตือน", CustomMsgBoxBase.MessageBoxIconType.Warning);
-                        }
-                        return false;
+                    if (value == null || value == DBNull.Value || string.IsNullOrWhiteSpace(value.ToString()))
+                    {
+                        emptyRow = row;
+                        emptyColumn = column;
+                        return true;
                     }
                 }
             }
-            return true;
+
+            emptyRow = null;
+            emptyColumn = null;
+            return false;
         }
 
         private bool IsDataGridViewValid(DataGridView dtg)
@@ -1143,6 +1466,9 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
         private void bt_back_Click(object sender, EventArgs e)
         {
+            // ไม่เก็บร่างให้เอง (เก็บเฉพาะตอนกด Record Data) แต่ถามก่อนถ้ามีค่าที่ยังไม่ได้ Record
+            if (!ConfirmLeave()) return;
+
             propQA.inProcStatus = ((int)ProcStatus.Unfinished).ToString();
             propQA.reportStatus = ((int)ProcStatus.Unfinished).ToString();
 

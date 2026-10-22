@@ -24,7 +24,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RawMat.ViewsMaterial.InspDataCheck
 {
-    public partial class userControlInspData : UserControl
+    public partial class userControlInspData : UserControl, IInspectionScreen
     {
         [System.Runtime.InteropServices.DllImport("ole32.dll")]
         static extern void CoFreeUnusedLibraries();
@@ -188,6 +188,20 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             {
                 DocPreviewCls.ShowMessage(panel_pdf, "แสดงเอกสารไม่สำเร็จ : " + ex.Message);
             }
+        }
+
+        // กดเมนูอื่น / Logout โดยไม่ผ่านปุ่มย้อนกลับ : NavigationService เรียกก่อน Dispose หน้านี้ (IInspectionScreen)
+        // หน้านี้ไม่มีร่าง ทำแค่ส่วนสถานะของ bt_back_Click คือตั้ง Not Finished yet + ปลดล็อกใบ
+        // ไม่งั้นใบค้างเป็น Working เหมือนมีคนเปิดอยู่
+        public void LeaveScreen()
+        {
+            InspectionDraft.ReleaseReport(conQA, propQA);
+        }
+
+        // หน้านี้ไม่มีปุ่ม Record Data ไม่มีอะไรให้ถามก่อนออก
+        public bool ConfirmLeave()
+        {
+            return true;
         }
 
         private void bt_back_Click(object sender, EventArgs e)

@@ -236,9 +236,11 @@
     <Compile Include="Utilities\DocPreviewCls.cs" />
     <Compile Include="Utilities\ExcelPreviewCls.cs" />
     <Compile Include="Utilities\EquipmentSerialColumn.cs" />
+    <Compile Include="Utilities\InspectionDraft.cs" />
     <Compile Include="Utilities\PointJudgeType.cs" />
     <Compile Include="Utilities\NumberDisplay.cs" />
     <Compile Include="Utilities\imgCls.cs" />
+    <Compile Include="Utilities\IInspectionScreen.cs" />
     <Compile Include="Utilities\INavigationService.cs" />
     <Compile Include="Utilities\IParent.cs" />
     <Compile Include="Utilities\MqttManager.cs" />

@@ -265,8 +265,8 @@ namespace RawMat.ViewsMaterial.AppearCheck
             SetColumnLayout("Report No.", 115, 100, DataGridViewContentAlignment.MiddleCenter);
             SetColumnLayout("M-CODE", 110, 95, DataGridViewContentAlignment.MiddleCenter);
             SetColumnLayout("Invoice No.", 120, 105, DataGridViewContentAlignment.MiddleCenter);
-            SetColumnLayout("Lot Size", 80, 75, DataGridViewContentAlignment.MiddleRight);
-            SetColumnLayout("Inspection Qty", 95, 90, DataGridViewContentAlignment.MiddleRight);
+            SetColumnLayout("Lot Size", 55, 45, DataGridViewContentAlignment.MiddleRight);
+            SetColumnLayout("Inspection Qty", 65, 55, DataGridViewContentAlignment.MiddleRight);
             SetColumnLayout("Vendor", 145, 130, DataGridViewContentAlignment.MiddleLeft);
             SetColumnLayout("Material Name", 220, 205, DataGridViewContentAlignment.MiddleLeft);
             SetColumnLayout("Status", 90, 80, DataGridViewContentAlignment.MiddleCenter);

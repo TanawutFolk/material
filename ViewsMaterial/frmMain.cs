@@ -659,6 +659,9 @@ namespace RawMat
 
         private void ProfileControl_Logout(object sender, EventArgs e)
         {
+            // อยู่ในหน้าตรวจและมีค่าที่ยังไม่ได้กด Record Data : ถามก่อน กด Cancel = ยังไม่ Logout
+            if (!_navigationService.ConfirmLeaveInspectionScreens()) return;
+
             empProp = new EmployeeProperty();
             LoadLoginControl();
 
@@ -689,6 +692,9 @@ namespace RawMat
 
         private void bt_home_Click(object sender, EventArgs e)
         {
+            // อยู่ในหน้าตรวจและมีค่าที่ยังไม่ได้กด Record Data : ถามก่อน กด Cancel = อยู่หน้าเดิม
+            if (!_navigationService.ConfirmLeaveInspectionScreens()) return;
+
             ControlLevel(empProp);
             //_navigationService.Clear(); // ใช้ NavigationService เพื่อเคลียร์หน้า
             panelMainHome();

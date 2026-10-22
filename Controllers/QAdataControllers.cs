@@ -1741,6 +1741,76 @@ namespace RawMat.Controllers
             return bl;
         }
 
+        /// <summary>คืน XML ของร่าง ถ้ายังไม่เคย Save ร่างไว้จะได้ null</summary>
+        public string SearchInspectionDraft(QAdataProperty dataItem)
+        {
+            try
+            {
+                _resultData = _model.SearchInspectionDraft(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    DataTable result = _resultData.ResultOnDb;
+                    if (result != null && result.Rows.Count > 0 && result.Rows[0]["DRAFT_DATA"] != DBNull.Value)
+                    {
+                        return result.Rows[0]["DRAFT_DATA"].ToString();
+                    }
+                    return null;
+                }
+
+                // อ่านไม่ได้ต้องบอก ไม่งั้นผู้ตรวจจะเข้าใจว่าค่าที่ Save ไว้หายไปแล้วกรอกใหม่ทับ
+                MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return null;
+        }
+
+        public Boolean SaveInspectionDraft(QAdataProperty dataItem)
+        {
+            Boolean bl = false;
+            try
+            {
+                _resultData = _model.SaveInspectionDraft(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return bl;
+        }
+
+        public Boolean DeleteInspectionDraft(QAdataProperty dataItem)
+        {
+            Boolean bl = false;
+            try
+            {
+                _resultData = _model.DeleteInspectionDraft(dataItem);
+                if (_resultData.StatusOnDb == true)
+                {
+                    bl = _resultData.StatusOnDb;
+                }
+                else
+                {
+                    MessageBox.Show(_resultData.MessageOnDb, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return bl;
+        }
+
 
         public Boolean DeleteReportHistory(QAdataProperty dataItem)
         {

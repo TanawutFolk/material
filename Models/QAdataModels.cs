@@ -440,6 +440,24 @@ namespace RawMat.Models
             return resultData;
         }
 
+        public OutputOnDbProperty SearchInspectionDraft(QAdataProperty dataItem)
+        {
+            resultData = services.SearchInspectionDraft(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty SaveInspectionDraft(QAdataProperty dataItem)
+        {
+            resultData = services.SaveInspectionDraft(dataItem);
+            return resultData;
+        }
+
+        public OutputOnDbProperty DeleteInspectionDraft(QAdataProperty dataItem)
+        {
+            resultData = services.DeleteInspectionDraft(dataItem);
+            return resultData;
+        }
+
 
         public OutputOnDbProperty DeleteReportHistory(QAdataProperty dataItem)
         {

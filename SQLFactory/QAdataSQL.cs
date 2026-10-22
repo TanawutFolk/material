@@ -1535,6 +1535,38 @@ namespace RawMat.SQLFactory
 
         }
 
+        // ร่างของหน้าตรวจที่ยังกรอกไม่ครบ ใบละ 1 แถวต่อ process (DatabaseScripts/20260928_add_inspection_draft.sql)
+        public string SearchInspectionDraft(QAdataProperty dataItem)
+        {
+            return $@"SELECT `DRAFT_DATA`, `EMP_ID`, `SAVE_DATE`
+                    FROM `db_inspection_draft`
+                    WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                      AND `PROCESS` = {ToSqlTextValue(dataItem.process)}";
+        }
+
+        public string SaveInspectionDraft(QAdataProperty dataItem)
+        {
+            // DRAFT_DATA เป็น XML ทั้งก้อน ค่าที่ผู้ตรวจพิมพ์มีได้ทุกตัวอักษร
+            // server ไม่ได้เปิด NO_BACKSLASH_ESCAPES จึงต้อง escape \ ด้วย ไม่ใช่แค่ '
+            string draftData = (dataItem.DRAFT_DATA ?? string.Empty)
+                .Replace("\\", "\\\\")
+                .Replace("'", "''");
+
+            return $@"INSERT INTO `db_inspection_draft` (`REPORT_NO`, `PROCESS`, `DRAFT_DATA`, `EMP_ID`, `SAVE_DATE`)
+                    VALUES ({ToSqlTextValue(dataItem.Report_No)}, {ToSqlTextValue(dataItem.process)}, '{draftData}', {ToSqlValue(dataItem.EMP_ID)}, NOW())
+                    ON DUPLICATE KEY UPDATE
+                        `DRAFT_DATA` = VALUES(`DRAFT_DATA`),
+                        `EMP_ID` = VALUES(`EMP_ID`),
+                        `SAVE_DATE` = NOW();";
+        }
+
+        public string DeleteInspectionDraft(QAdataProperty dataItem)
+        {
+            return $@"DELETE FROM `db_inspection_draft`
+                    WHERE `REPORT_NO` = {ToSqlTextValue(dataItem.Report_No)}
+                      AND `PROCESS` = {ToSqlTextValue(dataItem.process)};";
+        }
+
         // อ่านสถานะของ process ที่กำลังทำอยู่ (คอลัมน์ชื่อเดียวกับ dataItem.process เช่น `Appearance_Check`)
         // เดิมอ่าน `report_status` ซึ่งเป็นคอลัมน์รวมทั้งใบที่ทุก process เขียนทับกันได้
         // ทำให้ Appearance ถูกบล็อกเพราะ Function/Dimension ติด Pending ทั้งที่ยังไม่ได้เริ่มตรวจ

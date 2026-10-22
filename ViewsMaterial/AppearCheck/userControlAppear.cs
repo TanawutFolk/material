@@ -23,7 +23,7 @@ using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace RawMat.ViewsMaterial.AppearCheck
 {
-    public partial class userControlAppear : UserControl
+    public partial class userControlAppear : UserControl, IInspectionScreen
     {
         public event Action<UserControl> AddUserControlRequested;
         public event Action OnReleaseMutex;
@@ -169,6 +169,58 @@ namespace RawMat.ViewsMaterial.AppearCheck
         {
             List<string> lotNoList = GetReportLotNoList();
             return lotNoList.Count == 1 ? lotNoList[0] : string.Empty;
+        }
+
+        /// <summary>
+        /// Lot No. ของแถวในตาราง Packing : pack ที่ตรวจไปแล้วต้องโชว์ Lot ที่บันทึกไว้ ไม่ใช่ค่าเริ่มต้น
+        /// เดิมใช้ค่าเริ่มต้นทุกแถว ใบที่มีหลาย Lot เลยเห็น Lot No. ว่างในแถวที่เสร็จแล้ว (QA26-0049)
+        /// pack ที่ยังตรวจไม่ครบเลือก Lot ได้อยู่ ใส่ Lot ที่บันทึกไว้ให้ก่อนเฉพาะตอนเป็นตัวเลือกใน dropdown ได้
+        /// </summary>
+        private string GetPackingRowLotNo(List<string> savedLots, bool isSelectable)
+        {
+            if (!isSelectable && savedLots.Count > 0)
+            {
+                return string.Join(", ", savedLots);
+            }
+
+            if (savedLots.Count == 1 && GetReportLotNoList().Contains(savedLots[0]))
+            {
+                return savedLots[0];
+            }
+
+            return GetDefaultLotNoForPackingRow();
+        }
+
+        /// <summary>
+        /// pack ที่ตรวจครบแล้วกด Select ไม่ได้ เปลี่ยน Lot ไปก็ไม่ได้บันทึก จึงโชว์ Lot ที่บันทึกไว้เป็นข้อความที่แก้ไม่ได้แทน dropdown
+        /// ต้องเปลี่ยนเป็นช่องข้อความ เพราะค่าที่บันทึกไว้อาจไม่อยู่ในรายการ Lot ของใบแล้ว หรือมีหลาย Lot ต่อกัน dropdown โชว์ไม่ได้
+        /// เรียกหลัง ConfigurePackingLotNoColumn ทุกครั้งที่ bind ใหม่ เพราะแถวใหม่จะได้ cell dropdown กลับมา
+        /// </summary>
+        private void LockFinishedPackLotNoCells()
+        {
+            if (!dtg_packing_size_appear.Columns.Contains("LOT_NO") || !dtg_packing_size_appear.Columns.Contains("IS_SELECTABLE"))
+            {
+                return;
+            }
+
+            int lotColumnIndex = dtg_packing_size_appear.Columns["LOT_NO"].Index;
+            foreach (DataGridViewRow row in dtg_packing_size_appear.Rows)
+            {
+                if (row.IsNewRow || row.Cells["IS_SELECTABLE"].Value is bool selectable && selectable)
+                {
+                    continue;
+                }
+
+                if (!(row.Cells[lotColumnIndex] is DataGridViewTextBoxCell))
+                {
+                    row.Cells[lotColumnIndex] = new DataGridViewTextBoxCell();
+                }
+
+                DataGridViewCell lotCell = row.Cells[lotColumnIndex];
+                lotCell.ReadOnly = true;
+                lotCell.Style.BackColor = Color.LightGray;
+                lotCell.Style.ForeColor = Color.Black;
+            }
         }
 
         private bool TrySetSelectedPackingLotNo(DataGridViewRow selectedRow)
@@ -337,6 +389,97 @@ namespace RawMat.ViewsMaterial.AppearCheck
             checkTimer.Tick += CheckTimer_Tick;
             checkTimer.Start();
 
+            // ปุ่ม Record Data / Save and Continue สลับเองตามว่า pack ที่เลือกกรอกครบหรือยัง
+            // แบบเดียวกับ Packing / Regular / Function / Dimension (Utilities/InspectionDraft.cs)
+            // แต่หน้านี้ไม่มีร่าง : ตอนครบกดแล้วถามยืนยันก่อน (tb_record_Click) แล้วบันทึก pack นั้นลง DB ทันทีเหมือนเดิม
+            HookRecordButtonMode();
+            UpdateRecordButtonMode();
+        }
+
+        private void HookRecordButtonMode()
+        {
+            // เลือก pack / Record เสร็จ / Clear / เปิด-ปิด NG MODE ล้วนเปลี่ยน DataSource ของสองตารางนี้
+            dtg_show_appear.DataSourceChanged += RecordButtonMode_Changed;
+            dtg_show_appear.DataBindingComplete += RecordButtonMode_Changed;
+            dtg_show_appear.CellValueChanged += RecordButtonMode_Changed;
+            dtg_show_appear.EditingControlShowing += WatchEditingValue;
+
+            dtg_ngMode.DataSourceChanged += RecordButtonMode_Changed;
+            dtg_ngMode.DataBindingComplete += RecordButtonMode_Changed;
+            dtg_ngMode.CellValueChanged += RecordButtonMode_Changed;
+            dtg_ngMode.RowsAdded += RecordButtonMode_Changed;
+            dtg_ngMode.RowsRemoved += RecordButtonMode_Changed;
+            dtg_ngMode.EditingControlShowing += WatchEditingValue;
+        }
+
+        // พิมพ์หรือเลือกค่าในตาราง : เปลี่ยนปุ่มทันที ไม่ต้องรอกด Enter
+        private void WatchEditingValue(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            InspectionDraft.WatchEditingControl(e, RecordButtonMode_Changed);
+        }
+
+        private void RecordButtonMode_Changed(object sender, EventArgs e)
+        {
+            UpdateRecordButtonMode();
+        }
+
+        private void UpdateRecordButtonMode()
+        {
+            InspectionDraft.ApplyButtonMode(tb_record, IsPackInputComplete());
+        }
+
+        /// <summary>
+        /// pack ที่เลือกกรอกครบพอจะ Record ได้หรือยัง : เงื่อนไขเดียวกับ SaveAppearData แต่ไม่เด้งข้อความ
+        /// ใช้แค่ตัดสินชื่อ/สีปุ่ม ตอนกดปุ่ม SaveAppearData ยังตรวจครบทุกข้อเหมือนเดิม
+        /// ช่องที่กำลังพิมพ์อยู่ใช้ค่าที่พิมพ์ (GetValueAfterEdit) ไม่ต้องรอกด Enter
+        /// </summary>
+        private bool IsPackInputComplete()
+        {
+            DataRow inputRow = GetActiveInputDataRow();
+            if (inputRow == null)
+            {
+                return false;
+            }
+
+            int qtySelect = ParseInt(InspectionDraft.GetValueAfterEdit(dtg_show_appear, inputRow, "QTY_SELECT"));
+            int qtyOk = ParseInt(InspectionDraft.GetValueAfterEdit(dtg_show_appear, inputRow, "QTY_OK"));
+            int qtyNg = ParseInt(InspectionDraft.GetValueAfterEdit(dtg_show_appear, inputRow, "QTY_NG"));
+
+            if (qtySelect <= 0 || qtyOk + qtyNg != qtySelect || qtySelect > currentEntryMaxQty)
+            {
+                return false;
+            }
+
+            return qtyNg == 0 || IsNgModeComplete(qtyNg);
+        }
+
+        // เงื่อนไขเดียวกับ ValidateNgModeDetails แต่ไม่เด้งข้อความ
+        // NG MODE เปิดหลังกด Enter ช่อง QTY_NG แล้วเท่านั้น ระหว่างพิมพ์จำนวน NG จึงยังไม่ครบ
+        private bool IsNgModeComplete(int requiredNgQty)
+        {
+            if (!isNgModeActive || totalNgRequired != requiredNgQty || !(dtg_ngMode.DataSource is DataTable ngDt))
+            {
+                return false;
+            }
+
+            int sumNg = 0;
+            int completedRows = 0;
+
+            foreach (DataRow row in ngDt.Rows)
+            {
+                if (row.RowState == DataRowState.Deleted) continue;
+
+                int qty = ParseInt(InspectionDraft.GetValueAfterEdit(dtg_ngMode, row, "QTY_NG"));
+                string mode = InspectionDraft.GetValueAfterEdit(dtg_ngMode, row, NgModeHelper.ColumnName)?.ToString().Trim() ?? "";
+
+                if (qty <= 0 && string.IsNullOrEmpty(mode)) continue;
+                if (qty <= 0 || string.IsNullOrEmpty(mode)) return false;
+
+                sumNg += qty;
+                completedRows++;
+            }
+
+            return completedRows > 0 && sumNg == requiredNgQty;
         }
 
         //// *** Manual create columns สำหรับ dtg_packing_size_appear ***
@@ -547,6 +690,8 @@ namespace RawMat.ViewsMaterial.AppearCheck
                 column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 column.ReadOnly = column.Name != "LOT_NO";
             }
+
+            LockFinishedPackLotNoCells();
 
             UpdatePackingSelectButtonState();
             UpdatePackingCountLabel();
@@ -808,8 +953,47 @@ namespace RawMat.ViewsMaterial.AppearCheck
 
         private void bt_back_Click(object sender, EventArgs e)
         {
+            if (!ConfirmLeave()) return;
+
             CleanupEvents();  // Unsubscribe manual ก่อน switch
             bt_Appear_Click();
+        }
+
+        // ออกจากหน้า (ย้อนกลับ / Home / Logout) : หน้านี้ไม่มีร่าง ค่าของ pack ที่ยังไม่ได้ Record จะหายถ้าออก
+        // ถามก่อนด้วยกล่องเดียวกับหน้าอื่น (frmConfirm) ถ้าไม่ได้กรอกอะไรไว้ก็ออกเลยเหมือนเดิม
+        // false = ผู้ตรวจกด Cancel อยู่หน้าเดิม
+        public bool ConfirmLeave()
+        {
+            if (!HasUnrecordedPackInput()) return true;
+
+            string pack = selectedPackSequence > 0 ? $"pack ที่ {selectedPackSequence}" : "pack นี้";
+            string message = $"{pack} ยังไม่ได้ Record Data{Environment.NewLine}ถ้าออกตอนนี้ ข้อมูลที่กรอกของ {pack} จะหาย";
+
+            return InspectionDraft.ConfirmLeaveWithoutSave(this, message);
+        }
+
+        // หน้านี้ไม่ได้ตั้งใบเป็น Working และไม่ได้ล็อกใบ ออกทาง Home / Logout ไม่มีอะไรต้องคืน
+        public void LeaveScreen()
+        {
+        }
+
+        // pack ที่เลือกมีค่าที่ผู้ตรวจกรอกแต่ยังไม่ได้ Record ไหม (ช่องที่กำลังพิมพ์อยู่ก็นับ)
+        // QTY_SELECT โหมดปกติโปรแกรมใส่ให้เองอยู่แล้ว นับเฉพาะโหมด All ที่ผู้ตรวจพิมพ์เอง
+        // ไม่ต้องเช็ค NG MODE แยก เพราะจะเปิดได้ก็ต่อเมื่อกรอก QTY_NG แล้ว
+        private bool HasUnrecordedPackInput()
+        {
+            DataRow inputRow = GetActiveInputDataRow();
+            if (inputRow == null)
+            {
+                return false;
+            }
+
+            string[] typedColumns = IsAllAppearanceMode()
+                ? new[] { "QTY_SELECT", "QTY_OK", "QTY_NG" }
+                : new[] { "QTY_OK", "QTY_NG" };
+
+            return typedColumns.Any(column =>
+                !string.IsNullOrWhiteSpace(InspectionDraft.GetValueAfterEdit(dtg_show_appear, inputRow, column)?.ToString()));
         }
 
         private void loadstatus()
@@ -1241,6 +1425,8 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                 Dictionary<int, int> savedQtyByCount = new Dictionary<int, int>();
                 Dictionary<int, int> savedOkByCount = new Dictionary<int, int>();
                 Dictionary<int, int> savedNgByCount = new Dictionary<int, int>();
+                Dictionary<int, List<string>> savedLotsByCount = new Dictionary<int, List<string>>();
+                bool hasSavedLotNo = savedData != null && savedData.Columns.Contains("LOT_NO");
 
                 if (savedData != null)
                 {
@@ -1254,11 +1440,18 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                             savedQtyByCount[count] = 0;
                             savedOkByCount[count] = 0;
                             savedNgByCount[count] = 0;
+                            savedLotsByCount[count] = new List<string>();
                         }
 
                         savedQtyByCount[count] += qty;
                         savedOkByCount[count] += ParseInt(savedRow["QTY_OK"]);
                         savedNgByCount[count] += ParseInt(savedRow["QTY_NG"]);
+
+                        string savedLotNo = hasSavedLotNo ? savedRow["LOT_NO"]?.ToString()?.Trim() : null;
+                        if (!string.IsNullOrWhiteSpace(savedLotNo) && !savedLotsByCount[count].Contains(savedLotNo))
+                        {
+                            savedLotsByCount[count].Add(savedLotNo);
+                        }
                     }
                 }
 
@@ -1280,7 +1473,8 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                     DataRow expandedRow = expandedDt.NewRow();
                     expandedRow["DISPLAY_NO"] = packSeq;
                     expandedRow["PACKING_VALUE"] = packingValue;
-                    expandedRow["LOT_NO"] = GetDefaultLotNoForPackingRow();
+                    List<string> savedLots = savedLotsByCount.ContainsKey(packSeq) ? savedLotsByCount[packSeq] : new List<string>();
+                    expandedRow["LOT_NO"] = GetPackingRowLotNo(savedLots, isSelectable);
                     expandedRow["CUMULATIVE_QTY"] = savedQty > 0 ? (object)cumulativeQty : DBNull.Value;
                     expandedRow["QTY_SELECT"] = planQty;
                     expandedRow["QTY_OK"] = savedOk > 0 ? savedOk.ToString() : "";
@@ -2089,6 +2283,23 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
         }
         private void tb_record_Click(object sender, EventArgs e)
         {
+            // ค่าที่กำลังพิมพ์ต้องลงตารางก่อน ถึงจะรู้ว่า pack นี้ครบหรือยัง
+            dtg_show_appear.EndEdit();
+            dtg_ngMode.EndEdit();
+
+            // ครบแล้ว ปุ่มเป็น Save and Continue : ถามก่อนด้วย frmConfirm แบบเดียวกับหน้าอื่น
+            // ยังไม่ครบ ปุ่มเป็น Record Data : ปล่อยให้ SaveAppearData เตือนว่าขาดอะไรแบบเดิม
+            // Cancel = ไม่บันทึก อยู่หน้าเดิม ค่าที่กรอกยังอยู่บนจอ (หน้านี้ไม่มีร่าง)
+            if (IsPackInputComplete())
+            {
+                string pack = selectedPackSequence > 0 ? $"pack ที่ {selectedPackSequence}" : "pack นี้";
+
+                if (!InspectionDraft.ConfirmContinue(this, $"Appearance {pack}", $"ต้องการบันทึกผลของ {pack} หรือไม่?"))
+                {
+                    return;
+                }
+            }
+
             SaveAppearData();
         }
 
@@ -2394,6 +2605,17 @@ int perPackQty = (int)Math.Ceiling(totalSampleQty / (double)packCount);
                         conQA.UpdateReportStatus(propQA); // Update report status
 
                         MessageBox.Show("พบสิ่งผิดปกติ งานถูกตั้งเป็น Pending", "พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        bt_Appear_Click(); // Back to select
+                    }
+                    else if (isAllComplete)
+                    {
+                        // pack นี้เป็นชุดสุดท้าย ตรวจครบจำนวนแล้ว ผู้ตรวจไม่มีอะไรให้ทำต่อ เหลือรอ Admin ตัดสิน NG อย่างเดียว
+                        // ต้องตั้ง Pending แบบเดียวกับสาขา OK ที่ตรวจครบแต่ยังมี NG ค้าง
+                        // (เดิมตั้งเป็น 8 ใบจึงค้างเป็น Not Finished yet ในรายการของผู้ตรวจ ทั้งที่ทุก pack เสร็จแล้ว)
+                        propQA.TOTAL_STATUS = "6"; // Pending
+                        conQA.UpdateReportStatus(propQA);
+
+                        MessageBox.Show("ตรวจครบจำนวนแล้ว แต่พบสิ่งผิดปกติ งานถูกตั้งเป็น Pending รอตรวจสอบงาน NG", "พบสิ่งผิดปกติ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         bt_Appear_Click(); // Back to select
                     }
                     else

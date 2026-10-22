@@ -58,6 +58,7 @@
             this.rb_ng_method3 = new System.Windows.Forms.RadioButton();
             this.rb_ok_method3 = new System.Windows.Forms.RadioButton();
             this.bt_save = new System.Windows.Forms.Button();
+            this.bt_saveContinue = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lb_reportNo = new System.Windows.Forms.Label();
             this.lb_mcode = new System.Windows.Forms.Label();
@@ -402,14 +403,29 @@
             this.bt_save.BackColor = System.Drawing.Color.Lime;
             this.bt_save.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.bt_save.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt_save.Location = new System.Drawing.Point(757, 845);
+            this.bt_save.Location = new System.Drawing.Point(757, 869);
             this.bt_save.Name = "bt_save";
             this.bt_save.Size = new System.Drawing.Size(129, 57);
             this.bt_save.TabIndex = 33;
             this.bt_save.Text = "SAVE";
             this.bt_save.UseVisualStyleBackColor = false;
             this.bt_save.Click += new System.EventHandler(this.bt_save_Click);
-            // 
+            //
+            // bt_saveContinue
+            //
+            this.bt_saveContinue.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
+            this.bt_saveContinue.FlatAppearance.BorderSize = 0;
+            this.bt_saveContinue.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bt_saveContinue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_saveContinue.ForeColor = System.Drawing.Color.White;
+            this.bt_saveContinue.Location = new System.Drawing.Point(898, 869);
+            this.bt_saveContinue.Name = "bt_saveContinue";
+            this.bt_saveContinue.Size = new System.Drawing.Size(173, 57);
+            this.bt_saveContinue.TabIndex = 34;
+            this.bt_saveContinue.Text = "Save and Continue";
+            this.bt_saveContinue.UseVisualStyleBackColor = false;
+            this.bt_saveContinue.Click += new System.EventHandler(this.bt_saveContinue_Click);
+            //
             // label1
             // 
             this.label1.AutoSize = true;
@@ -482,7 +498,7 @@
             this.dtg_lot_no.Name = "dtg_lot_no";
             this.dtg_lot_no.RowHeadersWidth = 51;
             this.dtg_lot_no.RowTemplate.Height = 24;
-            this.dtg_lot_no.Size = new System.Drawing.Size(527, 50);
+            this.dtg_lot_no.Size = new System.Drawing.Size(527, 91);
             this.dtg_lot_no.TabIndex = 43;
             this.dtg_lot_no.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dtg_lot_no_CellEndEdit);
             this.dtg_lot_no.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dtg_lot_no_EditingControlShowing);
@@ -543,13 +559,14 @@
             this.Controls.Add(this.lb_reportNo);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.bt_save);
+            this.Controls.Add(this.bt_saveContinue);
             this.Controls.Add(this.gb_method3);
             this.Controls.Add(this.gb_method2);
             this.Controls.Add(this.gb_method1);
             this.Controls.Add(this.tlp_methods);
             this.Controls.Add(this.lb_top);
             this.Name = "userControlPackingCheck";
-            this.Size = new System.Drawing.Size(1115, 955);
+            this.Size = new System.Drawing.Size(1115, 1032);
             this.Load += new System.EventHandler(this.userControlPackingCheck_Load);
             this.tlp_methods.ResumeLayout(false);
             this.tlp_methods.PerformLayout();
@@ -578,6 +595,7 @@
         private System.Windows.Forms.GroupBox gb_method2;
         private System.Windows.Forms.GroupBox gb_method3;
         private System.Windows.Forms.Button bt_save;
+        private System.Windows.Forms.Button bt_saveContinue;
         private System.Windows.Forms.TextBox tb_detail_method1;
         private System.Windows.Forms.RadioButton rb_ng_method1;
         private System.Windows.Forms.RadioButton rb_ok_method1;

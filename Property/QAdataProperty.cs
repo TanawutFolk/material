@@ -91,6 +91,9 @@ namespace RawMat.Property
         public DataTable dtAppSamp { get; set; }
         //Inspection Data Check
         public string data_detail { get; set; }
+
+        //ร่างของหน้าตรวจที่ยังกรอกไม่ครบ (db_inspection_draft)
+        public string DRAFT_DATA { get; set; }
         public enum ProcStatus
         {
             NG = 0,

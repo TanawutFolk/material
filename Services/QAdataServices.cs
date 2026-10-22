@@ -637,6 +637,30 @@ namespace RawMat.Services
             return _resultData;
         }
 
+        public OutputOnDbProperty SearchInspectionDraft(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SearchInspectionDraft(dataItem);
+            _resultData = base.SearchBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty SaveInspectionDraft(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.SaveInspectionDraft(dataItem);
+            _resultData = base.InsertBySql(sql);
+            return _resultData;
+        }
+
+        public OutputOnDbProperty DeleteInspectionDraft(QAdataProperty dataItem)
+        {
+            strConnection = ConfigurationManager.ConnectionStrings["ConnectionStrMysqlQA"].ConnectionString;
+            sql = sqlFactory.DeleteInspectionDraft(dataItem);
+            _resultData = base.DeleteBySql(sql);
+            return _resultData;
+        }
+
 
         public OutputOnDbProperty DeleteReportHistory(QAdataProperty dataItem)
         {

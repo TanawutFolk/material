@@ -23,7 +23,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace RawMat.ViewsMaterial.PackingCheck
 {
-    public partial class userControlPackingCheck : UserControl
+    public partial class userControlPackingCheck : UserControl, IInspectionScreen
     {
         public event Action<UserControl> AddUserControlRequested;
         public event Action OnReleaseMutex;
@@ -38,6 +38,15 @@ namespace RawMat.ViewsMaterial.PackingCheck
         private BindingSource bindingSource = new BindingSource();
         private IParent parent;
         private readonly Dictionary<int, string> originalMethodJudgments = new Dictionary<int, string>();
+
+        // ร่าง : ปุ่ม bt_save = Record Data (เก็บร่าง) / ปุ่ม bt_saveContinue = Save and Continue (ส่งผล) แยกกัน (Utilities/InspectionDraft.cs)
+        // หน้าอื่นใช้ปุ่มเดียวสลับตามความครบ แต่ Packing กรอก Lot No. ได้เรื่อย ๆ จึงรู้ไม่ได้ว่าครบเมื่อไหร่
+        private const string DraftPackingSizeTable = "PACKING_SIZE";
+        private const string DraftLotNoTable = "LOT_NO";
+        private bool _draftEnabled;     // Admin เปิดมาตัดสินงาน NG ปุ่มนี้คือปุ่มอนุมัติ จึงไม่ใช้ร่าง
+        private bool _isRestoringDraft;
+        // ค่าบนจอตอนที่ถือว่าเก็บแล้ว (เปิดหน้าเสร็จ / กด Record Data) ใช้เทียบตอนออกว่ามีค่าที่ยังไม่ได้ Record ไหม
+        private string _recordedDraft;
 
         public userControlPackingCheck(IParent parent)
         {
@@ -70,6 +79,340 @@ namespace RawMat.ViewsMaterial.PackingCheck
 
             LoadPackingCheckData();
             LoadReportLotNoData();
+
+            // Admin เปิดมาตัดสินงาน NG ปุ่ม SAVE คือปุ่มอนุมัติ (SaveAdminPartialApproval) ไม่ใช่ปุ่มกรอกผล
+            _draftEnabled = !IsAdminPendingReview();
+            if (_draftEnabled)
+            {
+                // ค่าที่เคย Save ไว้ตอนยังกรอกไม่ครบ ดึงกลับมาเติมให้ทำต่อได้
+                LoadDraft();
+                HookDraftTracking();
+                UpdateRecordButtonMode();
+                _recordedDraft = InspectionDraft.Serialize(BuildDraft());
+            }
+            else
+            {
+                bt_saveContinue.Visible = false;
+            }
+        }
+
+        private void HookDraftTracking()
+        {
+            foreach (RadioButton radio in new[] { rb_ok_method1, rb_ng_method1, rb_ok_method2, rb_ng_method2, rb_ok_method3, rb_ng_method3 })
+            {
+                radio.CheckedChanged += Input_Changed;
+            }
+
+            tb_detail_method1.TextChanged += Input_Changed;
+            tb_detail_method2.TextChanged += Input_Changed;
+            tb_detail_method3.TextChanged += Input_Changed;
+
+            // ผูกหลัง handler เดิมใน Designer จึงทำงานหลังคิด CALVALUE / ตัวพิมพ์ใหญ่ Lot No. เสร็จแล้ว
+            dtg_packing_size.CellEndEdit += Input_Changed;
+            dtg_packing_size.RowsRemoved += Input_Changed;
+            dtg_lot_no.CellEndEdit += Input_Changed;
+
+            // พิมพ์ในตารางเมื่อไหร่ เปลี่ยนปุ่มทันที ไม่ต้องรอกด Enter
+            dtg_packing_size.EditingControlShowing += WatchEditingValue;
+            dtg_lot_no.EditingControlShowing += WatchEditingValue;
+        }
+
+        private void WatchEditingValue(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            InspectionDraft.WatchEditingControl(e, EditingValue_Changed);
+        }
+
+        private void EditingValue_Changed(object sender, EventArgs e)
+        {
+            UpdateRecordButtonMode();
+        }
+
+        // ติ๊ก / พิมพ์เสร็จ / ลบแถว : คิดใหม่ว่าปุ่มเป็น Record Data หรือ Save and Continue
+        private void Input_Changed(object sender, EventArgs e)
+        {
+            if (_isRestoringDraft)
+            {
+                return;
+            }
+
+            UpdateRecordButtonMode();
+        }
+
+        private void LoadDraft()
+        {
+            DataSet draft = InspectionDraft.Load(conQA, propQA);
+            if (draft == null)
+            {
+                return;
+            }
+
+            _isRestoringDraft = true;
+
+            try
+            {
+                // Packing Size ต้องมาก่อน เพราะติ๊ก OK ข้อ 3 ได้ต่อเมื่อผลรวมเท่ากับ Lot Size แล้ว (rb_ok_method3_CheckedChanged)
+                // ข้อ 3 ที่บันทึก OK ไปแล้วถูกล็อก และ Packing Size โหลดจาก DB ไปแล้ว (LoadPackingSizeData)
+                if (gb_method3.Enabled && draft.Tables.Contains(DraftPackingSizeTable) && draft.Tables[DraftPackingSizeTable].Rows.Count > 0)
+                {
+                    dtg_packing_size.Rows.Clear();
+
+                    foreach (DataRow row in draft.Tables[DraftPackingSizeTable].Rows)
+                    {
+                        dtg_packing_size.Rows.Add(row["VALUE"], row["PACK_COUNT"], null);
+                    }
+
+                    UpdateCalculatedValues();
+                }
+
+                for (int methodId = 1; methodId <= 3; methodId++)
+                {
+                    // ข้อที่บันทึก OK ลง DB แล้วถูกล็อกไว้ (LoadPackingCheckData) ไม่เอาร่างไปทับ
+                    if (!GetGroupBox(methodId).Enabled)
+                    {
+                        continue;
+                    }
+
+                    var (rbOk, rbNg, tbDetail, _) = GetMethodControls(methodId);
+                    string judge = InspectionDraft.GetField(draft, "METHOD" + methodId);
+                    string detail = InspectionDraft.GetField(draft, "DETAIL" + methodId);
+
+                    if (detail != null)
+                    {
+                        tbDetail.Text = detail;
+                    }
+
+                    if (judge == "1")
+                    {
+                        rbOk.Checked = true;
+                    }
+                    else if (judge == "0")
+                    {
+                        rbNg.Checked = true;
+                    }
+                }
+
+                if (draft.Tables.Contains(DraftLotNoTable) && draft.Tables[DraftLotNoTable].Rows.Count > 0)
+                {
+                    ShowLotNumbers(draft.Tables[DraftLotNoTable].Rows.Cast<DataRow>()
+                        .Select(row => row["LOT_NO"].ToString())
+                        .ToList());
+                }
+            }
+            finally
+            {
+                _isRestoringDraft = false;
+            }
+
+        }
+
+        private DataSet BuildDraft()
+        {
+            var draft = new DataSet("DRAFT");
+
+            for (int methodId = 1; methodId <= 3; methodId++)
+            {
+                var (rbOk, rbNg, tbDetail, _) = GetMethodControls(methodId);
+                InspectionDraft.SetField(draft, "METHOD" + methodId, rbOk.Checked ? "1" : rbNg.Checked ? "0" : null);
+                InspectionDraft.SetField(draft, "DETAIL" + methodId, tbDetail.Text);
+            }
+
+            DataTable packingSize = draft.Tables.Add(DraftPackingSizeTable);
+            packingSize.Columns.Add("VALUE", typeof(string));
+            packingSize.Columns.Add("PACK_COUNT", typeof(string));
+            foreach (DataGridViewRow row in GetEnteredPackingSizeRows())
+            {
+                packingSize.Rows.Add(row.Cells["VALUE"].Value?.ToString(), row.Cells["PACK_COUNT"].Value?.ToString());
+            }
+
+            DataTable lotNumbers = draft.Tables.Add(DraftLotNoTable);
+            lotNumbers.Columns.Add("LOT_NO", typeof(string));
+            for (int i = 0; dtg_lot_no.Rows.Count > 0 && i < dtg_lot_no.Columns.Count; i++)
+            {
+                string lotNo = dtg_lot_no[i, 0].Value?.ToString();
+                if (!string.IsNullOrWhiteSpace(lotNo))
+                {
+                    lotNumbers.Rows.Add(lotNo);
+                }
+            }
+
+            return draft;
+        }
+
+        private bool SaveDraft(bool showMessage)
+        {
+            DataSet draft = BuildDraft();
+
+            if (!InspectionDraft.Save(conQA, propQA, draft, employee.EMP_CODE))
+            {
+                return false;
+            }
+
+            _recordedDraft = propQA.DRAFT_DATA;
+            UpdateRecordButtonMode();
+
+            if (showMessage)
+            {
+                string problem = FindPackingProblem();
+
+                CustomMsgBoxBase.ShowCustomMessageBox(
+                    "Save ข้อมูลที่กรอกไว้แล้ว กลับมาทำต่อได้" + (problem == null
+                        ? "\nข้อมูลครบแล้ว กด " + InspectionDraft.ContinueText + " เมื่อพร้อมส่งผล"
+                        : "\n" + problem),
+                    "Save",
+                    CustomMsgBoxBase.MessageBoxIconType.OK);
+            }
+
+            return true;
+        }
+
+        // กดเมนูอื่น / Logout โดยไม่ผ่านปุ่มย้อนกลับ : NavigationService เรียกก่อน Dispose หน้านี้ (IInspectionScreen)
+        // ทำแบบเดียวกับ bt_back_Click คือตั้ง Not Finished yet + ปลดล็อกใบ
+        // ไม่เก็บร่างให้ ค่าที่ยังไม่ได้กด Record Data จะทิ้งไป (user เลือกให้เก็บเฉพาะตอนกด Record Data)
+        public void LeaveScreen()
+        {
+            // Admin ด้วย : ReleaseReport แตะเฉพาะใบที่ยัง Working และล็อกเป็นของเครื่องนี้ ใบที่ Admin เปิดมาตัดสิน NG (Pending) ไม่โดน
+            InspectionDraft.ReleaseReport(conQA, propQA);
+        }
+
+        // ออกจากหน้า (ย้อนกลับ / Home / Logout) : ค่าบนจอไม่ตรงกับตอนเปิดหน้าหรือตอนกด Record Data ครั้งล่าสุด = ถามก่อน
+        // false = ผู้ตรวจกด Cancel อยู่หน้าเดิม ค่าที่กรอกยังอยู่บนจอ
+        // Admin ที่เปิดมาตัดสินงาน NG ไม่ได้ใช้ร่าง (_recordedDraft ว่าง) ออกได้เลยเหมือนเดิม
+        public bool ConfirmLeave()
+        {
+            if (!_draftEnabled || _recordedDraft == null) return true;
+
+            // ช่องที่กำลังพิมพ์อยู่ให้ลงตารางก่อน handler เดิมจะได้คิด CALVALUE / ตัวพิมพ์ใหญ่ Lot No. ให้
+            dtg_packing_size.EndEdit();
+            dtg_lot_no.EndEdit();
+
+            // ช่องที่ยัง commit ไม่ได้ (ค่าไม่ผ่าน CellValidating) ก็คือพิมพ์ค้างไว้
+            bool unrecorded = dtg_packing_size.IsCurrentCellDirty || dtg_lot_no.IsCurrentCellDirty
+                || InspectionDraft.Serialize(BuildDraft()) != _recordedDraft;
+
+            return !unrecorded || InspectionDraft.ConfirmLeaveUnrecorded(this, "Packing");
+        }
+
+        private void UpdateRecordButtonMode()
+        {
+            InspectionDraft.ApplySplitButtons(bt_save, bt_saveContinue, FindPackingProblem() == null);
+        }
+
+        /// <summary>
+        /// เงื่อนไขเดียวกับ ValidateAllData + UpdateStatusBasedOnJudgments แต่ไม่เด้งข้อความ
+        /// ใช้ตัดสินว่าปุ่มเป็น Record Data หรือ Save and Continue และบอกผู้ตรวจหลัง Save ว่ายังขาดอะไร
+        /// ตอนกด Save and Continue ตัวตรวจเดิมยังทำงานครบทุกข้อ ถ้าตรงนี้หลุดอะไรไป ตัวเดิมยังกันไว้
+        /// คืน null ถ้าพร้อมบันทึกผลแล้ว
+        /// </summary>
+        private string FindPackingProblem()
+        {
+            bool allOk = rb_ok_method1.Checked && rb_ok_method2.Checked && rb_ok_method3.Checked;
+            bool someNg = rb_ng_method1.Checked || rb_ng_method2.Checked || rb_ng_method3.Checked;
+
+            // บันทึกได้ 2 แบบ : OK ครบ 3 ข้อ หรือมีข้อที่ NG (ข้อถัดจาก NG ไม่ต้องตรวจต่อ)
+            if (!allOk && !someNg)
+            {
+                return "ยังเลือก OK / NG ไม่ครบ";
+            }
+
+            for (int methodId = 1; methodId <= 3; methodId++)
+            {
+                var (_, rbNg, tbDetail, _) = GetMethodControls(methodId);
+                if (rbNg.Checked && string.IsNullOrWhiteSpace(tbDetail.Text))
+                {
+                    return $"ข้อ {methodId} เลือก NG แต่ยังไม่ได้กรอกรายละเอียด";
+                }
+            }
+
+            if (rb_ng_method1.Checked && (rb_ok_method2.Checked || rb_ok_method3.Checked))
+            {
+                return "ข้อ 1 เป็น NG แล้ว ข้อ 2-3 เลือก OK ไม่ได้";
+            }
+
+            if (rb_ng_method2.Checked && rb_ok_method3.Checked)
+            {
+                return "ข้อ 2 เป็น NG แล้ว ข้อ 3 เลือก OK ไม่ได้";
+            }
+
+            if (rb_ok_method3.Checked)
+            {
+                if (!HasCompletePackingSizeRows())
+                {
+                    return "ยังกรอก Packing Size ไม่ครบ";
+                }
+
+                int totalValue = GetPackingSizeTotal();
+                if (!int.TryParse(propQA.Qty, out int lotSize) || totalValue != lotSize)
+                {
+                    return $"ผลรวม Packing Size {totalValue} ยังไม่เท่ากับ Lot Size ({propQA.Qty})";
+                }
+            }
+
+            if (rb_ok_method3.Checked || rb_ng_method3.Checked)
+            {
+                return FindLotNoProblem();
+            }
+
+            return null;
+        }
+
+        // ตาราง LOT NO Check เพิ่มช่องใหม่ให้ทุกครั้งที่กรอกช่องสุดท้าย และไม่มีที่ไหนบอกว่าใบนี้ต้องมีกี่ Lot
+        // โปรแกรมจึงนับว่าครบตั้งแต่มี Lot แรก ให้ผู้ตรวจทวนรายการ Lot ในกล่องยืนยันของปุ่ม Save and Continue เองก่อนส่งผล
+        // ยังไม่ครบก็กด Cancel แล้วกรอกต่อได้ (Cancel = อยู่หน้าเดิม ไม่บันทึก)
+        private string BuildContinueQuestion()
+        {
+            const string Question = "ต้องการบันทึกผลและไปขั้นตอนถัดไปหรือไม่?";
+            const int MaxShown = 20;
+
+            List<string> lotNumbers = new List<string>();
+            for (int i = 0; dtg_lot_no.Rows.Count > 0 && i < dtg_lot_no.Columns.Count; i++)
+            {
+                string lotNo = dtg_lot_no[i, 0].Value?.ToString()?.Trim();
+                if (!string.IsNullOrWhiteSpace(lotNo))
+                {
+                    lotNumbers.Add(lotNo);
+                }
+            }
+
+            // ข้อ 3 ไม่ได้ตรวจ (NG ตั้งแต่ข้อ 1-2) จะไม่มี Lot ให้ทวน
+            if (lotNumbers.Count == 0)
+            {
+                return Question;
+            }
+
+            string shown = string.Join(", ", lotNumbers.Take(MaxShown));
+            if (lotNumbers.Count > MaxShown)
+            {
+                shown += $" และอีก {lotNumbers.Count - MaxShown} Lot";
+            }
+
+            return $"LOT NO ที่จะบันทึก {lotNumbers.Count} Lot : {shown}{Environment.NewLine}{Question}";
+        }
+
+        // เงื่อนไข Lot No. เดียวกับ ValidateAllData : ช่องแรกต้องมีค่า และห้ามเว้นช่องว่างคั่นกลาง
+        private string FindLotNoProblem()
+        {
+            if (dtg_lot_no.Rows.Count == 0 || dtg_lot_no.Columns.Count == 0
+                || string.IsNullOrWhiteSpace(GetCellValueAfterEdit(dtg_lot_no, dtg_lot_no[0, 0])))
+            {
+                return "ยังไม่ได้กรอก Lot No.";
+            }
+
+            bool foundNonEmpty = false;
+            for (int i = 0; i < dtg_lot_no.Columns.Count - 1; i++)
+            {
+                string cellValue = GetCellValueAfterEdit(dtg_lot_no, dtg_lot_no[i, 0]);
+                if (string.IsNullOrWhiteSpace(cellValue) && foundNonEmpty)
+                {
+                    return $"Lot No. คอลัมน์ {dtg_lot_no.Columns[i].HeaderText} ว่างอยู่ แต่มีข้อมูลในคอลัมน์ถัดไป";
+                }
+
+                if (!string.IsNullOrWhiteSpace(cellValue))
+                {
+                    foundNonEmpty = true;
+                }
+            }
+
+            return null;
         }
 
         private void LoadPackingCheckData()
@@ -136,21 +479,7 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 }
                 if (lotNumbers.Any())
                 {
-                    dtg_lot_no.Columns.Clear();
-                    for (int i = 0; i < lotNumbers.Count; i++)
-                    {
-                        dtg_lot_no.Columns.Add("LOT_NO" + (i + 1), "LOT_NO" + (i + 1));
-                    }
-                    if (dtg_lot_no.Rows.Count == 0)
-                    {
-                        dtg_lot_no.Rows.Add();
-                    }
-                    for (int i = 0; i < lotNumbers.Count && i < dtg_lot_no.Columns.Count; i++)
-                    {
-                        dtg_lot_no[i, 0].Value = lotNumbers[i].ToUpper();
-                    }
-                    int newColumnIndex = dtg_lot_no.Columns.Count;
-                    dtg_lot_no.Columns.Add("LOT_NO" + (newColumnIndex + 1), "LOT_NO" + (newColumnIndex + 1));
+                    ShowLotNumbers(lotNumbers);
                 }
                 else
                 {
@@ -165,6 +494,26 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 dtg_lot_no.Columns[0].Name = "LOT_NO1";
                 dtg_lot_no.Rows.Add();
             }
+        }
+
+        // 1 คอลัมน์ต่อ 1 Lot แล้วเผื่อคอลัมน์ว่างท้ายสุดไว้ให้กรอก Lot ถัดไป
+        private void ShowLotNumbers(List<string> lotNumbers)
+        {
+            dtg_lot_no.Columns.Clear();
+            for (int i = 0; i < lotNumbers.Count; i++)
+            {
+                dtg_lot_no.Columns.Add("LOT_NO" + (i + 1), "LOT_NO" + (i + 1));
+            }
+            if (dtg_lot_no.Rows.Count == 0)
+            {
+                dtg_lot_no.Rows.Add();
+            }
+            for (int i = 0; i < lotNumbers.Count && i < dtg_lot_no.Columns.Count; i++)
+            {
+                dtg_lot_no[i, 0].Value = lotNumbers[i].ToUpper();
+            }
+            int newColumnIndex = dtg_lot_no.Columns.Count;
+            dtg_lot_no.Columns.Add("LOT_NO" + (newColumnIndex + 1), "LOT_NO" + (newColumnIndex + 1));
         }
 
         private void UpdateMethodUI(int methodId, string judgment, object detailJudge)
@@ -229,8 +578,8 @@ namespace RawMat.ViewsMaterial.PackingCheck
             int totalValue = 0;
             foreach (DataGridViewRow row in GetEnteredPackingSizeRows())
             {
-                int.TryParse(row.Cells["VALUE"].Value?.ToString(), out int value);
-                int.TryParse(row.Cells["PACK_COUNT"].Value?.ToString(), out int pack);
+                int.TryParse(GetCellValueAfterEdit(dtg_packing_size, row.Cells["VALUE"]), out int value);
+                int.TryParse(GetCellValueAfterEdit(dtg_packing_size, row.Cells["PACK_COUNT"]), out int pack);
                 totalValue += value * pack;
             }
 
@@ -262,10 +611,18 @@ namespace RawMat.ViewsMaterial.PackingCheck
             return true;
         }
 
-        private static bool HasPackingSizeCellValue(DataGridViewRow row, string columnName)
+        private bool HasPackingSizeCellValue(DataGridViewRow row, string columnName)
         {
-            object value = row.Cells[columnName].Value;
-            return value != null && !string.IsNullOrWhiteSpace(value.ToString());
+            return !string.IsNullOrWhiteSpace(GetCellValueAfterEdit(dtg_packing_size, row.Cells[columnName]));
+        }
+
+        // ค่าที่ช่องนี้จะมีหลังกด Enter : ช่องที่กำลังพิมพ์อยู่ใช้ค่าที่พิมพ์ ปุ่ม Save / Save and Continue จะได้เปลี่ยนทันที
+        // ตอนกดปุ่มบันทึก ตารางออกจากโหมดแก้ไขไปแล้ว จึงได้ค่าในเซลล์ตามเดิม
+        private static string GetCellValueAfterEdit(DataGridView grid, DataGridViewCell cell)
+        {
+            return InspectionDraft.TryGetPendingEdit(grid, out DataGridViewCell editingCell, out string editingValue) && cell == editingCell
+                ? editingValue
+                : cell.Value?.ToString();
         }
 
         private void bt_save_Click(object sender, EventArgs e)
@@ -300,6 +657,41 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 return;
             }
 
+            // Record Data : เก็บร่างอย่างเดียว ไม่ตัดสินผล ไม่เปลี่ยนสถานะใบ อยู่หน้าเดิม
+            // ส่งผลใช้ปุ่ม Save and Continue ข้าง ๆ (bt_saveContinue_Click)
+            SaveDraft(true);
+        }
+
+        // Save and Continue : แยกเป็นอีกปุ่มจาก Record Data (user ขอ 2026-09-30)
+        // Lot No. เพิ่มได้เรื่อย ๆ โปรแกรมรู้ไม่ได้ว่าผู้ตรวจกรอก Lot ครบหรือยัง
+        // เดิมใช้ปุ่มเดียวที่สลับเองตามความครบ พอข้ออื่นครบปุ่มก็กลายเป็น Save and Continue ทั้งที่ยังพิมพ์ Lot ไม่เสร็จ
+        private void bt_saveContinue_Click(object sender, EventArgs e)
+        {
+            var parentForm = this.FindForm() as frmMain;
+            tb_detail_method1.Text = tb_detail_method1.Text.Trim();
+            tb_detail_method2.Text = tb_detail_method2.Text.Trim();
+            tb_detail_method3.Text = tb_detail_method3.Text.Trim();
+            propQA.process = "Packing_Check";
+            propQA.EMP_ID = employee.EMP_CODE;
+
+            // ยังไม่ครบ (ปุ่มเป็นสีเทา) : ไม่บันทึกอะไร บอกว่ายังขาดอะไร
+            string problem = FindPackingProblem();
+            if (problem != null)
+            {
+                InspectionDraft.ShowNotComplete(problem);
+                return;
+            }
+
+            // ถามก่อนส่งผล พร้อมรายการ Lot No. ที่จะบันทึก ให้ผู้ตรวจทวนว่ากรอก Lot ครบแล้วจริง
+            // Cancel = อยู่หน้าเดิม ไม่บันทึกอะไร (จะเก็บไว้ทำต่อกด Record Data)
+            if (!InspectionDraft.ConfirmContinue(this, "Packing", BuildContinueQuestion()))
+            {
+                return;
+            }
+
+            // เก็บร่างล่าสุดไว้ก่อนส่งผล ถ้าบันทึกพังกลางทางค่าที่กรอกยังอยู่
+            SaveDraft(false);
+
             // Validation ข้อมูลทั้งหมดก่อน
             if (!ValidateAllData())
             {
@@ -312,6 +704,9 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 // จะไม่มีการเปลี่ยนหน้า และไม่มีการบันทึก
                 return;
             }
+
+            // ผลจริงลง db_packing_check แล้ว ร่างไม่ต้องใช้อีก
+            conQA.DeleteInspectionDraft(propQA);
 
             //if (rb_ng_method1.Checked)
             //{
@@ -1332,7 +1727,10 @@ namespace RawMat.ViewsMaterial.PackingCheck
                         totalValue += calValue;
                     }
                 }
-                if (employee.EMP_LEVEL != "1" && totalValue != UInt16.Parse(propQA.Qty))
+                // ต้องกรอก Packing Size ให้ผลรวมเท่ากับ Lot Size ก่อนถึงจะติ๊ก OK ได้ ทุกคนรวม Admin
+                // ยกเว้น Admin ที่เปิดมาตัดสินงาน NG (อนุมัติข้อที่ผู้ตรวจให้ NG ไว้ ซึ่งอาจไม่ได้กรอกจำนวน)
+                // เดิมยกเว้น Admin ทุกกรณี Admin ที่ตรวจงานเองเลยติ๊ก OK ได้ทั้งที่ตารางว่าง
+                if (!IsAdminPendingReview() && totalValue != UInt16.Parse(propQA.Qty))
                 {
                     rb_ok_method3.Checked = false;
                     MessageBox.Show($"ผลรวม {totalValue} ไม่เท่ากับ LotSize ({propQA.Qty})", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1469,6 +1867,9 @@ namespace RawMat.ViewsMaterial.PackingCheck
 
         private void bt_back_Click(object sender, EventArgs e)
         {
+            // ไม่เก็บร่างให้เอง (เก็บเฉพาะตอนกด Record Data) แต่ถามก่อนถ้ามีค่าที่ยังไม่ได้ Record
+            if (!ConfirmLeave()) return;
+
             if (employee.EMP_LEVEL != "1")
             {
                 propQA.inProcStatus = ((int)ProcStatus.Unfinished).ToString();
@@ -1484,6 +1885,13 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 }
 
 
+            }
+            else
+            {
+                // Admin ที่เข้าจากหน้าเลือกใบปกติก็ถูกตั้ง Working + ล็อกเหมือนพนักงาน (userControlSelectPackingCheck)
+                // เดิมปุ่มนี้ข้าม Admin ไป ใบเลยค้าง Working ทั้งที่ไม่มีใครทำ (QA26-0005)
+                // คืนเฉพาะใบที่ยัง Working และล็อกเป็นของเครื่องนี้ ใบที่เปิดมาตัดสิน NG จากหน้า Pending ไม่ได้ถูกตั้ง Working จึงไม่โดน
+                InspectionDraft.ReleaseReport(conQA, propQA);
             }
             bt_rec_pack_Click();
         }
