@@ -71,12 +71,24 @@ namespace RawMat.ViewsMaterial.AppearCheck
         private bool isNgModeActive = false;
         private DataTable ngModeList;
 
+        // พื้นที่แสดงรูป Appearance: ถ้ามีรูป Cavity ใช้ช่องล่าง, ถ้าไม่มีใช้ตั้งแต่ใต้หัวข้อจนถึงก่อน gb_pack
+        private static readonly Rectangle AppearAreaWithCavity = new Rectangle(96, 428, 1329, 446);
+        private static readonly Rectangle AppearAreaNoCavity = new Rectangle(96, 142, 1337, 732);
+
+        private void FitAppearImage(bool hasCavity)
+        {
+            imgCls.FitPictureBoxToImage(picbox_Appear, hasCavity ? AppearAreaWithCavity : AppearAreaNoCavity);
+        }
+
         public userControlAppear()
         {
 
             InitializeComponent();
             ngModeList = NgModeHelper.LoadNgModeList();
             ClearNgModeSummaryLabel();
+
+            imgCls.EnableClickToPreview(picbox_Appear, "Appearance");
+            imgCls.EnableClickToPreview(picbox_cavity, "Cavity");
 
             // กันเคสที่ออกจากหน้านี้โดยไม่ผ่าน bt_Appear_Click (เช่น กด Home / logout
             // ซึ่ง NavigationService จะ dispose control ทิ้งเลย) ให้หยุด timer เสมอ
@@ -346,12 +358,10 @@ namespace RawMat.ViewsMaterial.AppearCheck
                 else
                 {
                     gb_cavity.Visible = false;
-
-                    picbox_Appear.Location = new System.Drawing.Point(286, 113);
-                    picbox_Appear.Size = new Size(807, 442);
                 }
 
                 picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
+                FitAppearImage(Convert.ToInt32(propQA.CAVITY_QTY) != 0);
                 gb_pack.Enabled = true;
                 gb_input.Enabled = false;
 
@@ -363,9 +373,8 @@ namespace RawMat.ViewsMaterial.AppearCheck
             {
                 gb_cavity.Visible = false;
 
-                picbox_Appear.Location = new System.Drawing.Point(286, 113);
-                picbox_Appear.Size = new Size(807, 442);
                 picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
+                FitAppearImage(false);
 
                 gb_pack.Enabled = true;
                 gb_input.Enabled = false;

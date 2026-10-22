@@ -29,6 +29,9 @@ namespace RawMat.ViewsMaterial.AppearCheck
         {
             InitializeComponent();
             ConfigurePendingGrid();
+
+            imgCls.EnableClickToPreview(picbox_Appear, "Appearance");
+            imgCls.EnableClickToPreview(picbox_cavity, "Cavity");
         }
 
         private void userControlAppearPending_Load(object sender, EventArgs e)
@@ -101,17 +104,23 @@ namespace RawMat.ViewsMaterial.AppearCheck
 
         private void LoadInspectionImages()
         {
-            if (int.TryParse(propQA.CAVITY_QTY, out int cavityQty) && cavityQty > 0)
+            bool hasCavity = int.TryParse(propQA.CAVITY_QTY, out int cavityQty) && cavityQty > 0;
+            if (hasCavity)
             {
                 picbox_cavity.Image = imgCls.LoadCavityImage(propQA.M_CODE);
             }
             else
             {
                 gb_cavity.Visible = false;
-                picbox_Appear.Location = new Point(72, 115);
             }
 
             picbox_Appear.Image = imgCls.LoadAppearImage(propQA.M_CODE);
+
+            // ไม่มีรูป Cavity ให้รูป Appearance ใช้พื้นที่ของ Cavity ด้วย (ถึงก่อน dtg_ngMode)
+            Rectangle area = hasCavity
+                ? new Rectangle(72, 332, 997, 272)
+                : new Rectangle(72, 115, 1003, 489);
+            imgCls.FitPictureBoxToImage(picbox_Appear, area);
         }
 
         private void LoadPendingData()

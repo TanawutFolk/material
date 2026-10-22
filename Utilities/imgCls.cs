@@ -685,6 +685,63 @@ namespace RawMat.Utilities
             }
         }
 
+        // ปรับขนาด PictureBox ให้ใหญ่ที่สุดเท่าที่ใส่ในกรอบ area ได้ โดยคงสัดส่วนรูป
+        // (คล้าย CSS max-width/max-height + height:auto) แล้ววางกึ่งกลางแนวนอน
+        public static void FitPictureBoxToImage(PictureBox pictureBox, Rectangle area)
+        {
+            Image img = pictureBox.Image;
+            if (img == null || img.Width <= 0 || img.Height <= 0)
+            {
+                pictureBox.Bounds = area;
+                return;
+            }
+
+            double scale = Math.Min((double)area.Width / img.Width, (double)area.Height / img.Height);
+            int width = Math.Max(1, (int)(img.Width * scale));
+            int height = Math.Max(1, (int)(img.Height * scale));
+
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox.Bounds = new Rectangle(area.X + (area.Width - width) / 2, area.Y, width, height);
+        }
+
+        // คลิกที่รูปเพื่อเปิดดูแบบเต็มจอ (คลิกซ้ำหรือกด Esc เพื่อปิด)
+        public static void EnableClickToPreview(PictureBox pictureBox, string title)
+        {
+            pictureBox.Cursor = Cursors.Hand;
+            pictureBox.Click += (s, e) => ShowImagePreview(pictureBox.Image, title);
+        }
+
+        public static void ShowImagePreview(Image image, string title)
+        {
+            if (image == null) return;
+
+            using (Form preview = new Form())
+            {
+                preview.Text = title + "  (คลิกที่รูป หรือกด Esc เพื่อปิด)";
+                preview.WindowState = FormWindowState.Maximized;
+                preview.StartPosition = FormStartPosition.CenterScreen;
+                preview.BackColor = Color.Black;
+                preview.KeyPreview = true;
+                preview.ShowInTaskbar = false;
+
+                PictureBox pb = new PictureBox
+                {
+                    Dock = DockStyle.Fill,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    Image = image,
+                    Cursor = Cursors.Hand
+                };
+                pb.Click += (s, e) => preview.Close();
+                preview.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) preview.Close(); };
+                preview.Controls.Add(pb);
+
+                preview.ShowDialog();
+
+                // รูปเป็นของ PictureBox หน้าหลัก ห้าม dispose ไปพร้อมฟอร์ม
+                pb.Image = null;
+            }
+        }
+
         public PictureBox LoadEmployeeImage(string fileName)
         {
             Size pictureBoxSize = new Size(100, 100);
