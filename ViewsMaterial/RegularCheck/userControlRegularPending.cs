@@ -346,15 +346,6 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
         private void dtg_regular_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            // cavity เดียวกับแถวบนไม่ต้องโชว์ชื่อซ้ำ (E, E, F, F -> E, , F, ) แค่ตอนแสดง ข้อมูลจริงยังมีครบทุกแถว
-            if (dtg_regular.Columns[e.ColumnIndex].Name == "CAVITY_NAME" && e.RowIndex > 0
-                && Equals(dtg_regular.Rows[e.RowIndex - 1].Cells[e.ColumnIndex].Value, e.Value))
-            {
-                e.Value = string.Empty;
-                e.FormattingApplied = true;
-                return;
-            }
-
             if (dtg_regular.Columns[e.ColumnIndex].Name == "VALUE")
             {
                 if (dtg_regular.Rows[e.RowIndex].Cells["CRITERIA_MIN"].Value != null &&
