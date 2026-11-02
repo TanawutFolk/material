@@ -873,7 +873,8 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
             foreach (DataRow row in propQA.dtCavity.Rows)
             {
-                if (!int.TryParse(row["SAMPLING_QTY"]?.ToString(), out int qty) || qty < 0)
+                if (!int.TryParse(row["SAMPLING_QTY"]?.ToString(), out int qty) || qty < 0
+                    || (IsSplitPieceMCode() && qty != SplitPieceQtyPerCavity))
                 {
                     return false;
                 }
@@ -1023,6 +1024,14 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
                 if (int.TryParse(row.Cells["SAMPLING_QTY"].Value?.ToString(), out int qty) && qty >= 0)
                 {
+                    // ชิ้นที่ 1 กับ 2 วัดคนละจุด ถ้า cavity ไหนไม่ใช่ 2 ชิ้นจะได้จุดวัดไม่ครบหรือเกิน
+                    if (IsSplitPieceMCode() && qty != SplitPieceQtyPerCavity)
+                    {
+                        MessageBox.Show($"{SplitPieceMCode} ต้องกรอก {SplitPieceQtyPerCavity} ชิ้นทุก Cavity\n" +
+                            "(ชิ้นที่ 1 ผ่าแนวตั้ง / ชิ้นที่ 2 ผ่าแนวนอน)", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                     totalQty += qty;
                 }
                 else
@@ -1055,6 +1064,35 @@ namespace RawMat.ViewsMaterial.RegularCheck
             ApplyDraftValues();
 
             UpdateRecordButtonMode();
+        }
+
+        // SHIN005-01 วัดแบบผ่าชิ้นงาน แต่ละ cavity เก็บ 2 ชิ้น แต่ละชิ้นวัดคนละชุดจุด (QA อธิบาย 2026-11-02)
+        //   ชิ้นที่ 1 : วัดทั้งชิ้น ⑨⑩⑪ แล้วผ่าแนวตั้งวัด ⑥⑦⑬ ด้าน PET/Y  = POINT_ORDER 1-9
+        //   ชิ้นที่ 2 : ชิ้นใหม่ผ่าแนวนอน วัด ⑧⑫ ด้านบน/ล่าง             = POINT_ORDER 10-13
+        // ลำดับจุดอ้างอิง DatabaseScripts/20260826_fix_shin005_01_regular_points.sql
+        // มี M-Code เดียวที่วัดแบบนี้ จึงผูกไว้ตรงนี้แทนการเพิ่มคอลัมน์ใน master
+        private const string SplitPieceMCode = "SHIN005-01";
+        private const int SplitPieceQtyPerCavity = 2;
+        private const int SplitPieceFirstPieceLastPoint = 9;
+
+        private bool IsSplitPieceMCode()
+        {
+            return string.Equals(propQA.M_CODE?.Trim(), SplitPieceMCode, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // pieceNo = ชิ้นที่เท่าไรของ cavity นั้น นับจาก 1
+        private bool IsPointMeasuredOnPiece(DataRow measureRow, int pieceNo)
+        {
+            if (!IsSplitPieceMCode())
+            {
+                return true;
+            }
+
+            int pointOrder = Convert.ToInt32(measureRow["POINT_ORDER"]);
+
+            return pieceNo == 1
+                ? pointOrder <= SplitPieceFirstPieceLastPoint
+                : pointOrder > SplitPieceFirstPieceLastPoint;
         }
 
         private bool RequiresCavityInput()
@@ -1215,6 +1253,11 @@ namespace RawMat.ViewsMaterial.RegularCheck
 
                         foreach (DataRow measureRow in propQA.dtRegEq.Rows)
                         {
+                            if (!IsPointMeasuredOnPiece(measureRow, i + 1))
+                            {
+                                continue;
+                            }
+
                             dtAllSum.Rows.Add(
                                 name,
                                 qtySampNo,
