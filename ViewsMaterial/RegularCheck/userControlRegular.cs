@@ -1242,14 +1242,23 @@ namespace RawMat.ViewsMaterial.RegularCheck
             }
             else
             {
+                int cavityIndex = 0;
+                int cavityCount = dtgCavity.Rows.Cast<DataGridViewRow>().Count(r => !r.IsNewRow);
+
                 foreach (DataGridViewRow row in dtgCavity.Rows)
                 {
+                    if (row.IsNewRow) continue;
+
                     string name = row.Cells["CAVITY_NAME"].Value.ToString();
                     int qty = Convert.ToInt32(row.Cells["SAMPLING_QTY"].Value);
 
                     for (int i = 0; i < qty; i++)
                     {
-                        int qtySampNo = qtySampCounter++;
+                        // SHIN005-01 นับตามลำดับที่หยิบชิ้นงาน : รอบแรก E F G H = 1-4 (ผ่าแนวตั้ง) รอบสอง = 5-8 (ผ่าแนวนอน)
+                        // M-Code อื่นนับครบทีละ cavity : E E F F ... = 1 2 3 4 ...
+                        int qtySampNo = IsSplitPieceMCode()
+                            ? (i * cavityCount) + cavityIndex + 1
+                            : qtySampCounter++;
 
                         foreach (DataRow measureRow in propQA.dtRegEq.Rows)
                         {
@@ -1275,6 +1284,8 @@ namespace RawMat.ViewsMaterial.RegularCheck
                             );
                         }
                     }
+
+                    cavityIndex++;
                 }
             }
 
