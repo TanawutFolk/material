@@ -1198,9 +1198,13 @@ namespace RawMat.ViewsMaterial.PackingCheck
                         //propQA.dtDimSamp = conQA.DimensionSampling(propQA);
                         propQA.dtAppSamp = conQA.AppearSampling(propQA);
 
-                        if (propQA.dtAppSamp == null)
+                        if (propQA.dtAppSamp == null || propQA.dtAppSamp.Rows.Count == 0)
                         {
-                            MessageBox.Show("เกิดข้อผิดพลาดไม่พบ Appearance Sampling เพื่อจำนำไป คำนวณ packing size", "ข้อผิดพลาด", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(
+                                "ไม่พบการตั้งค่า Appearance Sampling สำหรับ M-Code นี้ กรุณาตรวจสอบ M-Code Inspection Setting",
+                                "ข้อผิดพลาด",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                             return false;
                         }
                         else
@@ -1959,5 +1963,4 @@ namespace RawMat.ViewsMaterial.PackingCheck
 
     }
 }
-
 

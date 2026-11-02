@@ -80,7 +80,7 @@
             this.lb_top.ForeColor = System.Drawing.Color.DarkRed;
             this.lb_top.Location = new System.Drawing.Point(0, 0);
             this.lb_top.Name = "lb_top";
-            this.lb_top.Size = new System.Drawing.Size(1102, 38);
+            this.lb_top.Size = new System.Drawing.Size(1098, 38);
             this.lb_top.TabIndex = 32;
             this.lb_top.Text = "Appearance Check";
             this.lb_top.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -171,7 +171,7 @@
             this.picbox_Appear.Image = global::RawMat.Properties.Resources.SHIN005;
             this.picbox_Appear.Location = new System.Drawing.Point(72, 332);
             this.picbox_Appear.Name = "picbox_Appear";
-            this.picbox_Appear.Size = new System.Drawing.Size(997, 688);
+            this.picbox_Appear.Size = new System.Drawing.Size(997, 550);
             this.picbox_Appear.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picbox_Appear.TabIndex = 80;
             this.picbox_Appear.TabStop = false;
@@ -219,7 +219,7 @@
             this.gb_ngMode.Controls.Add(this.dtg_ngMode);
             this.gb_ngMode.Enabled = false;
             this.gb_ngMode.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_ngMode.Location = new System.Drawing.Point(721, 1058);
+            this.gb_ngMode.Location = new System.Drawing.Point(715, 913);
             this.gb_ngMode.Name = "gb_ngMode";
             this.gb_ngMode.Size = new System.Drawing.Size(381, 543);
             this.gb_ngMode.TabIndex = 85;
@@ -292,7 +292,7 @@
             this.gb_input.Enabled = false;
             this.gb_input.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gb_input.ForeColor = System.Drawing.Color.Blue;
-            this.gb_input.Location = new System.Drawing.Point(6, 1371);
+            this.gb_input.Location = new System.Drawing.Point(0, 1226);
             this.gb_input.Name = "gb_input";
             this.gb_input.Size = new System.Drawing.Size(709, 547);
             this.gb_input.TabIndex = 87;
@@ -426,7 +426,7 @@
             this.gb_pack.Controls.Add(this.bt_select_packing_size_appear);
             this.gb_pack.Controls.Add(this.dtg_packing_size_appear);
             this.gb_pack.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gb_pack.Location = new System.Drawing.Point(12, 1056);
+            this.gb_pack.Location = new System.Drawing.Point(6, 911);
             this.gb_pack.Name = "gb_pack";
             this.gb_pack.Size = new System.Drawing.Size(703, 309);
             this.gb_pack.TabIndex = 86;
@@ -489,7 +489,7 @@
             this.Controls.Add(this.lb_top);
             this.Controls.Add(this.gb_input);
             this.Name = "userControlAppear";
-            this.Size = new System.Drawing.Size(1098, 1806);
+            this.Size = new System.Drawing.Size(1098, 1790);
             this.Load += new System.EventHandler(this.userControlAppear_Load);
             this.VisibleChanged += new System.EventHandler(this.userControlAppear_VisibleChanged);
             this.Leave += new System.EventHandler(this.userControlAppear_Leave);

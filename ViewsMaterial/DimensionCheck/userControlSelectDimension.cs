@@ -247,7 +247,9 @@ namespace RawMat.ViewsMaterial.DimensionCheck
                         }
                         else if (hasCavity && cavityNames.Count < cavityQty)
                         {
-                            MessageBox.Show("จำนวน Cavity_Name ไม่ตรงกับจำนวน Cavity ของ M-CODE : " + propQA.M_CODE);
+                            MessageBox.Show(
+                                "Cavity Name ของ M-Code " + propQA.M_CODE + " มีไม่ครบตาม Cavity Qty" + Environment.NewLine +
+                                "กรุณาไปที่ Setting > M-Code Inspection Setting > Dimension แล้วระบุให้ครบ เช่น A,B,C,D");
                             return;
                         }
                         else if ((propQA.SAMPLING_TYPE != "3" && propQA.SAMPLING_TYPE != "1") && (propQA.SAMPLING_QTY == "0" || propQA.SAMPLING_QTY == string.Empty))

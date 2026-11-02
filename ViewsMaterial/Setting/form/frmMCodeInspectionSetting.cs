@@ -639,6 +639,7 @@ namespace RawMat.ViewsMaterial.Setting
                 if (confirm == DialogResult.No) return false;
             }
 
+            if (!ValidateEnabledCheckSettings()) return false;
             if (!ValidateEquipmentGrid(dtgRegularEquipment, "Regular Equipment Set")) return false;
             if (!ValidateEquipmentGrid(dtgFunctionEquipment, "Function Equipment Set")) return false;
             if (!ValidateEquipmentGrid(dtgDimensionEquipment, "Dimension Equipment Set")) return false;
@@ -659,6 +660,84 @@ namespace RawMat.ViewsMaterial.Setting
             if (!ConfirmJudgeTypeMismatch(dtgDimensionEquipment, "Dimension Equipment Set")) return false;
 
             return true;
+        }
+
+        private bool ValidateEnabledCheckSettings()
+        {
+            var checks = new[]
+            {
+                (Name: "Regular Check", Combo: cboRegularCheck, Tab: _tabs[0]),
+                (Name: "Function Check", Combo: cboFunctionCheck, Tab: _tabs[1]),
+                (Name: "Dimension Check", Combo: cboDimensionCheck, Tab: _tabs[2]),
+                (Name: "Appearance Check", Combo: cboAppearanceCheck, Tab: _tabs[3])
+            };
+
+            foreach (var check in checks)
+            {
+                if (!IsYesComboValue(check.Combo))
+                {
+                    continue;
+                }
+
+                string samplingType = GetComboValue(check.Tab.CboInspectionLevel);
+                if (!int.TryParse(samplingType, out int samplingTypeId) || samplingTypeId <= 0)
+                {
+                    MessageBox.Show($"{check.Name}: กรุณาเลือก Inspection Level", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    check.Tab.CboInspectionLevel.Focus();
+                    return false;
+                }
+
+                string level = check.Tab.CboInspectionLevel.Text.Trim();
+                bool requiresCavity = level.Equals(SAMPLING_CAVITY_TXT, StringComparison.OrdinalIgnoreCase)
+                    || level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase);
+                bool requiresQuantity = level.Equals(SAMPLING_FIX_TXT, StringComparison.OrdinalIgnoreCase)
+                    || level.Equals(SAMPLING_CAVITY_TXT, StringComparison.OrdinalIgnoreCase)
+                    || level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase)
+                    || level.Equals(SAMPLING_PERCENT_TXT, StringComparison.OrdinalIgnoreCase);
+
+                if (requiresCavity
+                    && (!int.TryParse(GetNumberValueFromTextBox(txtQtyCavityTab1), out int cavityQty) || cavityQty <= 0))
+                {
+                    MessageBox.Show($"{check.Name}: กรุณาระบุ Cavity Qty มากกว่า 0", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtQtyCavityTab1.Focus();
+                    return false;
+                }
+
+                if (requiresQuantity
+                    && (!decimal.TryParse(GetSamplingQty(check.Tab), out decimal samplingQty) || samplingQty <= 0))
+                {
+                    MessageBox.Show($"{check.Name}: กรุณาระบุ Inspection Qty มากกว่า 0", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (check.Tab.CboInspectionQty != null && check.Tab.CboInspectionQty.Visible)
+                    {
+                        check.Tab.CboInspectionQty.Focus();
+                    }
+                    else
+                    {
+                        check.Tab.TxtInspectionQty.Focus();
+                    }
+                    return false;
+                }
+
+                if (level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase)
+                    && (!HasPositiveComboValue(check.Tab.CboNormalReduce)
+                        || !HasPositiveComboValue(check.Tab.CboS1)))
+                {
+                    MessageBox.Show($"{check.Name}: กรุณาเลือก Normal/Reduce และ Inspection Level", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    check.Tab.CboNormalReduce.Focus();
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool HasPositiveComboValue(ComboBox combo)
+        {
+            return int.TryParse(GetComboValue(combo), out int value) && value > 0;
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ using static RawMat.Property.QAdataProperty;
 
 namespace RawMat.ViewsMaterial.PackingCheck
 {
-    public partial class userControlPackingPrint : UserControl
+    public partial class userControlPackingPrint : UserControl, IInspectionScreen
     {
         public event Action<UserControl> AddUserControlRequested;
         public event EventHandler BackToARequested;
@@ -275,9 +275,16 @@ namespace RawMat.ViewsMaterial.PackingCheck
                     conQA.InsertPackingCheck(propQA);
                 }
 
-                if (conQA.UpdateStatus(propQA) == true)
+                if (!conQA.UpdateStatus(propQA))
                 {
+                    MessageBox.Show("ไม่สามารถอัปเดตสถานะ Report หลังพิมพ์เสร็จได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
+                if (!conQA.DeleteReportActive(propQA))
+                {
+                    MessageBox.Show("ไม่สามารถปลดล็อก Report หลังพิมพ์เสร็จได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
                 loadstatus();
@@ -497,10 +504,26 @@ namespace RawMat.ViewsMaterial.PackingCheck
             if (conQA.UpdateStatus(propQA) == false)
             {
                 MessageBox.Show("ไม่สามารถเปลี่ยนสถานะกลับเป็น Unfinished ได้");
+                return;
+            }
+
+            if (!conQA.DeleteReportActive(propQA))
+            {
+                MessageBox.Show("ไม่สามารถปลดล็อก Report ได้", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             bt_rec_pack_Click();
+        }
 
+        public bool ConfirmLeave()
+        {
+            return true;
+        }
+
+        public void LeaveScreen()
+        {
+            InspectionDraft.ReleaseReport(conQA, propQA);
         }
 
         private void loadstatus()
