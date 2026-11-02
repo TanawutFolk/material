@@ -347,12 +347,27 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 }
             }
 
-            if (rb_ok_method3.Checked || rb_ng_method3.Checked)
+            // ข้อ 3 OK ต้องมี Lot No. / ข้อ 3 NG ส่ง Pending ได้เลย ผู้ตรวจยังไม่กรอก Lot เมื่อเจอ NG
+            // แต่ถ้ากรอกมาแล้วต้องไม่เว้นช่องคั่นกลาง เพราะ Lot ที่กรอกจะถูกบันทึกด้วย
+            if (rb_ok_method3.Checked || (rb_ng_method3.Checked && HasAnyLotNo()))
             {
                 return FindLotNoProblem();
             }
 
             return null;
+        }
+
+        private bool HasAnyLotNo()
+        {
+            for (int i = 0; dtg_lot_no.Rows.Count > 0 && i < dtg_lot_no.Columns.Count; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(GetCellValueAfterEdit(dtg_lot_no, dtg_lot_no[i, 0])))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // ตาราง LOT NO Check เพิ่มช่องใหม่ให้ทุกครั้งที่กรอกช่องสุดท้าย และไม่มีที่ไหนบอกว่าใบนี้ต้องมีกี่ Lot
@@ -373,7 +388,7 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 }
             }
 
-            // ข้อ 3 ไม่ได้ตรวจ (NG ตั้งแต่ข้อ 1-2) จะไม่มี Lot ให้ทวน
+            // ข้อ 3 ไม่ได้ตรวจ (NG ตั้งแต่ข้อ 1-2) หรือ NG โดยยังไม่กรอก Lot จะไม่มี Lot ให้ทวน
             if (lotNumbers.Count == 0)
             {
                 return Question;
@@ -890,8 +905,8 @@ namespace RawMat.ViewsMaterial.PackingCheck
                 }
             }
 
-            // Validation สำหรับ Lot No. (Method 3)
-            if (rb_ok_method3.Checked == true || rb_ng_method3.Checked == true)
+            // Validation สำหรับ Lot No. (Method 3) เงื่อนไขเดียวกับ FindPackingProblem : NG ยังไม่กรอก Lot ได้
+            if (rb_ok_method3.Checked == true || (rb_ng_method3.Checked == true && HasAnyLotNo()))
             {
                 string firstCellValue = dtg_lot_no[0, 0].Value?.ToString();
 
