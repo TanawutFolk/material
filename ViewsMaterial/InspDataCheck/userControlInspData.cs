@@ -73,6 +73,13 @@ namespace RawMat.ViewsMaterial.InspDataCheck
             string keepDataFolderPath = ConfigurationManager.AppSettings["KeepDataPath"];
             string baseFilePath = System.IO.Path.Combine(keepDataFolderPath, propQA.dtReceiveDate.ToString("yyyy"), propQA.dtReceiveDate.ToString("yyyyMMdd") + "_" + propQA.M_CODE);
 
+            // ใบ Replacement ไฟล์ชื่อ yyyyMMdd_MCODE_Replacement ใบปกติ yyyyMMdd_MCODE (แบบเดียวกับ userControlRecWHPending)
+            // หาเฉพาะชื่อตามประเภทใบ ไม่เจอให้ขึ้นว่าไม่พบ ห้ามไปเปิดไฟล์ของอีกประเภทแทน
+            if (propQA.Invoice_No == "Replacement")
+            {
+                baseFilePath += "_Replacement";
+            }
+
             LoadPreviewDocument(baseFilePath);
 
 
