@@ -689,15 +689,19 @@ namespace RawMat.ViewsMaterial.Setting
                 }
 
                 string level = check.Tab.CboInspectionLevel.Text.Trim();
-                bool requiresCavity = level.Equals(SAMPLING_CAVITY_TXT, StringComparison.OrdinalIgnoreCase)
-                    || level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase);
+                int.TryParse(GetNumberValueFromTextBox(txtQtyCavityTab1), out int cavityQty);
+
+                // Sampling Table ไม่มี cavity ได้ : หน้าตรวจใช้จำนวนจากตาราง AQL ตรงๆ
+                // (userControlSelectDimension.cs:339) จึงบังคับจำนวนต่อ cavity เฉพาะตอนที่ตั้ง cavity ไว้
+                // ส่วน Pc/Cavity ต้องมี cavity เสมอ ไม่งั้นหน้าตรวจไม่ยอมให้เข้า
+                bool isSamplingTable = level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase);
+                bool requiresCavity = level.Equals(SAMPLING_CAVITY_TXT, StringComparison.OrdinalIgnoreCase);
                 bool requiresQuantity = level.Equals(SAMPLING_FIX_TXT, StringComparison.OrdinalIgnoreCase)
                     || level.Equals(SAMPLING_CAVITY_TXT, StringComparison.OrdinalIgnoreCase)
-                    || level.Equals(SAMPLING_TABLE_TXT, StringComparison.OrdinalIgnoreCase)
+                    || (isSamplingTable && cavityQty > 0)
                     || level.Equals(SAMPLING_PERCENT_TXT, StringComparison.OrdinalIgnoreCase);
 
-                if (requiresCavity
-                    && (!int.TryParse(GetNumberValueFromTextBox(txtQtyCavityTab1), out int cavityQty) || cavityQty <= 0))
+                if (requiresCavity && cavityQty <= 0)
                 {
                     MessageBox.Show($"{check.Name}: กรุณาระบุ Cavity Qty มากกว่า 0", "Warning",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
